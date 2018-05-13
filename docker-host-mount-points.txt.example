@@ -1,0 +1,11 @@
+/mnt/myserver/cloud/data                     -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/cloud/data
+/mnt/myserver/downloads/bittorrent/leeching  -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/bittorrent/leeching
+/mnt/myserver/downloads/bittorrent/seeding   -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/bittorrent/seeding
+/mnt/myserver/downloads/bittorrent/watching  -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/bittorrent/watching
+/mnt/myserver/downloads/usenet/completed     -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/usenet/completed
+/mnt/myserver/downloads/usenet/processing    -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/usenet/processing
+/mnt/myserver/downloads/usenet/watching      -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/usenet/watching
+/mnt/myserver/medias/movies                  -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/medias/movies
+/mnt/myserver/medias/music                   -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/medias/music
+/mnt/myserver/medias/podcasts                -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/medias/podcasts
+/mnt/myserver/medias/tv_shows                -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/medias/tv_shows

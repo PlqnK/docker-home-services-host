@@ -1,0 +1,14 @@
+# Global
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Project specific
+.env
+docker-host-mount-points.txt
+docker-host-rsyncd.conf
+docker-host-rsyncd.secrets
+docker-host-setup.conf
+traefik.toml

@@ -1,0 +1,32 @@
+debug = false
+logLevel = "ERROR"
+
+defaultEntryPoints = ["https","http"]
+InsecureSkipVerify = true
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+
+[retry]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "example.com"
+watch = true
+exposedbydefault = false
+
+[acme]
+email = "me@example.com"
+storage = "acme.json"
+entryPoint = "https"
+OnHostRule = true
+  [acme.dnsChallenge]
+  # https://docs.traefik.io/configuration/acme/#provider
+  provider = "OVH"
+  delayBeforeCheck = 0
