@@ -39,3 +39,10 @@ systemctl enable rsync.service && systemctl start rsync.service
 cp traefik.toml "${LOCAL_STORAGE}"/traefik/config/traefik.toml
 touch "${LOCAL_STORAGE}"/traefik/config/acme.json && chmod 600 "${LOCAL_STORAGE}"/traefik/config/acme.json
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}"/traefik/config && chmod 755 "${LOCAL_STORAGE}"/traefik/config/traefik.toml
+
+# Copy the OpenVPN profile if needed
+if [[ -f custom.ovpn ]]; then
+  cp custom.ovpn "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
+  chown dockerrt:dockerrt "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
+  chmod 600 "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
+fi
