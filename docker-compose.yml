@@ -31,7 +31,7 @@ services:
     devices:
       - /dev/net/tun
     expose:
-      - 9091:9091
+      - "9091"
     volumes:
       - ${LOCAL_STORAGE}/transmission/openvpn/custom.ovpn:/etc/openvpn/custom/default.ovpn
       - ${MOUNT_POINT}/downloads/bittorrent:/data
@@ -141,8 +141,8 @@ services:
     networks:
       - web
     expose:
-      - 8080:8080
-      - 9090:9090
+      - "8080"
+      - "9090"
     volumes:
       - ${LOCAL_STORAGE}/sabnzbd/config:/config
       - ${MOUNT_POINT}/downloads/usenet/completed:/downloads
@@ -163,7 +163,7 @@ services:
     networks:
       - web
     expose:
-      - 9117:9117
+      - "9117"
     volumes:
       - ${LOCAL_STORAGE}/jackett/config:/config
       - ${MOUNT_POINT}/downloads/bittorrent/watching:/downloads
@@ -183,7 +183,7 @@ services:
     networks:
       - web
     expose:
-      - 5076:5076
+      - "5076"
     volumes:
       - ${LOCAL_STORAGE}/nzbhydra2/config:/config
       - ${MOUNT_POINT}/downloads/bittorrent/watching:/downloads
@@ -208,7 +208,7 @@ services:
     networks:
       - web
     expose:
-      - 7878:7878
+      - "7878"
     volumes:
       - ${LOCAL_STORAGE}/radarr/config:/config
       - ${MOUNT_POINT}/downloads:/downloads
@@ -234,7 +234,7 @@ services:
     networks:
       - web
     expose:
-      - 8989:8989
+      - "8989"
     volumes:
       - ${LOCAL_STORAGE}/sonarr/config:/config
       - ${MOUNT_POINT}/downloads:/downloads
@@ -260,7 +260,7 @@ services:
     networks:
       - web
     expose:
-      - 8686:8686
+      - "8686"
     volumes:
       - ${LOCAL_STORAGE}/lidarr/config:/config
       - ${MOUNT_POINT}/downloads:/downloads
@@ -284,7 +284,7 @@ services:
     networks:
       - web
     expose:
-      - 3579:3579
+      - "3579"
     volumes:
       - ${LOCAL_STORAGE}/ombi/config:/config
     environment:
@@ -325,7 +325,7 @@ services:
     networks:
       - web
     expose:
-      - 8181:8181
+      - "8181"
     volumes:
       - ${LOCAL_STORAGE}/tautulli/config:/config
       - ${LOCAL_STORAGE}/plexmediaserver/db/Library/Application\ Support/Plex\ Media\ Server/Logs:/logs:ro
@@ -345,8 +345,8 @@ services:
     networks:
       - web
     expose:
-      - 8096:8096
-      - 8920:8920
+      - "8096"
+      - "8920"
     volumes:
       - ${LOCAL_STORAGE}/embyserver/config:/config
       - ${MOUNT_POINT}/medias:/data
@@ -366,7 +366,7 @@ services:
     networks:
       - web
     expose:
-      - 4040:4040
+      - "4040"
     volumes:
       - ${LOCAL_STORAGE}/airsonic/config:/airsonic/data
       - ${LOCAL_STORAGE}/airsonic/playlists:/airsonic/playlists
@@ -402,7 +402,7 @@ services:
     networks:
       - web
     expose:
-      - 8080:80
+      - "80"
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html
       - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps
@@ -411,7 +411,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=web"
-      - "traefik.port=8080"
+      - "traefik.port=80"
       - "traefik.frontend.rule=Host:cloud.${DOMAIN_NAME}"
 
 networks:
