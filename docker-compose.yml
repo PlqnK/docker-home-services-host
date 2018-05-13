@@ -302,7 +302,8 @@ services:
     restart: unless-stopped
     networks:
       - web
-    network_mode: host
+    expose:
+      - "32400"
     volumes:
       - ${LOCAL_STORAGE}/plexmediaserver/db:/config
       - ${MOUNT_POINT}/medias:/data
