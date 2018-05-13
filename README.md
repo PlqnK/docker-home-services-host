@@ -45,6 +45,7 @@ $ sudo ./fedora-server-setup.sh
 For rsync you will now need to configure your file server in order to pull files from the docker host.
 And finally:
 ```
+$ docker network create web
 $ docker-compose up -d
 ```
 ## Contributing
