@@ -34,3 +34,7 @@ sed -i 's/RSYNC_ENABLE=false/RSYNC_ENABLE=true/g' /etc/default/rsync
 cp docker-host-rsyncd.conf /etc/rsyncd.conf && cp docker-host-rsyncd.secrets /etc/rsyncd.secrets
 chmod 600 /etc/rsyncd.secrets
 systemctl enable rsync.service && systemctl start rsync.service
+
+# Copy Traefik config
+cp traefik.toml "${LOCAL_STORAGE}"/traefik/config/traefik.toml
+touch "${LOCAL_STORAGE}"/traefik/config/acme.json && chmod 600 "${LOCAL_STORAGE}"/traefik/config/acme.json
