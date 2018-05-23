@@ -54,4 +54,4 @@ Contributions are welcome if you see any area of improvement!
 
 ## License
 
-This project is released under the [3-Clause BSD License](https://opensource.org/licenses/BSD-3-Clause).
+This project is released under the [BSD 3-Clause License](https://opensource.org/licenses/BSD-3-Clause).
