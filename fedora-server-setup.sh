@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 
-# Make sure that we are running as root
 if [[ "$(id -u)" -ne "0" ]]; then
   echo "Script must be ran as root."
   exit
 fi
 
-# Source variables from config file
 source docker-host-setup.conf
 
 # Install Docker
@@ -34,12 +32,11 @@ cp docker-host-rsyncd.conf /etc/rsyncd.conf && cp docker-host-rsyncd.secrets /et
 chmod 600 /etc/rsyncd.secrets
 systemctl enable rsyncd.service && systemctl start rsyncd.service
 
-# Copy Traefik config
+# Copy configs where needed
 cp traefik.toml "${LOCAL_STORAGE}"/traefik/config/traefik.toml
 touch "${LOCAL_STORAGE}"/traefik/config/acme.json && chmod 600 "${LOCAL_STORAGE}"/traefik/config/acme.json
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}"/traefik/config && chmod 755 "${LOCAL_STORAGE}"/traefik/config/traefik.toml
 
-# Copy the OpenVPN profile if needed
 if [[ -f custom.ovpn ]]; then
   cp custom.ovpn "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
   chown dockerrt:dockerrt "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
