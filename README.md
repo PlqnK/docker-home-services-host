@@ -29,7 +29,7 @@ You then need to:
 - Get a Plex claim token here https://www.plex.tv/claim/ and replace the `PLEX_CLAIM` variable in the `.env` file with it.
 - Update every reference to `example.com` in the files with your personal domain name, every reference to `myserver` with either the hostname of your server or the IP address where needed. Change `USER` in `docker-host-setup.conf` to the name of the user created during the installation of Ubuntu/Fedora.
 - Fill in passwords for `TRANSMISSION_RPC_PASSWORD`, `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` in `.env` as well as rsync in `docker-host-rsyncd.secrets`.
-- Modify the `OPENVPN_PROVIDER`, `OPENVPN_USERNAME` and `OPENVPN_PASSWORD` according to the doc here https://hub.docker.com/r/haugene/transmission-openvpn/. If you have a provider that doesn't use credentials you will need to set `OPENVPN_PROVIDER` to custom and place your OpenVPN profile file inside the working dir as `custom.ovpn`.
+- Modify the `OPENVPN_PROVIDER`, `OPENVPN_USERNAME` and `OPENVPN_PASSWORD` according to the doc here https://hub.docker.com/r/haugene/transmission-openvpn/. If you have a provider that doesn't use credentials you will need to set `OPENVPN_PROVIDER` to `custom` and place your OpenVPN profile file inside the working dir as `custom.ovpn`.
 - Adapt the rest of the variables in .env and other conf files according to your needs.
 
 Next, if you are on Ubuntu:
@@ -45,7 +45,7 @@ $ sudo ./fedora-server-setup.sh
 For rsync you will now need to configure your file server in order to pull files from the docker host.
 And finally:
 ```
-$ docker network create web
+$ docker network create proxy
 $ docker-compose up -d
 ```
 ## Contributing

@@ -6,7 +6,7 @@ services:
     container_name: traefik
     restart: unless-stopped
     networks:
-      - web
+      - proxy
     ports:
       - 80:80
       - 443:443
@@ -25,7 +25,7 @@ services:
     container_name: transmission
     restart: unless-stopped
     networks:
-      - web
+      - proxy
     cap_add:
       - NET_ADMIN
     devices:
@@ -131,7 +131,7 @@ services:
 #      - TRANSMISSION_RATIO_LIMIT_ENABLED=${TRANSMISSION_RATIO_LIMIT_ENABLED}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=9091"
       - "traefik.frontend.rule=Host:transmission.${DOMAIN_NAME}"
   sabnzbd:
@@ -139,7 +139,7 @@ services:
     container_name: sabnzbd
     restart: unless-stopped
     networks:
-      - web
+      - proxy
     expose:
       - "8080"
       - "9090"
@@ -153,7 +153,7 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=8080"
       - "traefik.frontend.rule=Host:sabnzbd.${DOMAIN_NAME}"
   jackett:
@@ -161,7 +161,7 @@ services:
     container_name: jackett
     restart: unless-stopped
     networks:
-      - web
+      - proxy
     expose:
       - "9117"
     volumes:
@@ -173,7 +173,7 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=9117"
       - "traefik.frontend.rule=Host:jackett.${DOMAIN_NAME}"
   nzbhydra2:
@@ -181,7 +181,7 @@ services:
     container_name: nzbhydra2
     restart: unless-stopped
     networks:
-      - web
+      - proxy
     expose:
       - "5076"
     volumes:
@@ -193,7 +193,7 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=5076"
       - "traefik.frontend.rule=Host:nzbhydra.${DOMAIN_NAME}"
   radarr:
@@ -206,7 +206,7 @@ services:
       - jackett
       - nzbhydra2
     networks:
-      - web
+      - proxy
     expose:
       - "7878"
     volumes:
@@ -219,7 +219,7 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=7878"
       - "traefik.frontend.rule=Host:radarr.${DOMAIN_NAME}"
   sonarr:
@@ -232,7 +232,7 @@ services:
       - jackett
       - nzbhydra2
     networks:
-      - web
+      - proxy
     expose:
       - "8989"
     volumes:
@@ -245,7 +245,7 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=8989"
       - "traefik.frontend.rule=Host:sonarr.${DOMAIN_NAME}"
   lidarr:
@@ -258,7 +258,7 @@ services:
       - jackett
       - nzbhydra2
     networks:
-      - web
+      - proxy
     expose:
       - "8686"
     volumes:
@@ -271,7 +271,7 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=8686"
       - "traefik.frontend.rule=Host:lidarr.${DOMAIN_NAME}"
   ombi:
@@ -282,7 +282,7 @@ services:
       - radarr
       - sonarr
     networks:
-      - web
+      - proxy
     expose:
       - "3579"
     volumes:
@@ -293,7 +293,7 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=3579"
       - "traefik.frontend.rule=Host:ombi.${DOMAIN_NAME}"
   plexmediaserver:
@@ -301,7 +301,7 @@ services:
     container_name: plexmediaserver
     restart: unless-stopped
     networks:
-      - web
+      - proxy
     expose:
       - "32400"
     volumes:
@@ -314,7 +314,7 @@ services:
       - PLEX_CLAIM=${PLEX_CLAIM}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=32400"
       - "traefik.frontend.rule=Host:plex.${DOMAIN_NAME}"
   tautulli:
@@ -324,7 +324,7 @@ services:
     depends_on:
       - plexmediaserver
     networks:
-      - web
+      - proxy
     expose:
       - "8181"
     volumes:
@@ -336,7 +336,7 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=8181"
       - "traefik.frontend.rule=Host:tautulli.${DOMAIN_NAME}"
   embyserver:
@@ -344,7 +344,7 @@ services:
     container_name: embyserver
     restart: unless-stopped
     networks:
-      - web
+      - proxy
     expose:
       - "8096"
       - "8920"
@@ -357,7 +357,7 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=8096"
       - "traefik.frontend.rule=Host:emby.${DOMAIN_NAME}"
   airsonic:
@@ -365,7 +365,7 @@ services:
     container_name: airsonic
     restart: unless-stopped
     networks:
-      - web
+      - proxy
     expose:
       - "4040"
     volumes:
@@ -380,7 +380,7 @@ services:
 #      - JAVA_OPTS=${JAVA_OPTS}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=4040"
       - "traefik.frontend.rule=Host:airsonic.${DOMAIN_NAME}"
   mariadb_nextcloud:
@@ -401,7 +401,7 @@ services:
     depends_on:
       - mariadb_nextcloud
     networks:
-      - web
+      - proxy
     expose:
       - "80"
     volumes:
@@ -411,10 +411,10 @@ services:
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=proxy"
       - "traefik.port=80"
       - "traefik.frontend.rule=Host:cloud.${DOMAIN_NAME}"
 
 networks:
-  web:
+  proxy:
     external: true
