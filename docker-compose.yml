@@ -387,6 +387,8 @@ services:
     image: mariadb
     container_name: mariadb_nextcloud
     restart: unless-stopped
+    networks:
+      - internal
     volumes:
       - ${LOCAL_STORAGE}/mariadb_nextcloud/db:/var/lib/mysql
     environment:
@@ -402,6 +404,7 @@ services:
       - mariadb_nextcloud
     networks:
       - proxy
+      - internal
     expose:
       - "80"
     volumes:
@@ -418,3 +421,5 @@ services:
 networks:
   proxy:
     external: true
+  internal:
+    external: false
