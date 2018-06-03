@@ -17,10 +17,10 @@ For example, if you have the domain `example.com`, you need to set up `dyn.examp
 
 ## Installation
 
-```
-$ git clone https://github.com/plqnk/docker-media-services-host.git
-$ cd docker-media-services-host
-$ for file in *.example; do cp -- "$file" "${file%%.example}"; done
+```shell-script
+git clone https://github.com/plqnk/docker-media-services-host.git
+cd docker-media-services-host
+for file in *.example; do cp -- "$file" "${file%%.example}"; done
 ```
 You then need to:
 
@@ -33,20 +33,20 @@ You then need to:
 - Adapt the rest of the variables in .env and other conf files according to your needs.
 
 Next, if you are on Ubuntu:
-```
-$ chmod u+x ubuntu-server-setup.sh
-$ sudo ./ubuntu-server-setup.sh
+```shell-script
+chmod u+x ubuntu-server-setup.sh
+sudo ./ubuntu-server-setup.sh
 ```
 Or if you are on Fedora:
-```
-$ chmod u+x fedora-server-setup.sh
-$ sudo ./fedora-server-setup.sh
+```shell-script
+chmod u+x fedora-server-setup.sh
+sudo ./fedora-server-setup.sh
 ```
 For rsync you will now need to configure your file server in order to pull files from the docker host.
 And finally:
-```
-$ docker network create proxy
-$ docker-compose up -d
+```shell-script
+docker network create proxy
+docker-compose up -d
 ```
 ## Contributing
 
