@@ -21,7 +21,7 @@ useradd dockerrt -d /nonexistent -u 1001 -U -s /usr/sbin/nologin
 # Install & setup NFS
 dnf -y install nfs-utils autofs
 mkdir -p "${MOUNT_POINT_DIRS}"
-echo "${AUTO_MASTER}" > /etc/auto.master.d/chappie.autofs
+echo "${AUTO_MASTER}" > /etc/auto.master.d/"${STORAGE_SERVER_NAME}".autofs
 cp docker-host-mount-points.txt /etc/auto."${STORAGE_SERVER_NAME}"
 systemctl enable autofs && systemctl start autofs
 
