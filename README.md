@@ -57,11 +57,16 @@ chmod u+x fedora-server-setup.sh
 sudo ./fedora-server-setup.sh
 ```
 For rsync you will now need to configure your file server in order to pull files from the docker host.
-And finally:
+You need to create the docker proxy network and you can then launch your containers:
 ```shell-script
 docker network create proxy
 docker-compose up -d
 ```
+And finally run the post install script which will modify some services config files:
+```shell-script
+sudo ./post-first-launch.sh
+```
+
 ## Contributing
 
 Contributions are welcome if you see any area of improvement!
