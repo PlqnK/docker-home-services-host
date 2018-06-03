@@ -192,7 +192,7 @@ services:
       - "5076"
     volumes:
       - ${LOCAL_STORAGE}/nzbhydra2/config:/config
-      - ${MOUNT_POINT}/downloads/bittorrent/watching:/downloads
+      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
