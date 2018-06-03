@@ -412,6 +412,11 @@ services:
       - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps
       - ${LOCAL_STORAGE}/nextcloud/config:/var/www/html/config
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=${MYSQL_HOST}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
