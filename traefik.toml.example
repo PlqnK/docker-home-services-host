@@ -12,6 +12,16 @@ InsecureSkipVerify = true
   [entryPoints.https]
   address = ":443"
     [entryPoints.https.tls]
+  [entryPoints.traefik]
+  address = ":8080"
+    [entryPoints.traefik.auth]
+      [entryPoints.traefik.auth.basic]
+      users = ["admin:yourpasswordhash"]
+
+[api]
+entryPoint = "traefik"
+dashboard = true
+debug = false
 
 [retry]
 

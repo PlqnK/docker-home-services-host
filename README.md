@@ -42,6 +42,12 @@ Or if you are on Fedora:
 chmod u+x fedora-server-setup.sh
 sudo ./fedora-server-setup.sh
 ```
+Choose a password for Træfik and hash it as followed:
+```shell-script
+htpasswd -nb admin yourchosenpassword
+```
+Replace `yourpasswordhash` in `traefik.toml` under `entryPoints.traefik.auth.basic` with the hash that you just obtained.
+
 For rsync you will now need to configure your file server in order to pull files from the docker host.
 And finally:
 ```shell-script
