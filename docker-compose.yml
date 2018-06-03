@@ -191,7 +191,7 @@ services:
     expose:
       - "5076"
     volumes:
-      - ${LOCAL_STORAGE}/nzbhydra2/config:/config
+      - ${LOCAL_STORAGE}/nzbhydra2/config:/data
       - ${MOUNT_POINT}/downloads/usenet/watching:/downloads
     environment:
       - TZ=${TZ}
