@@ -32,6 +32,20 @@ You then need to:
 - Modify the `OPENVPN_PROVIDER`, `OPENVPN_USERNAME` and `OPENVPN_PASSWORD` according to the doc here https://hub.docker.com/r/haugene/transmission-openvpn/. If you have a provider that doesn't use credentials you will need to set `OPENVPN_PROVIDER` to `custom` and place your OpenVPN profile file inside the working dir as `custom.ovpn`.
 - Adapt the rest of the variables in .env and other conf files according to your needs.
 
+If you are on Ubuntu, install htpasswd with:
+```shell-script
+sudo apt install apache2-utils
+```
+If you are on Fedora, install it with:
+```shell-script
+sudo dnf install httpd-tools
+```
+Then choose a password for Træfik and hash it as followed:
+```shell-script
+htpasswd -nb admin yourchosenpassword
+```
+Replace `yourpasswordhash` in `traefik.toml` under `entryPoints.traefik.auth.basic` with the hash that you just obtained.
+
 Next, if you are on Ubuntu:
 ```shell-script
 chmod u+x ubuntu-server-setup.sh
@@ -42,12 +56,6 @@ Or if you are on Fedora:
 chmod u+x fedora-server-setup.sh
 sudo ./fedora-server-setup.sh
 ```
-Choose a password for Træfik and hash it as followed:
-```shell-script
-htpasswd -nb admin yourchosenpassword
-```
-Replace `yourpasswordhash` in `traefik.toml` under `entryPoints.traefik.auth.basic` with the hash that you just obtained.
-
 For rsync you will now need to configure your file server in order to pull files from the docker host.
 And finally:
 ```shell-script

@@ -5,7 +5,7 @@ services:
     image: traefik
     container_name: traefik
     restart: unless-stopped
-    command: --api
+    #command: --api
     networks:
       - proxy
     ports:
