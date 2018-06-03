@@ -9,7 +9,7 @@ source docker-host-setup.conf
 
 # Install Docker
 dnf -y upgrade
-dnf -y install dnf-plugins-core httpd-tools htop wget curl nano vim git
+dnf -y install dnf-plugins-core htop wget curl nano vim git
 dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
 dnf -y upgrade && dnf -y install docker-ce docker-compose
 systemctl enable docker && systemctl start docker
