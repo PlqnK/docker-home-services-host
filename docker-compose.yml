@@ -10,8 +10,7 @@ services:
     ports:
       - 80:80
       - 443:443
-    expose:
-      - "8080"
+      - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${LOCAL_STORAGE}/traefik/config/traefik.toml:/etc/traefik/traefik.toml
@@ -36,8 +35,6 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun
-    expose:
-      - "9091"
     volumes:
       - ${LOCAL_STORAGE}/transmission/openvpn/custom.ovpn:/etc/openvpn/custom/default.ovpn
       - ${MOUNT_POINT}/downloads/bittorrent:/data
@@ -146,9 +143,6 @@ services:
     restart: unless-stopped
     networks:
       - proxy
-    expose:
-      - "8080"
-      - "9090"
     volumes:
       - ${LOCAL_STORAGE}/sabnzbd/config:/config
       - ${MOUNT_POINT}/downloads/usenet/completed:/downloads
@@ -168,8 +162,6 @@ services:
     restart: unless-stopped
     networks:
       - proxy
-    expose:
-      - "9117"
     volumes:
       - ${LOCAL_STORAGE}/jackett/config:/config
       - ${MOUNT_POINT}/downloads/bittorrent/watching:/downloads
@@ -188,8 +180,6 @@ services:
     restart: unless-stopped
     networks:
       - proxy
-    expose:
-      - "5076"
     volumes:
       - ${LOCAL_STORAGE}/nzbhydra2/config:/data
       - ${MOUNT_POINT}/downloads/usenet/watching:/downloads
@@ -213,8 +203,6 @@ services:
       - nzbhydra2
     networks:
       - proxy
-    expose:
-      - "7878"
     volumes:
       - ${LOCAL_STORAGE}/radarr/config:/config
       - ${MOUNT_POINT}/downloads:/downloads
@@ -239,8 +227,6 @@ services:
       - nzbhydra2
     networks:
       - proxy
-    expose:
-      - "8989"
     volumes:
       - ${LOCAL_STORAGE}/sonarr/config:/config
       - ${MOUNT_POINT}/downloads:/downloads
@@ -265,8 +251,6 @@ services:
       - nzbhydra2
     networks:
       - proxy
-    expose:
-      - "8686"
     volumes:
       - ${LOCAL_STORAGE}/lidarr/config:/config
       - ${MOUNT_POINT}/downloads:/downloads
@@ -289,8 +273,6 @@ services:
       - sonarr
     networks:
       - proxy
-    expose:
-      - "3579"
     volumes:
       - ${LOCAL_STORAGE}/ombi/config:/config
     environment:
@@ -318,8 +300,6 @@ services:
       - 32412:32412/udp
       - 32413:32413/udp
       - 32414:32414/udp
-    expose:
-      - "32400"
     volumes:
       - ${LOCAL_STORAGE}/plexmediaserver/db:/config
       - ${MOUNT_POINT}/medias:/data
@@ -341,8 +321,6 @@ services:
       - plexmediaserver
     networks:
       - proxy
-    expose:
-      - "8181"
     volumes:
       - ${LOCAL_STORAGE}/tautulli/config:/config
       - ${LOCAL_STORAGE}/plexmediaserver/db/Library/Application\ Support/Plex\ Media\ Server/Logs:/logs:ro
@@ -361,9 +339,6 @@ services:
     restart: unless-stopped
     networks:
       - proxy
-    expose:
-      - "8096"
-      - "8920"
     volumes:
       - ${LOCAL_STORAGE}/embyserver/config:/config
       - ${MOUNT_POINT}/medias:/data
@@ -382,8 +357,6 @@ services:
     restart: unless-stopped
     networks:
       - proxy
-    expose:
-      - "4040"
     volumes:
       - ${LOCAL_STORAGE}/airsonic/config:/airsonic/data
       - ${LOCAL_STORAGE}/airsonic/playlists:/airsonic/playlists
@@ -421,8 +394,6 @@ services:
     networks:
       - proxy
       - internal
-    expose:
-      - "80"
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html
       - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps
