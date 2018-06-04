@@ -408,6 +408,28 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=80"
       - "traefik.frontend.rule=Host:cloud.${DOMAIN_NAME}"
+  collaboraonline:
+    image: collabora/code
+    container_name: collaboraonline
+    restart: unless-stopped
+    depends_on:
+      - nextcloud
+    networks:
+      - proxy
+    cap_add:
+      - MKNOD
+    volumes:
+      - ${LOCAL_STORAGE}/collaboraonline/config:/etc/loolwsd
+    environment:
+      - domain=${NEXTCLOUD_DOMAIN}
+      - username=${COLLABORA_USERNAME}
+      - password=${COLLABORA_PASSWORD}
+      - dictionaries=${COLLABORA_DICTIONARIES}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.port=9980"
+      - "traefik.frontend.rule=Host:office.${DOMAIN_NAME}"
 
 networks:
   proxy:
