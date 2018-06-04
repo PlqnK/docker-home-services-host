@@ -427,6 +427,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.port=9980"
+      - "traefik.protocol=https"
       - "traefik.frontend.rule=Host:office.${DOMAIN_NAME}"
 
 networks:
