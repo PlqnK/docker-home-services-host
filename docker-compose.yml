@@ -418,8 +418,6 @@ services:
       - proxy
     cap_add:
       - MKNOD
-    volumes:
-      - ${LOCAL_STORAGE}/collaboraonline/config:/etc/loolwsd
     environment:
       - domain=${NEXTCLOUD_DOMAIN}
       - username=${COLLABORA_USERNAME}
