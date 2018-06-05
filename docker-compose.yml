@@ -385,7 +385,7 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
   # Need that container in order to be able to use cron as a background job in Nextcloud
-  # This container as one process running: cron, which execute /var/www/html/cron.php every 15 minutes
+  # This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
   # More info here: https://github.com/nextcloud/docker/pull/220
   cron_nextcloud:
     image: nextcloud
