@@ -38,7 +38,7 @@ services:
       - /dev/net/tun
     volumes:
       - ${LOCAL_STORAGE}/transmission/openvpn/custom.ovpn:/etc/openvpn/custom/default.ovpn
-      - ${MOUNT_POINT}/downloads/bittorrent:/data
+      - ${MOUNT_POINT}/downloads/bittorrent:/data:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -147,8 +147,8 @@ services:
       - proxy
     volumes:
       - ${LOCAL_STORAGE}/sabnzbd/config:/config
-      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads
-      - ${MOUNT_POINT}/downloads/usenet/processing:/incomplete-downloads
+      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads:slave
+      - ${MOUNT_POINT}/downloads/usenet/processing:/incomplete-downloads:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -167,7 +167,7 @@ services:
       - proxy
     volumes:
       - ${LOCAL_STORAGE}/jackett/config:/config
-      - ${MOUNT_POINT}/downloads/bittorrent/watching:/downloads
+      - ${MOUNT_POINT}/downloads/bittorrent/watching:/downloads:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -186,7 +186,7 @@ services:
       - proxy
     volumes:
       - ${LOCAL_STORAGE}/nzbhydra2/config:/data
-      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads
+      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -210,8 +210,8 @@ services:
       - proxy
     volumes:
       - ${LOCAL_STORAGE}/radarr/config:/config
-      - ${MOUNT_POINT}/downloads:/downloads
-      - ${MOUNT_POINT}/medias/movies:/movies
+      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/medias/movies:/movies:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -235,8 +235,8 @@ services:
       - proxy
     volumes:
       - ${LOCAL_STORAGE}/sonarr/config:/config
-      - ${MOUNT_POINT}/downloads:/downloads
-      - ${MOUNT_POINT}/medias/tv_shows:/tv
+      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -260,8 +260,8 @@ services:
       - proxy
     volumes:
       - ${LOCAL_STORAGE}/lidarr/config:/config
-      - ${MOUNT_POINT}/downloads:/downloads
-      - ${MOUNT_POINT}/medias/music:/music
+      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/medias/music:/music:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -311,7 +311,7 @@ services:
       - 32414:32414/udp
     volumes:
       - ${LOCAL_STORAGE}/plexmediaserver/db:/config
-      - ${MOUNT_POINT}/medias:/data
+      - ${MOUNT_POINT}/medias:/data:slave
     environment:
       - TZ=${TZ}
       - PLEX_UID=${PUID}
@@ -352,7 +352,7 @@ services:
       - proxy
     volumes:
       - ${LOCAL_STORAGE}/embyserver/config:/config
-      - ${MOUNT_POINT}/medias:/data
+      - ${MOUNT_POINT}/medias:/data:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -372,8 +372,8 @@ services:
     volumes:
       - ${LOCAL_STORAGE}/airsonic/config:/airsonic/data
       - ${LOCAL_STORAGE}/airsonic/playlists:/airsonic/playlists
-      - ${MOUNT_POINT}/medias/music:/airsonic/music
-      - ${MOUNT_POINT}/medias/podcasts:/airsonic/podcasts
+      - ${MOUNT_POINT}/medias/music:/airsonic/music:slave
+      - ${MOUNT_POINT}/medias/podcasts:/airsonic/podcasts:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -415,7 +415,7 @@ services:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html
       - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps
       - ${LOCAL_STORAGE}/nextcloud/config:/var/www/html/config
-      - ${MOUNT_POINT}/cloud/data:/var/www/html/data
+      - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
   nextcloud:
     # https://hub.docker.com/_/nextcloud/
     image: nextcloud
@@ -430,8 +430,8 @@ services:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html
       - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps
       - ${LOCAL_STORAGE}/nextcloud/config:/var/www/html/config
-      - ${MOUNT_POINT}/cloud/data:/var/www/html/data
-      - ${LOCAL_DOCUMENTS}:/mnt/documents
+      - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
+      - ${LOCAL_DOCUMENTS}:/mnt/documents:slave
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
