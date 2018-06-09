@@ -2,6 +2,7 @@ version: "2"
 
 services:
   traefik:
+    # https://hub.docker.com/_/traefik/
     image: traefik
     container_name: traefik
     restart: unless-stopped
@@ -25,6 +26,7 @@ services:
       - "traefik.port=8080"
       - "traefik.frontend.rule=Host:traefik.${DOMAIN_NAME}"
   transmission:
+    # https://hub.docker.com/r/haugene/transmission-openvpn/
     image: haugene/transmission-openvpn
     container_name: transmission
     restart: unless-stopped
@@ -47,96 +49,97 @@ services:
       - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
       - OPENVPN_OPTS=${OPENVPN_OPTS}
       - LOCAL_NETWORK=${LOCAL_NETWORK}
-#      - ENABLE_UFW=${ENABLE_UFW}
-#      - UFW_ALLOW_GW_NET=${UFW_ALLOW_GW_NET}
-#      - UFW_EXTRA_PORTS=${UFW_EXTRA_PORTS}
-#      - TRANSMISSION_WEB_HOME=${TRANSMISSION_WEB_HOME}
-#      - TRANSMISSION_WEB_UI=${TRANSMISSION_WEB_UI}
+      #- ENABLE_UFW=${ENABLE_UFW}
+      #- UFW_ALLOW_GW_NET=${UFW_ALLOW_GW_NET}
+      #- UFW_EXTRA_PORTS=${UFW_EXTRA_PORTS}
+      #- TRANSMISSION_WEB_HOME=${TRANSMISSION_WEB_HOME}
+      #- TRANSMISSION_WEB_UI=${TRANSMISSION_WEB_UI}
       - WEBPROXY_ENABLED=${WEBPROXY_ENABLED}
-#      - WEBPROXY_PORT=${WEBPROXY_PORT}
+      #- WEBPROXY_PORT=${WEBPROXY_PORT}
       ## Transmission configuration
       # Bandwidth
-#      - TRANSMISSION_ALT_SPEED_ENABLED=${TRANSMISSION_ALT_SPEED_ENABLED}
+      #- TRANSMISSION_ALT_SPEED_ENABLED=${TRANSMISSION_ALT_SPEED_ENABLED}
       - TRANSMISSION_ALT_SPEED_UP=${TRANSMISSION_ALT_SPEED_UP}
       - TRANSMISSION_ALT_SPEED_DOWN=${TRANSMISSION_ALT_SPEED_DOWN}
       - TRANSMISSION_SPEED_LIMIT_DOWN=${TRANSMISSION_SPEED_LIMIT_DOWN}
-#      - TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED=${TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED}
+      #- TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED=${TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED}
       - TRANSMISSION_SPEED_LIMIT_UP=${TRANSMISSION_SPEED_LIMIT_UP}
-#      - TRANSMISSION_SPEED_LIMIT_UP_ENABLED=${TRANSMISSION_SPEED_LIMIT_UP_ENABLED}
-#      - TRANSMISSION_UPLOAD_SLOTS_PER_TORRENT=${TRANSMISSION_UPLOAD_SLOTS_PER_TORRENT}
+      #- TRANSMISSION_SPEED_LIMIT_UP_ENABLED=${TRANSMISSION_SPEED_LIMIT_UP_ENABLED}
+      #- TRANSMISSION_UPLOAD_SLOTS_PER_TORRENT=${TRANSMISSION_UPLOAD_SLOTS_PER_TORRENT}
       # Blocklists
-#      - TRANSMISSION_BLOCKLIST_URL=${TRANSMISSION_BLOCKLIST_URL}
-#      - TRANSMISSION_BLOCKLIST_ENABLED=${TRANSMISSION_BLOCKLIST_ENABLED}
+      #- TRANSMISSION_BLOCKLIST_URL=${TRANSMISSION_BLOCKLIST_URL}
+      #- TRANSMISSION_BLOCKLIST_ENABLED=${TRANSMISSION_BLOCKLIST_ENABLED}
       # Files and Locations
       - TRANSMISSION_DOWNLOAD_DIR=${TRANSMISSION_DOWNLOAD_DIR}
       - TRANSMISSION_INCOMPLETE_DIR=${TRANSMISSION_INCOMPLETE_DIR}
       - TRANSMISSION_INCOMPLETE_DIR_ENABLED=${TRANSMISSION_INCOMPLETE_DIR_ENABLED}
-#      - TRANSMISSION_PREALLOCATION=${TRANSMISSION_PREALLOCATION}
-#      - TRANSMISSION_RENAME_PARTIAL_FILES=${TRANSMISSION_RENAME_PARTIAL_FILES}
-#      - TRANSMISSION_START_ADDED_TORRENTS=${TRANSMISSION_START_ADDED_TORRENTS}
-#      - TRANSMISSION_TRASH_ORIGINAL_TORRENT_FILES=${TRANSMISSION_TRASH_ORIGINAL_TORRENT_FILES}
+      #- TRANSMISSION_PREALLOCATION=${TRANSMISSION_PREALLOCATION}
+      #- TRANSMISSION_RENAME_PARTIAL_FILES=${TRANSMISSION_RENAME_PARTIAL_FILES}
+      #- TRANSMISSION_START_ADDED_TORRENTS=${TRANSMISSION_START_ADDED_TORRENTS}
+      #- TRANSMISSION_TRASH_ORIGINAL_TORRENT_FILES=${TRANSMISSION_TRASH_ORIGINAL_TORRENT_FILES}
       - TRANSMISSION_UMASK=${TRANSMISSION_UMASK}
       - TRANSMISSION_WATCH_DIR=${TRANSMISSION_WATCH_DIR}
       - TRANSMISSION_WATCH_DIR_ENABLED=${TRANSMISSION_WATCH_DIR_ENABLED}
       # Misc
-#      - TRANSMISSION_CACHE_SIZE_MB=${TRANSMISSION_CACHE_SIZE_MB}
+      #- TRANSMISSION_CACHE_SIZE_MB=${TRANSMISSION_CACHE_SIZE_MB}
       - TRANSMISSION_DHT_ENABLED=${TRANSMISSION_DHT_ENABLED}
-#      - TRANSMISSION_ENCRYPTION=${TRANSMISSION_ENCRYPTION}
-#      - TRANSMISSION_LAZY_BITFIELD_ENABLED=${TRANSMISSION_LAZY_BITFIELD_ENABLED}
-#      - TRANSMISSION_LPD_ENABLED=${TRANSMISSION_LPD_ENABLED}
-#      - TRANSMISSION_MESSAGE_LEVEL=${TRANSMISSION_MESSAGE_LEVEL}
+      #- TRANSMISSION_ENCRYPTION=${TRANSMISSION_ENCRYPTION}
+      #- TRANSMISSION_LAZY_BITFIELD_ENABLED=${TRANSMISSION_LAZY_BITFIELD_ENABLED}
+      #- TRANSMISSION_LPD_ENABLED=${TRANSMISSION_LPD_ENABLED}
+      #- TRANSMISSION_MESSAGE_LEVEL=${TRANSMISSION_MESSAGE_LEVEL}
       - TRANSMISSION_PEX_ENABLED=${TRANSMISSION_PEX_ENABLED}
-#      - TRANSMISSION_PREFETCH_ENABLED=${TRANSMISSION_PREFETCH_ENABLED}
-#      - TRANSMISSION_SCRAPE_PAUSED_TORRENTS_ENABLED=${TRANSMISSION_SCRAPE_PAUSED_TORRENTS_ENABLED}
-#      - TRANSMISSION_SCRIPT_TORRENT_DONE_ENABLED=${TRANSMISSION_SCRIPT_TORRENT_DONE_ENABLED}
-#      - TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME=${TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME}
-#      - TRANSMISSION_UTP_ENABLED=${TRANSMISSION_UTP_ENABLED}
+      #- TRANSMISSION_PREFETCH_ENABLED=${TRANSMISSION_PREFETCH_ENABLED}
+      #- TRANSMISSION_SCRAPE_PAUSED_TORRENTS_ENABLED=${TRANSMISSION_SCRAPE_PAUSED_TORRENTS_ENABLED}
+      #- TRANSMISSION_SCRIPT_TORRENT_DONE_ENABLED=${TRANSMISSION_SCRIPT_TORRENT_DONE_ENABLED}
+      #- TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME=${TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME}
+      #- TRANSMISSION_UTP_ENABLED=${TRANSMISSION_UTP_ENABLED}
       # Peers
-#      - TRANSMISSION_PEER_CONGESTION_ALGORITHM=${TRANSMISSION_PEER_CONGESTION_ALGORITHM}
-#      - TRANSMISSION_PEER_ID_TTL_HOURS=${TRANSMISSION_PEER_ID_TTL_HOURS}
-#      - TRANSMISSION_PEER_LIMIT_GLOBAL=${TRANSMISSION_PEER_LIMIT_GLOBAL}
-#      - TRANSMISSION_PEER_LIMIT_PER_TORRENT=${TRANSMISSION_PEER_LIMIT_PER_TORRENT}
-#      - TRANSMISSION_PEER_SOCKET_TOS=${TRANSMISSION_PEER_SOCKET_TOS}
+      #- TRANSMISSION_PEER_CONGESTION_ALGORITHM=${TRANSMISSION_PEER_CONGESTION_ALGORITHM}
+      #- TRANSMISSION_PEER_ID_TTL_HOURS=${TRANSMISSION_PEER_ID_TTL_HOURS}
+      #- TRANSMISSION_PEER_LIMIT_GLOBAL=${TRANSMISSION_PEER_LIMIT_GLOBAL}
+      #- TRANSMISSION_PEER_LIMIT_PER_TORRENT=${TRANSMISSION_PEER_LIMIT_PER_TORRENT}
+      #- TRANSMISSION_PEER_SOCKET_TOS=${TRANSMISSION_PEER_SOCKET_TOS}
       # Peer port
       - TRANSMISSION_PEER_PORT=${TRANSMISSION_PEER_PORT}
-#      - TRANSMISSION_PEER_PORT_RANDOM_HIGH=${TRANSMISSION_PEER_PORT_RANDOM_HIGH}
-#      - TRANSMISSION_PEER_PORT_RANDOM_LOW=${TRANSMISSION_PEER_PORT_RANDOM_LOW}
-#      - TRANSMISSION_PEER_PORT_RANDOM_ON_START=${TRANSMISSION_PEER_PORT_RANDOM_ON_START}
+      #- TRANSMISSION_PEER_PORT_RANDOM_HIGH=${TRANSMISSION_PEER_PORT_RANDOM_HIGH}
+      #- TRANSMISSION_PEER_PORT_RANDOM_LOW=${TRANSMISSION_PEER_PORT_RANDOM_LOW}
+      #- TRANSMISSION_PEER_PORT_RANDOM_ON_START=${TRANSMISSION_PEER_PORT_RANDOM_ON_START}
       - TRANSMISSION_PORT_FORWARDING_ENABLED=${TRANSMISSION_PORT_FORWARDING_ENABLED}
       # Queuing
-#      - TRANSMISSION_DOWNLOAD_QUEUE_ENABLED=${TRANSMISSION_DOWNLOAD_QUEUE_ENABLED}
+      #- TRANSMISSION_DOWNLOAD_QUEUE_ENABLED=${TRANSMISSION_DOWNLOAD_QUEUE_ENABLED}
       - TRANSMISSION_DOWNLOAD_QUEUE_SIZE=${TRANSMISSION_DOWNLOAD_QUEUE_SIZE}
-#      - TRANSMISSION_QUEUE_STALLED_ENABLED=${TRANSMISSION_QUEUE_STALLED_ENABLED}
-#      - TRANSMISSION_QUEUE_STALLED_MINUTES=${TRANSMISSION_QUEUE_STALLED_MINUTES}
-#      - TRANSMISSION_SEED_QUEUE_ENABLED=${TRANSMISSION_SEED_QUEUE_ENABLED}
-#      - TRANSMISSION_SEED_QUEUE_SIZE=${TRANSMISSION_SEED_QUEUE_SIZE}
+      #- TRANSMISSION_QUEUE_STALLED_ENABLED=${TRANSMISSION_QUEUE_STALLED_ENABLED}
+      #- TRANSMISSION_QUEUE_STALLED_MINUTES=${TRANSMISSION_QUEUE_STALLED_MINUTES}
+      #- TRANSMISSION_SEED_QUEUE_ENABLED=${TRANSMISSION_SEED_QUEUE_ENABLED}
+      #- TRANSMISSION_SEED_QUEUE_SIZE=${TRANSMISSION_SEED_QUEUE_SIZE}
       # RPC
       - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=${TRANSMISSION_RPC_AUTHENTICATION_REQUIRED}
-#      - TRANSMISSION_RPC_BIND_ADDRESS=${TRANSMISSION_RPC_BIND_ADDRESS}
-#      - TRANSMISSION_RPC_ENABLED=${TRANSMISSION_RPC_ENABLED}
-#      - TRANSMISSION_RPC_HOST_WHITELIST=${TRANSMISSION_RPC_HOST_WHITELIST}
-#      - TRANSMISSION_RPC_HOST_WHITELIST_ENABLED=${TRANSMISSION_RPC_HOST_WHITELIST_ENABLED}
+      #- TRANSMISSION_RPC_BIND_ADDRESS=${TRANSMISSION_RPC_BIND_ADDRESS}
+      #- TRANSMISSION_RPC_ENABLED=${TRANSMISSION_RPC_ENABLED}
+      #- TRANSMISSION_RPC_HOST_WHITELIST=${TRANSMISSION_RPC_HOST_WHITELIST}
+      #- TRANSMISSION_RPC_HOST_WHITELIST_ENABLED=${TRANSMISSION_RPC_HOST_WHITELIST_ENABLED}
       - TRANSMISSION_RPC_PASSWORD=${TRANSMISSION_RPC_PASSWORD}
-#      - TRANSMISSION_RPC_PORT=${TRANSMISSION_RPC_PORT}
-#      - TRANSMISSION_RPC_URL=${TRANSMISSION_RPC_URL}
+      #- TRANSMISSION_RPC_PORT=${TRANSMISSION_RPC_PORT}
+      #- TRANSMISSION_RPC_URL=${TRANSMISSION_RPC_URL}
       - TRANSMISSION_RPC_USERNAME=${TRANSMISSION_RPC_USERNAME}
-#      - TRANSMISSION_RPC_WHITELIST=${TRANSMISSION_WHITELIST}
-#      - TRANSMISSION_RPC_WHITELIST_ENABLED=${TRANSMISSION_WHITELIST_ENABLED}
+      #- TRANSMISSION_RPC_WHITELIST=${TRANSMISSION_WHITELIST}
+      #- TRANSMISSION_RPC_WHITELIST_ENABLED=${TRANSMISSION_WHITELIST_ENABLED}
       # Scheduling
       - TRANSMISSION_ALT_SPEED_TIME_ENABLED=${TRANSMISSION_ALT_SPEED_TIME_ENABLED}
       - TRANSMISSION_ALT_SPEED_TIME_BEGIN=${TRANSMISSION_ALT_SPEED_TIME_BEGIN}
       - TRANSMISSION_ALT_SPEED_TIME_END=${TRANSMISSION_ALT_SPEED_TIME_END}
       - TRANSMISSION_ALT_SPEED_TIME_DAY=${TRANSMISSION_ALT_SPEED_TIME_DAY}
-#      - TRANSMISSION_IDLE_SEEDING_LIMIT=${TRANSMISSION_IDLE_SEEDING_LIMIT}
-#      - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=${TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED}
-#      - TRANSMISSION_RATIO_LIMIT=${TRANSMISSION_RATIO_LIMIT}
-#      - TRANSMISSION_RATIO_LIMIT_ENABLED=${TRANSMISSION_RATIO_LIMIT_ENABLED}
+      #- TRANSMISSION_IDLE_SEEDING_LIMIT=${TRANSMISSION_IDLE_SEEDING_LIMIT}
+      #- TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=${TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED}
+      #- TRANSMISSION_RATIO_LIMIT=${TRANSMISSION_RATIO_LIMIT}
+      #- TRANSMISSION_RATIO_LIMIT_ENABLED=${TRANSMISSION_RATIO_LIMIT_ENABLED}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.port=9091"
       - "traefik.frontend.rule=Host:transmission.${DOMAIN_NAME}"
   sabnzbd:
+    # https://hub.docker.com/r/linuxserver/sabnzbd/
     image: linuxserver/sabnzbd
     container_name: sabnzbd
     restart: unless-stopped
@@ -156,6 +159,7 @@ services:
       - "traefik.port=8080"
       - "traefik.frontend.rule=Host:sabnzbd.${DOMAIN_NAME}"
   jackett:
+    # https://hub.docker.com/r/linuxserver/jackett/
     image: linuxserver/jackett
     container_name: jackett
     restart: unless-stopped
@@ -174,6 +178,7 @@ services:
       - "traefik.port=9117"
       - "traefik.frontend.rule=Host:jackett.${DOMAIN_NAME}"
   nzbhydra2:
+    # https://hub.docker.com/r/theotherp/nzbhydra2/
     image: theotherp/nzbhydra2
     container_name: nzbhydra2
     restart: unless-stopped
@@ -192,6 +197,7 @@ services:
       - "traefik.port=5076"
       - "traefik.frontend.rule=Host:nzbhydra.${DOMAIN_NAME}"
   radarr:
+    # https://hub.docker.com/r/linuxserver/radarr/
     image: linuxserver/radarr
     container_name: radarr
     restart: unless-stopped
@@ -216,6 +222,7 @@ services:
       - "traefik.port=7878"
       - "traefik.frontend.rule=Host:radarr.${DOMAIN_NAME}"
   sonarr:
+    # https://hub.docker.com/r/linuxserver/sonarr/
     image: linuxserver/sonarr
     container_name: sonarr
     restart: unless-stopped
@@ -240,6 +247,7 @@ services:
       - "traefik.port=8989"
       - "traefik.frontend.rule=Host:sonarr.${DOMAIN_NAME}"
   lidarr:
+    # https://hub.docker.com/r/linuxserver/lidarr/
     image: linuxserver/lidarr
     container_name: lidarr
     restart: unless-stopped
@@ -264,6 +272,7 @@ services:
       - "traefik.port=8686"
       - "traefik.frontend.rule=Host:lidarr.${DOMAIN_NAME}"
   ombi:
+    # https://hub.docker.com/r/linuxserver/ombi/
     image: linuxserver/ombi
     container_name: ombi
     restart: unless-stopped
@@ -284,6 +293,7 @@ services:
       - "traefik.port=3579"
       - "traefik.frontend.rule=Host:ombi.${DOMAIN_NAME}"
   plexmediaserver:
+    # https://hub.docker.com/r/plexinc/pms-docker/
     image: plexinc/pms-docker:${PLEX_TAG}
     container_name: plexmediaserver
     restart: unless-stopped
@@ -313,6 +323,7 @@ services:
       - "traefik.port=32400"
       - "traefik.frontend.rule=Host:plex.${DOMAIN_NAME}"
   tautulli:
+    # https://hub.docker.com/r/tautulli/tautulli/
     image: tautulli/tautulli
     container_name: tautulli
     restart: unless-stopped
@@ -333,6 +344,7 @@ services:
       - "traefik.port=8181"
       - "traefik.frontend.rule=Host:tautulli.${DOMAIN_NAME}"
   embyserver:
+    # https://hub.docker.com/r/emby/embyserver/
     image: emby/embyserver
     container_name: embyserver
     restart: unless-stopped
@@ -351,6 +363,7 @@ services:
       - "traefik.port=8096"
       - "traefik.frontend.rule=Host:emby.${DOMAIN_NAME}"
   airsonic:
+    # https://hub.docker.com/r/airsonic/airsonic/
     image: airsonic/airsonic
     container_name: airsonic
     restart: unless-stopped
@@ -365,13 +378,14 @@ services:
       - TZ=${TZ}
       - PUID=${PUID}
       - PGID=${PGID}
-#      - JAVA_OPTS=${JAVA_OPTS}
+      #- JAVA_OPTS=${JAVA_OPTS}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
       - "traefik.port=4040"
       - "traefik.frontend.rule=Host:airsonic.${DOMAIN_NAME}"
   mariadb_nextcloud:
+    # https://hub.docker.com/_/mariadb/
     image: mariadb
     container_name: mariadb_nextcloud
     restart: unless-stopped
@@ -388,6 +402,7 @@ services:
   # This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
   # More info here: https://github.com/nextcloud/docker/pull/220
   cron_nextcloud:
+    # https://hub.docker.com/_/nextcloud/
     image: nextcloud
     container_name: cron_nextcloud
     restart: unless-stopped
@@ -402,6 +417,7 @@ services:
       - ${LOCAL_STORAGE}/nextcloud/config:/var/www/html/config
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data
   nextcloud:
+    # https://hub.docker.com/_/nextcloud/
     image: nextcloud
     container_name: nextcloud
     restart: unless-stopped
@@ -427,6 +443,7 @@ services:
       - "traefik.port=80"
       - "traefik.frontend.rule=Host:cloud.${DOMAIN_NAME}"
   collaboraonline:
+    # https://hub.docker.com/r/collabora/code/
     image: collabora/code
     container_name: collaboraonline
     restart: unless-stopped
