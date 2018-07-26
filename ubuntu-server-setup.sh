@@ -16,7 +16,7 @@ apt-get update && apt-get install -y docker-ce docker-compose
 usermod -aG docker "${USER}"
 
 # Create a docker group and a docker runtime user for a little bit more security
-useradd dockerrt -d /nonexistent -u 1001 -U -s /usr/sbin/nologin
+useradd dockerrt -d /nonexistent -u 2000 -U -s /usr/sbin/nologin
 
 # Install & setup NFS
 apt-get install -y nfs-common autofs
