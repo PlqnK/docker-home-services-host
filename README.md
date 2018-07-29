@@ -20,7 +20,7 @@ For example, if you have the domain `example.com`, you need to set up `dyn.examp
 ```shell-script
 git clone https://github.com/plqnk/docker-media-services-host.git
 cd docker-media-services-host
-for file in *.example; do cp -- "$file" "${file%%.example}"; done
+for file in *.example*; do mv $file $(echo $file | sed -e 's/.example//'); done
 ```
 You then need to:
 
