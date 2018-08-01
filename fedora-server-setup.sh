@@ -28,7 +28,8 @@ echo "${AUTO_MASTER}" > /etc/auto.master.d/"${STORAGE_SERVER_NAME}".autofs
 cp docker-host-mount-points.txt /etc/auto."${STORAGE_SERVER_NAME}"
 systemctl enable autofs && systemctl start autofs
 
-# Configure local storage and rsync for config files
+# Configure local storage for config files, install and configure rsync in daemon mode
+dnf -y install rsync rsync-daemon
 eval "mkdir -p ${LOCAL_STORAGE_DIRS}"
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}" && chmod -R 755 "${LOCAL_STORAGE}"
 cp docker-host-rsyncd.conf /etc/rsyncd.conf && cp docker-host-rsyncd.secrets /etc/rsyncd.secrets
