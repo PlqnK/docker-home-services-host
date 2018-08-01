@@ -16,7 +16,7 @@ systemctl enable docker && systemctl start docker
 usermod -aG docker "${USER}"
 
 # Create a docker group and a docker runtime user for a little bit more security
-useradd dockerrt -d /nonexistent -u 1001 -U -s /usr/sbin/nologin
+useradd dockerrt -d /nonexistent -u 2000 -U -s /usr/sbin/nologin
 
 # Install & setup NFS
 dnf -y install nfs-utils autofs
