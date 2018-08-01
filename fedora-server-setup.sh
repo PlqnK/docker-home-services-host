@@ -20,13 +20,16 @@ useradd dockerrt -d /nonexistent -u 1001 -U -s /usr/sbin/nologin
 
 # Install & setup NFS
 dnf -y install nfs-utils autofs
-mkdir -p "${MOUNT_POINT_DIRS}"
+# I know, eval is evil. But this isn't a mission critical command and this is the only way to have variable expansion 
+# before the brace expansion so that "mkdir {folder1,folder2}" creates 2 folders instead of 1 folder named litteraly
+# "{folder1,folder2}"
+eval "mkdir -p ${MOUNT_POINT_DIRS}"
 echo "${AUTO_MASTER}" > /etc/auto.master.d/"${STORAGE_SERVER_NAME}".autofs
 cp docker-host-mount-points.txt /etc/auto."${STORAGE_SERVER_NAME}"
 systemctl enable autofs && systemctl start autofs
 
 # Configure local storage and rsync for config files
-mkdir -p "${LOCAL_STORAGE_DIRS}"
+eval "mkdir -p ${LOCAL_STORAGE_DIRS}"
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}" && chmod -R 755 "${LOCAL_STORAGE}"
 cp docker-host-rsyncd.conf /etc/rsyncd.conf && cp docker-host-rsyncd.secrets /etc/rsyncd.secrets
 chmod 600 /etc/rsyncd.secrets
