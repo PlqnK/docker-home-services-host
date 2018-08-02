@@ -177,15 +177,15 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=9117"
       - "traefik.frontend.rule=Host:jackett.${DOMAIN_NAME}"
-  nzbhydra2:
+  nzbhydra:
     # https://hub.docker.com/r/theotherp/nzbhydra2/
     image: theotherp/nzbhydra2
-    container_name: nzbhydra2
+    container_name: nzbhydra
     restart: unless-stopped
     networks:
       - proxy
     volumes:
-      - ${LOCAL_STORAGE}/nzbhydra2/config:/data
+      - ${LOCAL_STORAGE}/nzbhydra/config:/data
       - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave
     environment:
       - TZ=${TZ}
@@ -205,7 +205,7 @@ services:
       - transmission
       - sabnzbd
       - jackett
-      - nzbhydra2
+      - nzbhydra
     networks:
       - proxy
     volumes:
@@ -230,7 +230,7 @@ services:
       - transmission
       - sabnzbd
       - jackett
-      - nzbhydra2
+      - nzbhydra
     networks:
       - proxy
     volumes:
@@ -255,7 +255,7 @@ services:
       - transmission
       - sabnzbd
       - jackett
-      - nzbhydra2
+      - nzbhydra
     networks:
       - proxy
     volumes:
