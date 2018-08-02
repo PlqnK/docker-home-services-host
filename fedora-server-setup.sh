@@ -15,7 +15,7 @@ dnf -y upgrade && dnf -y install docker-ce docker-compose
 systemctl enable docker && systemctl start docker
 usermod -aG docker "${USER}"
 
-# Configure firewalld to work with docker
+# Configure firewalld to work with docker (allow inter-container communication on port 443)
 # See here for more information: https://opsech.io/posts/2017/May/23/docker-dns-with-firewalld-on-fedora.html
 firewall-cmd --permanent --new-zone=docker
 firewall-cmd --permanent --zone=docker --add-interface=docker0
