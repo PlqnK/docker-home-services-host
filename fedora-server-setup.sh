@@ -16,6 +16,7 @@ systemctl enable docker && systemctl start docker
 usermod -aG docker "${USER}"
 
 # Configure firewalld to work with docker
+# See here for more information: https://opsech.io/posts/2017/May/23/docker-dns-with-firewalld-on-fedora.html
 firewall-cmd --permanent --new-zone=docker
 firewall-cmd --permanent --zone=docker --add-interface=docker0
 firewall-cmd --permanent --zone=docker --add-source=172.0.0.0/8
