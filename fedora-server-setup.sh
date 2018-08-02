@@ -15,6 +15,14 @@ dnf -y upgrade && dnf -y install docker-ce docker-compose
 systemctl enable docker && systemctl start docker
 usermod -aG docker "${USER}"
 
+# Configure firewalld to work with docker
+firewall-cmd --permanent --new-zone=docker
+firewall-cmd --permanent --zone=docker --add-interface=docker0
+firewall-cmd --permanent --zone=docker --add-source=172.0.0.0/8
+firewall-cmd --permanent --zone=docker --add-port=443/tcp
+firewall-cmd --reload
+systemctl restart docker
+
 # Create a docker group and a docker runtime user for a little bit more security
 useradd dockerrt -d /nonexistent -u 2000 -U -s /usr/sbin/nologin
 
