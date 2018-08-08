@@ -343,28 +343,6 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=8181"
       - "traefik.frontend.rule=Host:tautulli.${DOMAIN_NAME}"
-  airsonic:
-    # https://hub.docker.com/r/airsonic/airsonic/
-    image: airsonic/airsonic
-    container_name: airsonic
-    restart: unless-stopped
-    networks:
-      - proxy
-    volumes:
-      - ${LOCAL_STORAGE}/airsonic/config:/airsonic/data
-      - ${LOCAL_STORAGE}/airsonic/playlists:/airsonic/playlists
-      - ${MOUNT_POINT}/medias/music:/airsonic/music:slave
-      - ${MOUNT_POINT}/medias/podcasts:/airsonic/podcasts:slave
-    environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
-      #- JAVA_OPTS=${JAVA_OPTS}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=4040"
-      - "traefik.frontend.rule=Host:airsonic.${DOMAIN_NAME}"
   mariadb_nextcloud:
     # https://hub.docker.com/_/mariadb/
     image: mariadb
