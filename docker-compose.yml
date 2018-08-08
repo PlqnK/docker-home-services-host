@@ -343,25 +343,6 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=8181"
       - "traefik.frontend.rule=Host:tautulli.${DOMAIN_NAME}"
-  embyserver:
-    # https://hub.docker.com/r/emby/embyserver/
-    image: emby/embyserver
-    container_name: embyserver
-    restart: unless-stopped
-    networks:
-      - proxy
-    volumes:
-      - ${LOCAL_STORAGE}/embyserver/config:/config
-      - ${MOUNT_POINT}/medias:/data:slave
-    environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=8096"
-      - "traefik.frontend.rule=Host:emby.${DOMAIN_NAME}"
   airsonic:
     # https://hub.docker.com/r/airsonic/airsonic/
     image: airsonic/airsonic
