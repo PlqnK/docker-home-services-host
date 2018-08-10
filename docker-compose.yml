@@ -1,6 +1,17 @@
 version: "2"
 
 services:
+  watchtower:
+    # https://hub.docker.com/r/lsiocommunity/organizr/
+    image: v2tec/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=${TZ}
+    # Update containers every monday at 5:00 a.m.
+    command: --schedule "0 0 5 * * 1"
   traefik:
     # https://hub.docker.com/_/traefik/
     image: traefik
