@@ -25,6 +25,24 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=8080"
       - "traefik.frontend.rule=Host:traefik.${DOMAIN_NAME}"
+  organizr:
+    # https://hub.docker.com/r/lsiocommunity/organizr/
+    image: lsiocommunity/organizr
+    container_name: organizr
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - ${LOCAL_STORAGE}/organizr/config:/config
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=Host:organizr.${DOMAIN_NAME}"
   transmission:
     # https://hub.docker.com/r/haugene/transmission-openvpn/
     image: haugene/transmission-openvpn
