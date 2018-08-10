@@ -2,7 +2,7 @@ version: "2"
 
 services:
   watchtower:
-    # https://hub.docker.com/r/lsiocommunity/organizr/
+    # https://hub.docker.com/r/v2tec/watchtower/
     image: v2tec/watchtower
     container_name: watchtower
     restart: unless-stopped
