@@ -29,10 +29,16 @@ It leverages [Docker](https://www.docker.com/) and [docker-compose](https://docs
 
 ## Roadmap
 
+Services to consider:
+
 - Add [LazyLibrarian](https://github.com/DobyTang/LazyLibrarian) + [Calibre](https://calibre-ebook.com/) + [Calibre-Web](https://github.com/janeczku/calibre-web) and [Mylar](https://github.com/evilhero/mylar) + [Ubooquity](http://vaemendis.net/ubooquity/) to retrieve and organise E-books and Comics
 - Add [Beets](http://beets.io/) and/or [Musicbrainz](https://musicbrainz.org/) to organise and properly tag my music library
 - Add [openHAB](https://www.openhab.org/) and/or [Home Assistant](https://www.home-assistant.io/) as a home automation hub
 - Add [Grafana](https://grafana.com/) + [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) & [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) to properly monitor my servers and services
+
+Project:
+
+- Learn and use Ansible to replace docker-compose and all the setup scripts
 
 ## Context of my setup
 
