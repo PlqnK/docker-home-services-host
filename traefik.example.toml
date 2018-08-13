@@ -36,7 +36,5 @@ email = "me@example.com"
 storage = "acme.json"
 entryPoint = "https"
 OnHostRule = true
-  [acme.dnsChallenge]
-  # https://docs.traefik.io/configuration/acme/#provider
-  provider = "OVH"
-  delayBeforeCheck = 0
+  [acme.httpChallenge]
+  entryPoint = "http"

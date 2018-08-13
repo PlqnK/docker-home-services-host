@@ -49,7 +49,6 @@ I have a separate server running FreeNAS that host all my files. That's why I'm 
 - Fedora Server 28+ or Ubuntu Server 18.04+ (other Linux distributions are possible but you will need to adapt the setup scripts)
 - A properly configured DNS server in your LAN that, at least, all of your servers uses as well as proper DNS entries with a domain suffix (populated by hand or automatically with the hostname of your devices)
 - A paid domain name for which you have full control over
-- [Optionnal] A DNS provider supported by ACME, see here <https://docs.traefik.io/configuration/acme/#provider> (I'm using OVH as my registrar and DNS provider, if you are using something else you will need to make adjustments to the `docker-compose.yml`, the `traefik.toml` as well as the `.env` files in order to correctly configure your provider in the Træfik container.). If your provider is not supported by ACME then you can use the HTTP-01 challenge instead of the DNS-01 challenge.
 
 ## Installation
 
@@ -62,7 +61,6 @@ for file in *.example*; do cp $file $(echo $file | sed -e 's/.example//'); done
 You then need to:
 
 - Adapt the NFS mount points in `docker-host-mount-points.txt` with what you have on your file server.
-- Get an API token from your DNS provider and add it to the `.env` file.
 - Get a Plex claim token here <https://www.plex.tv/claim/> and replace the `PLEX_CLAIM` variable in the `.env` file with it.
 - Update every reference to `example.com` in the files with your personal domain name, every reference to `myserver` with either the hostname of your server or the IP address where needed. Change `USER` in `docker-host-setup.conf` to the name of the user created during the installation of Ubuntu/Fedora.
 - Fill in passwords for `TRANSMISSION_RPC_PASSWORD`, `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` in `.env` as well as rsync in `docker-host-rsyncd.secrets`.

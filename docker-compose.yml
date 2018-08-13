@@ -26,11 +26,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${LOCAL_STORAGE}/traefik/config/traefik.toml:/etc/traefik/traefik.toml
       - ${LOCAL_STORAGE}/traefik/config/acme.json:/acme.json
-    environment:
-      - OVH_ENDPOINT=${OVH_ENDPOINT}
-      - OVH_APPLICATION_KEY=${OVH_APPLICATION_KEY}
-      - OVH_APPLICATION_SECRET=${OVH_APPLICATION_SECRET}
-      - OVH_CONSUMER_KEY=${OVH_CONSUMER_KEY}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
