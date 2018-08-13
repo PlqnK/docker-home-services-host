@@ -11,7 +11,7 @@ It leverages [Docker](https://www.docker.com/) and [docker-compose](https://docs
 - [Transmission](https://transmissionbt.com/): An easy to use program to downloads files using the BitTorrent protocol.
 - [SABnzbd](https://sabnzbd.org/): An easy to use binary newsreader (download files using the Usenet protocol).
 - [Jackett](https://github.com/Jackett/Jackett): A proxy server that helps interface PVR apps (Radarr, Sonarr, Lidarr etc.) and your BitTorrent trackers.
-- [NZBHydra 2](https://github.com/theotherp/nzbhydra2): A meta search software for NZB indexers, you can configure and then search in all your NZB indexers in one place.
+- [NZBHydra 2](https://github.com/theotherp/nzbhydra2): A meta search software for NZB indexers, you can configure and then search all your NZB indexers in one place.
 - [Sonarr](https://sonarr.tv/), [Radarr](https://radarr.video/) and [Lidarr](https://lidarr.audio/): PVR programs for managing TV Shows, Movies and Music repectively. They will automatically monitor, grab and send the wanted file to a specified binary newsreader or BitTorrent downloader then rename and organize the resulting download according to your own preferences.
 - [Ombi](https://ombi.io/): Give your users the hability to request missing media content.
 - [Plex Media Server](https://www.plex.tv/): Plex is a centralised media server solution that let's you organize your personal video, music, and photo collections and streams them to all of your devices with a consistent interface.
@@ -22,6 +22,7 @@ It leverages [Docker](https://www.docker.com/) and [docker-compose](https://docs
 ## Context of my personnal setup
 
 I have a separate server running FreeNAS that host all my files. That's why I'm mounting my primary datasets with NFS on the docker host. It's also the reason why I'm using rsync, my FreeNAS server is configured to pull my container config files from the docker host with rsync once per hour.
+
 I have a personnal domain name, with a subdomain that I use as a Dynamic DNS because I'm hosting everything at home and I don't have a static IP (the A record of that subdomain is automatically updated by my router when my public IP adress change).
 
 ## Prerequisites
