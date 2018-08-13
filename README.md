@@ -110,7 +110,7 @@ Run the post install script which will modify some services config files that we
 sudo ./post-first-launch.sh
 ```
 
-Finally, in order to backup you containers config files, you will need to configure your file server in order to pull files from the docker host with rsync.
+Finally, in order to backup you containers config files, you will need to configure your file server in order to pull files from the docker host using rsync in "module mode" with the module named `docker_backup` configured in the `docker-host-rsyncd.example.conf` file.
 
 ## Contributing
 
