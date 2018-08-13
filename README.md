@@ -2,7 +2,7 @@
 
 This is my personal media services host config that I use at home in order to retrieve media and serve them over the network. I also use it to host a Nextcloud instance.
 
-It leverages [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/) in order to bring up and host the services and [rsync](https://rsync.samba.org/) to backup the containers configuration files. The services that are hosted on the server are:
+It leverages [Docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/) in order to bring up/host the services and [rsync](https://rsync.samba.org/) to backup the containers configuration files. The services that are hosted on the server are:
 
 - [Watchtower](https://github.com/v2tec/watchtower): A simple service to automatically update your Docker containers as soon as their image is updated or on a fixed schedule.
 - [Træfik](https://traefik.io/): A reverse-proxy that is very easy to configure and can automatically generate Let's Encrypt certificates.
@@ -13,11 +13,11 @@ It leverages [Docker](https://www.docker.com/) and [docker-compose](https://docs
 - [Jackett](https://github.com/Jackett/Jackett): A proxy server that helps interface PVR apps (Radarr, Sonarr, Lidarr etc.) and your BitTorrent trackers.
 - [NZBHydra 2](https://github.com/theotherp/nzbhydra2): A meta search software for NZB indexers, you can configure and then search all your NZB indexers in one place.
 - [Sonarr](https://sonarr.tv/), [Radarr](https://radarr.video/) and [Lidarr](https://lidarr.audio/): PVR programs for managing TV Shows, Movies and Music respectively. They will automatically monitor, grab and send the wanted file to a specified binary newsreader or BitTorrent downloader then rename and organize the resulting download according to your own preferences.
-- [Ombi](https://ombi.io/): Give your users the hability to request missing media content.
+- [Ombi](https://ombi.io/): Give your users the ability to request missing media content.
 - [Plex Media Server](https://www.plex.tv/): Plex is a centralised media server solution that let's you organize your personal video, music, and photo collections and streams them to all of your devices with a consistent interface.
 - [Tautulli](https://tautulli.com/): Tautulli is a 3rd party application that runs alongside a Plex Media Server instance to monitor activity and track various statistics that Plex doesn't show in it's own interface.
-- [Nextcloud](https://nextcloud.com/): Nextcloud is a suite of client-server software for creating and using file hosting services. It is functionally similar to Google Drive, although Nextcloud is free and open-source, allowing anyone to self-host an instance.
-- [Collabora Online](https://www.collaboraoffice.com/collabora-online/): A powerfull web-based LibreOffice suite that features collaborative editing.
+- [Nextcloud](https://nextcloud.com/): It's a suite of client-server software for creating and using file hosting services. It is functionally similar to Google Drive, although Nextcloud is free and open-source, allowing anyone to self-host an instance.
+- [Collabora Online](https://www.collaboraoffice.com/collabora-online/): A powerfull web-based LibreOffice suite that features collaborative editing that can integrated in Nextcloud.
 
 ## Context of my personnal setup
 
