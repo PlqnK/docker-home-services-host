@@ -1,4 +1,4 @@
-# Docker Media Services Host
+# Docker Home Services Host
 
 ## Disclaimer
 
@@ -53,8 +53,8 @@ I have a separate server running FreeNAS that host all my files. That's why I'm 
 ## Installation
 
 ```bash
-git clone https://github.com/plqnk/docker-media-services-host.git
-cd docker-media-services-host
+git clone https://github.com/PlqnK/docker-home-services-host.git
+cd docker-home-services-host
 for file in *.example*; do cp $file $(echo $file | sed -e 's/.example//'); done
 ```
 
