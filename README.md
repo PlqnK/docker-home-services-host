@@ -4,6 +4,8 @@
 
 This project is not in any way designed to be a simple one-click-to-deploy project that let's you chose which software you want to run and can be tailored to your needs. It's my personal media services host config that I use at home in order to retrieve media, serve them over the network and host a Nextcloud instance.
 
+If you're really looking for a complete, easy to configure and to use, media server deployment tool take a look at [Cloudbox](https://github.com/Cloudbox/Cloudbox) which uses Ansible and Docker to deploy the same services I use (and much more).
+
 Because it's design is so heavily influenced by my personal tastes, you may prefer to just learn from it and take bits and pieces here and there rather than clone and run the whole thing as is.
 
 Either way, I still try to be as concise as possible so that you can pretty much start from scratch with just this project and if someone happens to have a similar setup as me they can get up and running pretty easily just by reading this README.
