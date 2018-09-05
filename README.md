@@ -35,7 +35,7 @@ Services to consider:
 
 - Add [LazyLibrarian](https://github.com/DobyTang/LazyLibrarian) + [Calibre](https://calibre-ebook.com/) + [Calibre-Web](https://github.com/janeczku/calibre-web) and [Mylar](https://github.com/evilhero/mylar) + [Ubooquity](http://vaemendis.net/ubooquity/) to retrieve and organise E-books as well as Comics
 - Add [openHAB](https://www.openhab.org/) and/or [Home Assistant](https://www.home-assistant.io/) as a home automation hub (will maybe run it on a separate Raspberry Pi instead)
-- Add [Grafana](https://grafana.com/) + [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) & [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) to properly monitor devices, operating systems and services
+- Add [Grafana](https://grafana.com/) & [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) + [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) / [Prometheus](https://prometheus.io/) or even the [Elastic Stack](https://www.elastic.co/products) to properly monitor devices, operating systems and services
 
 Project:
 
