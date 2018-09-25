@@ -384,15 +384,15 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=8181"
       - "traefik.frontend.rule=Host:tautulli.${DOMAIN_NAME}"
-  mariadb_nextcloud:
+  nextcloud_mariadb:
     # https://hub.docker.com/_/mariadb/
     image: mariadb
-    container_name: mariadb_nextcloud
+    container_name: nextcloud_mariadb
     restart: unless-stopped
     networks:
       - internal
     volumes:
-      - ${LOCAL_STORAGE}/mariadb_nextcloud/db:/var/lib/mysql
+      - ${LOCAL_STORAGE}/nextcloud_mariadb/db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
@@ -401,13 +401,13 @@ services:
   # Need that container in order to be able to use cron as a background job in Nextcloud
   # This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
   # More info here: https://github.com/nextcloud/docker/pull/220
-  cron_nextcloud:
+  nextcloud_cron:
     # https://hub.docker.com/_/nextcloud/
     image: nextcloud
-    container_name: cron_nextcloud
+    container_name: nextcloud_cron
     restart: unless-stopped
     depends_on:
-      - mariadb_nextcloud
+      - nextcloud_mariadb
     networks:
       - internal
     entrypoint: /cron.sh
@@ -422,7 +422,7 @@ services:
     container_name: nextcloud
     restart: unless-stopped
     depends_on:
-      - mariadb_nextcloud
+      - nextcloud_mariadb
     networks:
       - proxy
       - internal
