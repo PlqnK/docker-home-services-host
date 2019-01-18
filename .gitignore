@@ -5,6 +5,7 @@
 .Trash-*
 .nfs*
 .vscode/
+.vagrant
 
 # Project specific
 .env
