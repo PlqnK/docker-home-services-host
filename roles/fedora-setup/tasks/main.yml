@@ -1,0 +1,155 @@
+---
+- name: Upgrade all packages
+  dnf:
+    name: '*'
+    state: latest
+
+- name: Install needed packages
+  dnf:
+    name:
+      - dnf-plugins-core
+      - htop
+      - wget
+      - curl
+      - vim
+      - git
+      - nfs-utils
+      - autofs
+      - rsync
+      - rsync-daemon
+    state: present
+
+- name: Add official Docker repository
+  # There's no modules for dnf config-manager yet.
+  command: dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+  run_once: true
+
+- name: Install Docker
+  dnf:
+    name: docker-ce
+    state: present
+    update_cache: yes
+
+- name: Enable and start the docker service
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add main user to docker group
+  user:
+    name: "{{ main_user }}"
+    groups: docker
+    append: yes
+
+- name: Create firewalld docker zone
+  firewalld:
+    permanent: true
+    zone: docker
+    state: present
+
+- name: Reload firewalld
+  # See the notes on zone transaction https://docs.ansible.com/ansible/latest/modules/firewalld_module.html
+  command: firewalld-cmd --reload
+
+- name: Add interface to firewalld docker zone
+  firewalld:
+    permanent: true
+    zone: docker
+    interface: docker0
+    state: enabled
+
+- name: Add source to firewalld docker zone
+  firewalld:
+    permanent: true
+    zone: docker
+    source: 172.0.0.0/8
+    state: enabled
+
+- name: Add TCP port to firewalld docker zone
+  firewalld:
+    permanent: true
+    zone: docker
+    port: 443/tcp
+    state: enabled
+
+- name: Restart Docker
+  systemd:
+    name: docker
+    state: restarted
+
+- name: Create Docker Rutime group
+  group:
+    name: dockerrt
+    gid: 2000
+    state: present
+
+- name: Create a Docker Runtime user
+  user:
+    name: dockerrt
+    comment: Docker Runtime user
+    uid: 2000
+    group: dockerrt
+    create_home: no
+    home: /nonexistent
+    shell: /usr/sbin/nologin
+
+- name: Create NFS mount points
+  file:
+    path: "{{ nfs_mount_points }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create AutoFS master file from template
+  template:
+    src: server.autofs.j2
+    dest: "/etc/auto.master.d/{{ storage_server_name }}.autofs"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create AutoFS template file from template
+  template:
+    src: auto.server.j2
+    dest: "/etc/auto.{{ storage_server_name }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable and start the autofs service
+  systemd:
+    name: autofs
+    state: started
+    enabled: yes
+
+- name: Create local directory structure for container config files
+  file:
+    path: "{{ local_container_storage_directories }}"
+    state: directory
+    owner: dockerrt
+    group: dockerrt
+    mode: 0755
+
+- name: Create rsyncd config file from template
+  template:
+    src: rsyncd.conf.j2
+    dest: /etc/rsyncd.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create rsyncd secrets file from template
+  template:
+    src: rsyncd.secrets.j2
+    dest: /etc/rsyncd.secrets
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Enable and start the rsyncd service
+  systemd:
+    name: rsyncd
+    state: started
+    enabled: yes
