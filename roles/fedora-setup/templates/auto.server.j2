@@ -1,0 +1,3 @@
+{% for mount_point in nfs_mount_points %}
+{{ nfs_mount_path }}/{{ mount_point }} -rw,vers=3 {{ storage_server_name }}.{{ local_domain_suffix }}:{{ storage_server_base_path }}/{{ mount_point }}
+{% endfor %}

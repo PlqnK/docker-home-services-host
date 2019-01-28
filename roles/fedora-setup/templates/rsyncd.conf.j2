@@ -1,0 +1,30 @@
+# GLOBAL OPTIONS
+
+#motd file=/etc/motd
+log file=/var/log/rsyncd.log
+# For pid file, do not use /var/run/rsync.pid if you are going to run rsync out
+# of the init.d script. The init.d script does its own pid file handling, so 
+# omit the "pid file" line completely in that case.
+#pid file=/var/run/rsyncd.pid
+#syslog facility=daemon
+#socket options=
+
+# MODULE OPTIONS
+
+[docker_backup]
+    comment = Backup of Docker services configs
+    path = {{ local_container_storage_path }}
+    use chroot = yes
+    lock file = /var/lock/rsyncd
+    read only = yes
+    list = yes
+    uid = root
+    gid = root
+    auth users = {{ rsync_auth_user }}
+    secrets file = /etc/rsyncd.secrets
+    hosts allow = {{ storage_server_name }}.{{ local_domain_suffix }}
+    hosts deny = *
+    ignore errors = no
+    ignore nonreadable = yes
+    timeout = 300
+    dont compress = *.gz *.tgz *.zip *.z *.rpm *.deb *.iso *.bz2 *.tbz
