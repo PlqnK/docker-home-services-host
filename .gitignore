@@ -4,6 +4,7 @@
 .directory
 .Trash-*
 .nfs*
+.vscode/
 
 # Project specific
 .env
