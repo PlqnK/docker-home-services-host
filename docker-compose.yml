@@ -287,6 +287,29 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=8989"
       - "traefik.frontend.rule=Host:sonarr.${DOMAIN_NAME}"
+  bazarr:
+    # https://hub.docker.com/r/linuxserver/bazarr
+    image: linuxserver/bazarr
+    container_name: bazarr
+    restart: unless-stopped
+    depends_on:
+      - radarr
+      - sonarr
+    networks:
+      - proxy
+    volumes:
+      - ${LOCAL_STORAGE}/bazarr/config:/config
+      - ${MOUNT_POINT}/medias/movies:/movies:slave
+      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.port=6767"
+      - "traefik.frontend.rule=Host:bazarr.${DOMAIN_NAME}"
   lidarr:
     # https://hub.docker.com/r/linuxserver/lidarr/
     image: linuxserver/lidarr
