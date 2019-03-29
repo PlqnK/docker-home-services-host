@@ -335,6 +335,34 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=8686"
       - "traefik.frontend.rule=Host:lidarr.${DOMAIN_NAME}"
+  lazylibrarian:
+    # https://hub.docker.com/r/thraxis/lazylibrarian-calibre
+    image: thraxis/lazylibrarian-calibre
+    container_name: lazylibrarian
+    restart: unless-stopped
+    depends_on:
+      - transmission
+      - sabnzbd
+      - jackett
+      - nzbhydra
+    networks:
+      - proxy
+    volumes:
+      - ${LOCAL_STORAGE}/lazylibrarian/config:/config
+      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/medias/books:/books:slave
+      - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave
+      - ${MOUNT_POINT}/medias/magazines:/magazines:slave
+      - ${MOUNT_POINT}/medias/comics:/comics:slave
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.port=5299"
+      - "traefik.frontend.rule=Host:lazylibrarian.${DOMAIN_NAME}"
   ombi:
     # https://hub.docker.com/r/linuxserver/ombi/
     image: linuxserver/ombi
@@ -407,6 +435,25 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=8181"
       - "traefik.frontend.rule=Host:tautulli.${DOMAIN_NAME}"
+  calibre-web:
+    # https://hub.docker.com/r/linuxserver/calibre-web
+    image: linuxserver/calibre-web
+    container_name: calibre-web
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - ${LOCAL_STORAGE}/calibre-web/config:/config
+      - ${MOUNT_POINT}/medias/books:/books:slave
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.port=8083"
+      - "traefik.frontend.rule=Host:calibre.${DOMAIN_NAME}"
   nextcloud_mariadb:
     # https://hub.docker.com/_/mariadb/
     image: mariadb
