@@ -24,6 +24,7 @@ It leverages [Docker](https://www.docker.com/) and [Docker Compose](https://docs
 - [NZBHydra 2](https://github.com/theotherp/nzbhydra2): A meta search software for NZB indexers, you can configure and then search all your NZB indexers in one place.
 - [Sonarr](https://sonarr.tv/), [Radarr](https://radarr.video/) and [Lidarr](https://lidarr.audio/): PVR programs for managing TV Shows, Movies and Music respectively. They will automatically monitor, grab and send the wanted file to a specified binary newsreader or BitTorrent downloader then rename and organize the resulting download according to your own preferences.
 - [Bazarr](https://github.com/morpheus65535/bazarr): Companion application to Sonarr and Radarr, it manages and downloads subtitles based on your requirements.
+- [LazyLibrarian](https://github.com/DobyTang/LazyLibrarian): Ebook library downloader and manager, works like Sonarr/Radarr/Lidarr.
 - [Ombi](https://ombi.io/): Give your users the ability to request missing media content from your media collection.
 - [Plex Media Server](https://www.plex.tv/): Plex is a centralised media server solution that let you organize your personal video, music as well as photo collections and streams them to all of your devices with a consistent interface.
 - [Tautulli](https://tautulli.com/): Tautulli is a 3rd party program that runs alongside a Plex Media Server instance to monitor it's activity and track various statistics that Plex doesn't show in it's own interface.
