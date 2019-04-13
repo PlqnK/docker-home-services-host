@@ -219,14 +219,14 @@ services:
       - "traefik.port=9117"
       - "traefik.frontend.rule=Host:jackett.${DOMAIN_NAME}"
   nzbhydra:
-    # https://hub.docker.com/r/theotherp/nzbhydra2/
-    image: theotherp/nzbhydra2
+    # https://hub.docker.com/r/linuxserver/hydra2/
+    image: linuxserver/hydra2
     container_name: nzbhydra
     restart: unless-stopped
     networks:
       - proxy
     volumes:
-      - ${LOCAL_STORAGE}/nzbhydra/config:/data
+      - ${LOCAL_STORAGE}/nzbhydra/config:/config
       - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave
     environment:
       - TZ=${TZ}
