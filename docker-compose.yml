@@ -456,7 +456,7 @@ services:
       - "traefik.frontend.rule=Host:calibre.${DOMAIN_NAME}"
   nextcloud_mariadb:
     # https://hub.docker.com/_/mariadb/
-    image: mariadb:10
+    image: mariadb:${MARIADB_TAG}
     container_name: nextcloud_mariadb
     restart: unless-stopped
     networks:
@@ -473,7 +473,7 @@ services:
   # More info here: https://github.com/nextcloud/docker/pull/220
   nextcloud_cron:
     # https://hub.docker.com/_/nextcloud/
-    image: nextcloud:stable
+    image: nextcloud:${NEXTCLOUD_TAG}
     container_name: nextcloud_cron
     restart: unless-stopped
     depends_on:
@@ -488,7 +488,7 @@ services:
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
   nextcloud:
     # https://hub.docker.com/_/nextcloud/
-    image: nextcloud:stable
+    image: nextcloud:${NEXTCLOUD_TAG}
     container_name: nextcloud
     restart: unless-stopped
     depends_on:
