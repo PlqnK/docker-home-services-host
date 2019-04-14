@@ -2,8 +2,8 @@ version: '3'
 
 services:
   watchtower:
-    # https://hub.docker.com/r/v2tec/watchtower/
-    image: v2tec/watchtower
+    # https://hub.docker.com/r/containrrr/watchtower
+    image: containrrr/watchtower
     container_name: watchtower
     restart: unless-stopped
     volumes:
@@ -219,14 +219,14 @@ services:
       - "traefik.port=9117"
       - "traefik.frontend.rule=Host:jackett.${DOMAIN_NAME}"
   nzbhydra:
-    # https://hub.docker.com/r/theotherp/nzbhydra2/
-    image: theotherp/nzbhydra2
+    # https://hub.docker.com/r/linuxserver/hydra2/
+    image: linuxserver/hydra2
     container_name: nzbhydra
     restart: unless-stopped
     networks:
       - proxy
     volumes:
-      - ${LOCAL_STORAGE}/nzbhydra/config:/data
+      - ${LOCAL_STORAGE}/nzbhydra/config:/config
       - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave
     environment:
       - TZ=${TZ}
@@ -287,6 +287,29 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=8989"
       - "traefik.frontend.rule=Host:sonarr.${DOMAIN_NAME}"
+  bazarr:
+    # https://hub.docker.com/r/linuxserver/bazarr
+    image: linuxserver/bazarr
+    container_name: bazarr
+    restart: unless-stopped
+    depends_on:
+      - radarr
+      - sonarr
+    networks:
+      - proxy
+    volumes:
+      - ${LOCAL_STORAGE}/bazarr/config:/config
+      - ${MOUNT_POINT}/medias/movies:/movies:slave
+      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.port=6767"
+      - "traefik.frontend.rule=Host:bazarr.${DOMAIN_NAME}"
   lidarr:
     # https://hub.docker.com/r/linuxserver/lidarr/
     image: linuxserver/lidarr
@@ -312,6 +335,34 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=8686"
       - "traefik.frontend.rule=Host:lidarr.${DOMAIN_NAME}"
+  lazylibrarian:
+    # https://hub.docker.com/r/thraxis/lazylibrarian-calibre
+    image: thraxis/lazylibrarian-calibre
+    container_name: lazylibrarian
+    restart: unless-stopped
+    depends_on:
+      - transmission
+      - sabnzbd
+      - jackett
+      - nzbhydra
+    networks:
+      - proxy
+    volumes:
+      - ${LOCAL_STORAGE}/lazylibrarian/config:/config
+      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/medias/books:/books:slave
+      - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave
+      - ${MOUNT_POINT}/medias/magazines:/magazines:slave
+      - ${MOUNT_POINT}/medias/comics:/comics:slave
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.port=5299"
+      - "traefik.frontend.rule=Host:lazylibrarian.${DOMAIN_NAME}"
   ombi:
     # https://hub.docker.com/r/linuxserver/ombi/
     image: linuxserver/ombi
@@ -384,9 +435,28 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.port=8181"
       - "traefik.frontend.rule=Host:tautulli.${DOMAIN_NAME}"
+  calibre-web:
+    # https://hub.docker.com/r/linuxserver/calibre-web
+    image: linuxserver/calibre-web
+    container_name: calibre-web
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - ${LOCAL_STORAGE}/calibre-web/config:/config
+      - ${MOUNT_POINT}/medias/books:/books:slave
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.port=8083"
+      - "traefik.frontend.rule=Host:calibre.${DOMAIN_NAME}"
   nextcloud_mariadb:
     # https://hub.docker.com/_/mariadb/
-    image: mariadb
+    image: mariadb:${MARIADB_TAG}
     container_name: nextcloud_mariadb
     restart: unless-stopped
     networks:
@@ -403,7 +473,7 @@ services:
   # More info here: https://github.com/nextcloud/docker/pull/220
   nextcloud_cron:
     # https://hub.docker.com/_/nextcloud/
-    image: nextcloud
+    image: nextcloud:${NEXTCLOUD_TAG}
     container_name: nextcloud_cron
     restart: unless-stopped
     depends_on:
@@ -418,7 +488,7 @@ services:
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
   nextcloud:
     # https://hub.docker.com/_/nextcloud/
-    image: nextcloud
+    image: nextcloud:${NEXTCLOUD_TAG}
     container_name: nextcloud
     restart: unless-stopped
     depends_on:

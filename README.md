@@ -23,9 +23,12 @@ It leverages [Docker](https://www.docker.com/) and [Docker Compose](https://docs
 - [Jackett](https://github.com/Jackett/Jackett): A proxy server that helps interface PVR programs (Radarr, Sonarr, Lidarr etc.) and your BitTorrent trackers.
 - [NZBHydra 2](https://github.com/theotherp/nzbhydra2): A meta search software for NZB indexers, you can configure and then search all your NZB indexers in one place.
 - [Sonarr](https://sonarr.tv/), [Radarr](https://radarr.video/) and [Lidarr](https://lidarr.audio/): PVR programs for managing TV Shows, Movies and Music respectively. They will automatically monitor, grab and send the wanted file to a specified binary newsreader or BitTorrent downloader then rename and organize the resulting download according to your own preferences.
+- [Bazarr](https://github.com/morpheus65535/bazarr): Companion application to Sonarr and Radarr, it manages and downloads subtitles based on your requirements.
+- [LazyLibrarian](https://github.com/DobyTang/LazyLibrarian): Ebook library downloader and manager, works like Sonarr/Radarr/Lidarr.
 - [Ombi](https://ombi.io/): Give your users the ability to request missing media content from your media collection.
 - [Plex Media Server](https://www.plex.tv/): Plex is a centralised media server solution that let you organize your personal video, music as well as photo collections and streams them to all of your devices with a consistent interface.
 - [Tautulli](https://tautulli.com/): Tautulli is a 3rd party program that runs alongside a Plex Media Server instance to monitor it's activity and track various statistics that Plex doesn't show in it's own interface.
+- [Calibre-Web](https://github.com/janeczku/calibre-web): Calibre-Web is a web app providing a clean interface for browsing, reading and downloading ebooks using an existing Calibre database.
 - [Nextcloud](https://nextcloud.com/): It's a suite of client-server software for creating and using file hosting services. It is functionally similar to Google Drive, although Nextcloud is free and open-source, allowing anyone to self-host an instance.
 - [Collabora Online](https://www.collaboraoffice.com/collabora-online/): A powerfull web-based LibreOffice suite that features collaborative editing and which can be integrated in Nextcloud.
 
@@ -33,8 +36,6 @@ It leverages [Docker](https://www.docker.com/) and [Docker Compose](https://docs
 
 Services to consider:
 
-- Add [Bazarr](https://github.com/morpheus65535/bazarr) to replace Sub-zero (Plex plugin) in order to download subtitles.
-- Add [LazyLibrarian](https://github.com/DobyTang/LazyLibrarian) + [Calibre](https://calibre-ebook.com/) + [Calibre-Web](https://github.com/janeczku/calibre-web) and [Mylar](https://github.com/evilhero/mylar) + [Ubooquity](http://vaemendis.net/ubooquity/) to retrieve and organise E-books as well as Comics
 - Add [openHAB](https://www.openhab.org/) and/or [Home Assistant](https://www.home-assistant.io/) as a home automation hub (will maybe run it on a separate Raspberry Pi instead)
 - Add [Grafana](https://grafana.com/) & [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) + [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) / [Prometheus](https://prometheus.io/) or even the [Elastic Stack](https://www.elastic.co/products) to properly monitor devices, operating systems and services
 
