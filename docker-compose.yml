@@ -537,6 +537,6 @@ services:
 
 networks:
   proxy:
-    external: true
+    external: false
   internal:
     external: false
