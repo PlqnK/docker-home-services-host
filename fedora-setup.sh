@@ -7,11 +7,10 @@ fi
 
 source docker-host-setup.conf
 
-# Install Docker
+# Install standard tools and upstream version of Docker
 dnf -y upgrade
 dnf -y install dnf-plugins-core htop wget curl nano vim git
-dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-dnf -y upgrade && dnf -y install docker-ce docker-compose
+dnf -y install moby-engine docker-compose
 systemctl enable docker && systemctl start docker
 usermod -aG docker "${USER}"
 
