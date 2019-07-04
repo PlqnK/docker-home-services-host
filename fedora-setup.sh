@@ -19,7 +19,7 @@ usermod -aG docker "${USER}"
 firewall-cmd --permanent --new-zone=docker
 firewall-cmd --permanent --zone=docker --add-interface=docker0
 firewall-cmd --permanent --zone=docker --add-source=172.0.0.0/8
-firewall-cmd --permanent --zone=docker --add-port=443/tcp
+firewall-cmd --permanent --zone=docker --add-service=https
 firewall-cmd --reload
 systemctl restart docker
 
