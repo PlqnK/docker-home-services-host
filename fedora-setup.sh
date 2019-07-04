@@ -28,7 +28,7 @@ useradd dockerrt -d /nonexistent -u 2000 -U -s /usr/sbin/nologin
 
 # Install & setup NFS
 dnf -y install nfs-utils autofs
-# I know, eval is evil. But this isn't a mission critical command and this is the only way to have variable expansion 
+# I know, eval is evil. But this isn't a mission critical command and this is the only way to have variable expansion
 # before the brace expansion so that "mkdir {folder1,folder2}" creates 2 folders instead of 1 folder named litteraly
 # "{folder1,folder2}"
 eval "mkdir -p ${MOUNT_POINT_DIRS}"
