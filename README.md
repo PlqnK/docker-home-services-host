@@ -91,10 +91,9 @@ chmod u+x fedora-setup.sh
 sudo ./fedora-setup.sh
 ```
 
-You will need to create the docker proxy network and then you can then launch your containers:
+You can then create and run your containers with a simple:
 
 ```bash
-docker network create proxy
 docker-compose up -d
 ```
 
