@@ -49,7 +49,7 @@ I have a separate server running FreeNAS that host all my files. That's why I'm 
 
 ## Prerequisites
 
-- Fedora Server 29 (other Linux distributions are possible but you will need to adapt the setup scripts).
+- Fedora Server 29+ (other Linux distributions are possible but you will need to adapt the setup scripts).
 - A properly configured DNS server in your LAN as well as proper DNS entries with a domain suffix for your servers (populated by hand or automatically with the hostname of your devices).
 - A paid domain name for which you have full control over.
 
@@ -104,6 +104,17 @@ sudo ./post-first-launch.sh
 ```
 
 Finally, in order to backup your containers config files you will need to configure your file server to pull files from the docker host using rsync in "module mode" with the module named `docker_backup` configured in the `docker-host-rsyncd.example.conf` file.
+
+## Updating
+
+Because this project uses Watchtower, containers are updated automatically every monday at 5 a.m. If you want to manually update your containers, just run:
+
+```bash
+cd /path/to/docker-home-services-host
+docker-compose pull && docker-compose up -d
+```
+
+If you also want to update the source files of the project you just need to run `git pull` right before `docker-compose pull && docker-compose up -d`.
 
 ## Contributing
 
