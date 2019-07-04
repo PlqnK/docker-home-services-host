@@ -84,7 +84,7 @@ htpasswd -nb admin yourchosenpassword
 
 Replace `yourpasswordhash` in `traefik.toml` under `entryPoints.traefik.auth.basic` with the hash that you just obtained.
 
-Next:
+Next, chmod and execute the setup script:
 
 ```bash
 chmod u+x fedora-setup.sh
@@ -103,7 +103,7 @@ Run the post install script which will modify some services config files that we
 sudo ./post-first-launch.sh
 ```
 
-Finally, in order to backup you containers config files you will need to configure your file server to pull files from the docker host using rsync in "module mode" with the module named `docker_backup` configured in the `docker-host-rsyncd.example.conf` file.
+Finally, in order to backup your containers config files you will need to configure your file server to pull files from the docker host using rsync in "module mode" with the module named `docker_backup` configured in the `docker-host-rsyncd.example.conf` file.
 
 ## Contributing
 
