@@ -11,7 +11,7 @@ source docker-host-setup.conf
 dnf -y upgrade
 dnf -y install dnf-plugins-core htop wget curl nano vim git
 dnf -y install moby-engine docker-compose
-systemctl enable docker && systemctl start docker
+systemctl enable --now docker
 usermod -aG docker "${USER}"
 
 # Configure firewalld to work with docker (allow inter-container communication on port 443)
@@ -34,7 +34,7 @@ dnf -y install nfs-utils autofs
 eval "mkdir -p ${MOUNT_POINT_DIRS}"
 echo "${AUTO_MASTER}" > /etc/auto.master.d/"${STORAGE_SERVER_NAME}".autofs
 cp docker-host-mount-points.txt /etc/auto."${STORAGE_SERVER_NAME}"
-systemctl enable autofs && systemctl start autofs
+systemctl enable --now autofs
 
 # Configure local storage for config files, install and configure rsync in daemon mode
 dnf -y install rsync rsync-daemon
@@ -42,7 +42,7 @@ eval "mkdir -p ${LOCAL_STORAGE_DIRS}"
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}" && chmod -R 755 "${LOCAL_STORAGE}"
 cp docker-host-rsyncd.conf /etc/rsyncd.conf && cp docker-host-rsyncd.secrets /etc/rsyncd.secrets
 chmod 600 /etc/rsyncd.secrets
-systemctl enable rsyncd.service && systemctl start rsyncd.service
+systemctl enable --now rsyncd.service
 
 # Copy configs where needed
 cp traefik.toml "${LOCAL_STORAGE}"/traefik/config/traefik.toml
