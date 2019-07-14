@@ -43,6 +43,8 @@
     groups: docker
     append: yes
 
+# Configure firewalld to work with docker (allow inter-container communication on port 443)
+# See here for more information: https://opsech.io/posts/2017/May/23/docker-dns-with-firewalld-on-fedora.html
 - name: Create firewalld docker zone
   firewalld:
     zone: docker
