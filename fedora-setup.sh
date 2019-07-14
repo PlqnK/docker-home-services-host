@@ -7,35 +7,42 @@ fi
 
 source docker-host-setup.conf
 
-# Install Docker
-apt-get update && apt-get upgrade -y
-apt-get install -y apt-transport-https ca-certificates software-properties-common htop wget curl nano vim git
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-apt-get update && apt-get install -y docker-ce docker-compose
+# Install standard tools and upstream version of Docker
+dnf -y upgrade
+dnf -y install dnf-plugins-core htop wget curl nano vim git
+dnf -y install moby-engine docker-compose
+systemctl enable --now docker
 usermod -aG docker "${USER}"
+
+# Configure firewalld to work with docker (allow inter-container communication on port 443)
+# See here for more information: https://opsech.io/posts/2017/May/23/docker-dns-with-firewalld-on-fedora.html
+firewall-cmd --permanent --new-zone=docker
+firewall-cmd --permanent --zone=docker --add-interface=docker0
+firewall-cmd --permanent --zone=docker --add-source=172.0.0.0/8
+firewall-cmd --permanent --zone=docker --add-service=https
+firewall-cmd --reload
+systemctl restart docker
 
 # Create a docker group and a docker runtime user for a little bit more security
 useradd dockerrt -d /nonexistent -u 2000 -U -s /usr/sbin/nologin
 
 # Install & setup NFS
-apt-get install -y nfs-common autofs
-# I know, eval is evil. But this isn't a mission critical command and this is the only way to have variable expansion 
+dnf -y install nfs-utils autofs
+# I know, eval is evil. But this isn't a mission critical command and this is the only way to have variable expansion
 # before the brace expansion so that "mkdir {folder1,folder2}" creates 2 folders instead of 1 folder named litteraly
 # "{folder1,folder2}"
 eval "mkdir -p ${MOUNT_POINT_DIRS}"
-echo "${AUTO_MASTER}" >> /etc/auto.master
+echo "${AUTO_MASTER}" > /etc/auto.master.d/"${STORAGE_SERVER_NAME}".autofs
 cp docker-host-mount-points.txt /etc/auto."${STORAGE_SERVER_NAME}"
-systemctl enable autofs && systemctl start autofs
+systemctl enable --now autofs
 
 # Configure local storage for config files, install and configure rsync in daemon mode
-apt-get install -y rsync
+dnf -y install rsync rsync-daemon
 eval "mkdir -p ${LOCAL_STORAGE_DIRS}"
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}" && chmod -R 755 "${LOCAL_STORAGE}"
-sed -i 's/RSYNC_ENABLE=false/RSYNC_ENABLE=true/g' /etc/default/rsync
 cp docker-host-rsyncd.conf /etc/rsyncd.conf && cp docker-host-rsyncd.secrets /etc/rsyncd.secrets
 chmod 600 /etc/rsyncd.secrets
-systemctl enable rsync.service && systemctl start rsync.service
+systemctl enable --now rsyncd.service
 
 # Copy configs where needed
 cp traefik.toml "${LOCAL_STORAGE}"/traefik/config/traefik.toml

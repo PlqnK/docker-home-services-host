@@ -49,7 +49,7 @@ I have a separate server running FreeNAS that host all my files. That's why I'm 
 
 ## Prerequisites
 
-- Fedora Server 28+ or Ubuntu Server 18.04+ (other Linux distributions are possible but you will need to adapt the setup scripts).
+- Fedora Server 29+ (other Linux distributions are possible but you will need to adapt the setup scripts).
 - A properly configured DNS server in your LAN as well as proper DNS entries with a domain suffix for your servers (populated by hand or automatically with the hostname of your devices).
 - A paid domain name for which you have full control over.
 
@@ -70,16 +70,10 @@ You then need to:
 - Modify the `OPENVPN_PROVIDER`, `OPENVPN_USERNAME` and `OPENVPN_PASSWORD` according to the doc [here](https://hub.docker.com/r/haugene/transmission-openvpn/). If you have a provider that doesn't use credentials you will need to set `OPENVPN_PROVIDER` to `custom` and place your OpenVPN profile file inside the working dir as `custom.ovpn`.
 - Adapt the rest of the variables in .env and other conf files according to your needs.
 
-If you are on Fedora, install htpasswd with:
+Install htpasswd with:
 
 ```bash
 sudo dnf install httpd-tools
-```
-
-If you are on Ubuntu, install it with:
-
-```bash
-sudo apt install apache2-utils
 ```
 
 Then choose a password for the Træfik web interface and hash it as followed:
@@ -90,24 +84,16 @@ htpasswd -nb admin yourchosenpassword
 
 Replace `yourpasswordhash` in `traefik.toml` under `entryPoints.traefik.auth.basic` with the hash that you just obtained.
 
-Next, if you are on Fedora:
+Next, chmod and execute the setup script:
 
 ```bash
-chmod u+x fedora-server-setup.sh
-sudo ./fedora-server-setup.sh
+chmod u+x fedora-setup.sh
+sudo ./fedora-setup.sh
 ```
 
-Or, if you are on Ubuntu:
+You can then create and run your containers with a simple:
 
 ```bash
-chmod u+x ubuntu-server-setup.sh
-sudo ./ubuntu-server-setup.sh
-```
-
-You will need to create the docker proxy network and then you can then launch your containers:
-
-```bash
-docker network create proxy
 docker-compose up -d
 ```
 
@@ -117,7 +103,18 @@ Run the post install script which will modify some services config files that we
 sudo ./post-first-launch.sh
 ```
 
-Finally, in order to backup you containers config files you will need to configure your file server to pull files from the docker host using rsync in "module mode" with the module named `docker_backup` configured in the `docker-host-rsyncd.example.conf` file.
+Finally, in order to backup your containers config files you will need to configure your file server to pull files from the docker host using rsync in "module mode" with the module named `docker_backup` configured in the `docker-host-rsyncd.example.conf` file.
+
+## Updating
+
+Because this project uses Watchtower, containers are updated automatically every monday at 5 a.m. If you want to manually update your containers, just run:
+
+```bash
+cd /path/to/docker-home-services-host
+docker-compose pull && docker-compose up -d
+```
+
+If you also want to update the source files of the project you just need to run `git pull` right before `docker-compose pull && docker-compose up -d`.
 
 ## Contributing
 
