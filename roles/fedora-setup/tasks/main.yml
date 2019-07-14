@@ -34,9 +34,9 @@
 
 - name: Create firewalld docker zone
   firewalld:
-    permanent: true
     zone: docker
     state: present
+    permanent: yes
 
 - name: Reload firewalld
   # See the notes on zone transaction https://docs.ansible.com/ansible/latest/modules/firewalld_module.html
@@ -44,23 +44,26 @@
 
 - name: Add interface to firewalld docker zone
   firewalld:
-    permanent: true
     zone: docker
     interface: docker0
+    permanent: yes
+    immediate: yes
     state: enabled
 
 - name: Add source to firewalld docker zone
   firewalld:
-    permanent: true
     zone: docker
-    source: 172.0.0.0/8
+    source: 172.16.0.0/12
+    permanent: yes
+    immediate: yes
     state: enabled
 
 - name: Add TCP port to firewalld docker zone
   firewalld:
-    permanent: true
     zone: docker
-    port: 443/tcp
+    service: https
+    permanent: yes
+    immediate: yes
     state: enabled
 
 - name: Restart Docker
