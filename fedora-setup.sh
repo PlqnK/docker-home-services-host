@@ -18,7 +18,7 @@ usermod -aG docker "${USER}"
 # See here for more information: https://opsech.io/posts/2017/May/23/docker-dns-with-firewalld-on-fedora.html
 firewall-cmd --permanent --new-zone=docker
 firewall-cmd --permanent --zone=docker --add-interface=docker0
-firewall-cmd --permanent --zone=docker --add-source=172.0.0.0/8
+firewall-cmd --permanent --zone=docker --add-source=172.16.0.0/12
 firewall-cmd --permanent --zone=docker --add-service=https
 firewall-cmd --reload
 systemctl restart docker
