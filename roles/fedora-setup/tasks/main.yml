@@ -1,4 +1,15 @@
 ---
+- name: Ensure SELinux is enabled
+  selinux:
+    policy: targeted
+    state: enforcing
+
+- name: Ensure firewalld is enabled and running
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
 - name: Upgrade all packages
   dnf:
     name: '*'
