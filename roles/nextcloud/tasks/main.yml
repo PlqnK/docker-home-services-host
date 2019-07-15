@@ -1,0 +1,38 @@
+---
+- name: Create config directories
+  file:
+    path: "{{ local_container_storage_path }}/nextcloud/{{ item }}"
+    state: directory
+    owner: 33
+    group: root
+    mode: 0755
+  loop:
+    - apps
+    - config
+
+- name: Create the Nextcloud container
+  docker_container:
+    name: nextcloud
+    image: "nextcloud:{{ nextcloud_image_tag }}"
+    restart_policy: unless-stopped
+    networks:
+      - name: proxy
+      - name: internal
+    volumes:
+      - "{{ local_container_storage_path }}/nextcloud:/var/www/html"
+      - "{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps"
+      - "{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config"
+      - "{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave"
+      - "{{ nfs_mount_path }}/sync:/mnt/documents:slave"
+    env:
+      MYSQL_DATABASE: "{{ nextcloud_mysql_database }}"
+      MYSQL_USER: "{{ nextcloud_mysql_user }}"
+      MYSQL_PASSWORD: "{{ nextcloud_mysql_password }}"
+      MYSQL_HOST: "{{ nextcloud_mysql_host }}"
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "proxy"
+      traefik.port: "80"
+      traefik.frontend.rule: "Host:cloud.{{ domain_name }}"
+    pull: yes
+    state: started

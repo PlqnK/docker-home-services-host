@@ -1,0 +1,30 @@
+---
+- name: Create config directories
+  file:
+    path: "{{ local_container_storage_path }}/nextcloud/{{ item }}"
+    state: directory
+    owner: 33
+    group: root
+    mode: 0755
+  loop:
+    - apps
+    - config
+
+# Need that container in order to be able to use cron as a background job in Nextcloud
+# This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
+# More info here: https://github.com/nextcloud/docker/pull/220
+- name: Create the Nextcloud Cron container
+  docker_container:
+    name: nextcloud_cron
+    image: "nextcloud:{{ nextcloud_image_tag }}"
+    restart_policy: unless-stopped
+    networks:
+      - name: internal
+    volumes:
+      - "{{ local_container_storage_path }}/nextcloud:/var/www/html"
+      - "{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps"
+      - "{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config"
+      - "{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave"
+    entrypoint: /cron.sh
+    pull: yes
+    state: started
