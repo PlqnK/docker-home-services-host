@@ -17,6 +17,8 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - "{{ local_container_storage_path }}/portainer/config:/data"
+    env:
+      TZ: "{{ timezone }}"
     labels:
       traefik.enable: "true"
       traefik.docker.network: "proxy"
