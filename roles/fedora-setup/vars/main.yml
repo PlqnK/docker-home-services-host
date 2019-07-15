@@ -4,5 +4,5 @@
     docker_runtime_user_id: 2000
     docker_runtime_group_name: dockerrt
     docker_runtime_group_id: 2000
-    local_container_storage_directories: /usr/local/share/docker-containers/data
+    local_container_storage_path: /usr/local/share/docker-containers/data
     nfs_mount_path: "/mnt/{{ storage_server_name }}"

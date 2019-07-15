@@ -130,9 +130,9 @@
     state: started
     enabled: yes
 
-- name: Create local directory structure for container config files
+- name: Create local directory for container config files structure
   file:
-    path: "{{ local_container_storage_directories }}"
+    path: "{{ local_container_storage_path }}"
     state: directory
     owner: "{{ docker_runtime_user_name }}"
     group: "{{ docker_runtime_group_name }}"
