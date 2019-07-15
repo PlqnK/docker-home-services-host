@@ -1,0 +1,93 @@
+---
+- vars:
+    openvpn_provider: CUSTOM
+    openvpn_username: whatever
+    openvpn_password: whatever
+    openvpn_opts: --inactive 3600 --ping 10 --ping-exit 60 --mssfix 1460 --mute-replay-warnings
+    local_network: 192.168.0.0/24
+    enable_ufw: true
+    ufw_allow_gw_net: true
+    ufw_extra_ports: 9910,23561,443
+    #transmission_web_home: /path/to/web/ui
+    # Possibilities are combustion, kettu and transmission-web-control
+    transmission_web_ui: transmission-web-control
+    webproxy_enabled: true
+    webproxy_port: 8888
+    # All Transmission specific variables are the defaults that ships with the software.
+    # See here for more information about them https://github.com/transmission/transmission/wiki/Editing-Configuration-Files
+    # Bandwidth
+    transmission_alt_speed_enabled: false
+    transmission_alt_speed_up: 50
+    transmission_alt_speed_down: 50
+    transmission_speed_limit_down: 100
+    transmission_speed_limit_down_enabled: false
+    transmission_speed_limit_up: 100
+    transmission_speed_limit_up_enabled: false
+    transmission_upload_slots_per_torrent: 14
+    # Blocklists
+    transmission_blocklist_url: http://www.example.com/blocklist
+    transmission_blocklist_enabled: false
+    # Files and Locations
+    transmission_download_dir: /data/seeding
+    transmission_incomplete_dir: /data/leeching
+    transmission_incomplete_dir_enabled: false
+    transmission_preallocation: 1
+    transmission_rename_partial_files: true
+    transmission_start_added_torrents: true
+    transmission_trash_original_torrent_files: false
+    transmission_umask: 18
+    transmission_watch_dir: /data/watching
+    transmission_watch_dir_enabled: false
+    # Misc
+    transmission_cache_size_mb: 4
+    transmission_dht_enabled: true
+    transmission_encryption: 1
+    transmission_lazy_bitfield_enabled: true
+    transmission_lpd_enabled: false
+    transmission_message_level: 2
+    transmission_pex_enabled: true
+    transmission_prefetch_enabled: true
+    transmission_scrape_paused_torrents_enabled: true
+    transmission_script_torrent_done_enabled: false
+    transmission_script_torrent_done_filename: 
+    transmission_utp_enabled: true
+    # Peers
+    transmission_peer_congestion_algorithm: 
+    transmission_peer_id_ttl_hours: 6
+    transmission_peer_limit_global: 240
+    transmission_peer_limit_per_torrent: 60
+    transmission_peer_socket_tos: default
+    # Peer port
+    transmission_peer_port: 51413
+    transmission_peer_port_random_high: 65535
+    transmission_peer_port_random_low: 1024
+    transmission_peer_port_random_on_start: false
+    transmission_port_forwarding_enabled: true
+    # Queuing
+    transmission_download_queue_enabled: true
+    transmission_download_queue_size: 5
+    transmission_queue_stalled_enabled: true
+    transmission_queue_stalled_minutes: 30
+    transmission_seed_queue_enabled: false
+    transmission_seed_queue_size: 10
+    # RPC
+    transmission_rpc_authentication_required: false
+    transmission_rpc_bind_address: 0.0.0.0
+    transmission_rpc_enabled: true
+    transmission_rpc_host_whitelist: 
+    transmission_rpc_host_whitelist_enabled: true
+    transmission_rpc_password: password
+    transmission_rpc_port: 9091
+    transmission_rpc_url: /transmission/
+    transmission_rpc_username: 
+    transmission_rpc_whitelist: 127.0.0.1
+    transmission_rpc_whitelist_enabled: true
+    # Scheduling
+    transmission_alt_speed_time_enabled: true
+    transmission_alt_speed_time_begin: 540
+    transmission_alt_speed_time_end: 1020
+    transmission_alt_speed_time_day: 127
+    transmission_idle_seeding_limit: 30
+    transmission_idle_seeding_limit_enabled: false
+    transmission_ratio_limit: 2.0
+    transmission_ratio_limit_enabled: false

@@ -1,0 +1,132 @@
+---
+- name: Create config directories
+  file:
+    path: "{{ local_container_storage_path }}/transmission/openvpn"
+    state: directory
+    owner: "{{ docker_runtime_user_name }}"
+    group: "{{ docker_runtime_group_name }}"
+    mode: 0755
+
+- name: Copy OpenVPN config file
+  copy:
+    src: custom.ovpn
+    dest: "{{ local_container_storage_path }}/transmission/openvpn/custom.ovpn"
+    owner: "{{ docker_runtime_user_name }}"
+    group: "{{ docker_runtime_group_name }}"
+    mode: 0644
+
+- name: Create the Transmission container
+  docker_container:
+    name: transmission
+    image: haugene/transmission-openvpn
+    restart_policy: unless-stopped
+    capabilities:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    networks:
+      - name: proxy
+    volumes:
+      - "{{ local_container_storage_path }}/transmission/openvpn/custom.ovpn:/etc/openvpn/custom/default.ovpn"
+      - "{{ nfs_mount_path }}/downloads/bittorrent:/data:slave"
+    env:
+      TZ: "{{ timezone }}"
+      PUID: "{{ docker_runtime_user_id }}"
+      PGID: "{{ docker_runtime_group_id }}"
+      ## Container specific variables
+      OPENVPN_PROVIDER: "{{ openvpn_provider }}"
+      OPENVPN_USERNAME: "{{ openvpn_username }}"
+      OPENVPN_PASSWORD: "{{ openvpn_password }}"
+      OPENVPN_OPTS: "{{ openvpn_opts }}"
+      LOCAL_NETWORK: "{{ local_network }}"
+      #ENABLE_UFW: "{{ enable_ufw }}"
+      #UFW_ALLOW_GW_NET: "{{ ufw_allow_gw_net }}"
+      #UFW_EXTRA_PORTS: "{{ ufw_extra_ports }}"
+      #TRANSMISSION_WEB_HOME: "{{ transmission_web_home }}"
+      TRANSMISSION_WEB_UI: "{{ transmission_web_ui }}"
+      WEBPROXY_ENABLED: "{{ webproxy_enabled }}"
+      #WEBPROXY_PORT: "{{ webproxy_port }}"
+      ## Transmission configuration
+      # Bandwidth
+      #TRANSMISSION_ALT_SPEED_ENABLED: "{{ transmission_alt_speed_enabled }}"
+      TRANSMISSION_ALT_SPEED_UP: "{{ transmission_alt_speed_up }}"
+      TRANSMISSION_ALT_SPEED_DOWN: "{{ transmission_alt_speed_down }}"
+      TRANSMISSION_SPEED_LIMIT_DOWN: "{{ transmission_speed_limit_down }}"
+      #TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED: "{{ transmission_speed_limit_down_enabled }}"
+      TRANSMISSION_SPEED_LIMIT_UP: "{{ transmission_speed_limit_up }}"
+      #TRANSMISSION_SPEED_LIMIT_UP_ENABLED: "{{ transmission_speed_limit_up_enabled }}"
+      #TRANSMISSION_UPLOAD_SLOTS_PER_TORRENT: "{{ transmission_upload_slots_per_torrent }}"
+      # Blocklists
+      #TRANSMISSION_BLOCKLIST_URL: "{{ transmission_blocklist_url }}"
+      #TRANSMISSION_BLOCKLIST_ENABLED: "{{ transmission_blocklist_enabled }}"
+      # Files and Locations
+      TRANSMISSION_DOWNLOAD_DIR: "{{ transmission_download_dir }}"
+      TRANSMISSION_INCOMPLETE_DIR: "{{ transmission_incomplete_dir }}"
+      TRANSMISSION_INCOMPLETE_DIR_ENABLED: "{{ transmission_incomplete_dir_enabled }}"
+      #TRANSMISSION_PREALLOCATION: "{{ transmission_preallocation }}"
+      #TRANSMISSION_RENAME_PARTIAL_FILES: "{{ transmission_rename_partial_files }}"
+      #TRANSMISSION_START_ADDED_TORRENTS: "{{ transmission_start_added_torrents }}"
+      #TRANSMISSION_TRASH_ORIGINAL_TORRENT_FILES: "{{ transmission_trash_original_torrent_files }}"
+      TRANSMISSION_UMASK: "{{ transmission_umask }}"
+      TRANSMISSION_WATCH_DIR: "{{ transmission_watch_dir }}"
+      TRANSMISSION_WATCH_DIR_ENABLED: "{{ transmission_watch_dir_enabled }}"
+      # Misc
+      #TRANSMISSION_CACHE_SIZE_MB: "{{ transmission_cache_size_mb }}"
+      TRANSMISSION_DHT_ENABLED: "{{ transmission_dht_enabled }}"
+      #TRANSMISSION_ENCRYPTION: "{{ transmission_encryption }}"
+      #TRANSMISSION_LAZY_BITFIELD_ENABLED: "{{ transmission_lazy_bitfield_enabled }}"
+      #TRANSMISSION_LPD_ENABLED: "{{ transmission_lpd_enabled }}"
+      #TRANSMISSION_MESSAGE_LEVEL: "{{ transmission_message_level }}"
+      TRANSMISSION_PEX_ENABLED: "{{ transmission_pex_enabled }}"
+      #TRANSMISSION_PREFETCH_ENABLED: "{{ transmission_prefetch_enabled }}"
+      #TRANSMISSION_SCRAPE_PAUSED_TORRENTS_ENABLED: "{{ transmission_scrape_paused_torrents_enabled }}"
+      #TRANSMISSION_SCRIPT_TORRENT_DONE_ENABLED: "{{ transmission_script_torrent_done_enabled }}"
+      #TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME: "{{ transmission_script_torrent_done_filename }}"
+      #TRANSMISSION_UTP_ENABLED: "{{ transmission_utp_enabled }}"
+      # Peers
+      #TRANSMISSION_PEER_CONGESTION_ALGORITHM: "{{ transmission_peer_congestion_algorithm }}"
+      #TRANSMISSION_PEER_ID_TTL_HOURS: "{{ transmission_peer_id_ttl_hours }}"
+      #TRANSMISSION_PEER_LIMIT_GLOBAL: "{{ transmission_peer_limit_global }}"
+      #TRANSMISSION_PEER_LIMIT_PER_TORRENT: "{{ transmission_peer_limit_per_torrent }}"
+      #TRANSMISSION_PEER_SOCKET_TOS: "{{ transmission_peer_socket_tos }}"
+      # Peer port
+      TRANSMISSION_PEER_PORT: "{{ transmission_peer_port }}"
+      #TRANSMISSION_PEER_PORT_RANDOM_HIGH: "{{ transmission_peer_port_random_high }}"
+      #TRANSMISSION_PEER_PORT_RANDOM_LOW: "{{ transmission_peer_port_random_low }}"
+      #TRANSMISSION_PEER_PORT_RANDOM_ON_START: "{{ transmission_peer_port_random_on_start }}"
+      TRANSMISSION_PORT_FORWARDING_ENABLED: "{{ transmission_port_forwarding_enabled }}"
+      # Queuing
+      #TRANSMISSION_DOWNLOAD_QUEUE_ENABLED: "{{ transmission_download_queue_enabled }}"
+      TRANSMISSION_DOWNLOAD_QUEUE_SIZE: "{{ transmission_download_queue_size }}"
+      #TRANSMISSION_QUEUE_STALLED_ENABLED: "{{ transmission_queue_stalled_enabled }}"
+      #TRANSMISSION_QUEUE_STALLED_MINUTES: "{{ transmission_queue_stalled_minutes }}"
+      #TRANSMISSION_SEED_QUEUE_ENABLED: "{{ transmission_seed_queue_enabled }}"
+      #TRANSMISSION_SEED_QUEUE_SIZE: "{{ transmission_seed_queue_size }}"
+      # RPC
+      TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: "{{ transmission_rpc_authentication_required }}"
+      #TRANSMISSION_RPC_BIND_ADDRESS: "{{ transmission_rpc_bind_address }}"
+      #TRANSMISSION_RPC_ENABLED: "{{ transmission_rpc_enabled }}"
+      #TRANSMISSION_RPC_HOST_WHITELIST: "{{ transmission_rpc_host_whitelist }}"
+      #TRANSMISSION_RPC_HOST_WHITELIST_ENABLED: "{{ transmission_rpc_host_whitelist_enabled }}"
+      TRANSMISSION_RPC_PASSWORD: "{{ transmission_rpc_password }}"
+      #TRANSMISSION_RPC_PORT: "{{ transmission_rpc_port }}"
+      #TRANSMISSION_RPC_URL: "{{ transmission_rpc_url }}"
+      TRANSMISSION_RPC_USERNAME: "{{ transmission_rpc_username }}"
+      #TRANSMISSION_RPC_WHITELIST: "{{ transmission_whitelist }}"
+      #TRANSMISSION_RPC_WHITELIST_ENABLED: "{{ transmission_whitelist_enabled }}"
+      # Scheduling
+      TRANSMISSION_ALT_SPEED_TIME_ENABLED: "{{ transmission_alt_speed_time_enabled }}"
+      TRANSMISSION_ALT_SPEED_TIME_BEGIN: "{{ transmission_alt_speed_time_begin }}"
+      TRANSMISSION_ALT_SPEED_TIME_END: "{{ transmission_alt_speed_time_end }}"
+      TRANSMISSION_ALT_SPEED_TIME_DAY: "{{ transmission_alt_speed_time_day }}"
+      #TRANSMISSION_IDLE_SEEDING_LIMIT: "{{ transmission_idle_seeding_limit }}"
+      #TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED: "{{ transmission_idle_seeding_limit_enabled }}"
+      #TRANSMISSION_RATIO_LIMIT: "{{ transmission_ratio_limit }}"
+      #TRANSMISSION_RATIO_LIMIT_ENABLED: "{{ transmission_ratio_limit_enabled }}"
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "proxy"
+      traefik.port: "9091"
+      traefik.frontend.rule: "Host:transmission.{{ domain_name }}"
+    pull: yes
+    state: started
