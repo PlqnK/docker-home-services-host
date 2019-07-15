@@ -1,0 +1,37 @@
+---
+- name: Setup the host OS
+  hosts: docker-host
+  become: yes
+  vars:
+    - 
+  roles:
+    - fedora-setup
+    - docker-setup
+
+- name: Create/Update the containers
+  hosts: docker-host
+  become: yes
+  vars:
+    - 
+  roles:
+    - watchtower
+    - traefik
+    - portainer
+    - organizr
+    - transmission
+    - sabnzbd
+    - jackett
+    - nzbhydra
+    - radarr
+    - sonarr
+    - bazarr
+    - lidarr
+    - lazylibrarian
+    - ombi
+    - plexmediaserver
+    - tautulli
+    - calibre-web
+    - nextcloud-mariadb
+    - nextcloud-cron
+    - nextcloud
+    - collaboraonline
