@@ -7,7 +7,7 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     env:
-      - TZ="{{ timezone }}"
+      TZ: "{{ timezone }}"
     command: --schedule "0 0 5 * * 1" --cleanup
     pull: yes
     state: started
