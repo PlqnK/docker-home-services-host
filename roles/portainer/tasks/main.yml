@@ -1,0 +1,24 @@
+---
+- name: Create config directory
+  file:
+    path: "{{ local_container_storage_path }}/portainer/config"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create the Portainer container
+  docker_container:
+    name: portainer
+    image: portainer/portainer
+    restart_policy: unless-stopped
+    networks:
+      - name: proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "{{ local_container_storage_path }}/portainer/config:/data"
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "proxy"
+      traefik.port: "9000"
+      traefik.frontend.rule: "Host:portainer.{{ domain_name }}"
