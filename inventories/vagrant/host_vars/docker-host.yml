@@ -1,10 +1,9 @@
 ---
-- vars:
-    hostname: localhost
-    main_user: vagrant
-    nfs_mount_points:
-    storage_server_name:
-    local_domain_suffix:
-    storage_server_base_path:
-    rsync_auth_user:
-    rsync_auth_password:
+hostname: localhost
+main_user: vagrant
+nfs_mount_points:
+storage_server_name:
+local_domain_suffix: localdomain
+storage_server_base_path:
+rsync_auth_user: vagrant
+rsync_auth_password: vagrant
