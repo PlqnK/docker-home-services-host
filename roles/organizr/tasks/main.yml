@@ -1,0 +1,27 @@
+---
+- name: Create config directory
+  file:
+    path: "{{ local_container_storage_path }}/organizr/config"
+    state: directory
+    owner: "{{ docker_runtime_user_name }}"
+    group: "{{ docker_runtime_group_name }}"
+    mode: 0755
+
+- name: Create the Organizr container
+  docker_container:
+    name: organizr
+    image: lsiocommunity/organizr
+    restart_policy: unless-stopped
+    networks:
+      - name: proxy
+    volumes:
+      - "{{ local_container_storage_path }}/organizr/config:/config"
+    env:
+      TZ: "{{ timezone }}"
+      PUID: "{{ docker_runtime_user_id }}"
+      PGID: "{{ docker_runtime_group_id }}"
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "proxy"
+      traefik.port: "80"
+      traefik.frontend.rule: "Host:organizr.{{ domain_name }}"
