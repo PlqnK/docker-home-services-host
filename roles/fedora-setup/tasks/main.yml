@@ -86,16 +86,16 @@
 
 - name: Create Docker Rutime group
   group:
-    name: dockerrt
-    gid: 2000
+    name: "{{ docker_runtime_group_name }}"
+    gid: "{{ docker_runtime_group_id }}"
     state: present
 
 - name: Create a Docker Runtime user
   user:
-    name: dockerrt
+    name: "{{ docker_runtime_user_name }}"
     comment: Docker Runtime user
-    uid: 2000
-    group: dockerrt
+    uid: "{{ docker_runtime_user_id }}"
+    group: "{{ docker_runtime_group_name }}"
     create_home: no
     home: /nonexistent
     shell: /usr/sbin/nologin
@@ -134,8 +134,8 @@
   file:
     path: "{{ local_container_storage_directories }}"
     state: directory
-    owner: dockerrt
-    group: dockerrt
+    owner: "{{ docker_runtime_user_name }}"
+    group: "{{ docker_runtime_group_name }}"
     mode: 0755
 
 - name: Create rsyncd config file from template
