@@ -1,7 +1,9 @@
 ---
 hostname: localhost
 local_domain_suffix: localdomain
+local_network: 192.168.0.0/24
 storage_server_name:
+domain_name:
 main_user: vagrant
 nfs_mount_path: "/mnt/{{ storage_server_name }}"
 nfs_mount_points:
@@ -25,3 +27,4 @@ nfs_mount_points:
 storage_server_base_path:
 rsync_auth_user: vagrant
 rsync_auth_password: vagrant
+nextcloud_dotescaped_fqdn:

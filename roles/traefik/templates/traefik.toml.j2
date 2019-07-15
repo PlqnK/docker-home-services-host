@@ -16,7 +16,7 @@ InsecureSkipVerify = true
   address = ":8080"
     [entryPoints.traefik.auth]
       [entryPoints.traefik.auth.basic]
-      users = ["admin:{{ traefik_auth_password }}"]
+      users = ["admin:{{ traefik_auth_password_hash }}"]
 
 [api]
 entryPoint = "traefik"

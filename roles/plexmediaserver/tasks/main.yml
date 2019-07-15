@@ -36,7 +36,7 @@
       TZ: "{{ timezone }}"
       PLEX_UID: "{{ docker_runtime_user_id }}"
       PLEX_GID: "{{ docker_runtime_group_id }}"
-      PLEX_CLAIM: "{{ plex_claim_toker }}"
+      PLEX_CLAIM: "{{ plex_claim_token }}"
     labels:
       traefik.enable: "true"
       traefik.docker.network: "proxy"

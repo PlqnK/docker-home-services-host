@@ -8,6 +8,6 @@
       - /var/run/docker.sock:/var/run/docker.sock
     env:
       TZ: "{{ timezone }}"
-    command: --schedule "0 0 5 * * 1" --cleanup
+    command: --schedule "{{ containers_update_schedule }}" --cleanup
     pull: yes
     state: started
