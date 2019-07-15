@@ -24,3 +24,5 @@
       traefik.docker.network: "proxy"
       traefik.port: "9000"
       traefik.frontend.rule: "Host:portainer.{{ domain_name }}"
+    pull: yes
+    state: started

@@ -27,6 +27,8 @@
       traefik.docker.network: "proxy"
       traefik.port: "8080"
       traefik.frontend.rule: "Host:sabnzbd.{{ domain_name }}"
+    pull: yes
+    state: started
 
 - name: Whitelist chosen FQDN in config file
   lineinfile:

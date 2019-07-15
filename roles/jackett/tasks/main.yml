@@ -26,3 +26,5 @@
       traefik.docker.network: "proxy"
       traefik.port: "9117"
       traefik.frontend.rule: "Host:jackett.{{ domain_name }}"
+    pull: yes
+    state: started
