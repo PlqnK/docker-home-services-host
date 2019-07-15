@@ -21,6 +21,11 @@
     group: root
     mode: 0644
 
+- name: Create reverse-proxy docker network
+  docker_network:
+    name: proxy
+    state: present
+
 - name: Create the Traefik container
   docker_container:
     name: traefik

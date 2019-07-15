@@ -7,6 +7,11 @@
     group: root
     mode: 0755
 
+- name: Create reverse-proxy docker network
+  docker_network:
+    name: proxy
+    state: present
+
 - name: Create the Portainer container
   docker_container:
     name: portainer

@@ -7,6 +7,11 @@
     group: "{{ docker_runtime_group_name }}"
     mode: 0755
 
+- name: Create reverse-proxy docker network
+  docker_network:
+    name: proxy
+    state: present
+
 - name: Create the Radarr container
   docker_container:
     name: radarr

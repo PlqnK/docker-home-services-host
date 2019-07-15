@@ -1,4 +1,9 @@
 ---
+- name: Create reverse-proxy docker network
+  docker_network:
+    name: proxy
+    state: present
+
 - name: Create the Collabora Online container
   docker_container:
     name: collaboraonline

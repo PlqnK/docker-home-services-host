@@ -7,6 +7,11 @@
     group: 999
     mode: 0755
 
+- name: Create docker internal network
+  docker_network:
+    name: internal
+    state: present
+
 - name: Create the Nextcloud MariaDB container
   docker_container:
     name: nextcloud_mariadb

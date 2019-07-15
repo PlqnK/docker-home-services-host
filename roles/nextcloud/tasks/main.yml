@@ -10,6 +10,14 @@
     - apps
     - config
 
+- name: Create reverse-proxy and internal docker networks
+  docker_network:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - proxy
+    - internal
+
 - name: Create the Nextcloud container
   docker_container:
     name: nextcloud
