@@ -50,10 +50,12 @@
     zone: docker
     state: present
     permanent: yes
+  register: docker_zone_created
 
 - name: Reload firewalld
   # See the notes on zone transaction https://docs.ansible.com/ansible/latest/modules/firewalld_module.html
   command: firewalld-cmd --reload
+  when: docker_zone_created.changed
 
 - name: Add interface to firewalld docker zone
   firewalld:
