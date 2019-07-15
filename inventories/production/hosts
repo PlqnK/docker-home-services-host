@@ -1,0 +1,1 @@
+docker-host ansible_host={{ hostname }}.{{ local_domain_suffix }}
