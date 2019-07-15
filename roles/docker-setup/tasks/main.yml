@@ -1,0 +1,8 @@
+---
+- name: Create docker networks
+  docker_network:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - proxy
+    - internal
