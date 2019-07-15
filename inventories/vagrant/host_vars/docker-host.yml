@@ -5,23 +5,23 @@ storage_server_name:
 main_user: vagrant
 nfs_mount_path: "/mnt/{{ storage_server_name }}"
 nfs_mount_points:
-  - "{{ nfs_mount_path }}/cloud/data"
-  - "{{ nfs_mount_path }}/downloads/bittorrent/leeching"
-  - "{{ nfs_mount_path }}/downloads/bittorrent/seeding"
-  - "{{ nfs_mount_path }}/downloads/bittorrent/watching"
-  - "{{ nfs_mount_path }}/downloads/usenet/completed"
-  - "{{ nfs_mount_path }}/downloads/usenet/processing"
-  - "{{ nfs_mount_path }}/downloads/usenet/watching"
-  - "{{ nfs_mount_path }}/medias/audio_drama"
-  - "{{ nfs_mount_path }}/medias/audiobooks"
-  - "{{ nfs_mount_path }}/medias/books"
-  - "{{ nfs_mount_path }}/medias/comics"
-  - "{{ nfs_mount_path }}/medias/movies"
-  - "{{ nfs_mount_path }}/medias/music"
-  - "{{ nfs_mount_path }}/medias/podcasts"
-  - "{{ nfs_mount_path }}/medias/test_videos"
-  - "{{ nfs_mount_path }}/medias/tv_shows"
-  - "{{ nfs_mount_path }}/sync"
+  - cloud/data
+  - downloads/bittorrent/leeching
+  - downloads/bittorrent/seeding
+  - downloads/bittorrent/watching
+  - downloads/usenet/completed
+  - downloads/usenet/processing
+  - downloads/usenet/watching
+  - medias/audio_drama
+  - medias/audiobooks
+  - medias/books
+  - medias/comics
+  - medias/movies
+  - medias/music
+  - medias/podcasts
+  - medias/test_videos
+  - medias/tv_shows
+  - sync
 storage_server_base_path:
 rsync_auth_user: vagrant
 rsync_auth_password: vagrant

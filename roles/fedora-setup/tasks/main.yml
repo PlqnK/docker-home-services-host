@@ -32,11 +32,12 @@
 
 - name: Create NFS mount points
   file:
-    path: "{{ nfs_mount_points }}"
+    path: "{{ nfs_mount_path }}/{{ item }}"
     state: directory
     owner: root
     group: root
     mode: 0755
+  loop: "{{ nfs_mount_points }}"
 
 - name: Create AutoFS master file from template
   template:
