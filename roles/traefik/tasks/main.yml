@@ -1,0 +1,42 @@
+---
+- name: Create config directory
+  file:
+    path: "{{ local_container_storage_path }}/traefik/config"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create acme.json file
+  file:
+    path: "{{ local_container_storage_path }}/traefik/config/acme.json"
+    state: touch
+    mode: 0600
+
+- name: Create trafik.toml file from template
+  template:
+    src: traefik.toml.j2
+    dest: "{{ local_container_storage_path }}/traefik/config/traefik.toml"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create the Traefik container
+  docker_container:
+    name: traefik
+    image: traefik
+    restart_policy: unless-stopped
+    networks:
+      - name: proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "{{ local_container_storage_path }}/traefik/config/acme.json:/acme.json"
+      - "{{ local_container_storage_path }}/traefik/config/traefik.toml:/etc/traefik/traefik.toml"
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "proxy"
+      traefik.port: "8080"
+      traefik.frontend.rule: "Host:traefik.{{ domain_name }}"
