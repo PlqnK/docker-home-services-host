@@ -1,0 +1,23 @@
+---
+- name: Create the Collabora Online container
+  docker_container:
+    name: collaboraonline
+    image: collabora/code
+    restart_policy: unless-stopped
+    capabilities:
+      - MKNOD
+    networks:
+      - name: proxy
+    env:
+      domain: "{{ nextcloud_dotescaped_fqdn }}"
+      username: "{{ collabora_username }}"
+      password: "{{ collabora_password }}"
+      dictionaries: "{{ collabora_dictionaries }}"
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "proxy"
+      traefik.port: "9980"
+      traefik.protocol: "https"
+      traefik.frontend.rule: "Host:office.{{ domain_name }}"
+    pull: yes
+    state: started
