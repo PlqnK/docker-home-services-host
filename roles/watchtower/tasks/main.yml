@@ -1,0 +1,13 @@
+---
+- name: Create/Update the Watchtower container
+  docker_container:
+    name: watchtower
+    image: containrrr/watchtower
+    restart_policy: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env:
+      - TZ="{{ timezone }}"
+    command: --schedule "0 0 5 * * 1" --cleanup
+    pull: yes
+    state: started
