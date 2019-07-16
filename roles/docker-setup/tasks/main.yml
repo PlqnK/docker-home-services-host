@@ -28,7 +28,7 @@
 
 # See the notes on zone transaction https://docs.ansible.com/ansible/latest/modules/firewalld_module.html
 - name: Reload firewalld
-  command: firewalld-cmd --reload
+  command: firewall-cmd --reload
   when: docker_zone_created.changed
 
 - name: Add interface to firewalld docker zone
