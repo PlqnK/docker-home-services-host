@@ -3,7 +3,7 @@ hostname: 'vagrant'
 local_domain_suffix: 'localdomain'
 local_network: '192.168.0.0/24'
 storage_server_name: 'file-server'
-domain_name:
+domain_name: ''
 main_user: 'vagrant'
 nfs_mount_path: '/mnt/{{ storage_server_name }}'
 nfs_mount_points:
@@ -24,7 +24,7 @@ nfs_mount_points:
   - 'medias/test_videos'
   - 'medias/tv_shows'
   - 'sync'
-storage_server_base_path:
+storage_server_base_path: ''
 rsync_auth_user: 'vagrant'
 rsync_auth_password: 'vagrant'
-nextcloud_dotescaped_fqdn:
+nextcloud_dotescaped_fqdn: ''
