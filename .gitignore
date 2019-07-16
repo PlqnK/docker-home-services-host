@@ -4,14 +4,4 @@
 .directory
 .Trash-*
 .nfs*
-.vscode/
-.vagrant
-
-# Project specific
-.env
-custom.ovpn
-docker-host-mount-points.txt
-docker-host-rsyncd.conf
-docker-host-rsyncd.secrets
-docker-host-setup.conf
-traefik.toml
+.vagrant/
