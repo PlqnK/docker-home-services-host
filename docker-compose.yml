@@ -425,7 +425,7 @@ services:
       - proxy
     volumes:
       - ${LOCAL_STORAGE}/tautulli/config:/config
-      - ${LOCAL_STORAGE}/plexmediaserver/db/Library/Application\ Support/Plex\ Media\ Server/Logs:/logs:ro
+      - ${LOCAL_STORAGE}/plexmediaserver/db/Library/Application\ Support/Plex\ Media\ Server/Logs:/plex_logs:ro
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
