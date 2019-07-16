@@ -30,5 +30,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "80"
       traefik.frontend.rule: "Host:organizr.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

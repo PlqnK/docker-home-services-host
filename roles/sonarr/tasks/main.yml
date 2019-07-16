@@ -32,5 +32,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "8989"
       traefik.frontend.rule: "Host:sonarr.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

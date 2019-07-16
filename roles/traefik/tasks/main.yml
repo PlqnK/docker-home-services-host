@@ -45,5 +45,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "8080"
       traefik.frontend.rule: "Host:traefik.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

@@ -133,5 +133,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "9091"
       traefik.frontend.rule: "Host:transmission.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

@@ -32,5 +32,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "6767"
       traefik.frontend.rule: "Host:bazarr.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

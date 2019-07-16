@@ -31,5 +31,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "8181"
       traefik.frontend.rule: "Host:tautulli.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

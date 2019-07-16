@@ -30,5 +30,6 @@
       MYSQL_PASSWORD: "{{ nextcloud_mysql_password }}"
       MYSQL_DATABASE: "{{ nextcloud_mysql_database }}"
       MYSQL_USER: "{{ nextcloud_mysql_user }}"
+    purge_networks: yes
     pull: yes
     state: started

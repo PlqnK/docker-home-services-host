@@ -31,5 +31,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "9117"
       traefik.frontend.rule: "Host:jackett.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

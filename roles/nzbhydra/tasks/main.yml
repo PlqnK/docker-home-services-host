@@ -31,5 +31,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "5076"
       traefik.frontend.rule: "Host:nzbhydra.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

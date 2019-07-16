@@ -35,5 +35,6 @@
       - "{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config:z"
       - "{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave,z"
     entrypoint: /cron.sh
+    purge_networks: yes
     pull: yes
     state: started

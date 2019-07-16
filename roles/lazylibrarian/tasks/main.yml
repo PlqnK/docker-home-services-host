@@ -35,5 +35,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "5299"
       traefik.frontend.rule: "Host:lazylibrarian.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

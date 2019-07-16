@@ -24,5 +24,6 @@
       traefik.port: "9980"
       traefik.protocol: "https"
       traefik.frontend.rule: "Host:office.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

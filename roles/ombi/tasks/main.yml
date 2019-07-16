@@ -30,5 +30,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "3579"
       traefik.frontend.rule: "Host:ombi.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

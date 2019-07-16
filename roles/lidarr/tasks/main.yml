@@ -32,5 +32,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "8686"
       traefik.frontend.rule: "Host:lidarr.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started

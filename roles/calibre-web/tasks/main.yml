@@ -31,5 +31,6 @@
       traefik.docker.network: "proxy"
       traefik.port: "8083"
       traefik.frontend.rule: "Host:calibre.{{ domain_name }}"
+    purge_networks: yes
     pull: yes
     state: started
