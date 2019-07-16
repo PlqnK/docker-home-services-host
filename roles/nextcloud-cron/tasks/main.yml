@@ -7,7 +7,7 @@
   file:
     path: "{{ local_container_storage_path }}/nextcloud/{{ item }}"
     state: directory
-    owner: 33
+    owner: '33'
     group: root
     mode: 0755
   loop:

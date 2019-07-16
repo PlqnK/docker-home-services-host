@@ -7,8 +7,8 @@
   file:
     path: "{{ local_container_storage_path }}/nextcloud_mariadb/db"
     state: directory
-    owner: 999
-    group: 999
+    owner: '999'
+    group: '999'
     mode: 0755
 
 - name: Create docker internal network
