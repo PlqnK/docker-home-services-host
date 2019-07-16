@@ -1,30 +1,30 @@
 ---
-hostname: vagrant
-local_domain_suffix: localdomain
-local_network: 192.168.0.0/24
+hostname: 'vagrant'
+local_domain_suffix: 'localdomain'
+local_network: '192.168.0.0/24'
 storage_server_name:
 domain_name:
-main_user: vagrant
-nfs_mount_path: "/mnt/{{ storage_server_name }}"
+main_user: 'vagrant'
+nfs_mount_path: '/mnt/{{ storage_server_name }}'
 nfs_mount_points:
-  - cloud/data
-  - downloads/bittorrent/leeching
-  - downloads/bittorrent/seeding
-  - downloads/bittorrent/watching
-  - downloads/usenet/completed
-  - downloads/usenet/processing
-  - downloads/usenet/watching
-  - medias/audio_drama
-  - medias/audiobooks
-  - medias/books
-  - medias/comics
-  - medias/movies
-  - medias/music
-  - medias/podcasts
-  - medias/test_videos
-  - medias/tv_shows
-  - sync
+  - 'cloud/data'
+  - 'downloads/bittorrent/leeching'
+  - 'downloads/bittorrent/seeding'
+  - 'downloads/bittorrent/watching'
+  - 'downloads/usenet/completed'
+  - 'downloads/usenet/processing'
+  - 'downloads/usenet/watching'
+  - 'medias/audio_drama'
+  - 'medias/audiobooks'
+  - 'medias/books'
+  - 'medias/comics'
+  - 'medias/movies'
+  - 'medias/music'
+  - 'medias/podcasts'
+  - 'medias/test_videos'
+  - 'medias/tv_shows'
+  - 'sync'
 storage_server_base_path:
-rsync_auth_user: vagrant
-rsync_auth_password: vagrant
+rsync_auth_user: 'vagrant'
+rsync_auth_password: 'vagrant'
 nextcloud_dotescaped_fqdn:
