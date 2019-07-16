@@ -24,7 +24,7 @@
     networks:
       - name: internal
     volumes:
-      - "{{ local_container_storage_path }}/nextcloud_mariadb/db:/var/lib/mysql"
+      - "{{ local_container_storage_path }}/nextcloud_mariadb/db:/var/lib/mysql:Z"
     env:
       MYSQL_ROOT_PASSWORD: "{{ nextcloud_mysql_root_password }}"
       MYSQL_PASSWORD: "{{ nextcloud_mysql_password }}"

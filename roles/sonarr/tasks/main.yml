@@ -20,9 +20,9 @@
     networks:
       - name: proxy
     volumes:
-      - "{{ local_container_storage_path }}/sonarr/config:/config"
-      - "{{ nfs_mount_path }}/downloads:/downloads:slave"
-      - "{{ nfs_mount_path }}/medias/tv_shows:/tv:slave"
+      - "{{ local_container_storage_path }}/sonarr/config:/config:Z"
+      - "{{ nfs_mount_path }}/downloads:/downloads:slave,z"
+      - "{{ nfs_mount_path }}/medias/tv_shows:/tv:slave,z"
     env:
       TZ: "{{ timezone }}"
       PUID: "{{ docker_runtime_user_id }}"

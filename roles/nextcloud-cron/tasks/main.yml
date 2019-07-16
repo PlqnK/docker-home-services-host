@@ -30,10 +30,10 @@
     networks:
       - name: internal
     volumes:
-      - "{{ local_container_storage_path }}/nextcloud:/var/www/html"
-      - "{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps"
-      - "{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config"
-      - "{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave"
+      - "{{ local_container_storage_path }}/nextcloud:/var/www/html:z"
+      - "{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps:z"
+      - "{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config:z"
+      - "{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave,z"
     entrypoint: /cron.sh
     pull: yes
     state: started

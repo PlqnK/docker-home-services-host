@@ -20,9 +20,9 @@
     networks:
       - name: proxy
     volumes:
-      - "{{ local_container_storage_path }}/sabnzbd/config:/config"
-      - "{{ nfs_mount_path }}/downloads/usenet/completed:/downloads:slave"
-      - "{{ nfs_mount_path }}/downloads/usenet/processing:/incomplete-downloads:slave"
+      - "{{ local_container_storage_path }}/sabnzbd/config:/config:Z"
+      - "{{ nfs_mount_path }}/downloads/usenet/completed:/downloads:slave,z"
+      - "{{ nfs_mount_path }}/downloads/usenet/processing:/incomplete-downloads:slave,z"
     env:
       TZ: "{{ timezone }}"
       PUID: "{{ docker_runtime_user_id }}"

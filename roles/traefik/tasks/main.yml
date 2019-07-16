@@ -38,8 +38,8 @@
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - "{{ local_container_storage_path }}/traefik/config/acme.json:/acme.json"
-      - "{{ local_container_storage_path }}/traefik/config/traefik.toml:/etc/traefik/traefik.toml"
+      - "{{ local_container_storage_path }}/traefik/config/acme.json:/acme.json:Z"
+      - "{{ local_container_storage_path }}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z"
     labels:
       traefik.enable: "true"
       traefik.docker.network: "proxy"

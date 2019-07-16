@@ -32,8 +32,8 @@
     networks:
       - name: proxy
     volumes:
-      - "{{ local_container_storage_path }}/transmission/openvpn/custom.ovpn:/etc/openvpn/custom/default.ovpn"
-      - "{{ nfs_mount_path }}/downloads/bittorrent:/data:slave"
+      - "{{ local_container_storage_path }}/transmission/openvpn/custom.ovpn:/etc/openvpn/custom/default.ovpn:Z"
+      - "{{ nfs_mount_path }}/downloads/bittorrent:/data:slave,z"
     env:
       TZ: "{{ timezone }}"
       PUID: "{{ docker_runtime_user_id }}"

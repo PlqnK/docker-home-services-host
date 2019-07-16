@@ -20,8 +20,8 @@
     networks:
       - name: proxy
     volumes:
-      - "{{ local_container_storage_path }}/calibre-web/config:/config"
-      - "{{ nfs_mount_path }}/medias/books:/books:slave"
+      - "{{ local_container_storage_path }}/calibre-web/config:/config:Z"
+      - "{{ nfs_mount_path }}/medias/books:/books:slave,z"
     env:
       TZ: "{{ timezone }}"
       PUID: "{{ docker_runtime_user_id }}"

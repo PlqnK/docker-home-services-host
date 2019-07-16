@@ -21,7 +21,7 @@
       - name: proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - "{{ local_container_storage_path }}/portainer/config:/data"
+      - "{{ local_container_storage_path }}/portainer/config:/data:Z"
     env:
       TZ: "{{ timezone }}"
     labels:

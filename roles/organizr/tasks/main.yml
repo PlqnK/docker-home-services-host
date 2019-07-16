@@ -20,7 +20,7 @@
     networks:
       - name: proxy
     volumes:
-      - "{{ local_container_storage_path }}/organizr/config:/config"
+      - "{{ local_container_storage_path }}/organizr/config:/config:Z"
     env:
       TZ: "{{ timezone }}"
       PUID: "{{ docker_runtime_user_id }}"

@@ -20,7 +20,7 @@
     networks:
       - name: proxy
     volumes:
-      - "{{ local_container_storage_path }}/ombi/config:/config"
+      - "{{ local_container_storage_path }}/ombi/config:/config:Z"
     env:
       TZ: "{{ timezone }}"
       PUID: "{{ docker_runtime_user_id }}"
