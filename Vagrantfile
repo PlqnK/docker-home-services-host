@@ -4,6 +4,9 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "fedora/30-cloud-base"
 
+  config.vm.hostname = "docker-host"
+
+  config.vm.network "private_network", ip: "192.168.121.100"
   config.vm.network "forwarded_port", guest: 80, host: 80
   config.vm.network "forwarded_port", guest: 443, host: 443
   config.vm.network "forwarded_port", guest: 8080, host: 8080
@@ -18,6 +21,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbook.yml"
     ansible.inventory_path = "inventories/vagrant/hosts"
+    ansible.limit = "all"
     ansible.ask_vault_pass = true
   end
 end

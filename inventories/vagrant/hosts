@@ -1,1 +1,1 @@
-docker-host ansible_host={{ hostname }} ansible_port=2222 ansible_user=vagrant
+docker-host ansible_host=192.168.121.100 ansible_ssh_private_key_file=.vagrant/machines/default/libvirt/private_key ansible_user=vagrant
