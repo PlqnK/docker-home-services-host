@@ -46,7 +46,7 @@
     source: 172.16.0.0/12
     permanent: yes
     immediate: yes
-    state: enable
+    state: enabled
   notify: restart docker
 
 - name: Add TCP port to firewalld docker zone
