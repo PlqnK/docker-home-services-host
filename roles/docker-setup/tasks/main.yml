@@ -1,8 +1,9 @@
 ---
-- name: Install Docker
+- name: Install Docker and Ansible docker utils
   dnf:
     name:
       - moby-engine
+      - python3-docker 
     state: present
 
 - name: Enable and start the docker service
