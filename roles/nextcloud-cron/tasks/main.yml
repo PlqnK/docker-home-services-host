@@ -1,4 +1,8 @@
 ---
+- name: Get variables from main nextcloud role
+  include_vars:
+    file: roles/nextcloud/vars/main.yml
+
 - name: Create config directories
   file:
     path: "{{ local_container_storage_path }}/nextcloud/{{ item }}"
