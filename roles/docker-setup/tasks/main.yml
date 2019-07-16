@@ -26,8 +26,8 @@
     permanent: yes
   register: docker_zone_created
 
+# See the notes on zone transaction https://docs.ansible.com/ansible/latest/modules/firewalld_module.html
 - name: Reload firewalld
-  # See the notes on zone transaction https://docs.ansible.com/ansible/latest/modules/firewalld_module.html
   command: firewalld-cmd --reload
   when: docker_zone_created.changed
 
@@ -38,6 +38,7 @@
     permanent: yes
     immediate: yes
     state: enabled
+  notify: restart docker
 
 - name: Add source to firewalld docker zone
   firewalld:
@@ -45,7 +46,8 @@
     source: 172.16.0.0/12
     permanent: yes
     immediate: yes
-    state: enabled
+    state: enable
+  notify: restart docker
 
 - name: Add TCP port to firewalld docker zone
   firewalld:
@@ -54,11 +56,7 @@
     permanent: yes
     immediate: yes
     state: enabled
-
-- name: Restart Docker
-  systemd:
-    name: docker
-    state: restarted
+  notify: restart docker
 
 - name: Create Docker Rutime group
   group:
