@@ -26,6 +26,7 @@
   docker_container:
     name: nextcloud_cron
     image: "nextcloud:{{ nextcloud_image_tag }}"
+    entrypoint: /cron.sh
     restart_policy: unless-stopped
     networks:
       - name: internal
@@ -34,7 +35,6 @@
       - "{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps:z"
       - "{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config:z"
       - "{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave,z"
-    entrypoint: /cron.sh
     purge_networks: yes
     pull: yes
     state: started
