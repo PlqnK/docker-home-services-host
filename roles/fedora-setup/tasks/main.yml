@@ -1,15 +1,4 @@
 ---
-- name: Ensure SELinux is enabled
-  selinux:
-    policy: targeted
-    state: enforcing
-
-- name: Ensure firewalld is enabled and running
-  systemd:
-    name: firewalld
-    state: started
-    enabled: yes
-
 - name: Upgrade all packages
   dnf:
     name: '*'
@@ -18,6 +7,7 @@
 - name: Install needed packages
   dnf:
     name:
+      - firewalld
       - dnf-plugins-core
       - htop
       - wget
@@ -29,6 +19,17 @@
       - rsync
       - rsync-daemon
     state: present
+
+- name: Ensure SELinux is enabled
+  selinux:
+    policy: targeted
+    state: enforcing
+
+- name: Ensure firewalld is enabled and running
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
 
 - name: Create NFS mount points
   file:
