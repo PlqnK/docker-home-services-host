@@ -3,7 +3,7 @@ hostname: 'vagrant'
 local_domain_suffix: 'localdomain'
 local_network: '192.168.0.0/24'
 storage_server_name: 'localhost'
-domain_name: 'localdomain'
+domain_name: 'localhost.localdomain'
 main_user: 'vagrant'
 nfs_mount_path: '/mnt/{{ storage_server_name }}'
 nfs_mount_points:

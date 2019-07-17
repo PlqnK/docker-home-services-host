@@ -31,6 +31,7 @@ domain = "{{ domain_name }}"
 watch = true
 exposedbydefault = false
 
+{% if getent_passwd.vagrant is none %}
 [acme]
 email = "{{ acme_admin_email }}"
 storage = "acme.json"
@@ -38,3 +39,4 @@ entryPoint = "https"
 OnHostRule = true
   [acme.httpChallenge]
   entryPoint = "http"
+{% endif %}

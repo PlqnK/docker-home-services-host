@@ -13,6 +13,12 @@
     state: touch
     mode: 0600
 
+- name: Checking if provisioning a Vagrant VM
+  getent:
+    database: passwd
+    key: vagrant
+    fail_key: no
+
 - name: Create trafik.toml file from template
   template:
     src: traefik.toml.j2
