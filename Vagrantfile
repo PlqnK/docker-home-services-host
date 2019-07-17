@@ -18,6 +18,10 @@ Vagrant.configure("2") do |config|
     libvirt.memory = 4096
   end
 
+  # In order to be as close as the production environment, I need to configure an NFS server so that I can mount
+  # the NFS shares in the Ansible playbook later.
+  config.vm.provision "shell", path: "vagrant/nfs_server.sh"
+
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbook.yml"
     ansible.inventory_path = "inventories/vagrant/hosts"
