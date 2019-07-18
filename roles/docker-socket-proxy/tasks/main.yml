@@ -1,0 +1,21 @@
+---
+- name: Create socket-proxy docker network
+  docker_network:
+    name: socket-proxy
+    state: present
+
+- name: Create the Docker Socket Proxy container
+  docker_container:
+    name: docker-socket-proxy
+    image: tecnativa/docker-socket-proxy
+    restart_policy: unless-stopped
+    privileged: yes
+    networks:
+      - name: socket-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env:
+      CONTAINERS: '1'
+    purge_networks: yes
+    pull: yes
+    state: started

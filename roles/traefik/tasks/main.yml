@@ -27,10 +27,13 @@
     group: root
     mode: 0644
 
-- name: Create web-proxy docker network
+- name: Create web-proxy and socket-proxy docker networks
   docker_network:
-    name: web-proxy
+    name: "{{ item }}"
     state: present
+  loop:
+    - web-proxy
+    - socket-proxy
 
 - name: Create the Traefik container
   docker_container:
@@ -39,11 +42,11 @@
     restart_policy: unless-stopped
     networks:
       - name: web-proxy
+      - name: socket-proxy
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - "{{ local_container_storage_path }}/traefik/config/acme.json:/acme.json:Z"
       - "{{ local_container_storage_path }}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z"
     labels:

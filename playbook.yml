@@ -14,6 +14,7 @@
   vars_files:
     - vars/docker-host.yml
   roles:
+    - docker-socket-proxy
     - watchtower
     - traefik
     - portainer
