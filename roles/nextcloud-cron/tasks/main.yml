@@ -1,40 +1,40 @@
 ---
-- name: Get variables from main nextcloud role
+- name: 'Get variables from main nextcloud role'
   include_vars:
-    file: roles/nextcloud/vars/main.yml
+    file: 'roles/nextcloud/vars/main.yml'
 
-- name: Create config directories
+- name: 'Create config directories'
   file:
-    path: "{{ local_container_storage_path }}/nextcloud/{{ item }}"
-    state: directory
+    path: '{{ local_container_storage_path }}/nextcloud/{{ item }}'
+    state: 'directory'
     owner: '33'
-    group: root
-    mode: 0755
+    group: 'root'
+    mode: '0755'
   loop:
-    - apps
-    - config
+    - 'apps'
+    - 'config'
 
-- name: Create docker internal network
+- name: 'Create docker internal network'
   docker_network:
-    name: internal
-    state: present
+    name: 'internal'
+    state: 'present'
 
 # Need that container in order to be able to use cron as a background job in Nextcloud
 # This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
 # More info here: https://github.com/nextcloud/docker/pull/220
-- name: Create the Nextcloud Cron container
+- name: 'Create the Nextcloud Cron container'
   docker_container:
-    name: nextcloud_cron
-    image: "nextcloud:{{ nextcloud_image_tag }}"
-    entrypoint: /cron.sh
-    restart_policy: unless-stopped
+    name: 'nextcloud_cron'
+    image: 'nextcloud:{{ nextcloud_image_tag }}'
+    entrypoint: '/cron.sh'
+    restart_policy: 'unless-stopped'
     networks:
-      - name: internal
+      - name: 'internal'
     volumes:
-      - "{{ local_container_storage_path }}/nextcloud:/var/www/html:z"
-      - "{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps:z"
-      - "{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config:z"
-      - "{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave,z"
+      - '{{ local_container_storage_path }}/nextcloud:/var/www/html:z'
+      - '{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps:z'
+      - '{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config:z'
+      - '{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave,z'
     purge_networks: yes
     pull: yes
-    state: started
+    state: 'started'

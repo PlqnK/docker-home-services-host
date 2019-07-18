@@ -1,59 +1,59 @@
 ---
-- name: Create config directory
+- name: 'Create config directory'
   file:
-    path: "{{ local_container_storage_path }}/traefik/config"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
+    path: '{{ local_container_storage_path }}/traefik/config'
+    state: 'directory'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
 
-- name: Create acme.json file
+- name: 'Create acme.json file'
   file:
-    path: "{{ local_container_storage_path }}/traefik/config/acme.json"
-    state: touch
-    mode: 0600
+    path: '{{ local_container_storage_path }}/traefik/config/acme.json'
+    state: 'touch'
+    mode: '0600'
 
-- name: Checking if provisioning a Vagrant VM
+- name: 'Checking if provisioning a Vagrant VM'
   getent:
-    database: passwd
-    key: vagrant
+    database: 'passwd'
+    key: 'vagrant'
     fail_key: no
 
-- name: Create trafik.toml file from template
+- name: 'Create trafik.toml file from template'
   template:
-    src: traefik.toml.j2
-    dest: "{{ local_container_storage_path }}/traefik/config/traefik.toml"
-    owner: root
-    group: root
-    mode: 0644
+    src: 'traefik.toml.j2'
+    dest: '{{ local_container_storage_path }}/traefik/config/traefik.toml'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
 
-- name: Create web-proxy and socket-proxy docker networks
+- name: 'Create web-proxy and socket-proxy docker networks'
   docker_network:
-    name: "{{ item }}"
-    state: present
+    name: '{{ item }}'
+    state: 'present'
   loop:
-    - web-proxy
-    - socket-proxy
+    - 'web-proxy'
+    - 'socket-proxy'
 
-- name: Create the Traefik container
+- name: 'Create the Traefik container'
   docker_container:
-    name: traefik
-    image: traefik
-    restart_policy: unless-stopped
+    name: 'traefik'
+    image: 'traefik'
+    restart_policy: 'unless-stopped'
     networks:
-      - name: web-proxy
-      - name: socket-proxy
+      - name: 'web-proxy'
+      - name: 'socket-proxy'
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
-      - "{{ local_container_storage_path }}/traefik/config/acme.json:/acme.json:Z"
-      - "{{ local_container_storage_path }}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z"
+      - '{{ local_container_storage_path }}/traefik/config/acme.json:/acme.json:Z'
+      - '{{ local_container_storage_path }}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z'
     labels:
-      traefik.enable: "true"
-      traefik.docker.network: "web-proxy"
-      traefik.port: "8080"
-      traefik.frontend.rule: "Host:traefik.{{ domain_name }}"
+      traefik.enable: 'true'
+      traefik.docker.network: 'web-proxy'
+      traefik.port: '8080'
+      traefik.frontend.rule: 'Host:traefik.{{ domain_name }}'
     purge_networks: yes
     pull: yes
-    state: started
+    state: 'started'

@@ -1,36 +1,36 @@
 ---
-- name: Create config directory
+- name: 'Create config directory'
   file:
-    path: "{{ local_container_storage_path }}/calibre-web/config"
-    state: directory
-    owner: "{{ docker_runtime_user_name }}"
-    group: "{{ docker_runtime_group_name }}"
-    mode: 0755
+    path: '{{ local_container_storage_path }}/calibre-web/config'
+    state: 'directory'
+    owner: '{{ docker_runtime_user_name }}'
+    group: '{{ docker_runtime_group_name }}'
+    mode: '0755'
 
-- name: Create web-proxy docker network
+- name: 'Create web-proxy docker network'
   docker_network:
-    name: web-proxy
-    state: present
+    name: 'web-proxy'
+    state: 'present'
 
-- name: Create the Calibre-Web container
+- name: 'Create the Calibre-Web container'
   docker_container:
-    name: calibre-web
-    image: linuxserver/calibre-web
-    restart_policy: unless-stopped
+    name: 'calibre-web'
+    image: 'linuxserver/calibre-web'
+    restart_policy: 'unless-stopped'
     networks:
-      - name: web-proxy
+      - name: 'web-proxy'
     volumes:
-      - "{{ local_container_storage_path }}/calibre-web/config:/config:Z"
-      - "{{ nfs_mount_path }}/medias/books:/books:slave,z"
+      - '{{ local_container_storage_path }}/calibre-web/config:/config:Z'
+      - '{{ nfs_mount_path }}/medias/books:/books:slave,z'
     env:
-      TZ: "{{ timezone }}"
-      PUID: "{{ docker_runtime_user_id }}"
-      PGID: "{{ docker_runtime_group_id }}"
+      TZ: '{{ timezone }}'
+      PUID: '{{ docker_runtime_user_id }}'
+      PGID: '{{ docker_runtime_group_id }}'
     labels:
-      traefik.enable: "true"
-      traefik.docker.network: "web-proxy"
-      traefik.port: "8083"
-      traefik.frontend.rule: "Host:calibre.{{ domain_name }}"
+      traefik.enable: 'true'
+      traefik.docker.network: 'web-proxy'
+      traefik.port: '8083'
+      traefik.frontend.rule: 'Host:calibre.{{ domain_name }}'
     purge_networks: yes
     pull: yes
-    state: started
+    state: 'started'

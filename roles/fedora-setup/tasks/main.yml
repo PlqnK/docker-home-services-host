@@ -1,85 +1,85 @@
 ---
-- name: Upgrade all packages
+- name: 'Upgrade all packages'
   dnf:
     name: '*'
-    state: latest
+    state: 'latest'
 
-- name: Install needed packages
+- name: 'Install needed packages'
   dnf:
     name:
-      - firewalld
-      - dnf-plugins-core
-      - htop
-      - wget
-      - curl
-      - vim
-      - git
-      - nfs-utils
-      - autofs
-      - rsync
-      - rsync-daemon
-    state: present
+      - 'firewalld'
+      - 'dnf-plugins-core'
+      - 'htop'
+      - 'wget'
+      - 'curl'
+      - 'vim'
+      - 'git'
+      - 'nfs-utils'
+      - 'autofs'
+      - 'rsync'
+      - 'rsync-daemon'
+    state: 'present'
 
-- name: Ensure SELinux is enabled
+- name: 'Ensure SELinux is enabled'
   selinux:
-    policy: targeted
-    state: enforcing
+    policy: 'targeted'
+    state: 'enforcing'
 
-- name: Ensure firewalld is enabled and running
+- name: 'Ensure firewalld is enabled and running'
   systemd:
-    name: firewalld
-    state: started
+    name: 'firewalld'
+    state: 'started'
     enabled: yes
 
-- name: Create NFS mount points
+- name: 'Create NFS mount points'
   file:
-    path: "{{ nfs_mount_path }}/{{ item }}"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  loop: "{{ nfs_mount_points }}"
+    path: '{{ nfs_mount_path }}/{{ item }}'
+    state: 'directory'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  loop: '{{ nfs_mount_points }}'
 
-- name: Create AutoFS master file from template
+- name: 'Create AutoFS master file from template'
   template:
-    src: server.autofs.j2
-    dest: "/etc/auto.master.d/{{ storage_server_name }}.autofs"
-    owner: root
-    group: root
-    mode: 0644
+    src: 'server.autofs.j2'
+    dest: '/etc/auto.master.d/{{ storage_server_name }}.autofs'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
 
-- name: Create AutoFS template file from template
+- name: 'Create AutoFS template file from template'
   template:
-    src: auto.server.j2
-    dest: "/etc/auto.{{ storage_server_name }}"
-    owner: root
-    group: root
-    mode: 0644
+    src: 'auto.server.j2'
+    dest: '/etc/auto.{{ storage_server_name }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
 
-- name: Enable and start the autofs service
+- name: 'Enable and start the autofs service'
   systemd:
-    name: autofs
-    state: started
+    name: 'autofs'
+    state: 'started'
     enabled: yes
 
-- name: Create rsyncd config file from template
+- name: 'Create rsyncd config file from template'
   template:
-    src: rsyncd.conf.j2
-    dest: /etc/rsyncd.conf
-    owner: root
-    group: root
-    mode: 0644
+    src: 'rsyncd.conf.j2'
+    dest: '/etc/rsyncd.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
 
-- name: Create rsyncd secrets file from template
+- name: 'Create rsyncd secrets file from template'
   template:
-    src: rsyncd.secrets.j2
-    dest: /etc/rsyncd.secrets
-    owner: root
-    group: root
-    mode: 0600
+    src: 'rsyncd.secrets.j2'
+    dest: '/etc/rsyncd.secrets'
+    owner: 'root'
+    group: 'root'
+    mode: '0600'
 
-- name: Enable and start the rsyncd service
+- name: 'Enable and start the rsyncd service'
   systemd:
-    name: rsyncd
-    state: started
+    name: 'rsyncd'
+    state: 'started'
     enabled: yes

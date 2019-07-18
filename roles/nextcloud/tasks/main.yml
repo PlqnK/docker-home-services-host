@@ -1,47 +1,47 @@
 ---
-- name: Create config directories
+- name: 'Create config directories'
   file:
-    path: "{{ local_container_storage_path }}/nextcloud/{{ item }}"
-    state: directory
+    path: '{{ local_container_storage_path }}/nextcloud/{{ item }}'
+    state: 'directory'
     owner: '33'
-    group: root
-    mode: 0755
+    group: 'root'
+    mode: '0755'
   loop:
-    - apps
-    - config
+    - 'apps'
+    - 'config'
 
-- name: Create web-proxy and internal docker networks
+- name: 'Create web-proxy and internal docker networks'
   docker_network:
-    name: "{{ item }}"
-    state: present
+    name: '{{ item }}'
+    state: 'present'
   loop:
-    - web-proxy
-    - internal
+    - 'web-proxy'
+    - 'internal'
 
-- name: Create the Nextcloud container
+- name: 'Create the Nextcloud container'
   docker_container:
-    name: nextcloud
-    image: "nextcloud:{{ nextcloud_image_tag }}"
-    restart_policy: unless-stopped
+    name: 'nextcloud'
+    image: 'nextcloud:{{ nextcloud_image_tag }}'
+    restart_policy: 'unless-stopped'
     networks:
-      - name: web-proxy
-      - name: internal
+      - name: 'web-proxy'
+      - name: 'internal'
     volumes:
-      - "{{ local_container_storage_path }}/nextcloud:/var/www/html:z"
-      - "{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps:z"
-      - "{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config:z"
-      - "{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave,z"
-      - "{{ nfs_mount_path }}/sync:/mnt/documents:slave,z"
+      - '{{ local_container_storage_path }}/nextcloud:/var/www/html:z'
+      - '{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps:z'
+      - '{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config:z'
+      - '{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave,z'
+      - '{{ nfs_mount_path }}/sync:/mnt/documents:slave,z'
     env:
-      MYSQL_DATABASE: "{{ nextcloud_mysql_database }}"
-      MYSQL_USER: "{{ nextcloud_mysql_user }}"
-      MYSQL_PASSWORD: "{{ nextcloud_mysql_password }}"
-      MYSQL_HOST: "{{ nextcloud_mysql_host }}"
+      MYSQL_DATABASE: '{{ nextcloud_mysql_database }}'
+      MYSQL_USER: '{{ nextcloud_mysql_user }}'
+      MYSQL_PASSWORD: '{{ nextcloud_mysql_password }}'
+      MYSQL_HOST: '{{ nextcloud_mysql_host }}'
     labels:
-      traefik.enable: "true"
-      traefik.docker.network: "web-proxy"
-      traefik.port: "80"
-      traefik.frontend.rule: "Host:cloud.{{ domain_name }}"
+      traefik.enable: 'true'
+      traefik.docker.network: 'web-proxy'
+      traefik.port: '80'
+      traefik.frontend.rule: 'Host:cloud.{{ domain_name }}'
     purge_networks: yes
     pull: yes
-    state: started
+    state: 'started'

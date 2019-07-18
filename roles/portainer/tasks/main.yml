@@ -1,34 +1,34 @@
 ---
-- name: Create config directory
+- name: 'Create config directory'
   file:
-    path: "{{ local_container_storage_path }}/portainer/config"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
+    path: '{{ local_container_storage_path }}/portainer/config'
+    state: 'directory'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
 
-- name: Create web-proxy docker network
+- name: 'Create web-proxy docker network'
   docker_network:
-    name: web-proxy
-    state: present
+    name: 'web-proxy'
+    state: 'present'
 
-- name: Create the Portainer container
+- name: 'Create the Portainer container'
   docker_container:
-    name: portainer
-    image: portainer/portainer
-    restart_policy: unless-stopped
+    name: 'portainer'
+    image: 'portainer/portainer'
+    restart_policy: 'unless-stopped'
     networks:
-      - name: web-proxy
+      - name: 'web-proxy'
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - "{{ local_container_storage_path }}/portainer/config:/data:Z"
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '{{ local_container_storage_path }}/portainer/config:/data:Z'
     env:
-      TZ: "{{ timezone }}"
+      TZ: '{{ timezone }}'
     labels:
-      traefik.enable: "true"
-      traefik.docker.network: "web-proxy"
-      traefik.port: "9000"
-      traefik.frontend.rule: "Host:portainer.{{ domain_name }}"
+      traefik.enable: 'true'
+      traefik.docker.network: 'web-proxy'
+      traefik.port: '9000'
+      traefik.frontend.rule: 'Host:portainer.{{ domain_name }}'
     purge_networks: yes
     pull: yes
-    state: started
+    state: 'started'

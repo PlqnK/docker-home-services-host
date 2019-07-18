@@ -1,38 +1,38 @@
 ---
-- name: Setup the host OS
-  hosts: docker-host
+- name: 'Setup the host OS'
+  hosts: 'docker-host'
   become: yes
   vars_files:
-    - vars/docker-host.yml
+    - 'vars/docker-host.yml'
   roles:
-    - fedora-setup
-    - docker-setup
+    - 'fedora-setup'
+    - 'docker-setup'
 
-- name: Create/Update the containers
-  hosts: docker-host
+- name: 'Create/Update the containers'
+  hosts: 'docker-host'
   become: yes
   vars_files:
-    - vars/docker-host.yml
+    - 'vars/docker-host.yml'
   roles:
-    - docker-socket-proxy
-    - watchtower
-    - traefik
-    - portainer
-    - organizr
-    - transmission
-    - sabnzbd
-    - jackett
-    - nzbhydra
-    - radarr
-    - sonarr
-    - bazarr
-    - lidarr
-    - lazylibrarian
-    - ombi
-    - plexmediaserver
-    - tautulli
-    - calibre-web
-    - nextcloud-mariadb
-    - nextcloud-cron
-    - nextcloud
-    - collaboraonline
+    - 'docker-socket-proxy'
+    - 'watchtower'
+    - 'traefik'
+    - 'portainer'
+    - 'organizr'
+    - 'transmission'
+    - 'sabnzbd'
+    - 'jackett'
+    - 'nzbhydra'
+    - 'radarr'
+    - 'sonarr'
+    - 'bazarr'
+    - 'lidarr'
+    - 'lazylibrarian'
+    - 'ombi'
+    - 'plexmediaserver'
+    - 'tautulli'
+    - 'calibre-web'
+    - 'nextcloud-mariadb'
+    - 'nextcloud-cron'
+    - 'nextcloud'
+    - 'collaboraonline'

@@ -1,13 +1,13 @@
 ---
-- name: Create/Update the Watchtower container
+- name: 'Create/Update the Watchtower container'
   docker_container:
-    name: watchtower
-    image: containrrr/watchtower
-    command: --schedule "{{ containers_update_schedule }}" --cleanup
-    restart_policy: unless-stopped
+    name: 'watchtower'
+    image: 'containrrr/watchtower'
+    command: '--schedule {{ containers_update_schedule }} --cleanup'
+    restart_policy: 'unless-stopped'
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - '/var/run/docker.sock:/var/run/docker.sock'
     env:
-      TZ: "{{ timezone }}"
+      TZ: '{{ timezone }}'
     pull: yes
-    state: started
+    state: 'started'

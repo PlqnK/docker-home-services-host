@@ -1,29 +1,29 @@
 ---
-- name: Create web-proxy docker network
+- name: 'Create web-proxy docker network'
   docker_network:
-    name: web-proxy
-    state: present
+    name: 'web-proxy'
+    state: 'present'
 
-- name: Create the Collabora Online container
+- name: 'Create the Collabora Online container'
   docker_container:
-    name: collaboraonline
-    image: collabora/code
-    restart_policy: unless-stopped
+    name: 'collaboraonline'
+    image: 'collabora/code'
+    restart_policy: 'unless-stopped'
     capabilities:
-      - MKNOD
+      - 'MKNOD'
     networks:
-      - name: web-proxy
+      - name: 'web-proxy'
     env:
-      domain: "{{ nextcloud_dotescaped_fqdn }}"
-      username: "{{ collabora_username }}"
-      password: "{{ collabora_password }}"
-      dictionaries: "{{ collabora_dictionaries }}"
+      domain: '{{ nextcloud_dotescaped_fqdn }}'
+      username: '{{ collabora_username }}'
+      password: '{{ collabora_password }}'
+      dictionaries: '{{ collabora_dictionaries }}'
     labels:
-      traefik.enable: "true"
-      traefik.docker.network: "web-proxy"
-      traefik.port: "9980"
-      traefik.protocol: "https"
-      traefik.frontend.rule: "Host:office.{{ domain_name }}"
+      traefik.enable: 'true'
+      traefik.docker.network: 'web-proxy'
+      traefik.port: '9980'
+      traefik.protocol: 'https'
+      traefik.frontend.rule: 'Host:office.{{ domain_name }}'
     purge_networks: yes
     pull: yes
-    state: started
+    state: 'started'

@@ -1,84 +1,84 @@
 ---
-- name: Install Docker and Ansible docker utils
+- name: 'Install Docker and Ansible docker utils'
   dnf:
     name:
-      - moby-engine
-      - python3-docker 
-    state: present
+      - 'moby-engine'
+      - 'python3-docker'
+    state: 'present'
 
-- name: Enable and start the docker service
+- name: 'Enable and start the docker service'
   systemd:
-    name: docker
-    state: started
+    name: 'docker'
+    state: 'started'
     enabled: yes
 
-- name: Add main user to docker group
+- name: 'Add main user to docker group'
   user:
-    name: "{{ main_user }}"
-    groups: docker
+    name: '{{ main_user }}'
+    groups: 'docker'
     append: yes
 
 # Configure firewalld to work with docker (allow inter-container communication on port 443)
 # See here for more information: https://opsech.io/posts/2017/May/23/docker-dns-with-firewalld-on-fedora.html
-- name: Create firewalld docker zone
+- name: 'Create firewalld docker zone'
   firewalld:
-    zone: docker
-    state: present
+    zone: 'docker'
+    state: 'present'
     permanent: yes
   register: docker_zone_created
 
 # See the notes on zone transaction https://docs.ansible.com/ansible/latest/modules/firewalld_module.html
-- name: Reload firewalld
-  command: firewall-cmd --reload
+- name: 'Reload firewalld'
+  command: 'firewall-cmd --reload'
   when: docker_zone_created.changed
 
-- name: Add interface to firewalld docker zone
+- name: 'Add interface to firewalld docker zone'
   firewalld:
-    zone: docker
-    interface: docker0
+    zone: 'docker'
+    interface: 'docker0'
     permanent: yes
     immediate: yes
-    state: enabled
+    state: 'enabled'
   notify: restart docker
 
-- name: Add source to firewalld docker zone
+- name: 'Add source to firewalld docker zone'
   firewalld:
-    zone: docker
-    source: 172.16.0.0/12
+    zone: 'docker'
+    source: '172.16.0.0/12'
     permanent: yes
     immediate: yes
-    state: enabled
+    state: 'enabled'
   notify: restart docker
 
-- name: Add TCP port to firewalld docker zone
+- name: 'Add TCP port to firewalld docker zone'
   firewalld:
-    zone: docker
-    service: https
+    zone: 'docker'
+    service: 'https'
     permanent: yes
     immediate: yes
-    state: enabled
+    state: 'enabled'
   notify: restart docker
 
-- name: Create Docker Rutime group
+- name: 'Create Docker Rutime group'
   group:
-    name: "{{ docker_runtime_group_name }}"
-    gid: "{{ docker_runtime_group_id }}"
-    state: present
+    name: '{{ docker_runtime_group_name }}'
+    gid: '{{ docker_runtime_group_id }}'
+    state: 'present'
 
-- name: Create a Docker Runtime user
+- name: 'Create a Docker Runtime user'
   user:
-    name: "{{ docker_runtime_user_name }}"
-    comment: Docker Runtime user
-    uid: "{{ docker_runtime_user_id }}"
-    group: "{{ docker_runtime_group_name }}"
+    name: '{{ docker_runtime_user_name }}'
+    comment: 'Docker Runtime user'
+    uid: '{{ docker_runtime_user_id }}'
+    group: '{{ docker_runtime_group_name }}'
     create_home: no
-    home: /nonexistent
-    shell: /usr/sbin/nologin
+    home: '/nonexistent'
+    shell: '/usr/sbin/nologin'
 
-- name: Create local directory for container config files structure
+- name: 'Create local directory for container config files structure'
   file:
-    path: "{{ local_container_storage_path }}"
-    state: directory
-    owner: "{{ docker_runtime_user_name }}"
-    group: "{{ docker_runtime_group_name }}"
-    mode: 0755
+    path: '{{ local_container_storage_path }}'
+    state: 'directory'
+    owner: '{{ docker_runtime_user_name }}'
+    group: '{{ docker_runtime_group_name }}'
+    mode: '0755'
