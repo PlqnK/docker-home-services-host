@@ -15,9 +15,9 @@
     group: "{{ docker_runtime_group_name }}"
     mode: 0644
 
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the Transmission container
@@ -30,7 +30,7 @@
     devices:
       - /dev/net/tun:/dev/net/tun
     networks:
-      - name: proxy
+      - name: web-proxy
     volumes:
       - "{{ local_container_storage_path }}/transmission/openvpn/custom.ovpn:/etc/openvpn/custom/default.ovpn:Z"
       - "{{ nfs_mount_path }}/downloads/bittorrent:/data:slave,z"
@@ -130,7 +130,7 @@
       #TRANSMISSION_RATIO_LIMIT_ENABLED: "{{ transmission_ratio_limit_enabled }}"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "9091"
       traefik.frontend.rule: "Host:transmission.{{ domain_name }}"
     purge_networks: yes

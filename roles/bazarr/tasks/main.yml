@@ -7,9 +7,9 @@
     group: "{{ docker_runtime_group_name }}"
     mode: 0755
 
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the Bazarr container
@@ -18,7 +18,7 @@
     image: linuxserver/bazarr
     restart_policy: unless-stopped
     networks:
-      - name: proxy
+      - name: web-proxy
     volumes:
       - "{{ local_container_storage_path }}/bazarr/config:/config:Z"
       - "{{ nfs_mount_path }}/medias/movies:/movies:slave,z"

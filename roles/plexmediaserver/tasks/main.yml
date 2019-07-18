@@ -7,9 +7,9 @@
     group: "{{ docker_runtime_group_name }}"
     mode: 0755
 
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the Plex Media Server container
@@ -18,7 +18,7 @@
     image: "plexinc/pms-docker:{{ plex_image_tag }}"
     restart_policy: unless-stopped
     networks:
-      - name: proxy
+      - name: web-proxy
     ports:
       - "32400:32400/tcp"
       - "3005:3005/tcp"
@@ -39,7 +39,7 @@
       PLEX_CLAIM: "{{ plex_claim_token }}"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "32400"
       traefik.frontend.rule: "Host:plex.{{ domain_name }}"
     purge_networks: yes

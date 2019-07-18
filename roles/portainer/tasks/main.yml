@@ -7,9 +7,9 @@
     group: root
     mode: 0755
 
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the Portainer container
@@ -18,7 +18,7 @@
     image: portainer/portainer
     restart_policy: unless-stopped
     networks:
-      - name: proxy
+      - name: web-proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - "{{ local_container_storage_path }}/portainer/config:/data:Z"
@@ -26,7 +26,7 @@
       TZ: "{{ timezone }}"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "9000"
       traefik.frontend.rule: "Host:portainer.{{ domain_name }}"
     purge_networks: yes

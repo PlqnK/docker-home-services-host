@@ -7,9 +7,9 @@
     group: "{{ docker_runtime_group_name }}"
     mode: 0755
 
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the NZBHydra 2 container
@@ -18,7 +18,7 @@
     image: linuxserver/hydra2
     restart_policy: unless-stopped
     networks:
-      - name: proxy
+      - name: web-proxy
     volumes:
       - "{{ local_container_storage_path }}/nzbhydra/config:/config:Z"
       - "{{ nfs_mount_path }}/downloads/usenet/watching:/downloads:slave,z"
@@ -28,7 +28,7 @@
       PGID: "{{ docker_runtime_group_id }}"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "5076"
       traefik.frontend.rule: "Host:nzbhydra.{{ domain_name }}"
     purge_networks: yes

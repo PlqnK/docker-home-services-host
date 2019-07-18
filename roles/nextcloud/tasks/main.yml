@@ -10,12 +10,12 @@
     - apps
     - config
 
-- name: Create reverse-proxy and internal docker networks
+- name: Create web-proxy and internal docker networks
   docker_network:
     name: "{{ item }}"
     state: present
   loop:
-    - proxy
+    - web-proxy
     - internal
 
 - name: Create the Nextcloud container
@@ -24,7 +24,7 @@
     image: "nextcloud:{{ nextcloud_image_tag }}"
     restart_policy: unless-stopped
     networks:
-      - name: proxy
+      - name: web-proxy
       - name: internal
     volumes:
       - "{{ local_container_storage_path }}/nextcloud:/var/www/html:z"
@@ -39,7 +39,7 @@
       MYSQL_HOST: "{{ nextcloud_mysql_host }}"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "80"
       traefik.frontend.rule: "Host:cloud.{{ domain_name }}"
     purge_networks: yes

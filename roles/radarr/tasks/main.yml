@@ -7,9 +7,9 @@
     group: "{{ docker_runtime_group_name }}"
     mode: 0755
 
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the Radarr container
@@ -18,7 +18,7 @@
     image: linuxserver/radarr
     restart_policy: unless-stopped
     networks:
-      - name: proxy
+      - name: web-proxy
     volumes:
       - "{{ local_container_storage_path }}/radarr/config:/config:Z"
       - "{{ nfs_mount_path }}/downloads:/downloads:slave,z"
@@ -29,7 +29,7 @@
       PGID: "{{ docker_runtime_group_id }}"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "7878"
       traefik.frontend.rule: "Host:radarr.{{ domain_name }}"
     purge_networks: yes

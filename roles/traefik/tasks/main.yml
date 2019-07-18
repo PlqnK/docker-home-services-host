@@ -27,9 +27,9 @@
     group: root
     mode: 0644
 
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the Traefik container
@@ -38,7 +38,7 @@
     image: traefik
     restart_policy: unless-stopped
     networks:
-      - name: proxy
+      - name: web-proxy
     ports:
       - "80:80"
       - "443:443"
@@ -48,7 +48,7 @@
       - "{{ local_container_storage_path }}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "8080"
       traefik.frontend.rule: "Host:traefik.{{ domain_name }}"
     purge_networks: yes

@@ -7,9 +7,9 @@
     group: "{{ docker_runtime_group_name }}"
     mode: 0755
 
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the Organizr container
@@ -18,7 +18,7 @@
     image: lsiocommunity/organizr
     restart_policy: unless-stopped
     networks:
-      - name: proxy
+      - name: web-proxy
     volumes:
       - "{{ local_container_storage_path }}/organizr/config:/config:Z"
     env:
@@ -27,7 +27,7 @@
       PGID: "{{ docker_runtime_group_id }}"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "80"
       traefik.frontend.rule: "Host:organizr.{{ domain_name }}"
     purge_networks: yes

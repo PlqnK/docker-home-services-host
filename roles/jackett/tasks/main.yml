@@ -7,9 +7,9 @@
     group: "{{ docker_runtime_group_name }}"
     mode: 0755
 
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the Jackett container
@@ -18,7 +18,7 @@
     image: linuxserver/jackett
     restart_policy: unless-stopped
     networks:
-      - name: proxy
+      - name: web-proxy
     volumes:
       - "{{ local_container_storage_path }}/jackett/config:/config:Z"
       - "{{ nfs_mount_path }}/downloads/bittorrent/watching:/downloads:slave,z"
@@ -28,7 +28,7 @@
       PGID: "{{ docker_runtime_group_id }}"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "9117"
       traefik.frontend.rule: "Host:jackett.{{ domain_name }}"
     purge_networks: yes

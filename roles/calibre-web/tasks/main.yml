@@ -7,9 +7,9 @@
     group: "{{ docker_runtime_group_name }}"
     mode: 0755
 
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the Calibre-Web container
@@ -18,7 +18,7 @@
     image: linuxserver/calibre-web
     restart_policy: unless-stopped
     networks:
-      - name: proxy
+      - name: web-proxy
     volumes:
       - "{{ local_container_storage_path }}/calibre-web/config:/config:Z"
       - "{{ nfs_mount_path }}/medias/books:/books:slave,z"
@@ -28,7 +28,7 @@
       PGID: "{{ docker_runtime_group_id }}"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "8083"
       traefik.frontend.rule: "Host:calibre.{{ domain_name }}"
     purge_networks: yes

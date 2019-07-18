@@ -1,7 +1,7 @@
 ---
-- name: Create reverse-proxy docker network
+- name: Create web-proxy docker network
   docker_network:
-    name: proxy
+    name: web-proxy
     state: present
 
 - name: Create the Collabora Online container
@@ -12,7 +12,7 @@
     capabilities:
       - MKNOD
     networks:
-      - name: proxy
+      - name: web-proxy
     env:
       domain: "{{ nextcloud_dotescaped_fqdn }}"
       username: "{{ collabora_username }}"
@@ -20,7 +20,7 @@
       dictionaries: "{{ collabora_dictionaries }}"
     labels:
       traefik.enable: "true"
-      traefik.docker.network: "proxy"
+      traefik.docker.network: "web-proxy"
       traefik.port: "9980"
       traefik.protocol: "https"
       traefik.frontend.rule: "Host:office.{{ domain_name }}"
