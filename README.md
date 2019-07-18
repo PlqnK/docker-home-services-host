@@ -16,7 +16,6 @@ It leverages [Docker](https://www.docker.com/) and [Docker Compose](https://docs
 
 - [Watchtower](https://github.com/v2tec/watchtower): A simple service to automatically update your Docker containers as soon as their image is updated or on a fixed schedule.
 - [Træfik](https://traefik.io/): A reverse-proxy that is very easy to configure and can automatically obtain Let's Encrypt certificates.
-- [Portainer](https://www.portainer.io/): A simple management UI for Docker.
 - [Organizr](https://github.com/causefx/Organizr): Bring all your services web interfaces into one single centralized web interface.
 - [Transmission](https://transmissionbt.com/): An easy to use BitTorrent client to downloads files using the BitTorrent protocol.
 - [SABnzbd](https://sabnzbd.org/): An easy to use binary newsreader to download files using the Usenet protocol.

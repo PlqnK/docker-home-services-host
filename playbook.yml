@@ -17,7 +17,6 @@
     - 'docker-socket-proxy'
     - 'watchtower'
     - 'traefik'
-    - 'portainer'
     - 'organizr'
     - 'transmission'
     - 'sabnzbd'
