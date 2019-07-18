@@ -1,5 +1,6 @@
 ---
 nextcloud_image_tag: '16'
+nextcloud_redis_host: 'nextcloud_redis'
 nextcloud_mysql_host: 'nextcloud_mariadb'
 nextcloud_mysql_database: 'nextcloud'
 nextcloud_mysql_user: 'nextcloud'

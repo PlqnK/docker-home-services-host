@@ -37,6 +37,7 @@
       MYSQL_USER: '{{ nextcloud_mysql_user }}'
       MYSQL_PASSWORD: '{{ nextcloud_mysql_password }}'
       MYSQL_HOST: '{{ nextcloud_mysql_host }}'
+      REDIS_HOST: '{{ nextcloud_redis_host }}'
     labels:
       traefik.enable: 'true'
       traefik.docker.network: 'web-proxy'

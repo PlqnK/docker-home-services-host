@@ -1,0 +1,16 @@
+---
+- name: 'Create docker internal network'
+  docker_network:
+    name: 'internal'
+    state: 'present'
+
+- name: 'Create the Nextcloud Redis container'
+  docker_container:
+    name: 'nextcloud_redis'
+    image: 'redis:{{ redis_image_tag }}'
+    restart_policy: 'unless-stopped'
+    networks:
+      - name: 'internal'
+    purge_networks: yes
+    pull: yes
+    state: 'started'

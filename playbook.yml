@@ -33,6 +33,7 @@
     - 'tautulli'
     - 'calibre-web'
     - 'nextcloud-mariadb'
+    - 'nextcloud-redis'
     - 'nextcloud-cron'
     - 'nextcloud'
     - 'collaboraonline'
