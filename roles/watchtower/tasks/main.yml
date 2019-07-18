@@ -4,6 +4,7 @@
     name: 'watchtower'
     image: 'containrrr/watchtower'
     restart_policy: 'unless-stopped'
+    privileged: yes
     command: '--schedule {{ containers_update_schedule }} --cleanup'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
