@@ -3,8 +3,8 @@
   docker_container:
     name: 'watchtower'
     image: 'containrrr/watchtower'
-    command: '--schedule {{ containers_update_schedule }} --cleanup'
     restart_policy: 'unless-stopped'
+    command: '--schedule {{ containers_update_schedule }} --cleanup'
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
     env:

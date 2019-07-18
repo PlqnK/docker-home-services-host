@@ -26,8 +26,8 @@
   docker_container:
     name: 'nextcloud_cron'
     image: 'nextcloud:{{ nextcloud_image_tag }}'
-    entrypoint: '/cron.sh'
     restart_policy: 'unless-stopped'
+    entrypoint: '/cron.sh'
     networks:
       - name: 'internal'
     volumes:
