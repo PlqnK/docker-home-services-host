@@ -1,5 +1,4 @@
 ---
-mariadb_image_tag: '10'
 nextcloud_mysql_root_password: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           62323233376233336238396337373233366137623464323262363938303462633438326237613838

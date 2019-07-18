@@ -19,7 +19,7 @@
 - name: 'Create the Nextcloud MariaDB container'
   docker_container:
     name: 'nextcloud_mariadb'
-    image: 'mariadb:{{ mariadb_image_tag }}'
+    image: 'mariadb:{{ mariadb_image_tag | default("latest") }}'
     restart_policy: 'unless-stopped'
     networks:
       - name: 'internal'

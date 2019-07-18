@@ -15,7 +15,7 @@
 - name: 'Create the Plex Media Server container'
   docker_container:
     name: 'plexmediaserver'
-    image: 'plexinc/pms-docker:{{ plex_image_tag }}'
+    image: 'plexinc/pms-docker:{{ plex_image_tag | default("public") }}'
     restart_policy: 'unless-stopped'
     networks:
       - name: 'web-proxy'

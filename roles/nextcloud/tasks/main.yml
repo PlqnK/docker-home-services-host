@@ -21,7 +21,7 @@
 - name: 'Create the Nextcloud container'
   docker_container:
     name: 'nextcloud'
-    image: 'nextcloud:{{ nextcloud_image_tag }}'
+    image: 'nextcloud:{{ nextcloud_image_tag | default("stable") }}'
     restart_policy: 'unless-stopped'
     networks:
       - name: 'web-proxy'

@@ -7,7 +7,7 @@
 - name: 'Create the Nextcloud Redis container'
   docker_container:
     name: 'nextcloud_redis'
-    image: 'redis:{{ redis_image_tag }}'
+    image: 'redis:{{ redis_image_tag | default("latest") }}'
     restart_policy: 'unless-stopped'
     networks:
       - name: 'internal'
