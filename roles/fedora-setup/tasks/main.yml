@@ -92,6 +92,14 @@
     immediate: yes
     state: 'enabled'
 
+# Temporary. Containers config files have the SELinux container_file_t type so rsync can't access them.
+# With this seboolean rsync can export read only those files.
+- name: 'SELinux: allow rsyncd to export everything read only'
+  seboolean:
+    name: 'rsync_export_all_ro'
+    state: true
+    persistent: yes
+
 - name: 'Enable and start the rsyncd service'
   systemd:
     name: 'rsyncd'

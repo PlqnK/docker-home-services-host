@@ -39,6 +39,12 @@ systemctl restart nfs-server
 mkdir -p /opt/rsync
 echo "vagrant" > /opt/rsync/rsync_password
 chmod 0640 /opt/rsync/rsync_password
+cat << EOF > /opt/rsync/docker_backup.sh
+#!/usr/bin/env bash
+
+/usr/bin/rsync -avz vagrant@localhost::docker_backup /opt/rsync/docker_backup --password-file /opt/rsync/rsync_password
+EOF
+chmod +x /opt/rsync/docker_backup.sh
 cat << EOF > /etc/systemd/system/docker-backup.timer
 [Unit]
 Description=Backup docker data every 10 min
@@ -55,6 +61,6 @@ cat << EOF > /etc/systemd/system/docker-backup.service
 Description=Backup docker data
 
 [Service]
-ExecStart=/usr/bin/rsync -avz vagrant@localhost::docker_backup /opt/rsync/docker_backup --password-file /opt/rsync/rsync_password
+ExecStart=/opt/rsync/docker_backup.sh
 EOF
 systemctl enable --now docker-backup.timer
