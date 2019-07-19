@@ -19,9 +19,9 @@ Vagrant.configure("2") do |config|
 
   # In order to be as close as the production environment, I need to configure an NFS server so that I can mount
   # the NFS shares in the Ansible playbook later.
-  config.vm.provision "shell", path: "vagrant/nfs_server.sh"
+  config.vm.provision "Simulate production environment", type: "shell", path: "vagrant/simul_prod_env.sh"
 
-  config.vm.provision "ansible" do |ansible|
+  config.vm.provision "Provision the host", type: "ansible" do |ansible|
     ansible.playbook = "playbook.yml"
     ansible.inventory_path = "inventories/vagrant/hosts"
     ansible.limit = "all"

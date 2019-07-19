@@ -6,7 +6,7 @@ ${EXPORT_ROOT}/downloads/usenet/{completed,processing,watching} \
 ${EXPORT_ROOT}/medias/{audio_drama,audiobooks,books,comics,movies,music,podcasts,tv_shows} ${EXPORT_ROOT}/sync"
 
 yum upgrade -y
-yum install -y nfs-utils rpcbind firewalld
+yum install -y firewalld nfs-utils rpcbind rsync
 systemctl enable --now firewalld
 firewall-cmd --permanent --add-service=rpc-bind
 firewall-cmd --permanent --add-service=nfs
@@ -36,3 +36,23 @@ ${EXPORT_ROOT}/sync localhost(rw)
 EOF
 restorecon /etc/exports
 systemctl restart nfs-server
+mkdir -p /opt/rsync
+cat << EOF > /etc/systemd/system/docker-backup.timer
+[Unit]
+Description=Backup docker data every 10 min
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=false
+
+[Install]
+WantedBy=timers.target
+EOF
+cat << EOF > /etc/systemd/system/docker-backup.service
+[Unit]
+Description=Backup docker data
+
+[Service]
+ExecStart=/usr/bin/rsync -avz localhost::docker_backup /opt/rsync
+EOF
+systemctl enable --now docker-backup.timer
