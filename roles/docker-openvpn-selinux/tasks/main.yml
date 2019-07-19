@@ -1,0 +1,48 @@
+---
+- name: 'Check if SELinux is configured'
+  shell: 'semodule -l | grep docker-openvpn'
+  register: docker_openvpn_semodule
+  # grep returns 1 if the string isn't found and 2 for exceptions so we need to change the task fail condition.
+  failed_when: docker_openvpn_semodule.rc == 2
+
+- name: 'Configure SELinux to allow the use of OpenVPN in containers'
+  block:
+  - name: 'Copy the SELinux custom policy on the host'
+    copy:
+      src: 'docker-openvpn.te'
+      dest: '/tmp/docker-openvpn.te'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+
+  - name: 'Install SELinux policy compiler'
+    dnf:
+      name: 'checkpolicy'
+      state: 'present'
+
+  - name: 'Compile the SELinux custom policy module'
+    command: 'checkmodule -M -m -o /tmp/docker-openvpn.mod /tmp/docker-openvpn.te'
+    args:
+      creates: '/tmp/docker-openvpn.mod'
+
+  - name: 'Package the SELinux custom policy module'
+    command: 'semodule_package -o /tmp/docker-openvpn.pp -m /tmp/docker-openvpn.mod'
+    args:
+      creates: '/tmp/docker-openvpn.pp'
+
+  - name: 'Install the SELinux custom policy module'
+    command: 'semodule -i /tmp/docker-openvpn.pp'
+
+  - name: 'Load tun kernel module at boot'
+    copy:
+      content: 'tun'
+      dest: '/etc/modules-load.d/tun.conf'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+
+  - name: 'Load tun kernel module'
+    modprobe:
+      name: 'tun'
+      state: 'present'
+  when: docker_openvpn_semodule.rc == 1
