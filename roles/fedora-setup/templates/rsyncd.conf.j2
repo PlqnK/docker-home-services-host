@@ -22,7 +22,11 @@ log file=/var/log/rsyncd.log
     gid = {{ docker_runtime_group_name }}
     auth users = {{ rsync_auth_user }}
     secrets file = /etc/rsyncd.secrets
+{% if getent_passwd.vagrant is defined %}
+    hosts allow = {{ storage_server_name }}
+{% else %}
     hosts allow = {{ storage_server_name }}.{{ local_domain_suffix }}
+{% endif %}
     hosts deny = *
     ignore errors = no
     ignore nonreadable = yes

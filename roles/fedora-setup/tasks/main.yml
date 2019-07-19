@@ -62,6 +62,12 @@
     state: 'started'
     enabled: yes
 
+- name: 'Checking if provisioning a Vagrant VM'
+  getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: no
+
 - name: 'Create rsyncd config file from template'
   template:
     src: 'rsyncd.conf.j2'
@@ -78,7 +84,7 @@
     group: 'root'
     mode: '0600'
 
-- name: 'Authorize Rsync in firewalld'
+- name: 'Authorize rsyncd in firewalld'
   firewalld:
     zone: 'public'
     service: 'rsyncd'
