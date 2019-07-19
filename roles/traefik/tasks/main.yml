@@ -27,6 +27,17 @@
     group: 'root'
     mode: '0644'
 
+- name: 'Authorize HTTP and HTTPS in firewalld'
+  firewalld:
+    zone: 'public'
+    service: '{{ item }}'
+    permanent: yes
+    immediate: yes
+    state: 'enabled'
+  loop:
+    - 'http'
+    - 'https'
+
 - name: 'Create web-proxy and socket-proxy docker networks'
   docker_network:
     name: '{{ item }}'

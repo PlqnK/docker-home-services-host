@@ -78,6 +78,14 @@
     group: 'root'
     mode: '0600'
 
+- name: 'Authorize Rsync in firewalld'
+  firewalld:
+    zone: 'public'
+    service: 'rsyncd'
+    permanent: yes
+    immediate: yes
+    state: 'enabled'
+
 - name: 'Enable and start the rsyncd service'
   systemd:
     name: 'rsyncd'
