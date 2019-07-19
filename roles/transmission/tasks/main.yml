@@ -40,6 +40,11 @@
       owner: 'root'
       group: 'root'
       mode: '0644'
+
+  - name: 'Load tun kernel module'
+    modprobe:
+      name: 'tun'
+      state: 'present'
   when: docker_openvpn_semodule.rc == 1
 
 - name: 'Create config directories'
