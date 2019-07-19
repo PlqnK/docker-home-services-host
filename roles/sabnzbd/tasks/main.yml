@@ -41,11 +41,4 @@
     path: '{{ local_container_storage_path }}/sabnzbd/config/sabnzbd.ini'
     regexp: '^host_whitelist ='
     line: 'host_whitelist = sabnzbd.{{ domain_name }},'
-  register: config_updated
-
-- name: 'Restart the SABnzbd container'
-  docker_container:
-    name: 'sabnzbd'
-    state: 'started'
-    restart: yes
-  when: config_updated.changed
+  notify: restart sabnzbd

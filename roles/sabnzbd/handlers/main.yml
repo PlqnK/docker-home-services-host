@@ -1,0 +1,6 @@
+---
+- name: 'restart sabnzbd'
+  docker_container:
+    name: 'sabnzbd'
+    state: 'started'
+    restart: yes
