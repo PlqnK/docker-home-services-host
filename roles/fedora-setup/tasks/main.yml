@@ -27,7 +27,7 @@
 
 - name: 'Ensure firewalld is enabled and running'
   systemd:
-    name: 'firewalld'
+    name: 'firewalld.service'
     state: 'started'
     enabled: yes
 
@@ -58,7 +58,7 @@
 
 - name: 'Enable and start the autofs service'
   systemd:
-    name: 'autofs'
+    name: 'autofs.service'
     state: 'started'
     enabled: yes
 
@@ -102,6 +102,6 @@
 
 - name: 'Enable and start the rsyncd service'
   systemd:
-    name: 'rsyncd'
+    name: 'rsyncd.service'
     state: 'started'
     enabled: yes

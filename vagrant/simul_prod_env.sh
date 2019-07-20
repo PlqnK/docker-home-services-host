@@ -6,14 +6,14 @@ ${EXPORT_ROOT}/downloads/usenet/{completed,processing,watching} \
 ${EXPORT_ROOT}/medias/{audio_drama,audiobooks,books,comics,movies,music,podcasts,test_videos,tv_shows} \
 ${EXPORT_ROOT}/sync/vagrant/{documents,pictures,videos}"
 
-yum upgrade -y
-yum install -y firewalld nfs-utils rpcbind rsync
-systemctl enable --now firewalld
-firewall-cmd --permanent --add-service=rpc-bind
-firewall-cmd --permanent --add-service=nfs
-firewall-cmd --permanent --add-service=nfs3
+dnf upgrade -y
+dnf install -y firewalld nfs-utils rpcbind rsync
+systemctl enable --now firewalld.service
+firewall-cmd --permanent --zone=public --add-service=rpc-bind
+firewall-cmd --permanent --zone=public --add-service=nfs
+firewall-cmd --permanent --zone=public --add-service=nfs3
 firewall-cmd --reload
-systemctl enable --now rpcbind nfs-server
+systemctl enable --now rpcbind.service nfs-server.service
 # I know, eval is evil. But this is the only way to have variable expansion before the brace expansion so that
 # "mkdir {folder1,folder2}" creates 2 folders instead of 1 folder named litteraly "{folder1,folder2}".
 eval "mkdir -p ${EXPORT_DIRS}"
@@ -44,7 +44,7 @@ ${EXPORT_ROOT}/sync/vagrant/pictures localhost(rw,all_squash,anonuid=1000,anongi
 ${EXPORT_ROOT}/sync/vagrant/videos localhost(rw,all_squash,anonuid=1000,anongid=1001)
 EOF
 restorecon /etc/exports
-systemctl restart nfs-server
+systemctl restart nfs-server.service
 mkdir -p /opt/rsync
 echo "vagrant" > /opt/rsync/rsync_password
 chmod 0640 /opt/rsync/rsync_password

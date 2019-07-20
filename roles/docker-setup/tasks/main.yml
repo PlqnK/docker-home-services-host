@@ -8,7 +8,7 @@
 
 - name: 'Enable and start the docker service'
   systemd:
-    name: 'docker'
+    name: 'docker.service'
     state: 'started'
     enabled: yes
 
@@ -50,7 +50,7 @@
     state: 'enabled'
   notify: restart docker
 
-- name: 'Add TCP port to firewalld docker zone'
+- name: 'Add HTTPS service to firewalld docker zone'
   firewalld:
     zone: 'docker'
     service: 'https'
