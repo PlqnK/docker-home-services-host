@@ -2,8 +2,6 @@
 - name: 'Setup the host OS'
   hosts: 'docker-host'
   become: yes
-  vars_files:
-    - 'vars/docker-host.yml'
   roles:
     - 'fedora-setup'
     - 'docker-setup'
@@ -11,8 +9,6 @@
 - name: 'Create/Update the containers'
   hosts: 'docker-host'
   become: yes
-  vars_files:
-    - 'vars/docker-host.yml'
   roles:
     - 'docker-socket-proxy'
     - 'watchtower'
