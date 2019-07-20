@@ -3,7 +3,7 @@
 readonly EXPORT_ROOT="/srv/nfs"
 readonly EXPORT_DIRS="${EXPORT_ROOT}/cloud/data ${EXPORT_ROOT}/downloads/bittorrent/{leeching,seeding,watching} \
 ${EXPORT_ROOT}/downloads/usenet/{completed,processing,watching} \
-${EXPORT_ROOT}/medias/{audio_drama,audiobooks,books,comics,movies,music,podcasts,tv_shows} \
+${EXPORT_ROOT}/medias/{audio_drama,audiobooks,books,comics,movies,music,podcasts,test_videos,tv_shows} \
 ${EXPORT_ROOT}/sync/vagrant/{documents,pictures,videos}"
 
 yum upgrade -y
@@ -21,7 +21,7 @@ chown 80:80 ${EXPORT_ROOT}/cloud/data && chmod 750 ${EXPORT_ROOT}/cloud/data
 chown root:1004 ${EXPORT_ROOT}/downloads/bittorrent/* && chmod 770 ${EXPORT_ROOT}/downloads/bittorrent/*
 chown root:1004 ${EXPORT_ROOT}/downloads/usenet/* && chmod 770 ${EXPORT_ROOT}/downloads/usenet/*
 chown root:1005 ${EXPORT_ROOT}/medias/* && chmod 775 ${EXPORT_ROOT}/medias/*
-chown 1000:1001 ${EXPORT_ROOT}/sync/vagrant/* && chmod 755 ${EXPORT_ROOT}/sync/user/*
+chown 1000:1001 ${EXPORT_ROOT}/sync/vagrant/* && chmod 755 ${EXPORT_ROOT}/sync/vagrant/*
 cat << EOF > /etc/exports
 ${EXPORT_ROOT}/cloud/data localhost(rw,all_squash,anonuid=80,anongid=80)
 ${EXPORT_ROOT}/downloads/bittorrent/leeching localhost(rw,all_squash,anonuid=65534,anongid=1004)
@@ -37,6 +37,7 @@ ${EXPORT_ROOT}/medias/comics localhost(rw,all_squash,anonuid=65534,anongid=1005)
 ${EXPORT_ROOT}/medias/movies localhost(rw,all_squash,anonuid=65534,anongid=1005)
 ${EXPORT_ROOT}/medias/music localhost(rw,all_squash,anonuid=65534,anongid=1005)
 ${EXPORT_ROOT}/medias/podcasts localhost(rw,all_squash,anonuid=65534,anongid=1005)
+${EXPORT_ROOT}/medias/test_videos localhost(rw,all_squash,anonuid=65534,anongid=1005)
 ${EXPORT_ROOT}/medias/tv_shows localhost(rw,all_squash,anonuid=65534,anongid=1005)
 ${EXPORT_ROOT}/sync/vagrant/documents localhost(rw,all_squash,anonuid=1000,anongid=1001)
 ${EXPORT_ROOT}/sync/vagrant/pictures localhost(rw,all_squash,anonuid=1000,anongid=1001)
