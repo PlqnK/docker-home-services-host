@@ -1,7 +1,7 @@
 ---
-docker_runtime_user_name: 'dockerrt'
+docker_runtime_user_name: 'docker-runtime'
 docker_runtime_user_id: '2000'
-docker_runtime_group_name: 'dockerrt'
+docker_runtime_group_name: 'docker-runtime'
 docker_runtime_group_id: '2000'
 local_container_storage_path: '/opt/containers'
 timezone: 'Europe/Paris'
