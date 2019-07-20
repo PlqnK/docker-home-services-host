@@ -42,7 +42,7 @@
 
 - name: 'Create AutoFS master file from template'
   template:
-    src: 'server.autofs.j2'
+    src: 'auto.master.j2'
     dest: '/etc/auto.master.d/{{ storage_server_name }}.autofs'
     owner: 'root'
     group: 'root'
@@ -50,7 +50,7 @@
 
 - name: 'Create AutoFS template file from template'
   template:
-    src: 'auto.server.j2'
+    src: 'auto.template.j2'
     dest: '/etc/auto.{{ storage_server_name }}'
     owner: 'root'
     group: 'root'
