@@ -31,7 +31,9 @@
       - '{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps:z'
       - '{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config:z'
       - '{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave,z'
-      - '{{ nfs_mount_path }}/sync:/mnt/documents:slave,z'
+      - '{{ nfs_mount_path }}/sync/{{ main_user }}/documents:/mnt/documents:slave,z'
+      - '{{ nfs_mount_path }}/sync/{{ main_user }}/pictures:/mnt/pictures:slave,z'
+      - '{{ nfs_mount_path }}/sync/{{ main_user }}/videos:/mnt/videos:slave,z'
     env:
       MYSQL_DATABASE: '{{ nextcloud_mysql_database }}'
       MYSQL_USER: '{{ nextcloud_mysql_user }}'
