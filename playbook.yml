@@ -31,8 +31,5 @@
     - { role: 'plexmediaserver', vars: { plex_image_tag: 'plexpass' } }
     - 'tautulli'
     - 'calibre-web'
-    - { role: 'nextcloud-mariadb', vars: { mariadb_image_tag: '10' } }
-    - { role: 'nextcloud-redis', vars: { redis_image_tag: '5' } }
-    - { role: 'nextcloud-cron', vars: { nextcloud_image_tag: '16' } }
-    - { role: 'nextcloud', vars: { nextcloud_image_tag: '16' } }
+    - { role: 'nextcloud', vars: { nextcloud_image_tag: '16', mariadb_image_tag: '10', redis_image_tag: '5' } }
     - 'collaboraonline'

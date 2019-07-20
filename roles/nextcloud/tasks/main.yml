@@ -10,6 +10,14 @@
     - 'apps'
     - 'config'
 
+- name: 'Create database directory'
+  file:
+    path: '{{ local_container_storage_path }}/nextcloud_mariadb/db'
+    state: 'directory'
+    owner: '999'
+    group: '999'
+    mode: '0755'
+
 - name: 'Create web-proxy and internal docker networks'
   docker_network:
     name: '{{ item }}'
@@ -17,6 +25,58 @@
   loop:
     - 'web-proxy'
     - 'internal'
+
+- name: 'Create the MariaDB container'
+  docker_container:
+    name: 'nextcloud_mariadb'
+    image: 'mariadb:{{ mariadb_image_tag | default("latest") }}'
+    restart_policy: 'unless-stopped'
+    networks:
+      - name: 'internal'
+    volumes:
+      - '{{ local_container_storage_path }}/nextcloud_mariadb/db:/var/lib/mysql:Z'
+    env:
+      MYSQL_ROOT_PASSWORD: '{{ nextcloud_mysql_root_password }}'
+      MYSQL_PASSWORD: '{{ nextcloud_mysql_password }}'
+      MYSQL_DATABASE: '{{ nextcloud_mysql_database }}'
+      MYSQL_USER: '{{ nextcloud_mysql_user }}'
+    purge_networks: yes
+    pull: yes
+    state: 'started'
+
+- name: 'Create the Redis container'
+  docker_container:
+    name: 'nextcloud_redis'
+    image: 'redis:{{ redis_image_tag | default("latest") }}'
+    restart_policy: 'unless-stopped'
+    networks:
+      - name: 'internal'
+    purge_networks: yes
+    pull: yes
+    state: 'started'
+
+# Need that container in order to be able to use cron as a background job in Nextcloud
+# This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
+# More info here: https://github.com/nextcloud/docker/pull/220
+- name: 'Create the Cron container'
+  docker_container:
+    name: 'nextcloud_cron'
+    image: 'nextcloud:{{ nextcloud_image_tag | default("stable") }}'
+    restart_policy: 'unless-stopped'
+    entrypoint: '/cron.sh'
+    networks:
+      - name: 'internal'
+    volumes:
+      - '{{ local_container_storage_path }}/nextcloud:/var/www/html:z'
+      - '{{ local_container_storage_path }}/nextcloud/apps:/var/www/html/custom_apps:z'
+      - '{{ local_container_storage_path }}/nextcloud/config:/var/www/html/config:z'
+      - '{{ nfs_mount_path }}/cloud/data:/var/www/html/data:slave,z'
+      - '{{ nfs_mount_path }}/sync/{{ main_user }}/documents:/mnt/documents:slave,z'
+      - '{{ nfs_mount_path }}/sync/{{ main_user }}/pictures:/mnt/pictures:slave,z'
+      - '{{ nfs_mount_path }}/sync/{{ main_user }}/videos:/mnt/videos:slave,z'
+    purge_networks: yes
+    pull: yes
+    state: 'started'
 
 - name: 'Create the Nextcloud container'
   docker_container:
