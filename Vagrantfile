@@ -16,6 +16,10 @@ Vagrant.configure("2") do |config|
     libvirt.cpus = 4
     libvirt.memory = 4096
   end
+  config.vm.provider "virtualbox" do |vbox|
+    vbox.cpus = 4
+    vbox.memory = 4096
+  end
 
   # In order to be as close as the production environment, I need to configure an NFS server so that I can mount
   # the NFS shares in the Ansible playbook later.
