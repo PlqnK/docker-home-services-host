@@ -1,13 +1,13 @@
 ---
 - name: 'Setup the host OS'
-  hosts: 'docker-host'
+  hosts: 'services-host'
   become: yes
   roles:
     - 'fedora-setup'
     - 'docker-setup'
 
 - name: 'Create/Update the containers'
-  hosts: 'docker-host'
+  hosts: 'services-host'
   become: yes
   roles:
     - 'docker-socket-proxy'

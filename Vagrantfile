@@ -2,10 +2,10 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.define "docker-home-services" do |subconfig|
+  config.vm.define "services-host" do |subconfig|
     subconfig.vm.box = "fedora/30-cloud-base"
 
-    subconfig.vm.hostname = "docker-home-services.localdomain"
+    subconfig.vm.hostname = "services-host.localdomain"
 
     subconfig.vm.network "private_network", ip: "192.168.121.100"
     subconfig.vm.network "forwarded_port", guest: 80, host: 80
@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
     subconfig.vm.provider "virtualbox" do |vbox|
       vbox.cpus = 4
       vbox.memory = 4096
-      vbox.name = "docker-home-services"
+      vbox.name = "services-host"
     end
 
     # In order to be as close as the production environment, I need to configure an NFS server so that I can mount
