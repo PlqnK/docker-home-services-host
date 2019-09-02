@@ -12,7 +12,7 @@
   roles:
     - 'docker-socket-proxy'
     - 'watchtower'
-    - 'traefik'
+    - { role: 'traefik', vars: { traefik_image_tag: '1.7' } }
     - 'organizr'
     - 'transmission'
     - 'sabnzbd'

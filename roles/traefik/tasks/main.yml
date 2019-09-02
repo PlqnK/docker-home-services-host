@@ -49,7 +49,7 @@
 - name: 'Create the Traefik container'
   docker_container:
     name: 'traefik'
-    image: 'traefik'
+    image: 'traefik:{{ traefik_image_tag | default("latest") }}'
     restart_policy: 'unless-stopped'
     networks:
       - name: 'web-proxy'
