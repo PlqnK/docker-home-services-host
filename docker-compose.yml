@@ -14,7 +14,7 @@ services:
     command: --schedule "0 0 5 * * 1" --cleanup
   traefik:
     # https://hub.docker.com/_/traefik/
-    image: traefik
+    image: traefik:${TRAEFIK_TAG}
     container_name: traefik
     restart: unless-stopped
     networks:
