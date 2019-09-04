@@ -1,4 +1,4 @@
-# Docker Home Services Host
+# Ansible Docker Home Services
 
 ## Disclaimer
 
@@ -12,7 +12,12 @@ Either way, I still try to be as concise as possible so that you can pretty much
 
 ## About the project
 
-It leverages [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) in order to bring up/host the services and [rsync](https://rsync.samba.org/) to backup the containers configuration files. The services that are hosted on the server are:
+It leverages [Ansible](https://www.ansible.com/) to deploy the services and [Docker](https://www.docker.com/) to run them. It also uses [rsync](https://rsync.samba.org/) to backup the containers configuration files.
+
+Everything is tailored to run on a minimal Fedora Server installation, it follows security best practices by not disabling the firewall and/or SELinux but by configuring them in order to maintain the security of the default install.  
+It's also using a proxy for the docker socket in the form of a container. It restricts the API endpoints that can be used by the other containers and avoids having to mount the socket in a container accessible from the internet.
+
+The services that are hosted on the server are:
 
 - [Watchtower](https://github.com/v2tec/watchtower): A simple service to automatically update your Docker containers as soon as their image is updated or on a fixed schedule.
 - [Træfik](https://traefik.io/): A reverse-proxy that is very easy to configure and can automatically obtain Let's Encrypt certificates.
@@ -40,84 +45,122 @@ Services to consider:
 
 Project:
 
-- Learn and use Ansible to replace docker-compose and all the setup scripts
+- Add some monitoring.
 
 ## Context of my setup
 
 I have a separate server running FreeNAS that host all my files. That's why I'm mounting datasets with NFS on the docker host. It's also the reason why I'm using rsync, my FreeNAS server is configured to pull my container config files from the docker host with rsync once per hour.
 
-## Prerequisites
+## Test environment
 
-- Fedora Server 29+ (other Linux distributions are possible but you will need to adapt the setup scripts).
-- A properly configured DNS server in your LAN as well as proper DNS entries with a domain suffix for your servers (populated by hand or automatically with the hostname of your devices).
+### Prerequisites
+
+- Linux, macOS or Windows with [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) (required for the `ansible` Vagrant provisioner)
+- [Vagrant](https://www.vagrantup.com/)
+- [KVM](https://www.linux-kvm.org/page/Main_Page) hypervisor, [libvirt](https://libvirt.org/) and the [Vagrant Libvirt Provider plugin](https://github.com/vagrant-libvirt/vagrant-libvirt) for Linux ([Virtualbox](https://www.virtualbox.org) is also possible for macOS and Windows users but you will need to adapt the Vagrantfile as well as the path to the ssh private key in the Vagrant inventory file)
+- A local DNS resolver that can resolve `*.localhost.localdomain` to `127.0.0.1` ([systemd-resolved](https://www.freedesktop.org/software/systemd/man/systemd-resolved.service.html) on Linux, [dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) on Linux/macOS and [Acrylic DNS](http://mayakron.altervista.org/wikibase/show.php?id=AcrylicHome) on Windows)
+
+See here for instructions on how to use Vagrant inside WSL to command Vagrant on the Windows host: <https://www.vagrantup.com/docs/other/wsl.html>.
+
+### Launch instructions
+
+Clone the repository and launch Vagrant:
+
+```bash
+git clone https://github.com/PlqnK/ansible-docker-home-services.git
+cd ansible-docker-home-services
+vagrant up
+```
+
+Vagrant will create a VM via libvirt using KVM and provision it with the Ansible playbook of this repository.
+
+### Usage
+
+When the provisioning is finished, you can open a web browser and navigate to any of the services web interface by typing <https://[name_of_the_service].localhost.localdomain>.
+
+The Vagrant documentation is available here : <https://www.vagrantup.com/docs/>.
+
+## Production environment
+
+### Prerequisites
+
+For the Ansible Master:
+
+- Linux, macOS or Windows with WSL
+- Ansible
+- A SSH key
+
+For the services host:
+
+- Fedora Server 30 (other Linux distributions are possible but you will need to adapt the roles and playbooks).
+- The SSH key of the Ansible Master copied to the Server.
+- A properly configured DNS server in your LAN as well as DNS entries with a domain suffix for your servers (populated by hand or automatically with the hostname of your devices).
 - A paid domain name for which you have full control over.
 
-## Installation
+For the file server:
+
+- NFS exports for your datasets.
+- Rsync client.
+
+### Personalization
+
+First, you need to clone the repository:
 
 ```bash
-git clone https://github.com/PlqnK/docker-home-services-host.git
-cd docker-home-services-host
-for file in *.example*; do cp $file $(echo $file | sed -e 's/.example//'); done
+git clone https://github.com/PlqnK/ansible-docker-home-services.git
+cd ansible-docker-home-services
 ```
 
-You then need to:
-
-- Adapt the NFS mount points in `docker-host-mount-points.txt` with what you have on your file server. You need to make it match the target 1:1, except for the source folder name which isn't important, otherwise you will need to modify every reference to the original target name in the `docker-compose.yml` file.
-- Get a Plex claim token [here](https://www.plex.tv/claim/) and replace the `PLEX_CLAIM` variable in the `.env` file with it.
-- Update every reference to `example.com` in the files with your personal domain name, every reference to `myserver` with either the hostname of your server with a proper domain suffix where needed. Change `USER` in `docker-host-setup.conf` to the name of the user created during the installation of Fedora/Ubuntu.
-- Fill in passwords for `TRANSMISSION_RPC_PASSWORD`, `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` in `.env` as well as rsync in `docker-host-rsyncd.secrets`.
-- Modify the `OPENVPN_PROVIDER`, `OPENVPN_USERNAME` and `OPENVPN_PASSWORD` according to the doc [here](https://hub.docker.com/r/haugene/transmission-openvpn/). If you have a provider that doesn't use credentials you will need to set `OPENVPN_PROVIDER` to `custom` and place your OpenVPN profile file inside the working dir as `custom.ovpn`.
-- Adapt the rest of the variables in .env and other conf files according to your needs.
-
-Install htpasswd with:
+You then need to replace my encrypted production `host_vars` file with the Vagrant one:
 
 ```bash
-sudo dnf install httpd-tools
+cp inventories/vagrant/host_vars/docker-host.yml inventories/production/host_vars/docker-host.yml
 ```
 
-Then choose a password for the Træfik web interface and hash it as followed:
+And change it's values to your taste.
+
+> **Notes**:  
+> To get a Plex claim token, see [here](https://www.plex.tv/claim/).  
+> To generate a password hash for Traefik, use [htpasswd](https://httpd.apache.org/docs/2.4/programs/htpasswd.html).
+
+### Deployment
 
 ```bash
-htpasswd -nb admin yourchosenpassword
+ansible-playbook -i inventories/production/hosts playbook.yml
 ```
 
-Replace `yourpasswordhash` in `traefik.toml` under `entryPoints.traefik.auth.basic` with the hash that you just obtained.
+> **Note**: you also need the pass the argument `--ask-vault-pass` if you're using [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html) to encrypt some variables.
 
-Next, chmod and execute the setup script:
+In order to backup your containers config files you will need to configure your file server to pull files from the services host using rsync in "module mode" with the module named `docker_backup`.
+
+### Updating the configuration
+
+Ansible is idempotent, in order to update the configuration of your server according to the changes of this repository you only need to udpate the source files and re-execute the playbook:
 
 ```bash
-chmod u+x fedora-setup.sh
-sudo ./fedora-setup.sh
+git pull
+ansible-playbook -i inventories/production/hosts playbook.yml
 ```
 
-You can then create and run your containers with a simple:
+It will only update what needs to be updated.
+
+### Updating the containers
+
+Because this project uses Watchtower, containers are automatically updated every monday at 5 a.m. If you want to manually update your containers, just run:
 
 ```bash
-docker-compose up -d
+ansible-playbook -i inventories/production/hosts playbook.yml --tags "update_containers"
 ```
 
-Run the post install script which will modify some services config files that were created during the first run:
+### Usage
 
-```bash
-sudo ./post-first-launch.sh
-```
-
-Finally, in order to backup your containers config files you will need to configure your file server to pull files from the docker host using rsync in "module mode" with the module named `docker_backup` configured in the `docker-host-rsyncd.example.conf` file.
-
-## Updating
-
-Because this project uses Watchtower, containers are updated automatically every monday at 5 a.m. If you want to manually update your containers, just run:
-
-```bash
-cd /path/to/docker-home-services-host
-docker-compose pull && docker-compose up -d
-```
-
-If you also want to update the source files of the project you just need to run `git pull` right before `docker-compose pull && docker-compose up -d`.
+When the provisioning is finished, you can open a web browser and navigate to any of the services web interface by typing <https://[name_of_the_service].yourdomain.tld>.
 
 ## Contributing
 
-Contributions are welcome if you see any area of improvement!
+Issues and PR are welcome if you're having problems or if you see any area of improvement!
+
+This project is following the Ansible Styleguide from WhiteCloud, available here: <https://github.com/whitecloud/ansible-styleguide> and the Shell Styleguide from Google, available here: <https://google.github.io/styleguide/shell.xml>.
 
 There's no specific guidelines for pull requests but keep in mind that this project is tailored to my needs and, for example, I might not agree with what you think should be added.
 
