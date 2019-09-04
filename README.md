@@ -57,7 +57,9 @@ I have a separate server running FreeNAS that host all my files. That's why I'm 
 
 - Linux, macOS or Windows with [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) (required for the `ansible` Vagrant provisioner)
 - [Vagrant](https://www.vagrantup.com/)
-- [KVM](https://www.linux-kvm.org/page/Main_Page) hypervisor, [libvirt](https://libvirt.org/) and the [Vagrant Libvirt Provider plugin](https://github.com/vagrant-libvirt/vagrant-libvirt) for Linux ([Virtualbox](https://www.virtualbox.org) is also possible for macOS and Windows users but you will need to adapt the Vagrantfile as well as the path to the ssh private key in the Vagrant inventory file)
+  - [KVM](https://www.linux-kvm.org/page/Main_Page) hypervisor, [libvirt](https://libvirt.org/) and the [Vagrant Libvirt Provider plugin](https://github.com/vagrant-libvirt/vagrant-libvirt) for Linux.
+  - [Virtualbox](https://www.virtualbox.org) is also possible for macOS and Windows users but you will need to adapt the Vagrantfile as well as the path to the ssh private key in the Vagrant inventory file
+- [Ansible](https://www.ansible.com/) and [Docker SDK for Python](https://github.com/docker/docker-py) (also known as `docker-py`)
 - A local DNS resolver that can resolve `*.localhost.localdomain` to `127.0.0.1` ([systemd-resolved](https://www.freedesktop.org/software/systemd/man/systemd-resolved.service.html) on Linux, [dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) on Linux/macOS and [Acrylic DNS](http://mayakron.altervista.org/wikibase/show.php?id=AcrylicHome) on Windows)
 
 See here for instructions on how to use Vagrant inside WSL to command Vagrant on the Windows host: <https://www.vagrantup.com/docs/other/wsl.html>.
@@ -87,7 +89,7 @@ The Vagrant documentation is available here : <https://www.vagrantup.com/docs/>.
 For the Ansible Master:
 
 - Linux, macOS or Windows with WSL
-- Ansible
+- Ansible and Docker SDK for Python (also known as `docker-py`)
 - A SSH key
 
 For the services host:
