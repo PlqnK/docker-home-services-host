@@ -1,0 +1,4 @@
+---
+mariadb_image_tag: 'latest'
+redis_image_tag: 'latest'
+nextcloud_image_tag: 'stable'

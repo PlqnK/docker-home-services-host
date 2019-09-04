@@ -29,7 +29,7 @@
 - name: 'Create the MariaDB container'
   docker_container:
     name: 'nextcloud_mariadb'
-    image: 'mariadb:{{ mariadb_image_tag | default("latest") }}'
+    image: 'mariadb:{{ mariadb_image_tag }}'
     restart_policy: 'unless-stopped'
     networks:
       - name: 'internal'
@@ -47,7 +47,7 @@
 - name: 'Create the Redis container'
   docker_container:
     name: 'nextcloud_redis'
-    image: 'redis:{{ redis_image_tag | default("latest") }}'
+    image: 'redis:{{ redis_image_tag }}'
     restart_policy: 'unless-stopped'
     networks:
       - name: 'internal'
@@ -61,7 +61,7 @@
 - name: 'Create the Cron container'
   docker_container:
     name: 'nextcloud_cron'
-    image: 'nextcloud:{{ nextcloud_image_tag | default("stable") }}'
+    image: 'nextcloud:{{ nextcloud_image_tag }}'
     restart_policy: 'unless-stopped'
     entrypoint: '/cron.sh'
     networks:
@@ -81,7 +81,7 @@
 - name: 'Create the Nextcloud container'
   docker_container:
     name: 'nextcloud'
-    image: 'nextcloud:{{ nextcloud_image_tag | default("stable") }}'
+    image: 'nextcloud:{{ nextcloud_image_tag }}'
     restart_policy: 'unless-stopped'
     networks:
       - name: 'web-proxy'
