@@ -114,7 +114,7 @@ cd ansible-docker-home-services
 You then need to replace my encrypted production `host_vars` file with the Vagrant one:
 
 ```bash
-cp inventories/vagrant/host_vars/docker-host.yml inventories/production/host_vars/docker-host.yml
+cp inventories/vagrant/host_vars/services-host.yml inventories/production/host_vars/services-host.yml
 ```
 
 And change it's values to your taste.
