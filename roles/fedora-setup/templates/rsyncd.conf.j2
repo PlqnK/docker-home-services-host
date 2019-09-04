@@ -11,8 +11,8 @@ log file=/var/log/rsyncd.log
 
 # MODULE OPTIONS
 
-[docker_backup]
-    comment = Backup of Docker services configs
+[containers_data]
+    comment = Backup of docker containers services configs
     path = {{ local_container_storage_path }}
     use chroot = yes
     lock file = /var/lock/rsyncd

@@ -131,7 +131,7 @@ ansible-playbook -i inventories/production/hosts playbook.yml
 
 > **Note**: you also need the pass the argument `--ask-vault-pass` if you're using [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html) to encrypt some variables.
 
-In order to backup your containers config files you will need to configure your file server to pull files from the services host using rsync in "module mode" with the module named `docker_backup`.
+In order to backup your containers config files you will need to configure your file server to pull files from the services host using rsync in "module mode" with the module named `containers_data`.
 
 ### Updating the configuration
 
