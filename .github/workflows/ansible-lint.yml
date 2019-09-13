@@ -1,0 +1,17 @@
+name: Ansible Lint
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-python@v1
+    - run: pip install ansible-lint
+    - run: ansible-lint --version
+    - name: Lint Ansible roles and playbook
+      run: ansible-lint .
