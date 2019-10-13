@@ -468,6 +468,13 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
+  nextcloud_redis:
+    # https://hub.docker.com/_/mariadb/
+    image: redis:${REDIS_TAG}
+    container_name: nextcloud_redis
+    restart: unless-stopped
+    networks:
+      - internal
   # Need that container in order to be able to use cron as a background job in Nextcloud
   # This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
   # More info here: https://github.com/nextcloud/docker/pull/220
@@ -507,6 +514,7 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_HOST=${MYSQL_HOST}
+      - REDIS_HOST=${REDIS_HOST}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
