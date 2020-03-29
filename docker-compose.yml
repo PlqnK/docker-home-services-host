@@ -28,9 +28,11 @@ services:
       - ${LOCAL_STORAGE}/traefik/config/acme.json:/acme.json
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=8080"
-      - "traefik.frontend.rule=Host:traefik.${DOMAIN_NAME}"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.middlewares=traefik"
+      - "traefik.http.middlewares.traefik.basicauth.users=${TRAEFIK_API_USER}:${TRAEFIK_API_PASSWORD}"
   portainer:
     # https://hub.docker.com/r/portainer/portainer/
     image: portainer/portainer
@@ -45,9 +47,9 @@ services:
       - TZ=${TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=9000"
-      - "traefik.frontend.rule=Host:portainer.${DOMAIN_NAME}"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
   organizr:
     # https://hub.docker.com/r/lsiocommunity/organizr/
     image: lsiocommunity/organizr
@@ -63,9 +65,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=80"
-      - "traefik.frontend.rule=Host:organizr.${DOMAIN_NAME}"
+      - "traefik.http.routers.organizr.rule=Host(`organizr.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.organizr.entrypoints=websecure"
+      - "traefik.http.services.organizr.loadbalancer.server.port=80"
   transmission:
     # https://hub.docker.com/r/haugene/transmission-openvpn/
     image: haugene/transmission-openvpn
@@ -177,9 +179,9 @@ services:
       #- TRANSMISSION_RATIO_LIMIT_ENABLED=${TRANSMISSION_RATIO_LIMIT_ENABLED}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=9091"
-      - "traefik.frontend.rule=Host:transmission.${DOMAIN_NAME}"
+      - "traefik.http.routers.transmission.rule=Host(`transmission.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.transmission.entrypoints=websecure"
+      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
   sabnzbd:
     # https://hub.docker.com/r/linuxserver/sabnzbd/
     image: linuxserver/sabnzbd
@@ -197,9 +199,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=8080"
-      - "traefik.frontend.rule=Host:sabnzbd.${DOMAIN_NAME}"
+      - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.sabnzbd.entrypoints=websecure"
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
   jackett:
     # https://hub.docker.com/r/linuxserver/jackett/
     image: linuxserver/jackett
@@ -216,9 +218,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=9117"
-      - "traefik.frontend.rule=Host:jackett.${DOMAIN_NAME}"
+      - "traefik.http.routers.jackett.rule=Host(`jackett.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.jackett.entrypoints=websecure"
+      - "traefik.http.services.jackett.loadbalancer.server.port=9117"
   nzbhydra:
     # https://hub.docker.com/r/linuxserver/hydra2/
     image: linuxserver/hydra2
@@ -235,9 +237,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=5076"
-      - "traefik.frontend.rule=Host:nzbhydra.${DOMAIN_NAME}"
+      - "traefik.http.routers.nzbhydra.rule=Host(`nzbhydra.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.nzbhydra.entrypoints=websecure"
+      - "traefik.http.services.nzbhydra.loadbalancer.server.port=5076"
   radarr:
     # https://hub.docker.com/r/linuxserver/radarr/
     image: linuxserver/radarr
@@ -260,9 +262,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=7878"
-      - "traefik.frontend.rule=Host:radarr.${DOMAIN_NAME}"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
   sonarr:
     # https://hub.docker.com/r/linuxserver/sonarr/
     image: linuxserver/sonarr
@@ -285,9 +287,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=8989"
-      - "traefik.frontend.rule=Host:sonarr.${DOMAIN_NAME}"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
   bazarr:
     # https://hub.docker.com/r/linuxserver/bazarr
     image: linuxserver/bazarr
@@ -308,9 +310,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=6767"
-      - "traefik.frontend.rule=Host:bazarr.${DOMAIN_NAME}"
+      - "traefik.http.routers.bazarr.rule=Host(`bazarr.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.bazarr.entrypoints=websecure"
+      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
   lidarr:
     # https://hub.docker.com/r/linuxserver/lidarr/
     image: linuxserver/lidarr
@@ -333,9 +335,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=8686"
-      - "traefik.frontend.rule=Host:lidarr.${DOMAIN_NAME}"
+      - "traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.lidarr.entrypoints=websecure"
+      - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
   lazylibrarian:
     # https://hub.docker.com/r/thraxis/lazylibrarian-calibre
     image: thraxis/lazylibrarian-calibre
@@ -361,9 +363,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=5299"
-      - "traefik.frontend.rule=Host:lazylibrarian.${DOMAIN_NAME}"
+      - "traefik.http.routers.lazylibrarian.rule=Host(`lazylibrarian.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.lazylibrarian.entrypoints=websecure"
+      - "traefik.http.services.lazylibrarian.loadbalancer.server.port=5299"
   ombi:
     # https://hub.docker.com/r/linuxserver/ombi/
     image: linuxserver/ombi
@@ -382,9 +384,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=3579"
-      - "traefik.frontend.rule=Host:ombi.${DOMAIN_NAME}"
+      - "traefik.http.routers.ombi.rule=Host(`ombi.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.ombi.entrypoints=websecure"
+      - "traefik.http.services.ombi.loadbalancer.server.port=3579"
   plexmediaserver:
     # https://hub.docker.com/r/plexinc/pms-docker/
     image: plexinc/pms-docker:${PLEX_TAG}
@@ -412,9 +414,9 @@ services:
       - PLEX_CLAIM=${PLEX_CLAIM}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=32400"
-      - "traefik.frontend.rule=Host:plex.${DOMAIN_NAME}"
+      - "traefik.http.routers.plex.rule=Host(`plex.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.plex.entrypoints=websecure"
+      - "traefik.http.services.plex.loadbalancer.server.port=32400"
   tautulli:
     # https://hub.docker.com/r/tautulli/tautulli/
     image: tautulli/tautulli
@@ -433,9 +435,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=8181"
-      - "traefik.frontend.rule=Host:tautulli.${DOMAIN_NAME}"
+      - "traefik.http.routers.tautulli.rule=Host(`tautulli.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.tautulli.entrypoints=websecure"
+      - "traefik.http.services.tautulli.loadbalancer.server.port=8181"
   calibre-web:
     # https://hub.docker.com/r/linuxserver/calibre-web
     image: linuxserver/calibre-web
@@ -452,9 +454,9 @@ services:
       - PGID=${PGID}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=8083"
-      - "traefik.frontend.rule=Host:calibre.${DOMAIN_NAME}"
+      - "traefik.http.routers.calibre.rule=Host(`calibre.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.calibre.entrypoints=websecure"
+      - "traefik.http.services.calibre.loadbalancer.server.port=8083"
   nextcloud_mariadb:
     # https://hub.docker.com/_/mariadb/
     image: mariadb:${MARIADB_TAG}
@@ -520,9 +522,9 @@ services:
       - REDIS_HOST=${REDIS_HOST}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=80"
-      - "traefik.frontend.rule=Host:cloud.${DOMAIN_NAME}"
+      - "traefik.http.routers.cloud.rule=Host(`cloud.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.cloud.entrypoints=websecure"
+      - "traefik.http.services.cloud.loadbalancer.server.port=80"
   collaboraonline:
     # https://hub.docker.com/r/collabora/code/
     image: collabora/code
@@ -541,10 +543,10 @@ services:
       - dictionaries=${COLLABORA_DICTIONARIES}
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=9980"
-      - "traefik.protocol=https"
-      - "traefik.frontend.rule=Host:office.${DOMAIN_NAME}"
+      - "traefik.http.routers.office.rule=Host(`office.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.office.entrypoints=websecure"
+      - "traefik.http.services.office.loadbalancer.server.port=9980"
+      - "traefik.http.services.office.loadbalancer.server.scheme=https"
 
 networks:
   proxy:

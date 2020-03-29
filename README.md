@@ -82,7 +82,7 @@ Then choose a password for the Træfik web interface and hash it as followed:
 htpasswd -nb admin yourchosenpassword
 ```
 
-Replace `yourpasswordhash` in `traefik.toml` under `entryPoints.traefik.auth.basic` with the hash that you just obtained.
+Replace `yourpasswordhash` of the variable `TRAEFIK_API_PASSWORD` in `.env` with the hash that you just obtained.
 
 Next, chmod and execute the setup script:
 

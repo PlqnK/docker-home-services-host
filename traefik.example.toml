@@ -1,40 +1,33 @@
-debug = false
-logLevel = "ERROR"
+[global]
+  checkNewVersion = false
+  sendAnonymousUsage = false
 
-defaultEntryPoints = ["https","http"]
-InsecureSkipVerify = true
+[serversTransport]
+  insecureSkipVerify = true
+
+[log]
+  level = "ERROR"
 
 [entryPoints]
-  [entryPoints.http]
-  address = ":80"
-    [entryPoints.http.redirect]
-    entryPoint = "https"
-  [entryPoints.https]
-  address = ":443"
-    [entryPoints.https.tls]
-  [entryPoints.traefik]
-  address = ":8080"
-    [entryPoints.traefik.auth]
-      [entryPoints.traefik.auth.basic]
-      users = ["admin:yourpasswordhash"]
+  [entryPoints.web]
+    address = ":80"
+    [entryPoints.web.http.redirections.entryPoint]
+      to = "websecure"
+      scheme = "https"
+  [entryPoints.websecure]
+    address = ":443"
+    [entryPoints.websecure.http.tls]
+      certResolver = "le"
 
 [api]
-entryPoint = "traefik"
-dashboard = true
-debug = false
+  dashboard = true
 
-[retry]
+[providers.docker]
+  endpoint = "unix:///var/run/docker.sock"
+  exposedByDefault = false
+  network = "proxy"
 
-[docker]
-endpoint = "unix:///var/run/docker.sock"
-domain = "example.com"
-watch = true
-exposedbydefault = false
-
-[acme]
-email = "me@example.com"
-storage = "acme.json"
-entryPoint = "https"
-OnHostRule = true
-  [acme.httpChallenge]
-  entryPoint = "http"
+[certificatesResolvers.le.acme]
+  email = "postmaster@example.com"
+  storage = "acme.json"
+  [certificatesResolvers.le.acme.tlsChallenge]
