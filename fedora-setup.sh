@@ -26,6 +26,10 @@ systemctl restart docker
 # Create a docker group and a docker runtime user for a little bit more security
 useradd dockerrt -d /nonexistent -u 2000 -U -s /usr/sbin/nologin
 
+# Create the docker networks
+docker network create proxy
+docker network create internal
+
 # Install & setup NFS
 dnf -y install nfs-utils autofs
 # I know, eval is evil. But this isn't a mission critical command and this is the only way to have variable expansion

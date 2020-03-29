@@ -548,6 +548,6 @@ services:
 
 networks:
   proxy:
-    external: false
+    external: true
   internal:
-    external: false
+    external: true
