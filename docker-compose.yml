@@ -512,6 +512,7 @@ services:
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
       - ${LOCAL_DOCUMENTS}:/mnt/documents:slave
     environment:
+      - NEXTCLOUD_TRUSTED_DOMAINS=cloud.${DOMAIN_NAME}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
