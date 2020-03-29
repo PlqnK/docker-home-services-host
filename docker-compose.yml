@@ -471,7 +471,7 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
   nextcloud_redis:
-    # https://hub.docker.com/_/mariadb/
+    # https://hub.docker.com/_/redis/
     image: redis:${REDIS_TAG}
     container_name: nextcloud_redis
     restart: unless-stopped
