@@ -460,6 +460,7 @@ services:
     image: mariadb:${MARIADB_TAG}
     container_name: nextcloud_mariadb
     restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     networks:
       - internal
     volumes:
