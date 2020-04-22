@@ -24,7 +24,7 @@ firewall-cmd --reload
 systemctl restart docker
 
 # Create a docker group and a docker runtime user for a little bit more security
-useradd dockerrt -d /nonexistent -u 2000 -U -s /usr/sbin/nologin
+useradd dockerrt -d /nonexistent -u 3000 -U -s /usr/sbin/nologin
 
 # Create the docker networks
 docker network create proxy
