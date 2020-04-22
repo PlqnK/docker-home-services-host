@@ -1,7 +1,6 @@
 /mnt/myserver/cloud/data                     -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/cloud/data
-/mnt/myserver/downloads/bittorrent/leeching  -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/bittorrent/leeching
-/mnt/myserver/downloads/bittorrent/seeding   -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/bittorrent/seeding
-/mnt/myserver/downloads/bittorrent/watching  -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/bittorrent/watching
+/mnt/myserver/downloads/bittorrent/downloads -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/bittorrent/downloads
+/mnt/myserver/downloads/bittorrent/watch     -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/bittorrent/watch
 /mnt/myserver/downloads/usenet/completed     -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/usenet/completed
 /mnt/myserver/downloads/usenet/processing    -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/usenet/processing
 /mnt/myserver/downloads/usenet/watching      -rw,vers=3,rsize=8192,wsize=8192    myserver:/path/to/downloads/usenet/watching
