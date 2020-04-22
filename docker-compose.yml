@@ -115,7 +115,7 @@ services:
       #- TRANSMISSION_BLOCKLIST_ENABLED=${TRANSMISSION_BLOCKLIST_ENABLED}
       # Files and Locations
       - TRANSMISSION_DOWNLOAD_DIR=${TRANSMISSION_DOWNLOAD_DIR}
-      - TRANSMISSION_INCOMPLETE_DIR=${TRANSMISSION_INCOMPLETE_DIR}
+      #- TRANSMISSION_INCOMPLETE_DIR=${TRANSMISSION_INCOMPLETE_DIR}
       - TRANSMISSION_INCOMPLETE_DIR_ENABLED=${TRANSMISSION_INCOMPLETE_DIR_ENABLED}
       #- TRANSMISSION_PREALLOCATION=${TRANSMISSION_PREALLOCATION}
       #- TRANSMISSION_RENAME_PARTIAL_FILES=${TRANSMISSION_RENAME_PARTIAL_FILES}
@@ -193,6 +193,7 @@ services:
       - ${LOCAL_STORAGE}/sabnzbd/config:/config
       - ${MOUNT_POINT}/downloads/usenet/completed:/downloads:slave
       - ${MOUNT_POINT}/downloads/usenet/processing:/incomplete-downloads:slave
+      - ${MOUNT_POINT}/downloads/usenet/watching:/watching:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -211,7 +212,7 @@ services:
       - proxy
     volumes:
       - ${LOCAL_STORAGE}/jackett/config:/config
-      - ${MOUNT_POINT}/downloads/bittorrent/watching:/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads:slave
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
