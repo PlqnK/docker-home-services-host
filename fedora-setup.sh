@@ -27,8 +27,8 @@ systemctl restart docker
 useradd dockerrt -d /nonexistent -u 3000 -U -s /usr/sbin/nologin
 
 # Create the docker networks
-docker network create internal
-docker network create socket-proxy
+docker network create --internal internal
+docker network create --internal socket-proxy
 docker network create web-proxy
 docker network create vpn
 
