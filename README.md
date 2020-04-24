@@ -63,7 +63,7 @@ You then need to:
 - Adapt the NFS mount points in `docker-host-mount-points.txt` with what you have on your file server. You need to make it match the target 1:1, except for the source folder name which isn't important, otherwise you will need to modify every reference to the original target name in the `docker-compose.yml` file.
 - Get a Plex claim token [here](https://www.plex.tv/claim/) and replace the `PLEX_CLAIM` variable in the `.env` file with it.
 - Update every reference to `example.com` in the files with your personal domain name, every reference to `myserver` with either the hostname of your server with a proper domain suffix where needed. Change `USER` in `docker-host-setup.conf` to the name of the user created during the installation of Fedora/Ubuntu.
-- Fill in passwords for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` in `.env` as well as rsync in `docker-host-rsyncd.secrets`.
+- Fill in passwords for `MYSQL_ROOT_PASSWORD`, `MYSQL_PASSWORD` and `COLLABORA_PASSWORD` in `.env`.
 - Put your OpenVPN configuration file in the working dir as `client.ovpn`.
 - Adapt the rest of the variables in .env and other conf files according to your needs.
 
