@@ -1,6 +1,18 @@
 version: '3'
 
 services:
+  docker-socket-proxy:
+    # https://hub.docker.com/r/tecnativa/docker-socket-proxy
+    iamge: tecnativa/docker-socket-proxy
+    container_name: docker-socket-proxy
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - socket-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - CONTAINERS="1"
   traefik:
     # https://hub.docker.com/_/traefik/
     image: traefik:${TRAEFIK_TAG}
@@ -8,11 +20,11 @@ services:
     restart: unless-stopped
     networks:
       - web-proxy
+      - socket-proxy
     ports:
       - 80:80
       - 443:443
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${LOCAL_STORAGE}/traefik/config/traefik.toml:/etc/traefik/traefik.toml
       - ${LOCAL_STORAGE}/traefik/config/acme.json:/acme.json
     labels:
