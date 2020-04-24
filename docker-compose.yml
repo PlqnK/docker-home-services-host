@@ -25,8 +25,8 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ${LOCAL_STORAGE}/traefik/config/traefik.toml:/etc/traefik/traefik.toml
-      - ${LOCAL_STORAGE}/traefik/config/acme.json:/acme.json
+      - ${LOCAL_STORAGE}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z
+      - ${LOCAL_STORAGE}/traefik/config/acme.json:/acme.json:Z
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_NAME}`)"
@@ -46,8 +46,8 @@ services:
     devices:
       - /dev/net/tun
     volumes:
-      - ${LOCAL_STORAGE}/transmission/openvpn/custom.ovpn:/etc/openvpn/custom/default.ovpn
-      - ${MOUNT_POINT}/downloads/bittorrent:/data:slave
+      - ${LOCAL_STORAGE}/transmission/openvpn/custom.ovpn:/etc/openvpn/custom/default.ovpn:Z
+      - ${MOUNT_POINT}/downloads/bittorrent:/data:slave,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -156,10 +156,10 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/sabnzbd/config:/config
-      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads:slave
-      - ${MOUNT_POINT}/downloads/usenet/processing:/incomplete-downloads:slave
-      - ${MOUNT_POINT}/downloads/usenet/watching:/watching:slave
+      - ${LOCAL_STORAGE}/sabnzbd/config:/config:Z
+      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads:slave,z
+      - ${MOUNT_POINT}/downloads/usenet/processing:/incomplete-downloads:slave,z
+      - ${MOUNT_POINT}/downloads/usenet/watching:/watching:slave,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -177,8 +177,8 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/jackett/config:/config
-      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads:slave
+      - ${LOCAL_STORAGE}/jackett/config:/config:Z
+      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads:slave,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -196,8 +196,8 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/nzbhydra/config:/config
-      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave
+      - ${LOCAL_STORAGE}/nzbhydra/config:/config:Z
+      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -220,9 +220,9 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/radarr/config:/config
-      - ${MOUNT_POINT}/downloads:/downloads:slave
-      - ${MOUNT_POINT}/medias/movies:/movies:slave
+      - ${LOCAL_STORAGE}/radarr/config:/config:Z
+      - ${MOUNT_POINT}/downloads:/downloads:slave,z
+      - ${MOUNT_POINT}/medias/movies:/movies:slave,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -245,9 +245,9 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/sonarr/config:/config
-      - ${MOUNT_POINT}/downloads:/downloads:slave
-      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave
+      - ${LOCAL_STORAGE}/sonarr/config:/config:Z
+      - ${MOUNT_POINT}/downloads:/downloads:slave,z
+      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -268,9 +268,9 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/bazarr/config:/config
-      - ${MOUNT_POINT}/medias/movies:/movies:slave
-      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave
+      - ${LOCAL_STORAGE}/bazarr/config:/config:Z
+      - ${MOUNT_POINT}/medias/movies:/movies:slave,z
+      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -293,9 +293,9 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/lidarr/config:/config
-      - ${MOUNT_POINT}/downloads:/downloads:slave
-      - ${MOUNT_POINT}/medias/music:/music:slave
+      - ${LOCAL_STORAGE}/lidarr/config:/config:Z
+      - ${MOUNT_POINT}/downloads:/downloads:slave,z
+      - ${MOUNT_POINT}/medias/music:/music:slave,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -318,12 +318,12 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/lazylibrarian/config:/config
-      - ${MOUNT_POINT}/downloads:/downloads:slave
-      - ${MOUNT_POINT}/medias/books:/books:slave
-      - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave
-      - ${MOUNT_POINT}/medias/magazines:/magazines:slave
-      - ${MOUNT_POINT}/medias/comics:/comics:slave
+      - ${LOCAL_STORAGE}/lazylibrarian/config:/config:Z
+      - ${MOUNT_POINT}/downloads:/downloads:slave,z
+      - ${MOUNT_POINT}/medias/books:/books:slave,z
+      - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave,z
+      - ${MOUNT_POINT}/medias/magazines:/magazines:slave,z
+      - ${MOUNT_POINT}/medias/comics:/comics:slave,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -344,7 +344,7 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/ombi/config:/config
+      - ${LOCAL_STORAGE}/ombi/config:/config:Z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -372,8 +372,8 @@ services:
       - 32413:32413/udp
       - 32414:32414/udp
     volumes:
-      - ${LOCAL_STORAGE}/plexmediaserver/db:/config
-      - ${MOUNT_POINT}/medias:/data:slave
+      - ${LOCAL_STORAGE}/plexmediaserver/db:/config:z
+      - ${MOUNT_POINT}/medias:/data:slave,z
     environment:
       - TZ=${TZ}
       - PLEX_UID=${PUID}
@@ -394,8 +394,8 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/tautulli/config:/config
-      - ${LOCAL_STORAGE}/plexmediaserver/db/Library/Application\ Support/Plex\ Media\ Server/Logs:/plex_logs:ro
+      - ${LOCAL_STORAGE}/tautulli/config:/config:Z
+      - ${LOCAL_STORAGE}/plexmediaserver/db/Library/Application\ Support/Plex\ Media\ Server/Logs:/plex_logs:ro,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -413,8 +413,8 @@ services:
     networks:
       - web-proxy
     volumes:
-      - ${LOCAL_STORAGE}/calibre-web/config:/config
-      - ${MOUNT_POINT}/medias/books:/books:slave
+      - ${LOCAL_STORAGE}/calibre-web/config:/config:Z
+      - ${MOUNT_POINT}/medias/books:/books:slave,z
     environment:
       - TZ=${TZ}
       - PUID=${PUID}
@@ -433,7 +433,7 @@ services:
     networks:
       - internal
     volumes:
-      - ${LOCAL_STORAGE}/nextcloud_mariadb/db:/var/lib/mysql
+      - ${LOCAL_STORAGE}/nextcloud_mariadb/db:/var/lib/mysql:Z
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
@@ -460,10 +460,10 @@ services:
       - internal
     entrypoint: /cron.sh
     volumes:
-      - ${LOCAL_STORAGE}/nextcloud:/var/www/html
-      - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps
-      - ${LOCAL_STORAGE}/nextcloud/config:/var/www/html/config
-      - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
+      - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
+      - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps:z
+      - ${LOCAL_STORAGE}/nextcloud/config:/var/www/html/config:z
+      - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
   nextcloud:
     # https://hub.docker.com/_/nextcloud/
     image: nextcloud:${NEXTCLOUD_TAG}
@@ -475,11 +475,11 @@ services:
       - web-proxy
       - internal
     volumes:
-      - ${LOCAL_STORAGE}/nextcloud:/var/www/html
-      - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps
-      - ${LOCAL_STORAGE}/nextcloud/config:/var/www/html/config
-      - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
-      - ${LOCAL_DOCUMENTS}:/mnt/documents:slave
+      - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
+      - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps:z
+      - ${LOCAL_STORAGE}/nextcloud/config:/var/www/html/config:z
+      - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
+      - ${LOCAL_DOCUMENTS}:/mnt/documents:slave,z
     environment:
       - NEXTCLOUD_TRUSTED_DOMAINS=cloud.${DOMAIN_NAME}
       - MYSQL_DATABASE=${MYSQL_DATABASE}

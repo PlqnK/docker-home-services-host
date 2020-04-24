@@ -31,6 +31,16 @@ docker network create internal
 docker network create socket-proxy
 docker network create web-proxy
 
+# Configure SELinux to allow the use of OpenVPN in containers
+if ! semodule -l | grep docker-openvpn &>/dev/null; then
+  dnf -y install checkpolicy
+  checkmodule -M -m -o /tmp/docker-openvpn.mod docker-openvpn.te
+  semodule_package -o /tmp/docker-openvpn.pp -m /tmp/docker-openvpn.mod
+  semodule -i /tmp/docker-openvpn.pp
+  echo "tun" > /etc/modules-load.d/tun.conf
+  modprobe tun
+fi
+
 # Install & setup NFS
 dnf -y install nfs-utils autofs
 # I know, eval is evil. But this isn't a mission critical command and this is the only way to have variable expansion
