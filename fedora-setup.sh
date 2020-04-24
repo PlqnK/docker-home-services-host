@@ -65,7 +65,4 @@ if [[ -f custom.ovpn ]]; then
   cp client.ovpn "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
   chown dockerrt:dockerrt "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
   chmod 600 "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
-  cp custom.ovpn "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
-  chown dockerrt:dockerrt "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
-  chmod 600 "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
 fi
