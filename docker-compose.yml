@@ -29,6 +29,7 @@ services:
     environment:
       - DNS=""
       - FIREWALL=""
+      - OTHER_ARGS="--inactive 3600 --ping 10 --ping-exit 60"
   traefik:
     # https://hub.docker.com/_/traefik/
     image: traefik:${TRAEFIK_TAG}
