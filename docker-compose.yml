@@ -516,7 +516,9 @@ services:
       - "traefik.http.services.office.loadbalancer.server.scheme=https"
 
 networks:
-  web-proxy:
-    external: true
   internal:
+    external: true
+  socket-proxy:
+    external: true
+  web-proxy:
     external: true
