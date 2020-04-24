@@ -13,6 +13,22 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - CONTAINERS="1"
+  openvpn-client:
+    # https://hub.docker.com/r/dperson/openvpn-client
+    image: dperson/openvpn-client
+    container_name: openvpn-client
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    networks:
+      - vpn
+    volumes:
+      - ${LOCAL_STORAGE}/openvpn-client/config:/vpn:Z
+    environment:
+      - DNS=""
+      - FIREWALL=""
   traefik:
     # https://hub.docker.com/_/traefik/
     image: traefik:${TRAEFIK_TAG}
@@ -521,4 +537,6 @@ networks:
   socket-proxy:
     external: true
   web-proxy:
+    external: true
+  vpn:
     external: true
