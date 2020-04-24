@@ -22,23 +22,6 @@ services:
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.middlewares=traefik"
       - "traefik.http.middlewares.traefik.basicauth.users=${TRAEFIK_API_USER}:${TRAEFIK_API_PASSWORD}"
-  portainer:
-    # https://hub.docker.com/r/portainer/portainer/
-    image: portainer/portainer
-    container_name: portainer
-    restart: unless-stopped
-    networks:
-      - proxy
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${LOCAL_STORAGE}/portainer/config:/data
-    environment:
-      - TZ=${TZ}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.portainer.entrypoints=websecure"
-      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
   organizr:
     # https://hub.docker.com/r/lsiocommunity/organizr/
     image: lsiocommunity/organizr
