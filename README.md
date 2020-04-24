@@ -12,12 +12,9 @@ Either way, I still try to be as concise as possible so that you can pretty much
 
 ## About the project
 
-It leverages [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) in order to bring up/host the services and [rsync](https://rsync.samba.org/) to backup the containers configuration files. The services that are hosted on the server are:
+It leverages [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) in order to bring up/host the services. The services that are hosted on the server are:
 
-- [Watchtower](https://github.com/v2tec/watchtower): A simple service to automatically update your Docker containers as soon as their image is updated or on a fixed schedule.
 - [Træfik](https://traefik.io/): A reverse-proxy that is very easy to configure and can automatically obtain Let's Encrypt certificates.
-- [Portainer](https://www.portainer.io/): A simple management UI for Docker.
-- [Organizr](https://github.com/causefx/Organizr): Bring all your services web interfaces into one single centralized web interface.
 - [Transmission](https://transmissionbt.com/): An easy to use BitTorrent client to downloads files using the BitTorrent protocol.
 - [SABnzbd](https://sabnzbd.org/): An easy to use binary newsreader to download files using the Usenet protocol.
 - [Jackett](https://github.com/Jackett/Jackett): A proxy server that helps interface PVR programs (Radarr, Sonarr, Lidarr etc.) and your BitTorrent trackers.
@@ -45,11 +42,11 @@ Project:
 
 ## Context of my setup
 
-I have a separate server running FreeNAS that host all my files. That's why I'm mounting datasets with NFS on the docker host. It's also the reason why I'm using rsync, my FreeNAS server is configured to pull my container config files from the docker host with rsync once per hour.
+I have a separate server running FreeNAS that host all my files. That's why I'm mounting datasets with NFS on the docker host. My FreeNAS server is also configured to pull my container config files from the docker host with rsync once per hour.
 
 ## Prerequisites
 
-- Fedora Server 29+ (other Linux distributions are possible but you will need to adapt the setup scripts).
+- Fedora Server 31 (other Linux distributions are possible but you will need to adapt the setup scripts).
 - A properly configured DNS server in your LAN as well as proper DNS entries with a domain suffix for your servers (populated by hand or automatically with the hostname of your devices).
 - A paid domain name for which you have full control over.
 
@@ -66,8 +63,8 @@ You then need to:
 - Adapt the NFS mount points in `docker-host-mount-points.txt` with what you have on your file server. You need to make it match the target 1:1, except for the source folder name which isn't important, otherwise you will need to modify every reference to the original target name in the `docker-compose.yml` file.
 - Get a Plex claim token [here](https://www.plex.tv/claim/) and replace the `PLEX_CLAIM` variable in the `.env` file with it.
 - Update every reference to `example.com` in the files with your personal domain name, every reference to `myserver` with either the hostname of your server with a proper domain suffix where needed. Change `USER` in `docker-host-setup.conf` to the name of the user created during the installation of Fedora/Ubuntu.
-- Fill in passwords for `TRANSMISSION_RPC_PASSWORD`, `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` in `.env` as well as rsync in `docker-host-rsyncd.secrets`.
-- Modify the `OPENVPN_PROVIDER`, `OPENVPN_USERNAME` and `OPENVPN_PASSWORD` according to the doc [here](https://hub.docker.com/r/haugene/transmission-openvpn/). If you have a provider that doesn't use credentials you will need to set `OPENVPN_PROVIDER` to `custom` and place your OpenVPN profile file inside the working dir as `custom.ovpn`.
+- Fill in passwords for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` in `.env` as well as rsync in `docker-host-rsyncd.secrets`.
+- Put your OpenVPN configuration file in the working dir as `client.ovpn`.
 - Adapt the rest of the variables in .env and other conf files according to your needs.
 
 Install htpasswd with:
@@ -103,11 +100,9 @@ Run the post install script which will modify some services config files that we
 sudo ./post-first-launch.sh
 ```
 
-Finally, in order to backup your containers config files you will need to configure your file server to pull files from the docker host using rsync in "module mode" with the module named `docker_backup` configured in the `docker-host-rsyncd.example.conf` file.
-
 ## Updating
 
-Because this project uses Watchtower, containers are updated automatically every monday at 5 a.m. If you want to manually update your containers, just run:
+If you want to update your containers, just run:
 
 ```bash
 cd /path/to/docker-home-services-host
