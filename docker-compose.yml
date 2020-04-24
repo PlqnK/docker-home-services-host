@@ -22,24 +22,6 @@ services:
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.middlewares=traefik"
       - "traefik.http.middlewares.traefik.basicauth.users=${TRAEFIK_API_USER}:${TRAEFIK_API_PASSWORD}"
-  organizr:
-    # https://hub.docker.com/r/lsiocommunity/organizr/
-    image: lsiocommunity/organizr
-    container_name: organizr
-    restart: unless-stopped
-    networks:
-      - proxy
-    volumes:
-      - ${LOCAL_STORAGE}/organizr/config:/config
-    environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.organizr.rule=Host(`organizr.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.organizr.entrypoints=websecure"
-      - "traefik.http.services.organizr.loadbalancer.server.port=80"
   transmission:
     # https://hub.docker.com/r/haugene/transmission-openvpn/
     image: haugene/transmission-openvpn
