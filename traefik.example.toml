@@ -25,7 +25,7 @@
 [providers.docker]
   endpoint = "unix:///var/run/docker.sock"
   exposedByDefault = false
-  network = "proxy"
+  network = "web-proxy"
 
 [certificatesResolvers.le.acme]
   email = "postmaster@example.com"

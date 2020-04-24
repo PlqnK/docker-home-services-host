@@ -27,7 +27,7 @@ systemctl restart docker
 useradd dockerrt -d /nonexistent -u 3000 -U -s /usr/sbin/nologin
 
 # Create the docker networks
-docker network create proxy
+docker network create web-proxy
 docker network create internal
 
 # Install & setup NFS

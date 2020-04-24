@@ -7,7 +7,7 @@ services:
     container_name: traefik
     restart: unless-stopped
     networks:
-      - proxy
+      - web-proxy
     ports:
       - 80:80
       - 443:443
@@ -28,7 +28,7 @@ services:
     container_name: transmission
     restart: unless-stopped
     networks:
-      - proxy
+      - web-proxy
     cap_add:
       - NET_ADMIN
     devices:
@@ -142,7 +142,7 @@ services:
     container_name: sabnzbd
     restart: unless-stopped
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/sabnzbd/config:/config
       - ${MOUNT_POINT}/downloads/usenet/completed:/downloads:slave
@@ -163,7 +163,7 @@ services:
     container_name: jackett
     restart: unless-stopped
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/jackett/config:/config
       - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads:slave
@@ -182,7 +182,7 @@ services:
     container_name: nzbhydra
     restart: unless-stopped
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/nzbhydra/config:/config
       - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave
@@ -206,7 +206,7 @@ services:
       - jackett
       - nzbhydra
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/radarr/config:/config
       - ${MOUNT_POINT}/downloads:/downloads:slave
@@ -231,7 +231,7 @@ services:
       - jackett
       - nzbhydra
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/sonarr/config:/config
       - ${MOUNT_POINT}/downloads:/downloads:slave
@@ -254,7 +254,7 @@ services:
       - radarr
       - sonarr
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/bazarr/config:/config
       - ${MOUNT_POINT}/medias/movies:/movies:slave
@@ -279,7 +279,7 @@ services:
       - jackett
       - nzbhydra
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/lidarr/config:/config
       - ${MOUNT_POINT}/downloads:/downloads:slave
@@ -304,7 +304,7 @@ services:
       - jackett
       - nzbhydra
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/lazylibrarian/config:/config
       - ${MOUNT_POINT}/downloads:/downloads:slave
@@ -330,7 +330,7 @@ services:
       - radarr
       - sonarr
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/ombi/config:/config
     environment:
@@ -348,7 +348,7 @@ services:
     container_name: plexmediaserver
     restart: unless-stopped
     networks:
-      - proxy
+      - web-proxy
     ports:
       - 32400:32400/tcp
       - 3005:3005/tcp
@@ -380,7 +380,7 @@ services:
     depends_on:
       - plexmediaserver
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/tautulli/config:/config
       - ${LOCAL_STORAGE}/plexmediaserver/db/Library/Application\ Support/Plex\ Media\ Server/Logs:/plex_logs:ro
@@ -399,7 +399,7 @@ services:
     container_name: calibre-web
     restart: unless-stopped
     networks:
-      - proxy
+      - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/calibre-web/config:/config
       - ${MOUNT_POINT}/medias/books:/books:slave
@@ -460,7 +460,7 @@ services:
     depends_on:
       - nextcloud_mariadb
     networks:
-      - proxy
+      - web-proxy
       - internal
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html
@@ -488,7 +488,7 @@ services:
     depends_on:
       - nextcloud
     networks:
-      - proxy
+      - web-proxy
     cap_add:
       - MKNOD
     environment:
@@ -504,7 +504,7 @@ services:
       - "traefik.http.services.office.loadbalancer.server.scheme=https"
 
 networks:
-  proxy:
+  web-proxy:
     external: true
   internal:
     external: true
