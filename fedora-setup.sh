@@ -30,6 +30,7 @@ useradd dockerrt -d /nonexistent -u 3000 -U -s /usr/sbin/nologin
 docker network create internal
 docker network create socket-proxy
 docker network create web-proxy
+docker network create vpn
 
 # Configure SELinux to allow the use of OpenVPN in containers
 if ! semodule -l | grep docker-openvpn &>/dev/null; then
@@ -61,7 +62,7 @@ touch "${LOCAL_STORAGE}"/traefik/config/acme.json && chmod 600 "${LOCAL_STORAGE}
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}"/traefik/config && chmod 755 "${LOCAL_STORAGE}"/traefik/config/traefik.toml
 
 if [[ -f custom.ovpn ]]; then
-  cp custom.ovpn "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
-  chown dockerrt:dockerrt "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
-  chmod 600 "${LOCAL_STORAGE}"/transmission/openvpn/custom.ovpn
+  cp client.ovpn "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
+  chown dockerrt:dockerrt "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
+  chmod 600 "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
 fi
