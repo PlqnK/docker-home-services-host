@@ -12,7 +12,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - CONTAINERS=1
+      CONTAINERS: '1'
   openvpn-client:
     # https://hub.docker.com/r/dperson/openvpn-client
     image: dperson/openvpn-client
@@ -47,12 +47,12 @@ services:
       - ${LOCAL_STORAGE}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z
       - ${LOCAL_STORAGE}/traefik/config/acme.json:/acme.json:Z
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.middlewares=traefik"
-      - "traefik.http.middlewares.traefik.basicauth.users=${TRAEFIK_API_USER}:${TRAEFIK_API_PASSWORD}"
+      traefik.enable: 'true'
+      traefik.http.routers.traefik.rule: 'Host(`traefik.${DOMAIN_NAME}`)'
+      traefik.http.routers.traefik.entrypoints: 'websecure'
+      traefik.http.routers.traefik.service: 'api@internal'
+      traefik.http.routers.traefik.middlewares: 'traefik'
+      traefik.http.middlewares.traefik.basicauth.users: '${TRAEFIK_API_USER}:${TRAEFIK_API_PASSWORD}'
   transmission:
     # https://hub.docker.com/r/linuxserver/transmission
     image: linuxserver/transmission
@@ -66,15 +66,15 @@ services:
       - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads:slave,z
       - ${MOUNT_POINT}/downloads/bittorrent/watch:/watch:slave,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=vpn"
-      - "traefik.http.routers.transmission.rule=Host(`transmission.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.transmission.entrypoints=websecure"
-      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
+      traefik.enable: 'true'
+      traefik.docker.network: 'vpn'
+      traefik.http.routers.transmission.rule: 'Host(`transmission.${DOMAIN_NAME}`)'
+      traefik.http.routers.transmission.entrypoints: 'websecure'
+      traefik.http.services.transmission.loadbalancer.server.port: '9091'
   sabnzbd:
     # https://hub.docker.com/r/linuxserver/sabnzbd/
     image: linuxserver/sabnzbd
@@ -88,14 +88,14 @@ services:
       - ${MOUNT_POINT}/downloads/usenet/processing:/incomplete-downloads:slave,z
       - ${MOUNT_POINT}/downloads/usenet/watching:/watching:slave,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.sabnzbd.entrypoints=websecure"
-      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+      traefik.enable: 'true'
+      traefik.http.routers.sabnzbd.rule: 'Host(`sabnzbd.${DOMAIN_NAME}`)'
+      traefik.http.routers.sabnzbd.entrypoints: 'websecure'
+      traefik.http.services.sabnzbd.loadbalancer.server.port: '8080'
   jackett:
     # https://hub.docker.com/r/linuxserver/jackett/
     image: linuxserver/jackett
@@ -107,14 +107,14 @@ services:
       - ${LOCAL_STORAGE}/jackett/config:/config:Z
       - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads:slave,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.jackett.rule=Host(`jackett.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.jackett.entrypoints=websecure"
-      - "traefik.http.services.jackett.loadbalancer.server.port=9117"
+      traefik.enable: 'true'
+      traefik.http.routers.jackett.rule: 'Host(`jackett.${DOMAIN_NAME}`)'
+      traefik.http.routers.jackett.entrypoints: 'websecure'
+      traefik.http.services.jackett.loadbalancer.server.port: '9117'
   nzbhydra:
     # https://hub.docker.com/r/linuxserver/hydra2/
     image: linuxserver/hydra2
@@ -126,14 +126,14 @@ services:
       - ${LOCAL_STORAGE}/nzbhydra/config:/config:Z
       - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nzbhydra.rule=Host(`nzbhydra.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.nzbhydra.entrypoints=websecure"
-      - "traefik.http.services.nzbhydra.loadbalancer.server.port=5076"
+      traefik.enable: 'true'
+      traefik.http.routers.nzbhydra.rule: 'Host(`nzbhydra.${DOMAIN_NAME}`)'
+      traefik.http.routers.nzbhydra.entrypoints: 'websecure'
+      traefik.http.services.nzbhydra.loadbalancer.server.port: '5076'
   radarr:
     # https://hub.docker.com/r/linuxserver/radarr/
     image: linuxserver/radarr
@@ -151,14 +151,14 @@ services:
       - ${MOUNT_POINT}/downloads:/downloads:slave,z
       - ${MOUNT_POINT}/medias/movies:/movies:slave,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.radarr.entrypoints=websecure"
-      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+      traefik.enable: 'true'
+      traefik.http.routers.radarr.rule: 'Host(`radarr.${DOMAIN_NAME}`)'
+      traefik.http.routers.radarr.entrypoints: 'websecure'
+      traefik.http.services.radarr.loadbalancer.server.port: '7878'
   sonarr:
     # https://hub.docker.com/r/linuxserver/sonarr/
     image: linuxserver/sonarr
@@ -176,14 +176,14 @@ services:
       - ${MOUNT_POINT}/downloads:/downloads:slave,z
       - ${MOUNT_POINT}/medias/tv_shows:/tv:slave,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.sonarr.entrypoints=websecure"
-      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+      traefik.enable: 'true'
+      traefik.http.routers.sonarr.rule: 'Host(`sonarr.${DOMAIN_NAME}`)'
+      traefik.http.routers.sonarr.entrypoints: 'websecure'
+      traefik.http.services.sonarr.loadbalancer.server.port: '8989'
   bazarr:
     # https://hub.docker.com/r/linuxserver/bazarr
     image: linuxserver/bazarr
@@ -199,14 +199,14 @@ services:
       - ${MOUNT_POINT}/medias/movies:/movies:slave,z
       - ${MOUNT_POINT}/medias/tv_shows:/tv:slave,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.bazarr.rule=Host(`bazarr.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.bazarr.entrypoints=websecure"
-      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
+      traefik.enable: 'true'
+      traefik.http.routers.bazarr.rule: 'Host(`bazarr.${DOMAIN_NAME}`)'
+      traefik.http.routers.bazarr.entrypoints: 'websecure'
+      traefik.http.services.bazarr.loadbalancer.server.port: '6767'
   lidarr:
     # https://hub.docker.com/r/linuxserver/lidarr/
     image: linuxserver/lidarr
@@ -224,14 +224,14 @@ services:
       - ${MOUNT_POINT}/downloads:/downloads:slave,z
       - ${MOUNT_POINT}/medias/music:/music:slave,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.lidarr.entrypoints=websecure"
-      - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
+      traefik.enable: 'true'
+      traefik.http.routers.lidarr.rule: 'Host(`lidarr.${DOMAIN_NAME}`)'
+      traefik.http.routers.lidarr.entrypoints: 'websecure'
+      traefik.http.services.lidarr.loadbalancer.server.port: '8686'
   lazylibrarian:
     # https://hub.docker.com/r/thraxis/lazylibrarian-calibre
     image: thraxis/lazylibrarian-calibre
@@ -252,14 +252,14 @@ services:
       - ${MOUNT_POINT}/medias/magazines:/magazines:slave,z
       - ${MOUNT_POINT}/medias/comics:/comics:slave,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.lazylibrarian.rule=Host(`lazylibrarian.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.lazylibrarian.entrypoints=websecure"
-      - "traefik.http.services.lazylibrarian.loadbalancer.server.port=5299"
+      traefik.enable: 'true'
+      traefik.http.routers.lazylibrarian.rule: 'Host(`lazylibrarian.${DOMAIN_NAME}`)'
+      traefik.http.routers.lazylibrarian.entrypoints: 'websecure'
+      traefik.http.services.lazylibrarian.loadbalancer.server.port: '5299'
   ombi:
     # https://hub.docker.com/r/linuxserver/ombi/
     image: linuxserver/ombi
@@ -273,14 +273,14 @@ services:
     volumes:
       - ${LOCAL_STORAGE}/ombi/config:/config:Z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ombi.rule=Host(`ombi.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.ombi.entrypoints=websecure"
-      - "traefik.http.services.ombi.loadbalancer.server.port=3579"
+      traefik.enable: 'true'
+      traefik.http.routers.ombi.rule: 'Host(`ombi.${DOMAIN_NAME}`)'
+      traefik.http.routers.ombi.entrypoints: 'websecure'
+      traefik.http.services.ombi.loadbalancer.server.port: '3579'
   plexmediaserver:
     # https://hub.docker.com/r/plexinc/pms-docker/
     image: plexinc/pms-docker:${PLEX_TAG}
@@ -302,15 +302,15 @@ services:
       - ${LOCAL_STORAGE}/plexmediaserver/db:/config:z
       - ${MOUNT_POINT}/medias:/data:slave,z
     environment:
-      - TZ=${TZ}
-      - PLEX_UID=${PUID}
-      - PLEX_GID=${PGID}
-      - PLEX_CLAIM=${PLEX_CLAIM}
+      TZ: '${TZ}'
+      PLEX_UID: '${PUID}'
+      PLEX_GID: '${PGID}'
+      PLEX_CLAIM: '${PLEX_CLAIM}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.plex.rule=Host(`plex.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.plex.entrypoints=websecure"
-      - "traefik.http.services.plex.loadbalancer.server.port=32400"
+      traefik.enable: 'true'
+      traefik.http.routers.plex.rule: 'Host(`plex.${DOMAIN_NAME}`)'
+      traefik.http.routers.plex.entrypoints: 'websecure'
+      traefik.http.services.plex.loadbalancer.server.port: '32400'
   tautulli:
     # https://hub.docker.com/r/tautulli/tautulli/
     image: tautulli/tautulli
@@ -324,14 +324,14 @@ services:
       - ${LOCAL_STORAGE}/tautulli/config:/config:Z
       - ${LOCAL_STORAGE}/plexmediaserver/db/Library/Application\ Support/Plex\ Media\ Server/Logs:/plex_logs:ro,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.tautulli.rule=Host(`tautulli.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.tautulli.entrypoints=websecure"
-      - "traefik.http.services.tautulli.loadbalancer.server.port=8181"
+      traefik.enable: 'true'
+      traefik.http.routers.tautulli.rule: 'Host(`tautulli.${DOMAIN_NAME}`)'
+      traefik.http.routers.tautulli.entrypoints: 'websecure'
+      traefik.http.services.tautulli.loadbalancer.server.port: '8181'
   calibre-web:
     # https://hub.docker.com/r/linuxserver/calibre-web
     image: linuxserver/calibre-web
@@ -343,14 +343,14 @@ services:
       - ${LOCAL_STORAGE}/calibre-web/config:/config:Z
       - ${MOUNT_POINT}/medias/books:/books:slave,z
     environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.calibre.rule=Host(`calibre.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.calibre.entrypoints=websecure"
-      - "traefik.http.services.calibre.loadbalancer.server.port=8083"
+      traefik.enable: 'true'
+      traefik.http.routers.calibre.rule: 'Host(`calibre.${DOMAIN_NAME}`)'
+      traefik.http.routers.calibre.entrypoints: 'websecure'
+      traefik.http.services.calibre.loadbalancer.server.port: '8083'
   nextcloud_mariadb:
     # https://hub.docker.com/_/mariadb/
     image: mariadb:${MARIADB_TAG}
@@ -362,10 +362,10 @@ services:
     volumes:
       - ${LOCAL_STORAGE}/nextcloud_mariadb/db:/var/lib/mysql:Z
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+      MYSQL_USER: '${MYSQL_USER}'
   nextcloud_redis:
     # https://hub.docker.com/_/redis/
     image: redis:${REDIS_TAG}
@@ -405,17 +405,17 @@ services:
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
       - ${LOCAL_DOCUMENTS}:/mnt/documents:slave,z
     environment:
-      - NEXTCLOUD_TRUSTED_DOMAINS=cloud.${DOMAIN_NAME}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_HOST=${MYSQL_HOST}
-      - REDIS_HOST=${REDIS_HOST}
+      NEXTCLOUD_TRUSTED_DOMAINS: 'cloud.${DOMAIN_NAME}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      MYSQL_HOST: '${MYSQL_HOST}'
+      REDIS_HOST: '${REDIS_HOST}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.cloud.rule=Host(`cloud.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.cloud.entrypoints=websecure"
-      - "traefik.http.services.cloud.loadbalancer.server.port=80"
+      traefik.enable: 'true'
+      traefik.http.routers.cloud.rule: 'Host(`cloud.${DOMAIN_NAME}`)'
+      traefik.http.routers.cloud.entrypoints: 'websecure'
+      traefik.http.services.cloud.loadbalancer.server.port: '80'
   collaboraonline:
     # https://hub.docker.com/r/collabora/code/
     image: collabora/code
@@ -428,16 +428,16 @@ services:
     cap_add:
       - MKNOD
     environment:
-      - domain=${NEXTCLOUD_DOMAIN}
-      - username=${COLLABORA_USERNAME}
-      - password=${COLLABORA_PASSWORD}
-      - dictionaries=${COLLABORA_DICTIONARIES}
+      domain: '${NEXTCLOUD_DOMAIN}'
+      username: '${COLLABORA_USERNAME}'
+      password: '${COLLABORA_PASSWORD}'
+      dictionaries: '${COLLABORA_DICTIONARIES}'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.office.rule=Host(`office.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.office.entrypoints=websecure"
-      - "traefik.http.services.office.loadbalancer.server.port=9980"
-      - "traefik.http.services.office.loadbalancer.server.scheme=https"
+      traefik.enable: 'true'
+      traefik.http.routers.office.rule: 'Host(`office.${DOMAIN_NAME}`)'
+      traefik.http.routers.office.entrypoints: 'websecure'
+      traefik.http.services.office.loadbalancer.server.port: '9980'
+      traefik.http.services.office.loadbalancer.server.scheme: 'https'
 
 networks:
   internal:
