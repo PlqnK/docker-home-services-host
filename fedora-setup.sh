@@ -14,14 +14,12 @@ dnf -y install moby-engine docker-compose
 systemctl enable --now docker
 usermod -aG docker "${USER}"
 
-# Configure firewalld to work with docker (allow inter-container communication on port 443)
-# See here for more information: https://opsech.io/posts/2017/May/23/docker-dns-with-firewalld-on-fedora.html
-firewall-cmd --permanent --new-zone=docker
-firewall-cmd --permanent --zone=docker --add-interface=docker0
-firewall-cmd --permanent --zone=docker --add-source=172.16.0.0/12
-firewall-cmd --permanent --zone=docker --add-service=https
+# Configure firewalld
+firewalld_default_zone=$(firewall-cmd --get-default-zone)
+for service in http https plex; do
+  firewall-cmd --permanent --zone="${firewalld_default_zone}" --add-service="${service}"
+done
 firewall-cmd --reload
-systemctl restart docker
 
 # Create a docker group and a docker runtime user for a little bit more security
 useradd dockerrt -d /nonexistent -u 3000 -U -s /usr/sbin/nologin
