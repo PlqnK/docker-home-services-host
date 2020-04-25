@@ -266,6 +266,7 @@ services:
     container_name: ombi
     restart: unless-stopped
     depends_on:
+      - plexmediaserver
       - radarr
       - sonarr
     networks:
