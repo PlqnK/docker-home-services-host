@@ -382,8 +382,6 @@ services:
     container_name: nextcloud_cron
     restart: unless-stopped
     depends_on:
-      - nextcloud_mariadb
-      - nextcloud_redis
       - nextcloud
     networks:
       - internal
