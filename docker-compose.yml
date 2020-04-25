@@ -249,8 +249,6 @@ services:
       - ${MOUNT_POINT}/downloads:/downloads:slave,z
       - ${MOUNT_POINT}/medias/books:/books:slave,z
       - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave,z
-      - ${MOUNT_POINT}/medias/magazines:/magazines:slave,z
-      - ${MOUNT_POINT}/medias/comics:/comics:slave,z
     environment:
       DOCKER_MODS: 'linuxserver/calibre-web:calibre'
       TZ: '${TZ}'
