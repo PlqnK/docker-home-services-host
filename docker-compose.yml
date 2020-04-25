@@ -252,10 +252,10 @@ services:
       - ${MOUNT_POINT}/medias/magazines:/magazines:slave,z
       - ${MOUNT_POINT}/medias/comics:/comics:slave,z
     environment:
+      DOCKER_MODS: 'linuxserver/calibre-web:calibre'
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
-      DOCKER_MODS: 'linuxserver/calibre-web:calibre'
     labels:
       traefik.enable: 'true'
       traefik.http.routers.lazylibrarian.rule: 'Host(`lazylibrarian.${DOMAIN_NAME}`)'
@@ -345,6 +345,7 @@ services:
       - ${LOCAL_STORAGE}/calibre-web/config:/config:Z
       - ${MOUNT_POINT}/medias/books:/books:slave,z
     environment:
+      DOCKER_MODS: 'linuxserver/calibre-web:calibre'
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
