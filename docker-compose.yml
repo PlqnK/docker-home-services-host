@@ -27,9 +27,11 @@ services:
     volumes:
       - ${LOCAL_STORAGE}/openvpn-client/config:/vpn:Z
     environment:
-      - DNS=
-      - FIREWALL=
-      - OTHER_ARGS=${OPENVPN_OTHER_ARGS}
+      TZ: '${TZ}'
+      DNS: ''
+      FIREWALL: ''
+      VPNPORT: '${OPENVPN_FORWARDED_PORT}'
+      OTHER_ARGS: '${OPENVPN_OTHER_ARGS}'
   traefik:
     # https://hub.docker.com/_/traefik/
     image: traefik:${TRAEFIK_TAG}
@@ -354,7 +356,7 @@ services:
     image: mariadb:${MARIADB_TAG}
     container_name: nextcloud_mariadb
     restart: unless-stopped
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    command: --transaction-isolation=READ-COMMITTED --log-bin --binlog-format=ROW
     networks:
       - internal
     volumes:
@@ -381,13 +383,13 @@ services:
     restart: unless-stopped
     depends_on:
       - nextcloud_mariadb
+      - nextcloud_redis
+      - nextcloud
     networks:
       - internal
     entrypoint: /cron.sh
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
-      - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps:z
-      - ${LOCAL_STORAGE}/nextcloud/config:/var/www/html/config:z
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
   nextcloud:
     # https://hub.docker.com/_/nextcloud/
@@ -396,13 +398,12 @@ services:
     restart: unless-stopped
     depends_on:
       - nextcloud_mariadb
+      - nextcloud_redis
     networks:
       - web-proxy
       - internal
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
-      - ${LOCAL_STORAGE}/nextcloud/apps:/var/www/html/custom_apps:z
-      - ${LOCAL_STORAGE}/nextcloud/config:/var/www/html/config:z
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
       - ${LOCAL_DOCUMENTS}:/mnt/documents:slave,z
     environment:
