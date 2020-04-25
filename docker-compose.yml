@@ -3,7 +3,7 @@ version: '3'
 services:
   docker-socket-proxy:
     # https://hub.docker.com/r/tecnativa/docker-socket-proxy
-    iamge: tecnativa/docker-socket-proxy
+    image: tecnativa/docker-socket-proxy
     container_name: docker-socket-proxy
     restart: always
     privileged: true
