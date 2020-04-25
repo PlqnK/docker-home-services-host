@@ -233,8 +233,8 @@ services:
       traefik.http.routers.lidarr.entrypoints: 'websecure'
       traefik.http.services.lidarr.loadbalancer.server.port: '8686'
   lazylibrarian:
-    # https://hub.docker.com/r/thraxis/lazylibrarian-calibre
-    image: thraxis/lazylibrarian-calibre
+    # https://hub.docker.com/r/linuxserver/lazylibrarian
+    image: linuxserver/lazylibrarian
     container_name: lazylibrarian
     restart: unless-stopped
     depends_on:
@@ -249,9 +249,8 @@ services:
       - ${MOUNT_POINT}/downloads:/downloads:slave,z
       - ${MOUNT_POINT}/medias/books:/books:slave,z
       - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave,z
-      - ${MOUNT_POINT}/medias/magazines:/magazines:slave,z
-      - ${MOUNT_POINT}/medias/comics:/comics:slave,z
     environment:
+      DOCKER_MODS: 'linuxserver/calibre-web:calibre'
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
@@ -344,6 +343,7 @@ services:
       - ${LOCAL_STORAGE}/calibre-web/config:/config:Z
       - ${MOUNT_POINT}/medias/books:/books:slave,z
     environment:
+      DOCKER_MODS: 'linuxserver/calibre-web:calibre'
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
