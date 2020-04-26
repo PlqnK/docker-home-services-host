@@ -6,7 +6,7 @@
   insecureSkipVerify = true
 
 [log]
-  level = "ERROR"
+  level = "WARNING"
 
 [entryPoints]
   [entryPoints.web]
