@@ -409,6 +409,7 @@ services:
     environment:
       APACHE_DISABLE_REWRITE_IP: '1'
       TRUSTED_PROXIES: 'traefik'
+      OVERWRITEPROTOCOL: 'https'
       NEXTCLOUD_TRUSTED_DOMAINS: 'cloud.${DOMAIN_NAME}'
       MYSQL_DATABASE: '${MYSQL_DATABASE}'
       MYSQL_USER: '${MYSQL_USER}'
