@@ -29,6 +29,7 @@
     network = "web-proxy"
   [providers.file]
     filename = "/etc/traefik/traefik-dynamic.toml"
+    watch = true
 
 [certificatesResolvers.le.acme]
   email = "postmaster@example.com"
