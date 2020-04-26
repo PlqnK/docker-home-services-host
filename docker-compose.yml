@@ -45,6 +45,7 @@ services:
       - 443:443
     volumes:
       - ${LOCAL_STORAGE}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z
+      - ${LOCAL_STORAGE}/traefik/config/traefik-dynamic.toml:/etc/traefik/traefik-dynamic.toml:Z
       - ${LOCAL_STORAGE}/traefik/config/acme.json:/acme.json:Z
     labels:
       traefik.enable: 'true'

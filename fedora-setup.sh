@@ -56,9 +56,10 @@ eval "mkdir -p ${LOCAL_STORAGE_DIRS}"
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}" && chmod -R 755 "${LOCAL_STORAGE}"
 
 # Copy configs where needed
-cp traefik.toml "${LOCAL_STORAGE}"/traefik/config/traefik.toml
+cp traefik.toml traefik-dynamic.toml "${LOCAL_STORAGE}"/traefik/config/
 touch "${LOCAL_STORAGE}"/traefik/config/acme.json && chmod 600 "${LOCAL_STORAGE}"/traefik/config/acme.json
-chown -R dockerrt:dockerrt "${LOCAL_STORAGE}"/traefik/config && chmod 755 "${LOCAL_STORAGE}"/traefik/config/traefik.toml
+chown -R dockerrt:dockerrt "${LOCAL_STORAGE}"/traefik/config
+chmod 755 "${LOCAL_STORAGE}"/traefik/config/traefik.toml "${LOCAL_STORAGE}"/traefik/config/traefik-dynamic.toml
 
 if [[ -f custom.ovpn ]]; then
   cp client.ovpn "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
