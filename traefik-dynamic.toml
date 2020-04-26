@@ -11,3 +11,15 @@
       "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
     ]
     curvePreferences = ["CurveP521","CurveP384"]
+
+[http]
+  [http.routers]
+    [http.routers.web-insecure]
+      entrypoints = ["web"]
+      rule = "HostRegexp(`{host:.+}`)"
+      service = "noop@internal"
+      middlewares = ["redirect-to-https"]
+  [http.middlewares]
+    [http.middlewares.redirect-to-https.redirectScheme]
+      scheme = "https"
+      permanent = true
