@@ -412,8 +412,8 @@ services:
       MYSQL_DATABASE: '${MYSQL_DATABASE}'
       MYSQL_USER: '${MYSQL_USER}'
       MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
-      MYSQL_HOST: '${MYSQL_HOST}'
-      REDIS_HOST: '${REDIS_HOST}'
+      MYSQL_HOST: 'nextcloud_mariadb'
+      REDIS_HOST: 'nextcloud_redis'
     labels:
       traefik.enable: 'true'
       traefik.http.routers.cloud.rule: 'Host(`cloud.${DOMAIN_NAME}`)'
