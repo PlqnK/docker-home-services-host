@@ -12,6 +12,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      TZ: '${TZ}'
       CONTAINERS: '1'
   openvpn-client:
     # https://hub.docker.com/r/dperson/openvpn-client
@@ -45,14 +46,17 @@ services:
       - 443:443
     volumes:
       - ${LOCAL_STORAGE}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z
+      - ${LOCAL_STORAGE}/traefik/config/traefik-dynamic.toml:/etc/traefik/traefik-dynamic.toml:Z
       - ${LOCAL_STORAGE}/traefik/config/acme.json:/acme.json:Z
+    environment:
+      TZ: '${TZ}'
     labels:
       traefik.enable: 'true'
       traefik.http.routers.traefik.rule: 'Host(`traefik.${DOMAIN_NAME}`)'
       traefik.http.routers.traefik.entrypoints: 'websecure'
       traefik.http.routers.traefik.service: 'api@internal'
-      traefik.http.routers.traefik.middlewares: 'traefik'
-      traefik.http.middlewares.traefik.basicauth.users: '${TRAEFIK_API_USER}:${TRAEFIK_API_PASSWORD}'
+      traefik.http.routers.traefik.middlewares: 'set-security-headers@file, traefik-auth'
+      traefik.http.middlewares.traefik-auth.basicauth.users: '${TRAEFIK_API_USER}:${TRAEFIK_API_PASSWORD}'
   transmission:
     # https://hub.docker.com/r/linuxserver/transmission
     image: linuxserver/transmission
@@ -74,6 +78,7 @@ services:
       traefik.docker.network: 'vpn'
       traefik.http.routers.transmission.rule: 'Host(`transmission.${DOMAIN_NAME}`)'
       traefik.http.routers.transmission.entrypoints: 'websecure'
+      traefik.http.routers.transmission.middlewares: 'set-security-headers@file'
       traefik.http.services.transmission.loadbalancer.server.port: '9091'
   sabnzbd:
     # https://hub.docker.com/r/linuxserver/sabnzbd/
@@ -95,6 +100,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.sabnzbd.rule: 'Host(`sabnzbd.${DOMAIN_NAME}`)'
       traefik.http.routers.sabnzbd.entrypoints: 'websecure'
+      traefik.http.routers.sabnzbd.middlewares: 'set-security-headers@file'
       traefik.http.services.sabnzbd.loadbalancer.server.port: '8080'
   jackett:
     # https://hub.docker.com/r/linuxserver/jackett/
@@ -114,6 +120,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.jackett.rule: 'Host(`jackett.${DOMAIN_NAME}`)'
       traefik.http.routers.jackett.entrypoints: 'websecure'
+      traefik.http.routers.jackett.middlewares: 'set-security-headers@file'
       traefik.http.services.jackett.loadbalancer.server.port: '9117'
   nzbhydra:
     # https://hub.docker.com/r/linuxserver/hydra2/
@@ -133,6 +140,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.nzbhydra.rule: 'Host(`nzbhydra.${DOMAIN_NAME}`)'
       traefik.http.routers.nzbhydra.entrypoints: 'websecure'
+      traefik.http.routers.nzbhydra.middlewares: 'set-security-headers@file'
       traefik.http.services.nzbhydra.loadbalancer.server.port: '5076'
   radarr:
     # https://hub.docker.com/r/linuxserver/radarr/
@@ -158,6 +166,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.radarr.rule: 'Host(`radarr.${DOMAIN_NAME}`)'
       traefik.http.routers.radarr.entrypoints: 'websecure'
+      traefik.http.routers.radarr.middlewares: 'set-security-headers@file'
       traefik.http.services.radarr.loadbalancer.server.port: '7878'
   sonarr:
     # https://hub.docker.com/r/linuxserver/sonarr/
@@ -183,6 +192,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.sonarr.rule: 'Host(`sonarr.${DOMAIN_NAME}`)'
       traefik.http.routers.sonarr.entrypoints: 'websecure'
+      traefik.http.routers.sonarr.middlewares: 'set-security-headers@file'
       traefik.http.services.sonarr.loadbalancer.server.port: '8989'
   bazarr:
     # https://hub.docker.com/r/linuxserver/bazarr
@@ -206,6 +216,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.bazarr.rule: 'Host(`bazarr.${DOMAIN_NAME}`)'
       traefik.http.routers.bazarr.entrypoints: 'websecure'
+      traefik.http.routers.bazarr.middlewares: 'set-security-headers@file'
       traefik.http.services.bazarr.loadbalancer.server.port: '6767'
   lidarr:
     # https://hub.docker.com/r/linuxserver/lidarr/
@@ -231,6 +242,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.lidarr.rule: 'Host(`lidarr.${DOMAIN_NAME}`)'
       traefik.http.routers.lidarr.entrypoints: 'websecure'
+      traefik.http.routers.lidarr.middlewares: 'set-security-headers@file'
       traefik.http.services.lidarr.loadbalancer.server.port: '8686'
   lazylibrarian:
     # https://hub.docker.com/r/linuxserver/lazylibrarian
@@ -258,6 +270,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.lazylibrarian.rule: 'Host(`lazylibrarian.${DOMAIN_NAME}`)'
       traefik.http.routers.lazylibrarian.entrypoints: 'websecure'
+      traefik.http.routers.lazylibrarian.middlewares: 'set-security-headers@file'
       traefik.http.services.lazylibrarian.loadbalancer.server.port: '5299'
   ombi:
     # https://hub.docker.com/r/linuxserver/ombi/
@@ -280,6 +293,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.ombi.rule: 'Host(`ombi.${DOMAIN_NAME}`)'
       traefik.http.routers.ombi.entrypoints: 'websecure'
+      traefik.http.routers.ombi.middlewares: 'set-security-headers@file'
       traefik.http.services.ombi.loadbalancer.server.port: '3579'
   plexmediaserver:
     # https://hub.docker.com/r/plexinc/pms-docker/
@@ -310,6 +324,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.plex.rule: 'Host(`plex.${DOMAIN_NAME}`)'
       traefik.http.routers.plex.entrypoints: 'websecure'
+      traefik.http.routers.plex.middlewares: 'set-security-headers@file'
       traefik.http.services.plex.loadbalancer.server.port: '32400'
   tautulli:
     # https://hub.docker.com/r/tautulli/tautulli/
@@ -331,6 +346,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.tautulli.rule: 'Host(`tautulli.${DOMAIN_NAME}`)'
       traefik.http.routers.tautulli.entrypoints: 'websecure'
+      traefik.http.routers.tautulli.middlewares: 'set-security-headers@file'
       traefik.http.services.tautulli.loadbalancer.server.port: '8181'
   calibre-web:
     # https://hub.docker.com/r/linuxserver/calibre-web
@@ -351,6 +367,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.calibre.rule: 'Host(`calibre.${DOMAIN_NAME}`)'
       traefik.http.routers.calibre.entrypoints: 'websecure'
+      traefik.http.routers.calibre.middlewares: 'set-security-headers@file'
       traefik.http.services.calibre.loadbalancer.server.port: '8083'
   nextcloud_mariadb:
     # https://hub.docker.com/_/mariadb/
@@ -363,6 +380,7 @@ services:
     volumes:
       - ${LOCAL_STORAGE}/nextcloud_mariadb/db:/var/lib/mysql:Z
     environment:
+      TZ: '${TZ}'
       MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
       MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
       MYSQL_DATABASE: '${MYSQL_DATABASE}'
@@ -374,6 +392,8 @@ services:
     restart: unless-stopped
     networks:
       - internal
+    environment:
+      TZ: '${TZ}'
   # Need that container in order to be able to use cron as a background job in Nextcloud
   # This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
   # More info here: https://github.com/nextcloud/docker/pull/220
@@ -390,6 +410,8 @@ services:
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
+    environment:
+      TZ: '${TZ}'
   nextcloud:
     # https://hub.docker.com/_/nextcloud/
     image: nextcloud:${NEXTCLOUD_TAG}
@@ -406,8 +428,10 @@ services:
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
       - ${LOCAL_DOCUMENTS}:/mnt/documents:slave,z
     environment:
+      TZ: '${TZ}'
       APACHE_DISABLE_REWRITE_IP: '1'
       TRUSTED_PROXIES: 'traefik'
+      OVERWRITEPROTOCOL: 'https'
       NEXTCLOUD_TRUSTED_DOMAINS: 'cloud.${DOMAIN_NAME}'
       MYSQL_DATABASE: '${MYSQL_DATABASE}'
       MYSQL_USER: '${MYSQL_USER}'
@@ -418,11 +442,11 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.cloud.rule: 'Host(`cloud.${DOMAIN_NAME}`)'
       traefik.http.routers.cloud.entrypoints: 'websecure'
-      traefik.http.routers.cloud.middlewares: 'nextcloud'
+      traefik.http.routers.cloud.middlewares: 'set-security-headers@file, nextcloud-dav-redirect'
       traefik.http.services.cloud.loadbalancer.server.port: '80'
-      traefik.http.middlewares.nextcloud.redirectRegex.permanent: 'true'
-      traefik.http.middlewares.nextcloud.redirectRegex.regex: 'https://(.*)/.well-known/(card|cal)dav'
-      traefik.http.middlewares.nextcloud.redirectRegex.replacement: 'https://$${1}/remote.php/dav/'
+      traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.permanent: 'true'
+      traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.regex: 'https://(.*)/.well-known/(card|cal)dav'
+      traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.replacement: 'https://$${1}/remote.php/dav/'
   collaboraonline:
     # https://hub.docker.com/r/collabora/code/
     image: collabora/code
@@ -435,6 +459,7 @@ services:
     cap_add:
       - MKNOD
     environment:
+      TZ: '${TZ}'
       domain: '${NEXTCLOUD_DOMAIN}'
       username: '${COLLABORA_USERNAME}'
       password: '${COLLABORA_PASSWORD}'
@@ -443,6 +468,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.office.rule: 'Host(`office.${DOMAIN_NAME}`)'
       traefik.http.routers.office.entrypoints: 'websecure'
+      traefik.http.routers.office.middlewares: 'set-security-headers@file'
       traefik.http.services.office.loadbalancer.server.port: '9980'
       traefik.http.services.office.loadbalancer.server.scheme: 'https'
 

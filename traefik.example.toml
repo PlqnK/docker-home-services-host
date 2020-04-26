@@ -6,14 +6,11 @@
   insecureSkipVerify = true
 
 [log]
-  level = "ERROR"
+  level = "WARNING"
 
 [entryPoints]
   [entryPoints.web]
     address = ":80"
-    [entryPoints.web.http.redirections.entryPoint]
-      to = "websecure"
-      scheme = "https"
   [entryPoints.websecure]
     address = ":443"
     [entryPoints.websecure.http.tls]
@@ -22,10 +19,14 @@
 [api]
   dashboard = true
 
-[providers.docker]
-  endpoint = "tcp://docker-socket-proxy:2375"
-  exposedByDefault = false
-  network = "web-proxy"
+[providers]
+  [providers.docker]
+    endpoint = "tcp://docker-socket-proxy:2375"
+    exposedByDefault = false
+    network = "web-proxy"
+  [providers.file]
+    filename = "/etc/traefik/traefik-dynamic.toml"
+    watch = true
 
 [certificatesResolvers.le.acme]
   email = "postmaster@example.com"

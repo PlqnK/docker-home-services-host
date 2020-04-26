@@ -1,0 +1,41 @@
+[tls.options]
+  [tls.options.default]
+    minVersion = "VersionTLS12"
+    sniStrict = true
+    cipherSuites = [
+      "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
+      "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+    ]
+    curvePreferences = ["X25519", "CurveP521", "CurveP384"]
+
+[http]
+  [http.routers]
+    [http.routers.web-insecure]
+      entrypoints = ["web"]
+      rule = "HostRegexp(`{host:.+}`)"
+      service = "noop@internal"
+      middlewares = ["redirect-to-https"]
+  [http.middlewares]
+    [http.middlewares.redirect-to-https.redirectScheme]
+      scheme = "https"
+      permanent = true
+    [http.middlewares.set-security-headers.headers]
+      browserXssFilter = true
+      contentTypeNosniff = true
+      customFrameOptionsValue = "SAMEORIGIN"
+      referrerPolicy = "same-origin"
+      featurePolicy = "vibrate 'none'"
+      stsSeconds = 31536000
+      stsIncludeSubdomains = true
+      # Only enable if the second level domain has TLS enabled
+      stsPreload = false
+      [http.middlewares.set-security-headers.headers.customRequestHeaders]
+        X-Scheme = "https"
+        X-Forwarded-Proto = "https"
+      [http.middlewares.set-security-headers.headers.customResponseHeaders]
+        X-Powered-By = ""
+        X-Robots-Tag = "none"
