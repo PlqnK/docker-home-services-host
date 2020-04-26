@@ -5,7 +5,10 @@ if [[ "$(id -u)" -ne "0" ]]; then
   exit
 fi
 
-source .env && source docker-host-setup.conf
+# shellcheck source=.example.env
+source .env
+# shellcheck source=docker-host-setup.example.conf
+source docker-host-setup.conf
 
 # Enable access to SABnzbd
 sed -i "s/host_whitelist = .*/host_whitelist = sabnzbd.${DOMAIN_NAME},/g" "${LOCAL_STORAGE}"/sabnzbd/config/sabnzbd.ini

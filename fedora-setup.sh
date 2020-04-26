@@ -5,6 +5,7 @@ if [[ "$(id -u)" -ne "0" ]]; then
   exit
 fi
 
+# shellcheck source=docker-host-setup.example.conf
 source docker-host-setup.conf
 
 # Install standard tools and upstream version of Docker
