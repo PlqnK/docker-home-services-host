@@ -12,6 +12,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      TZ: '${TZ}'
       CONTAINERS: '1'
   openvpn-client:
     # https://hub.docker.com/r/dperson/openvpn-client
@@ -47,6 +48,8 @@ services:
       - ${LOCAL_STORAGE}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z
       - ${LOCAL_STORAGE}/traefik/config/traefik-dynamic.toml:/etc/traefik/traefik-dynamic.toml:Z
       - ${LOCAL_STORAGE}/traefik/config/acme.json:/acme.json:Z
+    environment:
+      TZ: '${TZ}'
     labels:
       traefik.enable: 'true'
       traefik.http.routers.traefik.rule: 'Host(`traefik.${DOMAIN_NAME}`)'
@@ -377,6 +380,7 @@ services:
     volumes:
       - ${LOCAL_STORAGE}/nextcloud_mariadb/db:/var/lib/mysql:Z
     environment:
+      TZ: '${TZ}'
       MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
       MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
       MYSQL_DATABASE: '${MYSQL_DATABASE}'
@@ -388,6 +392,8 @@ services:
     restart: unless-stopped
     networks:
       - internal
+    environment:
+      TZ: '${TZ}'
   # Need that container in order to be able to use cron as a background job in Nextcloud
   # This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
   # More info here: https://github.com/nextcloud/docker/pull/220
@@ -404,6 +410,8 @@ services:
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
+    environment:
+      TZ: '${TZ}'
   nextcloud:
     # https://hub.docker.com/_/nextcloud/
     image: nextcloud:${NEXTCLOUD_TAG}
@@ -420,6 +428,7 @@ services:
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
       - ${LOCAL_DOCUMENTS}:/mnt/documents:slave,z
     environment:
+      TZ: '${TZ}'
       APACHE_DISABLE_REWRITE_IP: '1'
       TRUSTED_PROXIES: 'traefik'
       OVERWRITEPROTOCOL: 'https'
@@ -450,6 +459,7 @@ services:
     cap_add:
       - MKNOD
     environment:
+      TZ: '${TZ}'
       domain: '${NEXTCLOUD_DOMAIN}'
       username: '${COLLABORA_USERNAME}'
       password: '${COLLABORA_PASSWORD}'
