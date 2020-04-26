@@ -406,6 +406,8 @@ services:
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
       - ${LOCAL_DOCUMENTS}:/mnt/documents:slave,z
     environment:
+      APACHE_DISABLE_REWRITE_IP: '1'
+      TRUSTED_PROXIES: 'traefik'
       NEXTCLOUD_TRUSTED_DOMAINS: 'cloud.${DOMAIN_NAME}'
       MYSQL_DATABASE: '${MYSQL_DATABASE}'
       MYSQL_USER: '${MYSQL_USER}'
@@ -416,7 +418,11 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.cloud.rule: 'Host(`cloud.${DOMAIN_NAME}`)'
       traefik.http.routers.cloud.entrypoints: 'websecure'
+      traefik.http.routers.cloud.middlewares: 'nextcloud'
       traefik.http.services.cloud.loadbalancer.server.port: '80'
+      traefik.http.middlewares.nextcloud.redirectRegex.permanent: 'true'
+      traefik.http.middlewares.nextcloud.redirectRegex.regex: 'https://(.*)/.well-known/(card|cal)dav'
+      traefik.http.middlewares.nextcloud.redirectRegex.replacement: 'https://$${1}/remote.php/dav/'
   collaboraonline:
     # https://hub.docker.com/r/collabora/code/
     image: collabora/code
