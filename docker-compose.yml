@@ -154,6 +154,7 @@ services:
       - nzbhydra
     networks:
       - web-proxy
+      - vpn
     volumes:
       - ${LOCAL_STORAGE}/radarr/config:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave,z
@@ -180,6 +181,7 @@ services:
       - nzbhydra
     networks:
       - web-proxy
+      - vpn
     volumes:
       - ${LOCAL_STORAGE}/sonarr/config:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave,z
@@ -230,6 +232,7 @@ services:
       - nzbhydra
     networks:
       - web-proxy
+      - vpn
     volumes:
       - ${LOCAL_STORAGE}/lidarr/config:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave,z
@@ -256,6 +259,7 @@ services:
       - nzbhydra
     networks:
       - web-proxy
+      - vpn
     volumes:
       - ${LOCAL_STORAGE}/lazylibrarian/config:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave,z
