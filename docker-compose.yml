@@ -409,6 +409,7 @@ services:
     depends_on:
       - nextcloud
     networks:
+      - web-proxy
       - internal
     entrypoint: /cron.sh
     volumes:
