@@ -385,10 +385,10 @@ services:
       - ${LOCAL_STORAGE}/nextcloud_mariadb/db:/var/lib/mysql:Z
     environment:
       TZ: '${TZ}'
-      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
-      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
-      MYSQL_DATABASE: '${MYSQL_DATABASE}'
-      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_ROOT_PASSWORD: '${NC_MYSQL_ROOT_PASSWORD}'
+      MYSQL_PASSWORD: '${NC_MYSQL_PASSWORD}'
+      MYSQL_DATABASE: '${NC_MYSQL_DATABASE}'
+      MYSQL_USER: '${NC_MYSQL_USER}'
   nextcloud_redis:
     # https://hub.docker.com/_/redis/
     image: redis:${REDIS_TAG}
@@ -438,9 +438,9 @@ services:
       TRUSTED_PROXIES: 'traefik'
       OVERWRITEPROTOCOL: 'https'
       NEXTCLOUD_TRUSTED_DOMAINS: 'cloud.${DOMAIN_NAME}'
-      MYSQL_DATABASE: '${MYSQL_DATABASE}'
-      MYSQL_USER: '${MYSQL_USER}'
-      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      MYSQL_DATABASE: '${NC_MYSQL_DATABASE}'
+      MYSQL_USER: '${NC_MYSQL_USER}'
+      MYSQL_PASSWORD: '${NC_MYSQL_PASSWORD}'
       MYSQL_HOST: 'nextcloud_mariadb'
       REDIS_HOST: 'nextcloud_redis'
     labels:
