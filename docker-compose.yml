@@ -375,7 +375,7 @@ services:
       traefik.http.services.calibre.loadbalancer.server.port: '8083'
   nextcloud_mariadb:
     # https://hub.docker.com/_/mariadb/
-    image: mariadb:${MARIADB_TAG}
+    image: mariadb:${NC_MARIADB_TAG}
     container_name: nextcloud_mariadb
     restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --log-bin --binlog-format=ROW
@@ -391,7 +391,7 @@ services:
       MYSQL_USER: '${NC_MYSQL_USER}'
   nextcloud_redis:
     # https://hub.docker.com/_/redis/
-    image: redis:${REDIS_TAG}
+    image: redis:${NC_REDIS_TAG}
     container_name: nextcloud_redis
     restart: unless-stopped
     networks:
