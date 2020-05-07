@@ -476,6 +476,83 @@ services:
       traefik.http.routers.office.middlewares: 'set-security-headers@file'
       traefik.http.services.office.loadbalancer.server.port: '9980'
       traefik.http.services.office.loadbalancer.server.scheme: 'https'
+  ttrss_postgres:
+    # https://hub.docker.com/_/postgres
+    image: postgres:${TTRSS_POSTGRES_TAG}
+    container_name: ttrss_postgres
+    restart: unless-stopped
+    networks:
+      - internal
+    volumes:
+      - ${LOCAL_STORAGE}/ttrss_postgres/db:/var/lib/postgresql/data:Z
+    environment:
+      TZ: '${TZ}'
+      POSTGRES_DB: '${TTRSS_POSTGRES_DB}'
+      POSTGRES_USER: '${TTRSS_POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${TTRSS_POSTGRES_PASSWORD}'
+  ttrss_updater:
+    # https://hub.docker.com/r/cthulhoo/ttrss-fpm-pgsql-static
+    image: cthulhoo/ttrss-fpm-pgsql-static
+    container_name: ttrss_updater
+    restart: unless-stopped
+    command: /updater.sh
+    depends_on:
+      - ttrss_app
+    networks:
+      - web-proxy
+      - internal
+    volumes:
+      - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:z
+    environment:
+      TZ: '${TZ}'
+      DB_TYPE: 'pgsql'
+      DB_HOST: 'ttrss_postgres'
+      DB_NAME: '${TTRSS_POSTGRES_DB}'
+      DB_USER: '${TTRSS_POSTGRES_USER}'
+      DB_PASS: '${TTRSS_POSTGRES_PASSWORD}'
+      OWNER_UID: '${PUID}'
+      OWNER_GID: '${PGID}'
+      SELF_URL_PATH: 'https://ttrss.${DOMAIN_NAME}/tt-rss'
+  ttrss_app:
+    # https://hub.docker.com/r/cthulhoo/ttrss-fpm-pgsql-static
+    image: cthulhoo/ttrss-fpm-pgsql-static
+    container_name: ttrss_app
+    restart: unless-stopped
+    depends_on:
+      - ttrss_postgres
+    networks:
+      - web-proxy
+      - internal
+    volumes:
+      - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:z
+    environment:
+      TZ: '${TZ}'
+      DB_TYPE: 'pgsql'
+      DB_HOST: 'ttrss_postgres'
+      DB_NAME: '${TTRSS_POSTGRES_DB}'
+      DB_USER: '${TTRSS_POSTGRES_USER}'
+      DB_PASS: '${TTRSS_POSTGRES_PASSWORD}'
+      OWNER_UID: '${PUID}'
+      OWNER_GID: '${PGID}'
+      SELF_URL_PATH: 'https://ttrss.${DOMAIN_NAME}/tt-rss'
+  ttrss:
+    # https://hub.docker.com/_/nginx
+    image: nginx:${TTRSS_NGINX_TAG}
+    container_name: ttrss
+    restart: unless-stopped
+    depends_on:
+      - ttrss_app
+    networks:
+      - web-proxy
+    volumes:
+      - ${LOCAL_STORAGE}/ttrss/config/nginx.conf:/etc/nginx/nginx.conf:ro,Z
+      - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:ro,z
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.ttrss.rule: 'Host(`ttrss.${DOMAIN_NAME}`)'
+      traefik.http.routers.ttrss.entrypoints: 'websecure'
+      traefik.http.routers.ttrss.middlewares: 'set-security-headers@file'
+      traefik.http.services.ttrss.loadbalancer.server.port: '80'
 
 networks:
   internal:
