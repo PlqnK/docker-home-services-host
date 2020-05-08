@@ -5,8 +5,8 @@ if [[ "$(id -u)" -ne "0" ]]; then
   exit
 fi
 
-# shellcheck source=.example.env
-source .env
+# shellcheck source=../.example.env
+source ../.env
 # shellcheck source=docker-host-setup.example.conf
 source docker-host-setup.conf
 
