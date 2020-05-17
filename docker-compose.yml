@@ -67,8 +67,8 @@ services:
     network_mode: service:openvpn-client
     volumes:
       - ${LOCAL_STORAGE}/transmission/config:/config:Z
-      - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads:slave,z
-      - ${MOUNT_POINT}/downloads/bittorrent/watch:/watch:slave,z
+      - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/watch:/watch:slave
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -89,9 +89,9 @@ services:
       - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/sabnzbd/config:/config:Z
-      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads:slave,z
-      - ${MOUNT_POINT}/downloads/usenet/processing:/incomplete-downloads:slave,z
-      - ${MOUNT_POINT}/downloads/usenet/watching:/watching:slave,z
+      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads:slave
+      - ${MOUNT_POINT}/downloads/usenet/processing:/incomplete-downloads:slave
+      - ${MOUNT_POINT}/downloads/usenet/watching:/watching:slave
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -111,7 +111,7 @@ services:
       - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/jackett/config:/config:Z
-      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads:slave,z
+      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads:slave
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -131,7 +131,7 @@ services:
       - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/nzbhydra/config:/config:Z
-      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave,z
+      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -157,8 +157,8 @@ services:
       - vpn
     volumes:
       - ${LOCAL_STORAGE}/radarr/config:/config:Z
-      - ${MOUNT_POINT}/downloads:/downloads:slave,z
-      - ${MOUNT_POINT}/medias/movies:/movies:slave,z
+      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/medias/movies:/movies:slave
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -184,8 +184,8 @@ services:
       - vpn
     volumes:
       - ${LOCAL_STORAGE}/sonarr/config:/config:Z
-      - ${MOUNT_POINT}/downloads:/downloads:slave,z
-      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave,z
+      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -208,8 +208,8 @@ services:
       - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/bazarr/config:/config:Z
-      - ${MOUNT_POINT}/medias/movies:/movies:slave,z
-      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave,z
+      - ${MOUNT_POINT}/medias/movies:/movies:slave
+      - ${MOUNT_POINT}/medias/tv_shows:/tv:slave
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -235,8 +235,8 @@ services:
       - vpn
     volumes:
       - ${LOCAL_STORAGE}/lidarr/config:/config:Z
-      - ${MOUNT_POINT}/downloads:/downloads:slave,z
-      - ${MOUNT_POINT}/medias/music:/music:slave,z
+      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/medias/music:/music:slave
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -262,9 +262,9 @@ services:
       - vpn
     volumes:
       - ${LOCAL_STORAGE}/lazylibrarian/config:/config:Z
-      - ${MOUNT_POINT}/downloads:/downloads:slave,z
-      - ${MOUNT_POINT}/medias/books:/books:slave,z
-      - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave,z
+      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/medias/books:/books:slave
+      - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave
     environment:
       DOCKER_MODS: 'linuxserver/calibre-web:calibre'
       TZ: '${TZ}'
@@ -318,7 +318,7 @@ services:
       - 32414:32414/udp
     volumes:
       - ${LOCAL_STORAGE}/plexmediaserver/db:/config:z
-      - ${MOUNT_POINT}/medias:/data:slave,z
+      - ${MOUNT_POINT}/medias:/data:slave
     environment:
       TZ: '${TZ}'
       PLEX_UID: '${PUID}'
@@ -361,7 +361,7 @@ services:
       - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/calibre-web/config:/config:Z
-      - ${MOUNT_POINT}/medias/books:/books:slave,z
+      - ${MOUNT_POINT}/medias/books:/books:slave
     environment:
       DOCKER_MODS: 'linuxserver/calibre-web:calibre'
       TZ: '${TZ}'
@@ -414,7 +414,7 @@ services:
     entrypoint: /cron.sh
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
-      - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
+      - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
     environment:
       TZ: '${TZ}'
   nextcloud:
@@ -430,7 +430,7 @@ services:
       - internal
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
-      - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
+      - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
     environment:
       TZ: '${TZ}'
       APACHE_DISABLE_REWRITE_IP: '1'
