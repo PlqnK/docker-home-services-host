@@ -431,7 +431,6 @@ services:
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave,z
-      - ${LOCAL_DOCUMENTS}:/mnt/documents:slave,z
     environment:
       TZ: '${TZ}'
       APACHE_DISABLE_REWRITE_IP: '1'
