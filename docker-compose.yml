@@ -5,7 +5,7 @@ services:
     # https://hub.docker.com/r/tecnativa/docker-socket-proxy
     image: tecnativa/docker-socket-proxy
     container_name: docker-socket-proxy
-    restart: always
+    restart: unless-stopped
     privileged: true
     networks:
       - socket-proxy
@@ -18,7 +18,7 @@ services:
     # https://hub.docker.com/r/dperson/openvpn-client
     image: dperson/openvpn-client
     container_name: openvpn-client
-    restart: always
+    restart: unless-stopped
     cap_add:
       - NET_ADMIN
     devices:
