@@ -388,6 +388,7 @@ services:
       - internal
     volumes:
       - ${LOCAL_STORAGE}/nextcloud_mariadb/db:/var/lib/mysql:Z
+      - ${LOCAL_STORAGE}/nextcloud_mariadb/dumps:/opt/mysql_dumps:Z
     environment:
       TZ: '${TZ}'
       MYSQL_ROOT_PASSWORD: '${NC_MYSQL_ROOT_PASSWORD}'
@@ -489,6 +490,7 @@ services:
       - internal
     volumes:
       - ${LOCAL_STORAGE}/ttrss_postgres/db:/var/lib/postgresql/data:Z
+      - ${LOCAL_STORAGE}/ttrss_postgres/dumps:/opt/postgres_dumps:Z
     environment:
       TZ: '${TZ}'
       POSTGRES_DB: '${TTRSS_POSTGRES_DB}'
