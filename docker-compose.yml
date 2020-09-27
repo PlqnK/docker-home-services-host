@@ -271,7 +271,7 @@ services:
       - ${MOUNT_POINT}/medias/books:/books:slave
       - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave
     environment:
-      DOCKER_MODS: 'linuxserver/calibre-web:calibre'
+      DOCKER_MODS: 'linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg'
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
