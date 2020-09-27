@@ -154,11 +154,6 @@ services:
     image: linuxserver/radarr
     container_name: radarr
     restart: unless-stopped
-    depends_on:
-      - transmission
-      - sabnzbd
-      - jackett
-      - nzbhydra
     networks:
       - web-proxy
       - vpn
@@ -181,11 +176,6 @@ services:
     image: linuxserver/sonarr
     container_name: sonarr
     restart: unless-stopped
-    depends_on:
-      - transmission
-      - sabnzbd
-      - jackett
-      - nzbhydra
     networks:
       - web-proxy
       - vpn
@@ -208,9 +198,6 @@ services:
     image: linuxserver/bazarr
     container_name: bazarr
     restart: unless-stopped
-    depends_on:
-      - radarr
-      - sonarr
     networks:
       - web-proxy
     volumes:
@@ -232,11 +219,6 @@ services:
     image: linuxserver/lidarr
     container_name: lidarr
     restart: unless-stopped
-    depends_on:
-      - transmission
-      - sabnzbd
-      - jackett
-      - nzbhydra
     networks:
       - web-proxy
       - vpn
@@ -259,11 +241,6 @@ services:
     image: linuxserver/lazylibrarian
     container_name: lazylibrarian
     restart: unless-stopped
-    depends_on:
-      - transmission
-      - sabnzbd
-      - jackett
-      - nzbhydra
     networks:
       - web-proxy
       - vpn
@@ -288,10 +265,6 @@ services:
     image: linuxserver/ombi
     container_name: ombi
     restart: unless-stopped
-    depends_on:
-      - plexmediaserver
-      - radarr
-      - sonarr
     networks:
       - web-proxy
     volumes:
@@ -342,8 +315,6 @@ services:
     image: tautulli/tautulli
     container_name: tautulli
     restart: unless-stopped
-    depends_on:
-      - plexmediaserver
     networks:
       - web-proxy
     volumes:
@@ -464,8 +435,6 @@ services:
     image: collabora/code
     container_name: collaboraonline
     restart: unless-stopped
-    depends_on:
-      - nextcloud
     networks:
       - web-proxy
     cap_add:
