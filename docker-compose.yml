@@ -129,7 +129,7 @@ services:
       traefik.http.services.jackett.loadbalancer.server.port: '9117'
   nzbhydra:
     # https://hub.docker.com/r/linuxserver/hydra2/
-    image: linuxserver/hydra2
+    image: linuxserver/nzbhydra2
     container_name: nzbhydra
     restart: unless-stopped
     networks:
