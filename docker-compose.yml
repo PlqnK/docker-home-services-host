@@ -42,6 +42,8 @@ services:
     image: traefik:${TRAEFIK_TAG}
     container_name: traefik
     restart: unless-stopped
+    depends_on:
+      - docker-socket-proxy
     networks:
       - web-proxy
       - socket-proxy
