@@ -24,7 +24,9 @@ services:
     devices:
       - /dev/net/tun
     networks:
-      - vpn
+      vpn:
+        aliases:
+          - 'transmission'
     volumes:
       - ${LOCAL_STORAGE}/openvpn-client/config:/vpn:Z
     environment:
@@ -33,6 +35,8 @@ services:
       FIREWALL: ''
       VPNPORT: '${OPENVPN_FORWARDED_PORT}'
       OTHER_ARGS: '${OPENVPN_OTHER_ARGS}'
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: '0'
   traefik:
     # https://hub.docker.com/_/traefik/
     image: traefik:${TRAEFIK_TAG}
@@ -41,6 +45,7 @@ services:
     networks:
       - web-proxy
       - socket-proxy
+      - vpn
     ports:
       - 80:80
       - 443:443
