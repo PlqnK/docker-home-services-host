@@ -37,5 +37,6 @@
         X-Scheme = "https"
         X-Forwarded-Proto = "https"
       [http.middlewares.set-security-headers.headers.customResponseHeaders]
+        Server = ""
         X-Powered-By = ""
         X-Robots-Tag = "none"
