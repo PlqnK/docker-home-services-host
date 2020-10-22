@@ -94,12 +94,6 @@ You can then create and run your containers with a simple:
 docker-compose up -d
 ```
 
-Run the post install script which will modify some services config files that were created during the first run:
-
-```bash
-sudo ./post-first-launch.sh
-```
-
 ## Updating
 
 If you want to update your containers, just run:
