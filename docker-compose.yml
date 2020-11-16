@@ -160,7 +160,11 @@ services:
       - vpn
     volumes:
       - ${LOCAL_STORAGE}/radarr/config:/config:Z
-      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads/bittorrent/watch:slave
+      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads/usenet/completed:slave
+      - ${MOUNT_POINT}/downloads/usenet/processing:/downloads/usenet/processing:slave
+      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads/usenet/watching:slave
       - ${MOUNT_POINT}/medias/movies:/movies:slave
     environment:
       TZ: '${TZ}'
@@ -182,7 +186,11 @@ services:
       - vpn
     volumes:
       - ${LOCAL_STORAGE}/sonarr/config:/config:Z
-      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads/bittorrent/watch:slave
+      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads/usenet/completed:slave
+      - ${MOUNT_POINT}/downloads/usenet/processing:/downloads/usenet/processing:slave
+      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads/usenet/watching:slave
       - ${MOUNT_POINT}/medias/tv_shows:/tv:slave
     environment:
       TZ: '${TZ}'
@@ -225,7 +233,11 @@ services:
       - vpn
     volumes:
       - ${LOCAL_STORAGE}/lidarr/config:/config:Z
-      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads/bittorrent/watch:slave
+      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads/usenet/completed:slave
+      - ${MOUNT_POINT}/downloads/usenet/processing:/downloads/usenet/processing:slave
+      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads/usenet/watching:slave
       - ${MOUNT_POINT}/medias/music:/music:slave
     environment:
       TZ: '${TZ}'
@@ -247,7 +259,11 @@ services:
       - vpn
     volumes:
       - ${LOCAL_STORAGE}/lazylibrarian/config:/config:Z
-      - ${MOUNT_POINT}/downloads:/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads/bittorrent/watch:slave
+      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads/usenet/completed:slave
+      - ${MOUNT_POINT}/downloads/usenet/processing:/downloads/usenet/processing:slave
+      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads/usenet/watching:slave
       - ${MOUNT_POINT}/medias/books:/books:slave
       - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave
     environment:
@@ -299,7 +315,12 @@ services:
       - 32414:32414/udp
     volumes:
       - ${LOCAL_STORAGE}/plexmediaserver/db:/config:z
-      - ${MOUNT_POINT}/medias:/data:slave
+      - ${MOUNT_POINT}/medias/audio_drama:/data/audio_drama:slave
+      - ${MOUNT_POINT}/medias/audiobooks:/data/audiobooks:slave
+      - ${MOUNT_POINT}/medias/movies:/data/movies:slave
+      - ${MOUNT_POINT}/medias/music:/data/music:slave
+      - ${MOUNT_POINT}/medias/test_videos:/data/test_videos:slave
+      - ${MOUNT_POINT}/medias/tv_shows:/data/tv_shows:slave
     environment:
       TZ: '${TZ}'
       PLEX_UID: '${PUID}'
