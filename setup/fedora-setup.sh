@@ -43,10 +43,6 @@ fi
 
 # Install & setup NFS
 dnf -y install nfs-utils autofs
-# I know, eval is evil. But this isn't a mission critical command and this is the only way to have variable expansion
-# before the brace expansion so that "mkdir {folder1,folder2}" creates 2 folders instead of 1 folder named litteraly
-# "{folder1,folder2}"
-eval "mkdir -p ${MOUNT_POINT_DIRS}"
 echo "${AUTO_MASTER}" > /etc/auto.master.d/"${STORAGE_SERVER_NAME}".autofs
 cp docker-host-mount-points.txt /etc/auto."${STORAGE_SERVER_NAME}"
 systemctl enable --now autofs
