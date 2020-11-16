@@ -10,7 +10,7 @@ source docker-host-setup.conf
 
 # Install standard tools and upstream version of Docker
 dnf -y upgrade
-dnf -y install dnf-plugins-core rsync htop wget curl nano vim git
+dnf -y install dnf-plugins-core setools-console rsync htop wget curl nano vim git
 dnf -y install moby-engine docker-compose
 systemctl enable --now docker
 usermod -aG docker "${USER}"
