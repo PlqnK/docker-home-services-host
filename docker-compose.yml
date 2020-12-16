@@ -103,7 +103,6 @@ services:
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
-      HOST_WHITELIST_ENTRIES: 'sabnzbd.${DOMAIN_NAME}'
     labels:
       traefik.enable: 'true'
       traefik.http.routers.sabnzbd.rule: 'Host(`sabnzbd.${DOMAIN_NAME}`)'
