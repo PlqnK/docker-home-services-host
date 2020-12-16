@@ -13,6 +13,8 @@ jobs:
     - uses: 'actions/checkout@v2'
     - name: 'ShellCheck'
       uses: 'azohra/shell-linter@master'
+      env:
+        SHELLCHECK_OPTS: '-x'
   yaml-lint:
     runs-on: 'ubuntu-latest'
     steps:
