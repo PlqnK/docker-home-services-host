@@ -109,6 +109,16 @@ services:
       traefik.http.routers.sabnzbd.entrypoints: 'websecure'
       traefik.http.routers.sabnzbd.middlewares: 'set-security-headers@file'
       traefik.http.services.sabnzbd.loadbalancer.server.port: '8080'
+  flaresolverr:
+    # https://hub.docker.com/r/flaresolverr/flaresolverr
+    image: flaresolverr/flaresolverr
+    container_name: flaresolverr
+    restart: unless-stopped
+    networks:
+      - web-proxy
+    environment:
+      TZ: '${TZ}'
+      CAPTCHA_SOLVER: 'hcaptcha-solver'
   jackett:
     # https://hub.docker.com/r/linuxserver/jackett/
     image: linuxserver/jackett
