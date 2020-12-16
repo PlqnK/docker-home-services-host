@@ -11,22 +11,45 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v2'
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          setup:
+            - 'setup/**'
     - name: 'ShellCheck'
       uses: 'azohra/shell-linter@master'
+      env:
+        SHELLCHECK_OPTS: '-x'
+      if: steps.changes.outputs.setup == 'true'
   yaml-lint:
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v2'
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          yaml:
+            - '**.yml'
     - name: 'YAML Lint'
       uses: 'ibiqlik/action-yamllint@master'
       with:
         config_file: '.yamllint.yml'
+      if: steps.changes.outputs.yaml == 'true'
   markdown-lint:
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v2'
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          markdown:
+            - '**.md'
     - name: 'Markdown Lint'
       uses: 'avto-dev/markdown-lint@master'
       with:
         args: '.'
         config: '.markdownlint.yml'
+      if: steps.changes.outputs.markdown == 'true'

@@ -395,6 +395,7 @@ services:
     image: redis:${NC_REDIS_TAG}
     container_name: nextcloud_redis
     restart: unless-stopped
+    command: --requirepass ${NC_REDIS_PASSWORD}
     networks:
       - internal
     environment:
@@ -442,6 +443,7 @@ services:
       MYSQL_USER: '${NC_MYSQL_USER}'
       MYSQL_PASSWORD: '${NC_MYSQL_PASSWORD}'
       MYSQL_HOST: 'nextcloud_mariadb'
+      REDIS_HOST_PASSWORD: '${NC_REDIS_PASSWORD}'
       REDIS_HOST: 'nextcloud_redis'
     labels:
       traefik.enable: 'true'
