@@ -103,13 +103,22 @@ services:
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
-      HOST_WHITELIST_ENTRIES: 'sabnzbd.${DOMAIN_NAME}'
     labels:
       traefik.enable: 'true'
       traefik.http.routers.sabnzbd.rule: 'Host(`sabnzbd.${DOMAIN_NAME}`)'
       traefik.http.routers.sabnzbd.entrypoints: 'websecure'
       traefik.http.routers.sabnzbd.middlewares: 'set-security-headers@file'
       traefik.http.services.sabnzbd.loadbalancer.server.port: '8080'
+  flaresolverr:
+    # https://hub.docker.com/r/flaresolverr/flaresolverr
+    image: flaresolverr/flaresolverr
+    container_name: flaresolverr
+    restart: unless-stopped
+    networks:
+      - web-proxy
+    environment:
+      TZ: '${TZ}'
+      CAPTCHA_SOLVER: 'hcaptcha-solver'
   jackett:
     # https://hub.docker.com/r/linuxserver/jackett/
     image: linuxserver/jackett
@@ -178,7 +187,7 @@ services:
       traefik.http.services.radarr.loadbalancer.server.port: '7878'
   sonarr:
     # https://hub.docker.com/r/linuxserver/sonarr/
-    image: linuxserver/sonarr
+    image: linuxserver/sonarr:preview
     container_name: sonarr
     restart: unless-stopped
     networks:
