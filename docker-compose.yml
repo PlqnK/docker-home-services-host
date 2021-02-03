@@ -359,6 +359,23 @@ services:
       traefik.http.routers.ombi.entrypoints: 'websecure'
       traefik.http.routers.ombi.middlewares: 'set-security-headers@file'
       traefik.http.services.ombi.loadbalancer.server.port: '3579'
+  overseerr:
+    # https://hub.docker.com/r/sctx/overseerr/
+    image: sctx/overseerr
+    container_name: overseerr
+    restart: unless-stopped
+    networks:
+      - web-proxy
+    volumes:
+      - ${LOCAL_STORAGE}/overseerr/config:/app/config:Z
+    environment:
+      TZ: '${TZ}'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.overseerr.rule: 'Host(`overseerr.${DOMAIN_NAME}`)'
+      traefik.http.routers.overseerr.entrypoints: 'websecure'
+      traefik.http.routers.overseerr.middlewares: 'set-security-headers@file'
+      traefik.http.services.overseerr.loadbalancer.server.port: '5055'
   plexmediaserver:
     # https://hub.docker.com/r/plexinc/pms-docker/
     image: plexinc/pms-docker:${PLEX_TAG}
