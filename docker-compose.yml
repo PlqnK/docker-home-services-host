@@ -302,6 +302,7 @@ services:
       - ${MOUNT_POINT}/downloads/usenet/watching:/downloads/usenet/watching:slave
       - ${MOUNT_POINT}/medias/books:/books:slave
       - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave
+      - ${MOUNT_POINT}/medias/comics:/comics:slave
     environment:
       DOCKER_MODS: 'linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg'
       TZ: '${TZ}'
@@ -313,6 +314,32 @@ services:
       traefik.http.routers.lazylibrarian.entrypoints: 'websecure'
       traefik.http.routers.lazylibrarian.middlewares: 'set-security-headers@file'
       traefik.http.services.lazylibrarian.loadbalancer.server.port: '5299'
+  mylar:
+    # https://hub.docker.com/r/linuxserver/mylar3
+    image: linuxserver/mylar3
+    container_name: mylar
+    restart: unless-stopped
+    networks:
+      - web-proxy
+      - vpn
+    volumes:
+      - ${LOCAL_STORAGE}/mylar/config:/config:Z
+      - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
+      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads/bittorrent/watch:slave
+      - ${MOUNT_POINT}/downloads/usenet/completed:/downloads/usenet/completed:slave
+      - ${MOUNT_POINT}/downloads/usenet/processing:/downloads/usenet/processing:slave
+      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads/usenet/watching:slave
+      - ${MOUNT_POINT}/medias/comics:/comics:slave
+    environment:
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.mylar.rule: 'Host(`mylar.${DOMAIN_NAME}`)'
+      traefik.http.routers.mylar.entrypoints: 'websecure'
+      traefik.http.routers.mylar.middlewares: 'set-security-headers@file'
+      traefik.http.services.mylar.loadbalancer.server.port: '8090'
   ombi:
     # https://hub.docker.com/r/linuxserver/ombi/
     image: linuxserver/ombi
@@ -409,6 +436,24 @@ services:
       traefik.http.routers.calibre.entrypoints: 'websecure'
       traefik.http.routers.calibre.middlewares: 'set-security-headers@file'
       traefik.http.services.calibre.loadbalancer.server.port: '8083'
+  komga:
+    # https://hub.docker.com/r/gotson/komga
+    image: gotson/komga
+    container_name: komga
+    restart: unless-stopped
+    networks:
+      - web-proxy
+    volumes:
+      - ${LOCAL_STORAGE}/komga/config:/config:Z
+      - ${MOUNT_POINT}/medias/comics:/books:slave
+    environment:
+      TZ: '${TZ}'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.komga.rule: 'Host(`komga.${DOMAIN_NAME}`)'
+      traefik.http.routers.komga.entrypoints: 'websecure'
+      traefik.http.routers.komga.middlewares: 'set-security-headers@file'
+      traefik.http.services.komga.loadbalancer.server.port: '8080'
   nextcloud_mariadb:
     # https://hub.docker.com/_/mariadb/
     image: mariadb:${NC_MARIADB_TAG}
