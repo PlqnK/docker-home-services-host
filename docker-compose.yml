@@ -159,6 +159,31 @@ services:
       traefik.http.routers.nzbhydra.entrypoints: 'websecure'
       traefik.http.routers.nzbhydra.middlewares: 'set-security-headers@file'
       traefik.http.services.nzbhydra.loadbalancer.server.port: '5076'
+  unpackerr:
+    # https://hub.docker.com/r/golift/unpackerr
+    image: golift/unpackerr
+    container_name: unpackerr
+    restart: unless-stopped
+    networks:
+      - web-proxy
+    volumes:
+      - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
+    environment:
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
+      UN_SONARR_0_URL: 'http://sonarr:8989'
+      UN_SONARR_0_API_KEY: '${UNPACKER_SONARR_API_KEY}'
+      UN_SONARR_0_PATHS_0: '/downloads/bittorrent/downloads/tv'
+      UN_SONARR_0_PROTOCOLS: 'torrent'
+      UN_RADARR_0_URL: 'http://radarr:7878'
+      UN_RADARR_0_API_KEY: '${UNPACKER_RADARR_API_KEY}'
+      UN_RADARR_0_PATHS_0: '/downloads/bittorrent/downloads/movies'
+      UN_RADARR_0_PROTOCOLS: 'torrent'
+      UN_LIDARR_0_URL: 'http://lidarr:8686'
+      UN_LIDARR_0_API_KEY: '${UNPACKER_LIDARR_API_KEY}'
+      UN_LIDARR_0_PATHS_0: '/downloads/bittorrent/downloads/audio'
+      UN_LIDARR_0_PROTOCOLS: 'torrent'
   radarr:
     # https://hub.docker.com/r/linuxserver/radarr/
     image: linuxserver/radarr
