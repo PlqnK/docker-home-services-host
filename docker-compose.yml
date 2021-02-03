@@ -80,6 +80,8 @@ services:
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
+      USER: '${TRANSMISSION_USER}'
+      PASS: '${TRANSMISSION_PASSWORD}'
     labels:
       traefik.enable: 'true'
       traefik.docker.network: 'vpn'
