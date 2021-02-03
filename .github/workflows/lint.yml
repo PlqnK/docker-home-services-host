@@ -20,7 +20,7 @@ jobs:
     - name: 'ShellCheck'
       uses: 'azohra/shell-linter@master'
       env:
-        SHELLCHECK_OPTS: '-x'
+        SHELLCHECK_OPTS: '-P setup -x -a'
       if: steps.changes.outputs.setup == 'true'
   yaml-lint:
     runs-on: 'ubuntu-latest'
