@@ -594,7 +594,7 @@ services:
     image: cthulhoo/ttrss-fpm-pgsql-static
     container_name: ttrss_updater
     restart: unless-stopped
-    command: /updater.sh
+    command: /opt/tt-rss/updater.sh
     depends_on:
       - ttrss_app
     networks:
@@ -604,14 +604,14 @@ services:
       - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:z
     environment:
       TZ: '${TZ}'
-      DB_TYPE: 'pgsql'
-      DB_HOST: 'ttrss_postgres'
-      DB_NAME: '${TTRSS_POSTGRES_DB}'
-      DB_USER: '${TTRSS_POSTGRES_USER}'
-      DB_PASS: '${TTRSS_POSTGRES_PASSWORD}'
       OWNER_UID: '${PUID}'
       OWNER_GID: '${PGID}'
-      SELF_URL_PATH: 'https://ttrss.${DOMAIN_NAME}/tt-rss'
+      TTRSS_DB_TYPE: 'pgsql'
+      TTRSS_DB_HOST: 'ttrss_postgres'
+      TTRSS_DB_NAME: '${TTRSS_POSTGRES_DB}'
+      TTRSS_DB_USER: '${TTRSS_POSTGRES_USER}'
+      TTRSS_DB_PASS: '${TTRSS_POSTGRES_PASSWORD}'
+      TTRSS_SELF_URL_PATH: 'https://ttrss.${DOMAIN_NAME}/tt-rss'
   ttrss_app:
     # https://hub.docker.com/r/cthulhoo/ttrss-fpm-pgsql-static
     image: cthulhoo/ttrss-fpm-pgsql-static
@@ -626,14 +626,14 @@ services:
       - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:z
     environment:
       TZ: '${TZ}'
-      DB_TYPE: 'pgsql'
-      DB_HOST: 'ttrss_postgres'
-      DB_NAME: '${TTRSS_POSTGRES_DB}'
-      DB_USER: '${TTRSS_POSTGRES_USER}'
-      DB_PASS: '${TTRSS_POSTGRES_PASSWORD}'
       OWNER_UID: '${PUID}'
       OWNER_GID: '${PGID}'
-      SELF_URL_PATH: 'https://ttrss.${DOMAIN_NAME}/tt-rss'
+      TTRSS_DB_TYPE: 'pgsql'
+      TTRSS_DB_HOST: 'ttrss_postgres'
+      TTRSS_DB_NAME: '${TTRSS_POSTGRES_DB}'
+      TTRSS_DB_USER: '${TTRSS_POSTGRES_USER}'
+      TTRSS_DB_PASS: '${TTRSS_POSTGRES_PASSWORD}'
+      TTRSS_SELF_URL_PATH: 'https://ttrss.${DOMAIN_NAME}/tt-rss'
   ttrss:
     # https://hub.docker.com/_/nginx
     image: nginx:${TTRSS_NGINX_TAG}
