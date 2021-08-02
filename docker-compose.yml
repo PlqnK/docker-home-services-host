@@ -214,7 +214,7 @@ services:
       traefik.http.services.radarr.loadbalancer.server.port: '7878'
   sonarr:
     # https://hub.docker.com/r/linuxserver/sonarr/
-    image: linuxserver/sonarr:preview
+    image: linuxserver/sonarr
     container_name: sonarr
     restart: unless-stopped
     networks:
