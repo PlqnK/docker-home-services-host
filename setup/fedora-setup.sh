@@ -10,24 +10,17 @@ source docker-host-setup.conf
 
 # Install standard tools and upstream version of Docker
 dnf -y upgrade
-dnf -y install dnf-plugins-core setools-console rsync htop wget curl nano vim git
+dnf -y install setools-console htop vim git-core tmux
 dnf -y install moby-engine docker-compose
 systemctl enable --now docker
 usermod -aG docker "${USER}"
 
 # Configure firewalld
-# Docker doesn't play well with nftables for now (december 2020), so we change the firewalld backend to iptables.
-# You can keep the nftables backend as long as you enable masquerading on the default firewalld interface. But doing so
-# messes with the origin IP addresses of all requests. Traefik for example will see all the requests coming from
-# the IP address of the docker bridge (something like 172.19.0.1) instead of the real one. So it will set the headers
-# "X-Forwarded-For" and "X-Real-IP" to the IP of the docker bridge which is less than ideal if you want to configure
-# external bandwidth restrictions in Plex for example.
-sed -i 's/^FirewallBackend=nftables/FirewallBackend=iptables/' /etc/firewalld/firewalld.conf
-systemctl restart firewalld
 firewalld_default_zone=$(firewall-cmd --get-default-zone)
 for service in http https plex; do
   firewall-cmd --permanent --zone="${firewalld_default_zone}" --add-service="${service}"
 done
+firewall-cmd --permanent --zone="${firewalld_default_zone}" --add-masquerade
 firewall-cmd --reload
 
 # Create a docker group and a docker runtime user for a little bit more security
