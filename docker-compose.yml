@@ -62,7 +62,7 @@ services:
       traefik.http.routers.traefik.rule: 'Host(`traefik.${DOMAIN_NAME}`)'
       traefik.http.routers.traefik.entrypoints: 'websecure'
       traefik.http.routers.traefik.service: 'api@internal'
-      traefik.http.routers.traefik.middlewares: 'set-security-headers@file, traefik-auth'
+      traefik.http.routers.traefik.middlewares: 'set-security-headers@file, restrict-external-access@file, traefik-auth'
       traefik.http.middlewares.traefik-auth.basicauth.users: '${TRAEFIK_API_USER}:${TRAEFIK_API_PASSWORD}'
   transmission:
     # https://hub.docker.com/r/linuxserver/transmission
@@ -87,7 +87,7 @@ services:
       traefik.docker.network: 'vpn'
       traefik.http.routers.transmission.rule: 'Host(`transmission.${DOMAIN_NAME}`)'
       traefik.http.routers.transmission.entrypoints: 'websecure'
-      traefik.http.routers.transmission.middlewares: 'set-security-headers@file'
+      traefik.http.routers.transmission.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.transmission.loadbalancer.server.port: '9091'
   sabnzbd:
     # https://hub.docker.com/r/linuxserver/sabnzbd/
@@ -109,7 +109,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.sabnzbd.rule: 'Host(`sabnzbd.${DOMAIN_NAME}`)'
       traefik.http.routers.sabnzbd.entrypoints: 'websecure'
-      traefik.http.routers.sabnzbd.middlewares: 'set-security-headers@file'
+      traefik.http.routers.sabnzbd.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.sabnzbd.loadbalancer.server.port: '8080'
   flaresolverr:
     # https://hub.docker.com/r/flaresolverr/flaresolverr
@@ -139,7 +139,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.jackett.rule: 'Host(`jackett.${DOMAIN_NAME}`)'
       traefik.http.routers.jackett.entrypoints: 'websecure'
-      traefik.http.routers.jackett.middlewares: 'set-security-headers@file'
+      traefik.http.routers.jackett.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.jackett.loadbalancer.server.port: '9117'
   nzbhydra:
     # https://hub.docker.com/r/linuxserver/hydra2/
@@ -159,7 +159,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.nzbhydra.rule: 'Host(`nzbhydra.${DOMAIN_NAME}`)'
       traefik.http.routers.nzbhydra.entrypoints: 'websecure'
-      traefik.http.routers.nzbhydra.middlewares: 'set-security-headers@file'
+      traefik.http.routers.nzbhydra.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.nzbhydra.loadbalancer.server.port: '5076'
   unpackerr:
     # https://hub.docker.com/r/golift/unpackerr
@@ -210,7 +210,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.radarr.rule: 'Host(`radarr.${DOMAIN_NAME}`)'
       traefik.http.routers.radarr.entrypoints: 'websecure'
-      traefik.http.routers.radarr.middlewares: 'set-security-headers@file'
+      traefik.http.routers.radarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.radarr.loadbalancer.server.port: '7878'
   sonarr:
     # https://hub.docker.com/r/linuxserver/sonarr/
@@ -236,7 +236,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.sonarr.rule: 'Host(`sonarr.${DOMAIN_NAME}`)'
       traefik.http.routers.sonarr.entrypoints: 'websecure'
-      traefik.http.routers.sonarr.middlewares: 'set-security-headers@file'
+      traefik.http.routers.sonarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.sonarr.loadbalancer.server.port: '8989'
   bazarr:
     # https://hub.docker.com/r/linuxserver/bazarr
@@ -257,7 +257,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.bazarr.rule: 'Host(`bazarr.${DOMAIN_NAME}`)'
       traefik.http.routers.bazarr.entrypoints: 'websecure'
-      traefik.http.routers.bazarr.middlewares: 'set-security-headers@file'
+      traefik.http.routers.bazarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.bazarr.loadbalancer.server.port: '6767'
   lidarr:
     # https://hub.docker.com/r/linuxserver/lidarr/
@@ -283,7 +283,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.lidarr.rule: 'Host(`lidarr.${DOMAIN_NAME}`)'
       traefik.http.routers.lidarr.entrypoints: 'websecure'
-      traefik.http.routers.lidarr.middlewares: 'set-security-headers@file'
+      traefik.http.routers.lidarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.lidarr.loadbalancer.server.port: '8686'
   lazylibrarian:
     # https://hub.docker.com/r/linuxserver/lazylibrarian
@@ -312,7 +312,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.lazylibrarian.rule: 'Host(`lazylibrarian.${DOMAIN_NAME}`)'
       traefik.http.routers.lazylibrarian.entrypoints: 'websecure'
-      traefik.http.routers.lazylibrarian.middlewares: 'set-security-headers@file'
+      traefik.http.routers.lazylibrarian.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.lazylibrarian.loadbalancer.server.port: '5299'
   mylar:
     # https://hub.docker.com/r/linuxserver/mylar3
@@ -338,7 +338,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.mylar.rule: 'Host(`mylar.${DOMAIN_NAME}`)'
       traefik.http.routers.mylar.entrypoints: 'websecure'
-      traefik.http.routers.mylar.middlewares: 'set-security-headers@file'
+      traefik.http.routers.mylar.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.mylar.loadbalancer.server.port: '8090'
   ombi:
     # https://hub.docker.com/r/linuxserver/ombi/
@@ -430,7 +430,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.tautulli.rule: 'Host(`tautulli.${DOMAIN_NAME}`)'
       traefik.http.routers.tautulli.entrypoints: 'websecure'
-      traefik.http.routers.tautulli.middlewares: 'set-security-headers@file'
+      traefik.http.routers.tautulli.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.tautulli.loadbalancer.server.port: '8181'
   calibre-web:
     # https://hub.docker.com/r/linuxserver/calibre-web
