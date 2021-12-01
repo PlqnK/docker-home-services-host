@@ -320,25 +320,6 @@ services:
       traefik.http.routers.mylar.entrypoints: 'websecure'
       traefik.http.routers.mylar.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.mylar.loadbalancer.server.port: '8090'
-  ombi:
-    # https://hub.docker.com/r/linuxserver/ombi/
-    image: linuxserver/ombi
-    container_name: ombi
-    restart: unless-stopped
-    networks:
-      - web-proxy
-    volumes:
-      - ${LOCAL_STORAGE}/ombi/config:/config:Z
-    environment:
-      TZ: '${TZ}'
-      PUID: '${PUID}'
-      PGID: '${PGID}'
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.ombi.rule: 'Host(`ombi.${DOMAIN_NAME}`)'
-      traefik.http.routers.ombi.entrypoints: 'websecure'
-      traefik.http.routers.ombi.middlewares: 'set-security-headers@file'
-      traefik.http.services.ombi.loadbalancer.server.port: '3579'
   overseerr:
     # https://hub.docker.com/r/sctx/overseerr/
     image: sctx/overseerr
