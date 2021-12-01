@@ -401,7 +401,6 @@ services:
       - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/tautulli/config:/config:Z
-      - ${LOCAL_STORAGE}/plexmediaserver/db/Library/Application\ Support/Plex\ Media\ Server/Logs:/plex_logs:ro,z
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
