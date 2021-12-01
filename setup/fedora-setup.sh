@@ -23,7 +23,7 @@ firewall-cmd --permanent --zone="${firewalld_default_zone}" --add-masquerade
 firewall-cmd --reload
 
 # Create a docker group and a docker runtime user for a little bit more security
-useradd dockerrt -d /nonexistent -u 3000 -U -s /usr/sbin/nologin
+useradd dockerrt -u 3000 -U -M -s /usr/sbin/nologin
 
 # Create the docker networks
 docker network create --internal internal
