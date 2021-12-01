@@ -9,7 +9,6 @@ fi
 source docker-host-setup.conf
 
 # Install standard tools and upstream version of Docker
-dnf -y upgrade
 dnf -y install setools-console htop vim git-core tmux
 dnf -y install moby-engine docker-compose
 systemctl enable --now docker
