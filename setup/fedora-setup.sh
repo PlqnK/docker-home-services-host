@@ -5,8 +5,13 @@ if [[ "$(id -u)" -ne "0" ]]; then
   exit
 fi
 
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+PROJECT_PATH="$(cd "${SCRIPT_PATH}/.." &>/dev/null && pwd)" 
+readonly SCRIPT_PATH
+readonly PROJECT_PATH
+
 # shellcheck source=docker-host-setup.example.conf
-source docker-host-setup.conf
+source "${SCRIPT_PATH}/docker-host-setup.conf"
 
 # Install standard tools and upstream version of Docker
 dnf -y install setools-console htop vim git-core tmux
@@ -34,7 +39,7 @@ docker network create vpn
 # Configure SELinux to allow the use of OpenVPN in containers
 if ! semodule -l | grep docker-openvpn &>/dev/null; then
   dnf -y install checkpolicy
-  checkmodule -M -m -o /tmp/docker-openvpn.mod docker-openvpn.te
+  checkmodule -M -m -o /tmp/docker-openvpn.mod "${SCRIPT_PATH}/docker-openvpn.te"
   semodule_package -o /tmp/docker-openvpn.pp -m /tmp/docker-openvpn.mod
   semodule -i /tmp/docker-openvpn.pp
   echo "tun" > /etc/modules-load.d/tun.conf
@@ -43,8 +48,8 @@ fi
 
 # Install & setup NFS
 dnf -y install nfs-utils autofs
-echo "${AUTO_MASTER}" > /etc/auto.master.d/"${STORAGE_SERVER_NAME}".autofs
-cp docker-host-mount-points.txt /etc/auto."${STORAGE_SERVER_NAME}"
+echo "${AUTO_MASTER}" > "/etc/auto.master.d/${STORAGE_SERVER_NAME}.autofs"
+cp "${SCRIPT_PATH}/docker-host-mount-points.txt" "/etc/auto.${STORAGE_SERVER_NAME}"
 systemctl enable --now autofs
 
 # Configure local storage for config files
@@ -52,9 +57,9 @@ eval "mkdir -p ${LOCAL_STORAGE_DIRS}"
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}" && chmod -R 755 "${LOCAL_STORAGE}"
 
 # Copy configs where needed
-cp traefik.toml traefik-dynamic.toml "${LOCAL_STORAGE}"/traefik/config/
-touch "${LOCAL_STORAGE}"/traefik/config/acme.json && chmod 600 "${LOCAL_STORAGE}"/traefik/config/acme.json
-chown -R dockerrt:dockerrt "${LOCAL_STORAGE}"/traefik/config
+cp "${PROJECT_PATH}/conf/traefik/traefik.toml" "${PROJECT_PATH}/conf/traefik/traefik-dynamic.toml" "${LOCAL_STORAGE}/traefik/config/"
+touch "${LOCAL_STORAGE}/traefik/config/acme.json" && chmod 600 "${LOCAL_STORAGE}/traefik/config/acme.json"
+chown -R dockerrt:dockerrt "${LOCAL_STORAGE}/traefik/config"
 
 if [[ -f custom.ovpn ]]; then
   cp client.ovpn "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
