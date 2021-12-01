@@ -60,6 +60,8 @@ chown -R dockerrt:dockerrt "${LOCAL_STORAGE}" && chmod -R 755 "${LOCAL_STORAGE}"
 cp "${PROJECT_PATH}/conf/traefik/traefik.toml" "${PROJECT_PATH}/conf/traefik/traefik-dynamic.toml" "${LOCAL_STORAGE}/traefik/config/"
 touch "${LOCAL_STORAGE}/traefik/config/acme.json" && chmod 600 "${LOCAL_STORAGE}/traefik/config/acme.json"
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}/traefik/config"
+cp "${PROJECT_PATH}/conf/ttrss/nginx.conf" "${LOCAL_STORAGE}${LOCAL_STORAGE}/ttrss/config/"
+chown -R dockerrt:dockerrt "${LOCAL_STORAGE}/ttrss/config"
 
 if [[ -f custom.ovpn ]]; then
   cp client.ovpn "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
