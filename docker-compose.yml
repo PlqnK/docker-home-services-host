@@ -393,6 +393,33 @@ services:
       traefik.http.routers.tautulli.entrypoints: 'websecure'
       traefik.http.routers.tautulli.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.tautulli.loadbalancer.server.port: '8181'
+  calibre:
+    # https://hub.docker.com/r/linuxserver/calibre
+    image: linuxserver/calibre
+    container_name: calibre
+    restart: unless-stopped
+    networks:
+      - web-proxy
+    volumes:
+      - ${LOCAL_STORAGE}/calibre/config:/config:Z
+      - ${MOUNT_POINT}/medias/books:/books:slave
+    environment:
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.calibre.rule: 'Host(`calibre.${DOMAIN_NAME}`)'
+      traefik.http.routers.calibre.entrypoints: 'websecure'
+      traefik.http.routers.calibre.middlewares: 'set-security-headers@file, restrict-external-access@file, calibre-auth'
+      traefik.http.routers.calibre.service: 'calibre'
+      traefik.http.middlewares.calibre-auth.basicauth.users: '${CALIBRE_USER}:${CALIBRE_PASSWORD}'
+      traefik.http.services.calibre.loadbalancer.server.port: '8080'
+      traefik.http.routers.calibre-cs.rule: 'Host(`calibre-cs.${DOMAIN_NAME}`)'
+      traefik.http.routers.calibre-cs.entrypoints: 'websecure'
+      traefik.http.routers.calibre-cs.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.routers.calibre-cs.service: 'calibre-cs'
+      traefik.http.services.calibre-cs.loadbalancer.server.port: '8081'
   calibre-web:
     # https://hub.docker.com/r/linuxserver/calibre-web
     image: linuxserver/calibre-web
@@ -404,16 +431,15 @@ services:
       - ${LOCAL_STORAGE}/calibre-web/config:/config:Z
       - ${MOUNT_POINT}/medias/books:/books:slave
     environment:
-      DOCKER_MODS: 'linuxserver/calibre-web:calibre'
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.calibre.rule: 'Host(`calibre.${DOMAIN_NAME}`)'
-      traefik.http.routers.calibre.entrypoints: 'websecure'
-      traefik.http.routers.calibre.middlewares: 'set-security-headers@file'
-      traefik.http.services.calibre.loadbalancer.server.port: '8083'
+      traefik.http.routers.calibre-web.rule: 'Host(`calibre-web.${DOMAIN_NAME}`)'
+      traefik.http.routers.calibre-web.entrypoints: 'websecure'
+      traefik.http.routers.calibre-web.middlewares: 'set-security-headers@file'
+      traefik.http.services.calibre-web.loadbalancer.server.port: '8083'
   komga:
     # https://hub.docker.com/r/gotson/komga
     image: gotson/komga
