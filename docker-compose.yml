@@ -121,46 +121,6 @@ services:
     environment:
       TZ: '${TZ}'
       CAPTCHA_SOLVER: 'hcaptcha-solver'
-  jackett:
-    # https://hub.docker.com/r/linuxserver/jackett/
-    image: linuxserver/jackett
-    container_name: jackett
-    restart: unless-stopped
-    networks:
-      - web-proxy
-    volumes:
-      - ${LOCAL_STORAGE}/jackett/config:/config:Z
-      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads:slave
-    environment:
-      TZ: '${TZ}'
-      PUID: '${PUID}'
-      PGID: '${PGID}'
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.jackett.rule: 'Host(`jackett.${DOMAIN_NAME}`)'
-      traefik.http.routers.jackett.entrypoints: 'websecure'
-      traefik.http.routers.jackett.middlewares: 'set-security-headers@file, restrict-external-access@file'
-      traefik.http.services.jackett.loadbalancer.server.port: '9117'
-  nzbhydra:
-    # https://hub.docker.com/r/linuxserver/hydra2/
-    image: linuxserver/nzbhydra2
-    container_name: nzbhydra
-    restart: unless-stopped
-    networks:
-      - web-proxy
-    volumes:
-      - ${LOCAL_STORAGE}/nzbhydra/config:/config:Z
-      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave
-    environment:
-      TZ: '${TZ}'
-      PUID: '${PUID}'
-      PGID: '${PGID}'
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.nzbhydra.rule: 'Host(`nzbhydra.${DOMAIN_NAME}`)'
-      traefik.http.routers.nzbhydra.entrypoints: 'websecure'
-      traefik.http.routers.nzbhydra.middlewares: 'set-security-headers@file, restrict-external-access@file'
-      traefik.http.services.nzbhydra.loadbalancer.server.port: '5076'
   unpackerr:
     # https://hub.docker.com/r/golift/unpackerr
     image: golift/unpackerr
@@ -186,6 +146,26 @@ services:
       UN_LIDARR_0_API_KEY: '${UNPACKER_LIDARR_API_KEY}'
       UN_LIDARR_0_PATHS_0: '/downloads/bittorrent/downloads/audio'
       UN_LIDARR_0_PROTOCOLS: 'torrent'
+  prowlarr:
+    # https://hub.docker.com/r/linuxserver/prowlarr/
+    image: linuxserver/prowlarr:develop
+    container_name: prowlarr
+    restart: unless-stopped
+    networks:
+      - web-proxy
+      - vpn
+    volumes:
+      - ${LOCAL_STORAGE}/prowlarr/config:/config:Z
+    environment:
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.prowlarr.rule: 'Host(`prowlarr.${DOMAIN_NAME}`)'
+      traefik.http.routers.prowlarr.entrypoints: 'websecure'
+      traefik.http.routers.prowlarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.prowlarr.loadbalancer.server.port: '9696'
   radarr:
     # https://hub.docker.com/r/linuxserver/radarr/
     image: linuxserver/radarr
