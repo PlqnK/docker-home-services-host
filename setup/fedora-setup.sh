@@ -63,8 +63,6 @@ chown -R dockerrt:dockerrt "${LOCAL_STORAGE}/traefik/config"
 cp "${PROJECT_PATH}/conf/ttrss/nginx.conf" "${LOCAL_STORAGE}${LOCAL_STORAGE}/ttrss/config/"
 chown -R dockerrt:dockerrt "${LOCAL_STORAGE}/ttrss/config"
 
-if [[ -f custom.ovpn ]]; then
-  cp client.ovpn "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
-  chown dockerrt:dockerrt "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
-  chmod 600 "${LOCAL_STORAGE}"/openvpn-client/config/client.ovpn
-fi
+cp -r "${PROJECT_PATH}/conf/openvpn-client/." "${LOCAL_STORAGE}/openvpn-client/config/"
+chown -R dockerrt:dockerrt "${LOCAL_STORAGE}/openvpn-client/config"
+chmod 600 "${LOCAL_STORAGE}"/openvpn-client/config/*
