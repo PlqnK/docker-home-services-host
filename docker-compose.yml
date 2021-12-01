@@ -146,6 +146,10 @@ services:
       UN_LIDARR_0_API_KEY: '${UNPACKER_LIDARR_API_KEY}'
       UN_LIDARR_0_PATHS_0: '/downloads/bittorrent/downloads/audio'
       UN_LIDARR_0_PROTOCOLS: 'torrent'
+      UN_READARR_0_URL: 'http://readarr:8787'
+      UN_READARR_0_API_KEY: '${UNPACKER_READARR_API_KEY}'
+      UN_READARR_0_PATHS_0: '/downloads/bittorrent/downloads/books'
+      UN_READARR_0_PROTOCOLS: 'torrent'
   prowlarr:
     # https://hub.docker.com/r/linuxserver/prowlarr/
     image: linuxserver/prowlarr:develop
@@ -265,35 +269,32 @@ services:
       traefik.http.routers.lidarr.entrypoints: 'websecure'
       traefik.http.routers.lidarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.lidarr.loadbalancer.server.port: '8686'
-  lazylibrarian:
-    # https://hub.docker.com/r/linuxserver/lazylibrarian
-    image: linuxserver/lazylibrarian
-    container_name: lazylibrarian
+  readarr:
+    # https://hub.docker.com/r/linuxserver/readarr/
+    image: linuxserver/readarr:nightly
+    container_name: readarr
     restart: unless-stopped
     networks:
       - web-proxy
       - vpn
     volumes:
-      - ${LOCAL_STORAGE}/lazylibrarian/config:/config:Z
+      - ${LOCAL_STORAGE}/readarr/config:/config:Z
       - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
       - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads/bittorrent/watch:slave
       - ${MOUNT_POINT}/downloads/usenet/completed:/downloads/usenet/completed:slave
       - ${MOUNT_POINT}/downloads/usenet/processing:/downloads/usenet/processing:slave
       - ${MOUNT_POINT}/downloads/usenet/watching:/downloads/usenet/watching:slave
       - ${MOUNT_POINT}/medias/books:/books:slave
-      - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave
-      - ${MOUNT_POINT}/medias/comics:/comics:slave
     environment:
-      DOCKER_MODS: 'linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg'
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.lazylibrarian.rule: 'Host(`lazylibrarian.${DOMAIN_NAME}`)'
-      traefik.http.routers.lazylibrarian.entrypoints: 'websecure'
-      traefik.http.routers.lazylibrarian.middlewares: 'set-security-headers@file, restrict-external-access@file'
-      traefik.http.services.lazylibrarian.loadbalancer.server.port: '5299'
+      traefik.http.routers.readarr.rule: 'Host(`readarr.${DOMAIN_NAME}`)'
+      traefik.http.routers.readarr.entrypoints: 'websecure'
+      traefik.http.routers.readarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.readarr.loadbalancer.server.port: '8787'
   mylar:
     # https://hub.docker.com/r/linuxserver/mylar3
     image: linuxserver/mylar3
