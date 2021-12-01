@@ -12,41 +12,65 @@ Either way, I still try to be as concise as possible so that you can pretty much
 
 ## About the project
 
-It leverages [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) in order to bring up/host the services. The services that are hosted on the server are:
+It leverages [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) in order to bring up/host the services. The high level services that are hosted on the server are:
 
-- [Træfik](https://traefik.io/): A reverse-proxy that is very easy to configure and can automatically obtain Let's Encrypt certificates.
-- [Transmission](https://transmissionbt.com/): An easy to use BitTorrent client to downloads files using the BitTorrent protocol.
-- [SABnzbd](https://sabnzbd.org/): An easy to use binary newsreader to download files using the Usenet protocol.
-- [Jackett](https://github.com/Jackett/Jackett): A proxy server that helps interface PVR programs (Radarr, Sonarr, Lidarr etc.) and your BitTorrent trackers.
-- [NZBHydra 2](https://github.com/theotherp/nzbhydra2): A meta search software for NZB indexers, you can configure and then search all your NZB indexers in one place.
-- [Sonarr](https://sonarr.tv/), [Radarr](https://radarr.video/) and [Lidarr](https://lidarr.audio/): PVR programs for managing TV Shows, Movies and Music respectively. They will automatically monitor, grab and send the wanted file to a specified binary newsreader or BitTorrent downloader then rename and organize the resulting download according to your own preferences.
-- [Bazarr](https://github.com/morpheus65535/bazarr): Companion application to Sonarr and Radarr, it manages and downloads subtitles based on your requirements.
-- [LazyLibrarian](https://github.com/DobyTang/LazyLibrarian): Ebook library downloader and manager, works like Sonarr/Radarr/Lidarr.
-- [Ombi](https://ombi.io/): Give your users the ability to request missing media content from your media collection.
-- [Plex Media Server](https://www.plex.tv/): Plex is a centralised media server solution that let you organize your personal video, music as well as photo collections and streams them to all of your devices with a consistent interface.
-- [Tautulli](https://tautulli.com/): Tautulli is a 3rd party program that runs alongside a Plex Media Server instance to monitor it's activity and track various statistics that Plex doesn't show in it's own interface.
-- [Calibre-Web](https://github.com/janeczku/calibre-web): Calibre-Web is a web app providing a clean interface for browsing, reading and downloading ebooks using an existing Calibre database.
-- [Nextcloud](https://nextcloud.com/): It's a suite of client-server software for creating and using file hosting services. It is functionally similar to Google Drive, although Nextcloud is free and open-source, allowing anyone to self-host an instance.
-- [Collabora Online](https://www.collaboraoffice.com/collabora-online/): A powerfull web-based LibreOffice suite that features collaborative editing and which can be integrated in Nextcloud.
+- [Træfik](https://traefik.io/)
+  - A reverse-proxy that is very easy to configure and can automatically obtain Let's Encrypt certificates.
+- [Transmission](https://transmissionbt.com/)
+  - A BitTorrent client to downloads files using the BitTorrent protocol.
+- [SABnzbd](https://sabnzbd.org/)
+  - A binary newsreader to download files using the Usenet protocol.
+- [Prowlarr](https://github.com/Prowlarr/Prowlarr)
+  - An indexer manager/proxy that supports management of both Torrent trackers and Usenet indexers.
+- [Sonarr](https://sonarr.tv/)
+  - PVR programs for managing TV Shows. It will automatically monitor your indexers/trackers RSS feeds for new episodes, grab and send the download to a binary newsreader or BitTorrent downloader then rename and organize the resulting download according to your own preferences.
+- [Radarr](https://radarr.video/)
+  - Same as Sonarr but for Movies.
+- [Lidarr](https://lidarr.audio/)
+  - Same as Sonarr but for Music.
+- [Readarr](https://readarr.com/)
+  - Same as Sonarr but for eBooks and Audiobooks.
+- [Mylar](https://github.com/mylar3/mylar3)
+  - Same as Sonarr but for Comic books and Mangas.
+- [Bazarr](https://github.com/morpheus65535/bazarr)
+  - Companion application to Sonarr and Radarr, it manages and downloads subtitles based on your requirements.
+- [Plex Media Server](https://www.plex.tv/)
+  - A centralised media server solution that let you organize your personal video, music as well as photo collections and streams them to all of your devices with a consistent interface.
+- [Tautulli](https://tautulli.com/)
+  - A 3rd party program that runs alongside a Plex Media Server instance to monitor it's activity and track various statistics that Plex doesn't show in it's own interface.
+- [Overseer](https://overseerr.dev/)
+  - A program that gives your users the possibility of requesting new media to be added to your instance. Integrates with Plex, Sonarr and Radarr.
+- [Calibre](https://calibre-ebook.com/):
+  - An eBooks manager that let's you organize your ebooks library, grab metadata from Goodreads and a lot of other cool things.
+- [Calibre-Web](https://github.com/janeczku/calibre-web)
+  - A web app providing a clean interface for browsing, reading and downloading ebooks from a browser, eReader or mobile application that supports the OPDS protocol.
+- [Komga](https://komga.org/)
+  - A comic books and mangas media server providing interface for browsing, reading and downloading from a browser, eReader, mobile application that supports the OPDS protocol or Tachiyomi on Android (highly recommended!).
+- [Nextcloud](https://nextcloud.com/)
+  - A suite of client-server software for creating and using file hosting services. It is functionally similar to Google Drive, although Nextcloud is free and open-source, allowing anyone to self-host an instance.
+- [Collabora Online](https://www.collaboraoffice.com/collabora-online/)
+  - A powerfull web-based LibreOffice suite that features collaborative editing and which can be integrated in Nextcloud.
+- [Tiny Tiny RSS](https://tt-rss.org/)
+  - A news feed (RSS/Atom) reader and aggregator.
 
-## Roadmap
+There's also some "low level" background services:
 
-Services to consider:
-
-- Add [openHAB](https://www.openhab.org/) and/or [Home Assistant](https://www.home-assistant.io/) as a home automation hub (will maybe run it on a separate Raspberry Pi instead)
-- Add [Grafana](https://grafana.com/) & [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) + [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) / [Prometheus](https://prometheus.io/) or even the [Elastic Stack](https://www.elastic.co/products) to properly monitor devices, operating systems and services
-
-Project:
-
-- Learn and use Ansible to replace docker-compose and all the setup scripts
+- [docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy)
+  - A security-enhanced proxy for the docker socket.
+- [openvpn-client](https://github.com/dperson/openvpn-client)
+  - An OpenVPN client that let's you route other containers traffic through an OpenVPN tunnel.
+- [flaresolverr](https://github.com/FlareSolverr/FlareSolverr)
+  - A proxy server to bypass Cloudflare protection. Useful if you have trackers that uses Cloudflare protection.
+- [unpackerr](https://github.com/davidnewhall/unpackerr)
+  - A background program that checks for completed downloads in your BitTorrent downloader and extracts them so Lidarr, Radarr, Readarr, Sonarr may import them.
 
 ## Context of my setup
 
-I have a separate server running FreeNAS that host all my files. That's why I'm mounting datasets with NFS on the docker host. My FreeNAS server is also configured to pull my container config files from the docker host with rsync once per hour.
+I have a separate server running TrueNAS that host all my files. That's why I'm mounting datasets with NFS on the docker host. On the TrueNAS side all the NFS exports are configured to map all connected machines to a local user that has the necessery rights on the datasets. That way I don't have to deal with UID/GID matching between TrueNAS and the docker host.
 
 ## Prerequisites
 
-- Fedora Server 31 (other Linux distributions are possible but you will need to adapt the setup scripts).
+- Latest Fedora Server release (other Linux distributions are possible but you will need to adapt the setup scripts).
 - A properly configured DNS server in your LAN as well as proper DNS entries with a domain suffix for your servers (populated by hand or automatically with the hostname of your devices).
 - A paid domain name for which you have full control over.
 
@@ -60,50 +84,49 @@ for file in *.example*; do cp $file $(echo $file | sed -e 's/.example//'); done
 
 You then need to:
 
-- Adapt the NFS mount points in `docker-host-mount-points.txt` with what you have on your file server. You need to make it match the target 1:1, except for the source folder name which isn't important, otherwise you will need to modify every reference to the original target name in the `docker-compose.yml` file.
-- Get a Plex claim token [here](https://www.plex.tv/claim/) and replace the `PLEX_CLAIM` variable in the `.env` file with it.
-- Update every reference to `example.com` in the files with your personal domain name, every reference to `myserver` with either the hostname of your server with a proper domain suffix where needed. Change `USER` in `docker-host-setup.conf` to the name of the user created during the installation of Fedora/Ubuntu.
-- Fill in passwords for `MYSQL_ROOT_PASSWORD`, `MYSQL_PASSWORD` and `COLLABORA_PASSWORD` in `.env`.
-- Put your OpenVPN configuration file in the working dir as `client.ovpn`.
-- Adapt the rest of the variables in .env and other conf files according to your needs.
+1. Adapt the NFS mount points in `docker-host-mount-points.txt` with what you have on your file server. You need to make it match the target 1:1, except for the source folder name which isn't important, otherwise you will need to modify every reference to the original target name in the `docker-compose.yml` file.
+2. Change the values in the `.env` with ones that fits your environnement.
+   - For the `PLEX_CLAIM` variable get a Plex claim token [here](https://www.plex.tv/claim/).
+   - For the `TRAEFIK_API_PASSWORD` and `CALIBRE_PASSWORD` variables generate the password hashes as followed:
 
-Install htpasswd with:
+     ```bash
+     openssl passwd -apr1
+     ```
 
-```bash
-sudo dnf install httpd-tools
-```
+   - For the `UNPACKER_xxx_API_KEY` variables you will need to start the stack once, get the API keys from the respective services, update the values and then execute `docker-compose up -d` to recreate the `unpackerr` container with the right configuration.
 
-Then choose a password for the Træfik web interface and hash it as followed:
+3. Change the value of the `certificatesResolvers.le.acme.email` variable in the `conf/traefik/traefik.toml` file with your email.
+4. Change every reference to `myserver` with the FQDN of the machine that provides the NFS exports in the `setup/docker-host-mount-points.txt` and `setup/docker-host-setup.conf` files.
+5. Change the value of the `USER` variable with the name of your administrative user in the `setup/docker-host-setup.conf` file.
+6. Put your OpenVPN configuration file(s) in the `conf/openvpn-client` directory.
+7. Next, execute the setup script:
 
-```bash
-htpasswd -nb admin yourchosenpassword
-```
+   ```bash
+   sudo bash setup/fedora-setup.sh
+   ```
 
-Replace `yourpasswordhash` of the variable `TRAEFIK_API_PASSWORD` in `.env` with the hash that you just obtained.
+8. You can then create and run your containers with:
 
-Next, chmod and execute the setup script:
-
-```bash
-chmod u+x fedora-setup.sh
-sudo ./fedora-setup.sh
-```
-
-You can then create and run your containers with a simple:
-
-```bash
-docker-compose up -d
-```
+   ```bash
+   docker-compose up -d
+   ```
 
 ## Updating
 
-If you want to update your containers, just run:
+### Containers
+
+If you just want to update your existing containers execute the following commands:
 
 ```bash
 cd /path/to/docker-home-services-host
 docker-compose pull && docker-compose up -d
 ```
 
-If you also want to update the source files of the project you just need to run `git pull` right before `docker-compose pull && docker-compose up -d`.
+### Project files
+
+If you want to update the source files of the project in order to get the changes I've made since the last time you cloned/updated the repository you can run a `git pull`.
+
+I **highly** encourage you to read the Merge Requests that have been made to the repository since the last time you updated it. I don't keep a proper changelog so it's the only way to know what has changed and prepare your upgrade accordingly.
 
 ## Contributing
 
