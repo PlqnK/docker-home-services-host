@@ -121,46 +121,6 @@ services:
     environment:
       TZ: '${TZ}'
       CAPTCHA_SOLVER: 'hcaptcha-solver'
-  jackett:
-    # https://hub.docker.com/r/linuxserver/jackett/
-    image: linuxserver/jackett
-    container_name: jackett
-    restart: unless-stopped
-    networks:
-      - web-proxy
-    volumes:
-      - ${LOCAL_STORAGE}/jackett/config:/config:Z
-      - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads:slave
-    environment:
-      TZ: '${TZ}'
-      PUID: '${PUID}'
-      PGID: '${PGID}'
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.jackett.rule: 'Host(`jackett.${DOMAIN_NAME}`)'
-      traefik.http.routers.jackett.entrypoints: 'websecure'
-      traefik.http.routers.jackett.middlewares: 'set-security-headers@file, restrict-external-access@file'
-      traefik.http.services.jackett.loadbalancer.server.port: '9117'
-  nzbhydra:
-    # https://hub.docker.com/r/linuxserver/hydra2/
-    image: linuxserver/nzbhydra2
-    container_name: nzbhydra
-    restart: unless-stopped
-    networks:
-      - web-proxy
-    volumes:
-      - ${LOCAL_STORAGE}/nzbhydra/config:/config:Z
-      - ${MOUNT_POINT}/downloads/usenet/watching:/downloads:slave
-    environment:
-      TZ: '${TZ}'
-      PUID: '${PUID}'
-      PGID: '${PGID}'
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.nzbhydra.rule: 'Host(`nzbhydra.${DOMAIN_NAME}`)'
-      traefik.http.routers.nzbhydra.entrypoints: 'websecure'
-      traefik.http.routers.nzbhydra.middlewares: 'set-security-headers@file, restrict-external-access@file'
-      traefik.http.services.nzbhydra.loadbalancer.server.port: '5076'
   unpackerr:
     # https://hub.docker.com/r/golift/unpackerr
     image: golift/unpackerr
@@ -186,6 +146,30 @@ services:
       UN_LIDARR_0_API_KEY: '${UNPACKER_LIDARR_API_KEY}'
       UN_LIDARR_0_PATHS_0: '/downloads/bittorrent/downloads/audio'
       UN_LIDARR_0_PROTOCOLS: 'torrent'
+      UN_READARR_0_URL: 'http://readarr:8787'
+      UN_READARR_0_API_KEY: '${UNPACKER_READARR_API_KEY}'
+      UN_READARR_0_PATHS_0: '/downloads/bittorrent/downloads/books'
+      UN_READARR_0_PROTOCOLS: 'torrent'
+  prowlarr:
+    # https://hub.docker.com/r/linuxserver/prowlarr/
+    image: linuxserver/prowlarr:develop
+    container_name: prowlarr
+    restart: unless-stopped
+    networks:
+      - web-proxy
+      - vpn
+    volumes:
+      - ${LOCAL_STORAGE}/prowlarr/config:/config:Z
+    environment:
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.prowlarr.rule: 'Host(`prowlarr.${DOMAIN_NAME}`)'
+      traefik.http.routers.prowlarr.entrypoints: 'websecure'
+      traefik.http.routers.prowlarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.prowlarr.loadbalancer.server.port: '9696'
   radarr:
     # https://hub.docker.com/r/linuxserver/radarr/
     image: linuxserver/radarr
@@ -285,35 +269,32 @@ services:
       traefik.http.routers.lidarr.entrypoints: 'websecure'
       traefik.http.routers.lidarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.lidarr.loadbalancer.server.port: '8686'
-  lazylibrarian:
-    # https://hub.docker.com/r/linuxserver/lazylibrarian
-    image: linuxserver/lazylibrarian
-    container_name: lazylibrarian
+  readarr:
+    # https://hub.docker.com/r/linuxserver/readarr/
+    image: linuxserver/readarr:nightly
+    container_name: readarr
     restart: unless-stopped
     networks:
       - web-proxy
       - vpn
     volumes:
-      - ${LOCAL_STORAGE}/lazylibrarian/config:/config:Z
+      - ${LOCAL_STORAGE}/readarr/config:/config:Z
       - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
       - ${MOUNT_POINT}/downloads/bittorrent/watch:/downloads/bittorrent/watch:slave
       - ${MOUNT_POINT}/downloads/usenet/completed:/downloads/usenet/completed:slave
       - ${MOUNT_POINT}/downloads/usenet/processing:/downloads/usenet/processing:slave
       - ${MOUNT_POINT}/downloads/usenet/watching:/downloads/usenet/watching:slave
       - ${MOUNT_POINT}/medias/books:/books:slave
-      - ${MOUNT_POINT}/medias/audiobooks:/audiobooks:slave
-      - ${MOUNT_POINT}/medias/comics:/comics:slave
     environment:
-      DOCKER_MODS: 'linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg'
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.lazylibrarian.rule: 'Host(`lazylibrarian.${DOMAIN_NAME}`)'
-      traefik.http.routers.lazylibrarian.entrypoints: 'websecure'
-      traefik.http.routers.lazylibrarian.middlewares: 'set-security-headers@file, restrict-external-access@file'
-      traefik.http.services.lazylibrarian.loadbalancer.server.port: '5299'
+      traefik.http.routers.readarr.rule: 'Host(`readarr.${DOMAIN_NAME}`)'
+      traefik.http.routers.readarr.entrypoints: 'websecure'
+      traefik.http.routers.readarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.readarr.loadbalancer.server.port: '8787'
   mylar:
     # https://hub.docker.com/r/linuxserver/mylar3
     image: linuxserver/mylar3
@@ -340,25 +321,6 @@ services:
       traefik.http.routers.mylar.entrypoints: 'websecure'
       traefik.http.routers.mylar.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.mylar.loadbalancer.server.port: '8090'
-  ombi:
-    # https://hub.docker.com/r/linuxserver/ombi/
-    image: linuxserver/ombi
-    container_name: ombi
-    restart: unless-stopped
-    networks:
-      - web-proxy
-    volumes:
-      - ${LOCAL_STORAGE}/ombi/config:/config:Z
-    environment:
-      TZ: '${TZ}'
-      PUID: '${PUID}'
-      PGID: '${PGID}'
-    labels:
-      traefik.enable: 'true'
-      traefik.http.routers.ombi.rule: 'Host(`ombi.${DOMAIN_NAME}`)'
-      traefik.http.routers.ombi.entrypoints: 'websecure'
-      traefik.http.routers.ombi.middlewares: 'set-security-headers@file'
-      traefik.http.services.ombi.loadbalancer.server.port: '3579'
   overseerr:
     # https://hub.docker.com/r/sctx/overseerr/
     image: sctx/overseerr
@@ -421,7 +383,6 @@ services:
       - web-proxy
     volumes:
       - ${LOCAL_STORAGE}/tautulli/config:/config:Z
-      - ${LOCAL_STORAGE}/plexmediaserver/db/Library/Application\ Support/Plex\ Media\ Server/Logs:/plex_logs:ro,z
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -432,6 +393,33 @@ services:
       traefik.http.routers.tautulli.entrypoints: 'websecure'
       traefik.http.routers.tautulli.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.tautulli.loadbalancer.server.port: '8181'
+  calibre:
+    # https://hub.docker.com/r/linuxserver/calibre
+    image: linuxserver/calibre
+    container_name: calibre
+    restart: unless-stopped
+    networks:
+      - web-proxy
+    volumes:
+      - ${LOCAL_STORAGE}/calibre/config:/config:Z
+      - ${MOUNT_POINT}/medias/books:/books:slave
+    environment:
+      TZ: '${TZ}'
+      PUID: '${PUID}'
+      PGID: '${PGID}'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.calibre.rule: 'Host(`calibre.${DOMAIN_NAME}`)'
+      traefik.http.routers.calibre.entrypoints: 'websecure'
+      traefik.http.routers.calibre.middlewares: 'set-security-headers@file, restrict-external-access@file, calibre-auth'
+      traefik.http.routers.calibre.service: 'calibre'
+      traefik.http.middlewares.calibre-auth.basicauth.users: '${CALIBRE_USER}:${CALIBRE_PASSWORD}'
+      traefik.http.services.calibre.loadbalancer.server.port: '8080'
+      traefik.http.routers.calibre-cs.rule: 'Host(`calibre-cs.${DOMAIN_NAME}`)'
+      traefik.http.routers.calibre-cs.entrypoints: 'websecure'
+      traefik.http.routers.calibre-cs.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.routers.calibre-cs.service: 'calibre-cs'
+      traefik.http.services.calibre-cs.loadbalancer.server.port: '8081'
   calibre-web:
     # https://hub.docker.com/r/linuxserver/calibre-web
     image: linuxserver/calibre-web
@@ -443,16 +431,15 @@ services:
       - ${LOCAL_STORAGE}/calibre-web/config:/config:Z
       - ${MOUNT_POINT}/medias/books:/books:slave
     environment:
-      DOCKER_MODS: 'linuxserver/calibre-web:calibre'
       TZ: '${TZ}'
       PUID: '${PUID}'
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.calibre.rule: 'Host(`calibre.${DOMAIN_NAME}`)'
-      traefik.http.routers.calibre.entrypoints: 'websecure'
-      traefik.http.routers.calibre.middlewares: 'set-security-headers@file'
-      traefik.http.services.calibre.loadbalancer.server.port: '8083'
+      traefik.http.routers.calibre-web.rule: 'Host(`calibre-web.${DOMAIN_NAME}`)'
+      traefik.http.routers.calibre-web.entrypoints: 'websecure'
+      traefik.http.routers.calibre-web.middlewares: 'set-security-headers@file'
+      traefik.http.services.calibre-web.loadbalancer.server.port: '8083'
   komga:
     # https://hub.docker.com/r/gotson/komga
     image: gotson/komga
