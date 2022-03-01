@@ -24,7 +24,8 @@ services:
     devices:
       - /dev/net/tun
     networks:
-      vpn:
+      vpn-tunnel:
+      traefik-internal:
         aliases:
           - 'transmission'
     volumes:
@@ -45,9 +46,9 @@ services:
     depends_on:
       - docker-socket-proxy
     networks:
-      - web-proxy
+      - traefik-external
+      - traefik-internal
       - socket-proxy
-      - vpn
     ports:
       - 80:80
       - 443:443
@@ -59,6 +60,7 @@ services:
       TZ: '${TZ}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.traefik.rule: 'Host(`traefik.${DOMAIN_NAME}`)'
       traefik.http.routers.traefik.entrypoints: 'websecure'
       traefik.http.routers.traefik.service: 'api@internal'
@@ -84,7 +86,6 @@ services:
       PASS: '${TRANSMISSION_PASSWORD}'
     labels:
       traefik.enable: 'true'
-      traefik.docker.network: 'vpn'
       traefik.http.routers.transmission.rule: 'Host(`transmission.${DOMAIN_NAME}`)'
       traefik.http.routers.transmission.entrypoints: 'websecure'
       traefik.http.routers.transmission.middlewares: 'set-security-headers@file, restrict-external-access@file'
@@ -95,7 +96,8 @@ services:
     container_name: sabnzbd
     restart: unless-stopped
     networks:
-      - web-proxy
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/sabnzbd/config:/config:Z
       - ${MOUNT_POINT}/downloads/usenet/completed:/downloads:slave
@@ -107,6 +109,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.sabnzbd.rule: 'Host(`sabnzbd.${DOMAIN_NAME}`)'
       traefik.http.routers.sabnzbd.entrypoints: 'websecure'
       traefik.http.routers.sabnzbd.middlewares: 'set-security-headers@file, restrict-external-access@file'
@@ -117,7 +120,8 @@ services:
     container_name: flaresolverr
     restart: unless-stopped
     networks:
-      - web-proxy
+      - web-egress
+      - traefik-internal
     environment:
       TZ: '${TZ}'
       CAPTCHA_SOLVER: 'hcaptcha-solver'
@@ -127,7 +131,7 @@ services:
     container_name: unpackerr
     restart: unless-stopped
     networks:
-      - web-proxy
+      - traefik-internal
     volumes:
       - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
     environment:
@@ -156,8 +160,8 @@ services:
     container_name: prowlarr
     restart: unless-stopped
     networks:
-      - web-proxy
-      - vpn
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/prowlarr/config:/config:Z
     environment:
@@ -166,6 +170,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.prowlarr.rule: 'Host(`prowlarr.${DOMAIN_NAME}`)'
       traefik.http.routers.prowlarr.entrypoints: 'websecure'
       traefik.http.routers.prowlarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
@@ -176,8 +181,8 @@ services:
     container_name: radarr
     restart: unless-stopped
     networks:
-      - web-proxy
-      - vpn
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/radarr/config:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave
@@ -188,6 +193,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.radarr.rule: 'Host(`radarr.${DOMAIN_NAME}`)'
       traefik.http.routers.radarr.entrypoints: 'websecure'
       traefik.http.routers.radarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
@@ -198,8 +204,8 @@ services:
     container_name: sonarr
     restart: unless-stopped
     networks:
-      - web-proxy
-      - vpn
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/sonarr/config:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave
@@ -210,6 +216,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.sonarr.rule: 'Host(`sonarr.${DOMAIN_NAME}`)'
       traefik.http.routers.sonarr.entrypoints: 'websecure'
       traefik.http.routers.sonarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
@@ -220,7 +227,8 @@ services:
     container_name: bazarr
     restart: unless-stopped
     networks:
-      - web-proxy
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/bazarr/config:/config:Z
       - ${MOUNT_POINT}/medias/movies:/movies:slave
@@ -231,6 +239,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.bazarr.rule: 'Host(`bazarr.${DOMAIN_NAME}`)'
       traefik.http.routers.bazarr.entrypoints: 'websecure'
       traefik.http.routers.bazarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
@@ -241,8 +250,8 @@ services:
     container_name: lidarr
     restart: unless-stopped
     networks:
-      - web-proxy
-      - vpn
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/lidarr/config:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave
@@ -253,6 +262,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.lidarr.rule: 'Host(`lidarr.${DOMAIN_NAME}`)'
       traefik.http.routers.lidarr.entrypoints: 'websecure'
       traefik.http.routers.lidarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
@@ -263,8 +273,8 @@ services:
     container_name: readarr
     restart: unless-stopped
     networks:
-      - web-proxy
-      - vpn
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/readarr/config:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave
@@ -275,6 +285,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.readarr.rule: 'Host(`readarr.${DOMAIN_NAME}`)'
       traefik.http.routers.readarr.entrypoints: 'websecure'
       traefik.http.routers.readarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
@@ -285,8 +296,8 @@ services:
     container_name: mylar
     restart: unless-stopped
     networks:
-      - web-proxy
-      - vpn
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/mylar/config:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave
@@ -297,6 +308,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.mylar.rule: 'Host(`mylar.${DOMAIN_NAME}`)'
       traefik.http.routers.mylar.entrypoints: 'websecure'
       traefik.http.routers.mylar.middlewares: 'set-security-headers@file, restrict-external-access@file'
@@ -307,13 +319,15 @@ services:
     container_name: overseerr
     restart: unless-stopped
     networks:
-      - web-proxy
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/overseerr/config:/app/config:Z
     environment:
       TZ: '${TZ}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.overseerr.rule: 'Host(`overseerr.${DOMAIN_NAME}`)'
       traefik.http.routers.overseerr.entrypoints: 'websecure'
       traefik.http.routers.overseerr.middlewares: 'set-security-headers@file'
@@ -324,7 +338,8 @@ services:
     container_name: plexmediaserver
     restart: unless-stopped
     networks:
-      - web-proxy
+      - plex-external
+      - traefik-internal
     ports:
       - 32400:32400/tcp
       - 3005:3005/tcp
@@ -349,6 +364,7 @@ services:
       PLEX_CLAIM: '${PLEX_CLAIM}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.plex.rule: 'Host(`plex.${DOMAIN_NAME}`)'
       traefik.http.routers.plex.entrypoints: 'websecure'
       traefik.http.routers.plex.middlewares: 'set-security-headers@file'
@@ -359,7 +375,8 @@ services:
     container_name: tautulli
     restart: unless-stopped
     networks:
-      - web-proxy
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/tautulli/config:/config:Z
     environment:
@@ -368,6 +385,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.tautulli.rule: 'Host(`tautulli.${DOMAIN_NAME}`)'
       traefik.http.routers.tautulli.entrypoints: 'websecure'
       traefik.http.routers.tautulli.middlewares: 'set-security-headers@file, restrict-external-access@file'
@@ -378,7 +396,8 @@ services:
     container_name: calibre
     restart: unless-stopped
     networks:
-      - web-proxy
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/calibre/config:/config:Z
       - ${MOUNT_POINT}/medias/books:/books:slave
@@ -388,6 +407,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.calibre.rule: 'Host(`calibre.${DOMAIN_NAME}`)'
       traefik.http.routers.calibre.entrypoints: 'websecure'
       traefik.http.routers.calibre.middlewares: 'set-security-headers@file, restrict-external-access@file, calibre-auth'
@@ -405,7 +425,8 @@ services:
     container_name: calibre-web
     restart: unless-stopped
     networks:
-      - web-proxy
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/calibre-web/config:/config:Z
       - ${MOUNT_POINT}/medias/books:/books:slave
@@ -415,6 +436,7 @@ services:
       PGID: '${PGID}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.calibre-web.rule: 'Host(`calibre-web.${DOMAIN_NAME}`)'
       traefik.http.routers.calibre-web.entrypoints: 'websecure'
       traefik.http.routers.calibre-web.middlewares: 'set-security-headers@file'
@@ -425,7 +447,8 @@ services:
     container_name: komga
     restart: unless-stopped
     networks:
-      - web-proxy
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/komga/config:/config:Z
       - ${MOUNT_POINT}/medias/comics:/books:slave
@@ -433,6 +456,7 @@ services:
       TZ: '${TZ}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.komga.rule: 'Host(`komga.${DOMAIN_NAME}`)'
       traefik.http.routers.komga.entrypoints: 'websecure'
       traefik.http.routers.komga.middlewares: 'set-security-headers@file'
@@ -444,7 +468,7 @@ services:
     restart: unless-stopped
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --skip-innodb-read-only-compressed
     networks:
-      - internal
+      - nextcloud-internal
     volumes:
       - ${LOCAL_STORAGE}/nextcloud_mariadb/db:/var/lib/mysql:Z
       - ${LOCAL_STORAGE}/nextcloud_mariadb/dumps:/opt/mysql_dumps:Z
@@ -461,7 +485,7 @@ services:
     restart: unless-stopped
     command: --requirepass ${NC_REDIS_PASSWORD}
     networks:
-      - internal
+      - nextcloud-internal
     environment:
       TZ: '${TZ}'
   # Need that container in order to be able to use cron as a background job in Nextcloud
@@ -475,8 +499,9 @@ services:
     depends_on:
       - nextcloud
     networks:
-      - web-proxy
-      - internal
+      - web-egress
+      - traefik-internal
+      - nextcloud-internal
     entrypoint: /cron.sh
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
@@ -492,16 +517,16 @@ services:
       - nextcloud_mariadb
       - nextcloud_redis
     networks:
-      - web-proxy
-      - internal
+      - web-egress
+      - traefik-internal
+      - nextcloud-internal
     volumes:
       - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
     environment:
       TZ: '${TZ}'
       APACHE_DISABLE_REWRITE_IP: '1'
-      TRUSTED_PROXIES: 'traefik'
-      OVERWRITEPROTOCOL: 'https'
+      TRUSTED_PROXIES: '172.16.0.0/12'
       NEXTCLOUD_TRUSTED_DOMAINS: 'cloud.${DOMAIN_NAME}'
       MYSQL_DATABASE: '${NC_MYSQL_DATABASE}'
       MYSQL_USER: '${NC_MYSQL_USER}'
@@ -511,6 +536,7 @@ services:
       REDIS_HOST: 'nextcloud_redis'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.cloud.rule: 'Host(`cloud.${DOMAIN_NAME}`)'
       traefik.http.routers.cloud.entrypoints: 'websecure'
       traefik.http.routers.cloud.middlewares: 'set-security-headers@file, nextcloud-dav-redirect'
@@ -524,7 +550,8 @@ services:
     container_name: collaboraonline
     restart: unless-stopped
     networks:
-      - web-proxy
+      - web-egress
+      - traefik-internal
     cap_add:
       - MKNOD
     environment:
@@ -535,6 +562,7 @@ services:
       dictionaries: '${COLLABORA_DICTIONARIES}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.office.rule: 'Host(`office.${DOMAIN_NAME}`)'
       traefik.http.routers.office.entrypoints: 'websecure'
       traefik.http.routers.office.middlewares: 'set-security-headers@file'
@@ -547,7 +575,7 @@ services:
     restart: unless-stopped
     command: --innodb-buffer-pool-size=128M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
     networks:
-      - internal
+      - photoprism-internal
     volumes:
       - ${LOCAL_STORAGE}/photoprism_mariadb/db:/var/lib/mysql:Z
     environment:
@@ -565,8 +593,9 @@ services:
     depends_on:
       - photoprism_mariadb
     networks:
-      - web-proxy
-      - internal
+      - web-egress
+      - traefik-internal
+      - photoprism-internal
     volumes:
       - ${LOCAL_STORAGE}/photoprism/storage:/photoprism/storage:Z
       - ${LOCAL_STORAGE}/photoprism/sidecar:/photoprism/sidecar:Z
@@ -587,6 +616,7 @@ services:
       PHOTOPRISM_ORIGINALS_LIMIT: 5000
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.photos.rule: 'Host(`photos.${DOMAIN_NAME}`)'
       traefik.http.routers.photos.entrypoints: 'websecure'
       traefik.http.routers.photos.middlewares: 'set-security-headers@file'
@@ -597,7 +627,7 @@ services:
     container_name: ttrss_postgres
     restart: unless-stopped
     networks:
-      - internal
+      - ttrss-internal
     volumes:
       - ${LOCAL_STORAGE}/ttrss_postgres/db:/var/lib/postgresql/data:Z
       - ${LOCAL_STORAGE}/ttrss_postgres/dumps:/opt/postgres_dumps:Z
@@ -615,8 +645,8 @@ services:
     depends_on:
       - ttrss_app
     networks:
-      - web-proxy
-      - internal
+      - web-egress
+      - ttrss-internal
     volumes:
       - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:z
     environment:
@@ -637,8 +667,8 @@ services:
     depends_on:
       - ttrss_postgres
     networks:
-      - web-proxy
-      - internal
+      - web-egress
+      - ttrss-internal
     volumes:
       - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:z
     environment:
@@ -659,7 +689,8 @@ services:
     depends_on:
       - ttrss_app
     networks:
-      - web-proxy
+      - web-egress
+      - traefik-internal
     volumes:
       - ${LOCAL_STORAGE}/ttrss/config/nginx.conf:/etc/nginx/nginx.conf:ro,Z
       - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:ro,z
@@ -667,17 +698,28 @@ services:
       TZ: '${TZ}'
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
       traefik.http.routers.ttrss.rule: 'Host(`ttrss.${DOMAIN_NAME}`)'
       traefik.http.routers.ttrss.entrypoints: 'websecure'
       traefik.http.routers.ttrss.middlewares: 'set-security-headers@file'
       traefik.http.services.ttrss.loadbalancer.server.port: '80'
 
 networks:
-  internal:
+  traefik-external:
+    external: true
+  traefik-internal:
     external: true
   socket-proxy:
     external: true
-  web-proxy:
+  vpn-tunnel:
     external: true
-  vpn:
+  web-egress:
+    external: true
+  plex-external:
+    external: true
+  nextcloud-internal:
+    external: true
+  photoprism-internal:
+    external: true
+  ttrss-internal:
     external: true

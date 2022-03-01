@@ -35,10 +35,15 @@ firewall-cmd --reload
 useradd dockerrt -u 3000 -U -M -s /usr/sbin/nologin
 
 # Create the docker networks
-docker network create --internal internal
+docker network create --ipv6 --subnet="${NETWORK_TRAEFIK_IPV6_PREFIX}" traefik-external
+docker network create --ipv6 --subnet="${NETWORK_PLEX_IPV6_PREFIX}" plex-external
+docker network create --ipv6 --subnet="${NETWORK_WEB_IPV6_PREFIX}" web-egress
+docker network create --ipv6 --subnet="${NETWORK_VPN_IPV6_PREFIX}" vpn-tunnel
 docker network create --internal socket-proxy
-docker network create web-proxy
-docker network create vpn
+docker network create --internal traefik-internal
+docker network create --internal nextcloud-internal
+docker network create --internal photoprism-internal
+docker network create --internal ttrss-internal
 
 # Configure SELinux to allow the use of OpenVPN in containers
 if ! semodule -l | grep docker-openvpn &>/dev/null; then
