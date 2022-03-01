@@ -12,3 +12,4 @@ client.ovpn
 docker-host-mount-points.txt
 docker-host-setup.conf
 traefik.toml
+daemon.json

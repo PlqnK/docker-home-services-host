@@ -16,6 +16,10 @@ source "${SCRIPT_PATH}/docker-host-setup.conf"
 # Install standard tools and upstream version of Docker
 dnf -y install setools-console htop vim git-core tmux
 dnf -y install moby-engine docker-compose
+
+# Enable IPv6 support in docker
+cp "${SCRIPT_PATH}/daemon.json" /etc/docker/daemon.json
+
 systemctl enable --now docker
 usermod -aG docker "${USER}"
 
