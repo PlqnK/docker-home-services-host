@@ -540,6 +540,57 @@ services:
       traefik.http.routers.office.middlewares: 'set-security-headers@file'
       traefik.http.services.office.loadbalancer.server.port: '9980'
       traefik.http.services.office.loadbalancer.server.scheme: 'https'
+  photoprism_mariadb:
+    # https://hub.docker.com/_/mariadb/
+    image: mariadb:${PHOTOPRISM_MARIADB_TAG}
+    container_name: photoprism_mariadb
+    restart: unless-stopped
+    command: --innodb-buffer-pool-size=128M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
+    networks:
+      - internal
+    volumes:
+      - ${LOCAL_STORAGE}/photoprism_mariadb/db:/var/lib/mysql:Z
+    environment:
+      TZ: '${TZ}'
+      MYSQL_ROOT_PASSWORD: '${PHOTOPRISM_MYSQL_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${PHOTOPRISM_MYSQL_DATABASE}'
+      MYSQL_USER: '${PHOTOPRISM_MYSQL_USER}'
+      MYSQL_PASSWORD: '${PHOTOPRISM_MYSQL_PASSWORD}'
+  photoprism:
+    # https://hub.docker.com/r/photoprism/photoprism
+    image: photoprism/photoprism:latest
+    container_name: photoprism
+    restart: unless-stopped
+    working_dir: /photoprism
+    depends_on:
+      - photoprism_mariadb
+    networks:
+      - web-proxy
+      - internal
+    volumes:
+      - ${LOCAL_STORAGE}/photoprism/storage:/photoprism/storage:Z
+      - ${LOCAL_STORAGE}/photoprism/sidecar:/photoprism/sidecar:Z
+      - ${LOCAL_STORAGE}/photoprism/cache:/photoprism/cache:Z
+      - ${MOUNT_POINT}/cloud/data/${PHOTOPRISM_PICTURES_PATH}:/photoprism/originals/pictures:slave
+      - ${MOUNT_POINT}/cloud/data/${PHOTOPRISM_VIDEOS_PATH}:/photoprism/originals/videos:slave
+    environment:
+      TZ: '${TZ}'
+      #PHOTOPRISM_ADMIN_PASSWORD: 'initialadminpassword'
+      PHOTOPRISM_SITE_URL: 'https://photos.${DOMAIN_NAME}/'
+      PHOTOPRISM_DATABASE_DRIVER: 'mysql'
+      PHOTOPRISM_DATABASE_SERVER: 'photoprism_mariadb:3306'
+      PHOTOPRISM_DATABASE_NAME: '${PHOTOPRISM_MYSQL_DATABASE}'
+      PHOTOPRISM_DATABASE_USER: '${PHOTOPRISM_MYSQL_USER}'
+      PHOTOPRISM_DATABASE_PASSWORD: '${PHOTOPRISM_MYSQL_PASSWORD}'
+      PHOTOPRISM_SIDECAR_PATH: '/photoprism/sidecar'
+      PHOTOPRISM_CACHE_PATH: '/photoprism/cache'
+      PHOTOPRISM_ORIGINALS_LIMIT: 5000
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.photos.rule: 'Host(`photos.${DOMAIN_NAME}`)'
+      traefik.http.routers.photos.entrypoints: 'websecure'
+      traefik.http.routers.photos.middlewares: 'set-security-headers@file'
+      traefik.http.services.photos.loadbalancer.server.port: '2342'
   ttrss_postgres:
     # https://hub.docker.com/_/postgres
     image: postgres:${TTRSS_POSTGRES_TAG}
