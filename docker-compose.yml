@@ -336,7 +336,7 @@ services:
       - 32413:32413/udp
       - 32414:32414/udp
     volumes:
-      - ${LOCAL_STORAGE}/plexmediaserver/db:/config:z
+      - ${LOCAL_STORAGE}/plexmediaserver/db:/config:Z
       - ${MOUNT_POINT}/medias/audiobooks:/data/audiobooks:slave
       - ${MOUNT_POINT}/medias/audiodrama:/data/audiodrama:slave
       - ${MOUNT_POINT}/medias/movies:/data/movies:slave
@@ -663,6 +663,8 @@ services:
     volumes:
       - ${LOCAL_STORAGE}/ttrss/config/nginx.conf:/etc/nginx/nginx.conf:ro,Z
       - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:ro,z
+    environment:
+      TZ: '${TZ}'
     labels:
       traefik.enable: 'true'
       traefik.http.routers.ttrss.rule: 'Host(`ttrss.${DOMAIN_NAME}`)'
