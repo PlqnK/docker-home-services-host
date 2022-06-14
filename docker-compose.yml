@@ -29,7 +29,7 @@ services:
         aliases:
           - 'transmission'
     volumes:
-      - ${LOCAL_STORAGE}/openvpn-client/config:/vpn:Z
+      - ${LOCAL_STORAGE}/config/openvpn-client:/vpn:Z
     environment:
       TZ: '${TZ}'
       DNS: ''
@@ -53,9 +53,9 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ${LOCAL_STORAGE}/traefik/config/traefik.toml:/etc/traefik/traefik.toml:Z
-      - ${LOCAL_STORAGE}/traefik/config/traefik-dynamic.toml:/etc/traefik/traefik-dynamic.toml:Z
-      - ${LOCAL_STORAGE}/traefik/config/acme.json:/acme.json:Z
+      - ${LOCAL_STORAGE}/config/traefik/traefik.toml:/etc/traefik/traefik.toml:Z
+      - ${LOCAL_STORAGE}/config/traefik/traefik-dynamic.toml:/etc/traefik/traefik-dynamic.toml:Z
+      - ${LOCAL_STORAGE}/data/traefik/acme.json:/acme.json:Z
     environment:
       TZ: '${TZ}'
     labels:
@@ -75,7 +75,7 @@ services:
       - openvpn-client
     network_mode: service:openvpn-client
     volumes:
-      - ${LOCAL_STORAGE}/transmission/config:/config:Z
+      - ${LOCAL_STORAGE}/data/transmission:/config:Z
       - ${MOUNT_POINT}/downloads/bittorrent/downloads:/downloads:slave
       - ${MOUNT_POINT}/downloads/bittorrent/watch:/watch:slave
     environment:
@@ -99,7 +99,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/sabnzbd/config:/config:Z
+      - ${LOCAL_STORAGE}/data/sabnzbd:/config:Z
       - ${MOUNT_POINT}/downloads/usenet/completed:/downloads:slave
       - ${MOUNT_POINT}/downloads/usenet/processing:/incomplete-downloads:slave
       - ${MOUNT_POINT}/downloads/usenet/watching:/watching:slave
@@ -163,7 +163,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/prowlarr/config:/config:Z
+      - ${LOCAL_STORAGE}/data/prowlarr:/config:Z
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -184,7 +184,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/radarr/config:/config:Z
+      - ${LOCAL_STORAGE}/data/radarr:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave
       - ${MOUNT_POINT}/medias/movies:/movies:slave
     environment:
@@ -207,7 +207,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/sonarr/config:/config:Z
+      - ${LOCAL_STORAGE}/data/sonarr:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave
       - ${MOUNT_POINT}/medias/series:/tv:slave
     environment:
@@ -230,7 +230,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/bazarr/config:/config:Z
+      - ${LOCAL_STORAGE}/data/bazarr:/config:Z
       - ${MOUNT_POINT}/medias/movies:/movies:slave
       - ${MOUNT_POINT}/medias/series:/tv:slave
     environment:
@@ -253,7 +253,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/lidarr/config:/config:Z
+      - ${LOCAL_STORAGE}/data/lidarr:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave
       - ${MOUNT_POINT}/medias/music:/music:slave
     environment:
@@ -276,7 +276,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/readarr/config:/config:Z
+      - ${LOCAL_STORAGE}/data/readarr:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave
       - ${MOUNT_POINT}/medias/books:/books:slave
     environment:
@@ -299,7 +299,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/mylar/config:/config:Z
+      - ${LOCAL_STORAGE}/data/mylar:/config:Z
       - ${MOUNT_POINT}/downloads:/downloads:slave
       - ${MOUNT_POINT}/medias/comics:/comics:slave
     environment:
@@ -322,7 +322,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/overseerr/config:/app/config:Z
+      - ${LOCAL_STORAGE}/data/overseerr:/app/config:Z
     environment:
       TZ: '${TZ}'
     labels:
@@ -332,10 +332,10 @@ services:
       traefik.http.routers.overseerr.entrypoints: 'websecure'
       traefik.http.routers.overseerr.middlewares: 'set-security-headers@file'
       traefik.http.services.overseerr.loadbalancer.server.port: '5055'
-  plexmediaserver:
+  plex:
     # https://hub.docker.com/r/plexinc/pms-docker/
     image: plexinc/pms-docker:${PLEX_TAG}
-    container_name: plexmediaserver
+    container_name: plex
     restart: unless-stopped
     networks:
       - plex-external
@@ -351,7 +351,7 @@ services:
       - 32413:32413/udp
       - 32414:32414/udp
     volumes:
-      - ${LOCAL_STORAGE}/plexmediaserver/db:/config:Z
+      - ${LOCAL_STORAGE}/data/plex:/config:Z
       - ${MOUNT_POINT}/medias/audiobooks:/data/audiobooks:slave,ro
       - ${MOUNT_POINT}/medias/audiodrama:/data/audiodrama:slave,ro
       - ${MOUNT_POINT}/medias/movies:/data/movies:slave,ro
@@ -378,7 +378,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/tautulli/config:/config:Z
+      - ${LOCAL_STORAGE}/data/tautulli:/config:Z
     environment:
       TZ: '${TZ}'
       PUID: '${PUID}'
@@ -399,7 +399,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/calibre/config:/config:Z
+      - ${LOCAL_STORAGE}/data/calibre:/config:Z
       - ${MOUNT_POINT}/medias/books:/books:slave
     environment:
       TZ: '${TZ}'
@@ -428,7 +428,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/calibre-web/config:/config:Z
+      - ${LOCAL_STORAGE}/data/calibre-web:/config:Z
       - ${MOUNT_POINT}/medias/books:/books:slave
     environment:
       TZ: '${TZ}'
@@ -450,7 +450,7 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/komga/config:/config:Z
+      - ${LOCAL_STORAGE}/data/komga:/config:Z
       - ${MOUNT_POINT}/medias/comics:/books:slave
     environment:
       TZ: '${TZ}'
@@ -470,8 +470,8 @@ services:
     networks:
       - nextcloud-internal
     volumes:
-      - ${LOCAL_STORAGE}/nextcloud_mariadb/db:/var/lib/mysql:Z
-      - ${LOCAL_STORAGE}/nextcloud_mariadb/dumps:/opt/mysql_dumps:Z
+      - ${LOCAL_STORAGE}/runtime/nextcloud_mariadb:/var/lib/mysql:Z
+      - ${LOCAL_STORAGE}/data/nextcloud_mariadb:/opt/dumps:Z
     environment:
       TZ: '${TZ}'
       MYSQL_ROOT_PASSWORD: '${NC_MYSQL_ROOT_PASSWORD}'
@@ -504,7 +504,7 @@ services:
       - nextcloud-internal
     entrypoint: /cron.sh
     volumes:
-      - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
+      - ${LOCAL_STORAGE}/data/nextcloud:/var/www/html:z
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
     environment:
       TZ: '${TZ}'
@@ -521,7 +521,7 @@ services:
       - traefik-internal
       - nextcloud-internal
     volumes:
-      - ${LOCAL_STORAGE}/nextcloud:/var/www/html:z
+      - ${LOCAL_STORAGE}/data/nextcloud:/var/www/html:z
       - ${MOUNT_POINT}/cloud/data:/var/www/html/data:slave
     environment:
       TZ: '${TZ}'
@@ -577,7 +577,7 @@ services:
     networks:
       - photoprism-internal
     volumes:
-      - ${LOCAL_STORAGE}/photoprism_mariadb/db:/var/lib/mysql:Z
+      - ${LOCAL_STORAGE}/runtime/photoprism_mariadb:/var/lib/mysql:Z
     environment:
       TZ: '${TZ}'
       MYSQL_ROOT_PASSWORD: '${PHOTOPRISM_MYSQL_ROOT_PASSWORD}'
@@ -597,9 +597,9 @@ services:
       - traefik-internal
       - photoprism-internal
     volumes:
-      - ${LOCAL_STORAGE}/photoprism/storage:/photoprism/storage:Z
-      - ${LOCAL_STORAGE}/photoprism/sidecar:/photoprism/sidecar:Z
-      - ${LOCAL_STORAGE}/photoprism/cache:/photoprism/cache:Z
+      - ${LOCAL_STORAGE}/data/photoprism:/photoprism/storage:Z
+      - ${LOCAL_STORAGE}/runtime/photoprism/sidecar:/photoprism/sidecar:Z
+      - ${LOCAL_STORAGE}/runtime/photoprism/cache:/photoprism/cache:Z
       - ${MOUNT_POINT}/cloud/data/${PHOTOPRISM_PICTURES_PATH}:/photoprism/originals/pictures:slave
       - ${MOUNT_POINT}/cloud/data/${PHOTOPRISM_VIDEOS_PATH}:/photoprism/originals/videos:slave
     environment:
@@ -629,8 +629,8 @@ services:
     networks:
       - ttrss-internal
     volumes:
-      - ${LOCAL_STORAGE}/ttrss_postgres/db:/var/lib/postgresql/data:Z
-      - ${LOCAL_STORAGE}/ttrss_postgres/dumps:/opt/postgres_dumps:Z
+      - ${LOCAL_STORAGE}/runtime/ttrss_postgres:/var/lib/postgresql/data:Z
+      - ${LOCAL_STORAGE}/data/ttrss_postgres:/opt/dumps:Z
     environment:
       TZ: '${TZ}'
       POSTGRES_DB: '${TTRSS_POSTGRES_DB}'
@@ -648,7 +648,7 @@ services:
       - web-egress
       - ttrss-internal
     volumes:
-      - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:z
+      - ${LOCAL_STORAGE}/data/ttrss_app:/var/www/html:z
     environment:
       TZ: '${TZ}'
       OWNER_UID: '${PUID}'
@@ -670,7 +670,7 @@ services:
       - web-egress
       - ttrss-internal
     volumes:
-      - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:z
+      - ${LOCAL_STORAGE}/data/ttrss_app:/var/www/html:z
     environment:
       TZ: '${TZ}'
       OWNER_UID: '${PUID}'
@@ -692,8 +692,8 @@ services:
       - web-egress
       - traefik-internal
     volumes:
-      - ${LOCAL_STORAGE}/ttrss/config/nginx.conf:/etc/nginx/nginx.conf:ro,Z
-      - ${LOCAL_STORAGE}/ttrss_app/data:/var/www/html:ro,z
+      - ${LOCAL_STORAGE}/config/ttrss/nginx.conf:/etc/nginx/nginx.conf:ro,Z
+      - ${LOCAL_STORAGE}/data/ttrss_app:/var/www/html:ro,z
     environment:
       TZ: '${TZ}'
     labels:
