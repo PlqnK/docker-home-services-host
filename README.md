@@ -73,6 +73,11 @@ I have a separate server running TrueNAS that host all my files. That's why I'm 
 - Latest Fedora Server release (other Linux distributions are possible but you will need to adapt the setup scripts).
 - A properly configured DNS server in your LAN as well as proper DNS entries with a domain suffix for your servers (populated by hand or automatically with the hostname of your devices).
 - A paid domain name for which you have full control over.
+  - Public DNS records pointing to your public IPv4
+    - One subdomain record per service, for exemple `traefik.domain.tld` (you can use a wildcard record but it's not recommended).
+    - I personnaly just have one A subdmain record pointing to my router public IPv4 and all the services records are CNAMEs that points to my A subdomain record.
+  - [Optional] If you have IPv6 properly configured on your network and your docker host
+    - A public AAAA DNS record with the same subdomain name as the IPv4 one.
 
 ## Installation
 
@@ -82,9 +87,19 @@ cd docker-home-services-host
 for file in *.example*; do cp $file $(echo $file | sed -e 's/.example//'); done
 ```
 
+If IPv6 is properly configured on your network and your host:
+
+1. Change the `fixed-cidr-v6` CIDR prefix in the `setup/daemon.json` file to a [ULA](https://en.wikipedia.org/wiki/Unique_local_address) prefix (you can generate one here, use your host MAC address <https://www.ip-six.de/>).
+2. Change the `NETWORK_xxx_IPV6_PREFIX` variables in the `docker-host-setup.conf` file with your ULA prefix.
+
+If IPv6 is **not** properly configured on your network and/or your host:
+
+1. Comment the line `cp "${SCRIPT_PATH}/daemon.json" /etc/docker/daemon.json` in the `setup/fedora-setup.sh` file.
+2. Remove the `--ipv6 --subnet="${NETWORK_xxx_IPV6_PREFIX}"` flags of the `docker network create` commands in the `setup/fedora-setup.sh` file as well.
+
 You then need to:
 
-1. Adapt the NFS mount points in `docker-host-mount-points.txt` with what you have on your file server. You need to make it match the target 1:1, except for the source folder name which isn't important, otherwise you will need to modify every reference to the original target name in the `docker-compose.yml` file.
+1. Adapt the NFS mount points in `setup/docker-host-mount-points.txt` with what you have on your file server. You need to make it match the target 1:1, except for the source folder name which isn't important, otherwise you will need to modify every reference to the original target name in the `docker-compose.yml` file.
 2. Change the values in the `.env` with ones that fits your environnement.
    - For the `PLEX_CLAIM` variable get a Plex claim token [here](https://www.plex.tv/claim/).
    - For the `TRAEFIK_API_PASSWORD` and `CALIBRE_PASSWORD` variables generate the password hashes as followed:
