@@ -352,11 +352,11 @@ services:
       - 32414:32414/udp
     volumes:
       - ${LOCAL_STORAGE}/plexmediaserver/db:/config:Z
-      - ${MOUNT_POINT}/medias/audiobooks:/data/audiobooks:slave
-      - ${MOUNT_POINT}/medias/audiodrama:/data/audiodrama:slave
-      - ${MOUNT_POINT}/medias/movies:/data/movies:slave
-      - ${MOUNT_POINT}/medias/music:/data/music:slave
-      - ${MOUNT_POINT}/medias/series:/data/series:slave
+      - ${MOUNT_POINT}/medias/audiobooks:/data/audiobooks:slave,ro
+      - ${MOUNT_POINT}/medias/audiodrama:/data/audiodrama:slave,ro
+      - ${MOUNT_POINT}/medias/movies:/data/movies:slave,ro
+      - ${MOUNT_POINT}/medias/music:/data/music:slave,ro
+      - ${MOUNT_POINT}/medias/series:/data/series:slave,ro
     environment:
       TZ: '${TZ}'
       PLEX_UID: '${PUID}'
