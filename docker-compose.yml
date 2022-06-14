@@ -556,7 +556,7 @@ services:
       - MKNOD
     environment:
       TZ: '${TZ}'
-      domain: '${NEXTCLOUD_DOMAIN}'
+      aliasgroup1: 'https://cloud.${DOMAIN_NAME}:443'
       username: '${COLLABORA_USERNAME}'
       password: '${COLLABORA_PASSWORD}'
       dictionaries: '${COLLABORA_DICTIONARIES}'
