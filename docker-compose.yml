@@ -707,15 +707,15 @@ services:
 networks:
   traefik-external:
     external: true
-  traefik-internal:
-    external: true
-  socket-proxy:
-    external: true
-  vpn-tunnel:
+  plex-external:
     external: true
   web-egress:
     external: true
-  plex-external:
+  vpn-tunnel:
+    external: true
+  socket-proxy:
+    external: true
+  traefik-internal:
     external: true
   nextcloud-internal:
     external: true
