@@ -269,7 +269,7 @@ services:
       traefik.http.services.lidarr.loadbalancer.server.port: '8686'
   readarr:
     # https://hub.docker.com/r/linuxserver/readarr/
-    image: linuxserver/readarr:nightly
+    image: linuxserver/readarr:develop
     container_name: readarr
     restart: unless-stopped
     networks:
