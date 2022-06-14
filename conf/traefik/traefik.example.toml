@@ -23,7 +23,6 @@
   [providers.docker]
     endpoint = "tcp://docker-socket-proxy:2375"
     exposedByDefault = false
-    network = "web-proxy"
   [providers.file]
     filename = "/etc/traefik/traefik-dynamic.toml"
     watch = true

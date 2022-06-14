@@ -16,6 +16,10 @@ source "${SCRIPT_PATH}/docker-host-setup.conf"
 # Install standard tools and upstream version of Docker
 dnf -y install setools-console htop vim git-core tmux
 dnf -y install moby-engine docker-compose
+
+# Enable IPv6 support in docker
+cp "${SCRIPT_PATH}/daemon.json" /etc/docker/daemon.json
+
 systemctl enable --now docker
 usermod -aG docker "${USER}"
 
@@ -31,10 +35,15 @@ firewall-cmd --reload
 useradd dockerrt -u 3000 -U -M -s /usr/sbin/nologin
 
 # Create the docker networks
-docker network create --internal internal
+docker network create --ipv6 --subnet="${NETWORK_TRAEFIK_IPV6_PREFIX}" traefik-external
+docker network create --ipv6 --subnet="${NETWORK_PLEX_IPV6_PREFIX}" plex-external
+docker network create --ipv6 --subnet="${NETWORK_WEB_IPV6_PREFIX}" web-egress
+docker network create --ipv6 --subnet="${NETWORK_VPN_IPV6_PREFIX}" vpn-tunnel
 docker network create --internal socket-proxy
-docker network create web-proxy
-docker network create vpn
+docker network create --internal traefik-internal
+docker network create --internal nextcloud-internal
+docker network create --internal photoprism-internal
+docker network create --internal ttrss-internal
 
 # Configure SELinux to allow the use of OpenVPN in containers
 if ! semodule -l | grep docker-openvpn &>/dev/null; then
