@@ -61,17 +61,13 @@ echo "${AUTO_MASTER}" > "/etc/auto.master.d/${STORAGE_SERVER_NAME}.autofs"
 cp "${SCRIPT_PATH}/docker-host-mount-points.txt" "/etc/auto.${STORAGE_SERVER_NAME}"
 systemctl enable --now autofs
 
-# Configure local storage for config files
-eval "mkdir -p ${LOCAL_STORAGE_DIRS}"
-chown -R dockerrt:dockerrt "${LOCAL_STORAGE}" && chmod -R 755 "${LOCAL_STORAGE}"
+# Configure local storage for containers config, data and runtime files
+mkdir -p "${LOCAL_STORAGE}/{config,data,runtime}"
 
 # Copy configs where needed
-cp "${PROJECT_PATH}/conf/traefik/traefik.toml" "${PROJECT_PATH}/conf/traefik/traefik-dynamic.toml" "${LOCAL_STORAGE}/traefik/config/"
-touch "${LOCAL_STORAGE}/traefik/config/acme.json" && chmod 600 "${LOCAL_STORAGE}/traefik/config/acme.json"
-chown -R dockerrt:dockerrt "${LOCAL_STORAGE}/traefik/config"
-cp "${PROJECT_PATH}/conf/ttrss/nginx.conf" "${LOCAL_STORAGE}${LOCAL_STORAGE}/ttrss/config/"
-chown -R dockerrt:dockerrt "${LOCAL_STORAGE}/ttrss/config"
+cp "${PROJECT_PATH}/conf/traefik/traefik.toml" "${PROJECT_PATH}/conf/traefik/traefik-dynamic.toml" "${LOCAL_STORAGE}/config/traefik/"
+cp "${PROJECT_PATH}/conf/ttrss/nginx.conf" "${LOCAL_STORAGE}/config/ttrss/"
+cp -r "${PROJECT_PATH}/conf/openvpn-client/." "${LOCAL_STORAGE}/config/openvpn-client/"
 
-cp -r "${PROJECT_PATH}/conf/openvpn-client/." "${LOCAL_STORAGE}/openvpn-client/config/"
-chown -R dockerrt:dockerrt "${LOCAL_STORAGE}/openvpn-client/config"
-chmod 600 "${LOCAL_STORAGE}"/openvpn-client/config/*
+# Create traefik acme.json file if it doesn't exists
+touch "${LOCAL_STORAGE}/data/traefik/acme.json" && chmod 600 "${LOCAL_STORAGE}/data/traefik/acme.json"
