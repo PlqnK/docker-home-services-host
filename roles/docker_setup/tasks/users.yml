@@ -1,0 +1,22 @@
+---
+- name: 'Add admin user to docker group'
+  ansible.builtin.user:
+    name: '{{ admin_user.user.name }}'
+    groups: 'docker'
+    append: true
+
+- name: 'Create Docker Rutime group'
+  ansible.builtin.group:
+    name: '{{ containers_runtime_user.group.name }}'
+    gid: '{{ containers_runtime_user.group.id }}'
+    state: 'present'
+
+- name: 'Create a Docker Runtime user'
+  ansible.builtin.user:
+    name: '{{ containers_runtime_user.user.name }}'
+    comment: 'Docker Runtime user'
+    uid: '{{ containers_runtime_user.user.id }}'
+    group: '{{ containers_runtime_user.group.name }}'
+    create_home: false
+    home: '/nonexistent'
+    shell: '/usr/sbin/nologin'

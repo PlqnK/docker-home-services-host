@@ -1,0 +1,17 @@
+---
+docker_ipv6:
+  enabled: false
+  ula:
+    prefix: 'fd00:dead:beef'
+    prefix_length: '/64'
+containers_runtime_user:
+  group:
+    name: 'dockerrt'
+    id: '3000'
+  user:
+    name: 'dockerrt'
+    id: '3000'
+admin_user:
+  user:
+    name: 'admin'
+containers_storage_base_path: '/var/containers'
