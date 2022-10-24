@@ -1,0 +1,103 @@
+---
+timezone: 'UTC'
+domain_name: 'example.com'
+admin_user:
+  user:
+    name: 'admin'
+  group:
+    name: 'wheel'
+  email: 'admin@example.com'
+storage_server:
+  name: 'nas'
+autofs_base_path: '/mnt/{{ storage_server.name }}'
+
+containers_storage_base_path: '/var/containers'
+
+compose_file_base_path: '/etc/containers'
+
+containers_runtime_user:
+  group:
+    id: '3000'
+  user:
+    id: '3000'
+
+containers_images_tags:
+  docker_socket_proxy: 'latest'
+  openvpn_client: 'latest'
+  traefik: '2.9'
+  transmission: 'latest'
+  sabnzbd: 'latest'
+  flaresolverr: 'latest'
+  unpackerr: 'latest'
+  prowlarr: 'develop'
+  radarr: 'latest'
+  sonarr: 'latest'
+  bazarr: 'latest'
+  lidarr: 'latest'
+  readarr: 'develop'
+  mylar: 'latest'
+  overseerr: 'latest'
+  plex: 'plexpass' # See the "Tags" section here https://hub.docker.com/r/plexinc/pms-docker/ in order to learn about the available tags
+  tautulli: 'latest'
+  calibre: 'latest'
+  calibre_web: 'latest'
+  komga: 'latest'
+  nextcloud:
+    app: '25'
+    mariadb: '10.9'
+    redis: '7'
+  collabora_online: 'latest'
+  photoprism:
+    app: 'latest'
+    mariadb: '10.9'
+  ttrss:
+    app: 'latest'
+    nginx: '1'
+    postgres: '12'
+
+openvpn_client:
+  forwarded_port: '5555'
+  other_args: '--inactive 3600 --ping 10 --ping-exit 60'
+traefik:
+  api:
+    user: 'admin'
+    password: 'password'
+  ipv6_gua: '2000:aaaa:bbbb:cccc::/56' # Define as empty if not using IPv6
+transmission:
+  user: 'transmission'
+  password: 'password'
+unpackerr:
+  sonarr_api_key: 'sonarrapikey'
+  radarr_api_key: 'radarrapikey'
+  lidarr_api_key: 'lidarrapikey'
+  readarr_api_key: 'readarrapikey'
+calibre:
+  user: 'calibre'
+  password: 'password'
+plex:
+  claim_token: 'claim-xxxxxxxxxxxxxxxxxxxx' # Get a claim token here https://www.plex.tv/claim/
+nextcloud:
+  mariadb:
+    root_password: 'password'
+    database: 'nextcloud'
+    user: 'nextcloud'
+    password: 'password'
+  redis:
+    password: 'password'
+collabora_online:
+  user: 'admin'
+  password: 'password'
+  dictionnaries: 'fr_FR en_US'
+photoprism:
+  pictures_path: 'path/to/pictures'
+  videos_path: 'path/to/videos'
+  mariadb:
+    root_password: 'password'
+    database: 'photoprism'
+    user: 'photoprism'
+    password: 'password'
+ttrss:
+  postgres:
+    database: 'ttrss'
+    user: 'ttrss'
+    password: 'password'

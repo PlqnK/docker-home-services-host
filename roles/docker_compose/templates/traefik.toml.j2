@@ -1,0 +1,33 @@
+[global]
+  checkNewVersion = false
+  sendAnonymousUsage = false
+
+[serversTransport]
+  insecureSkipVerify = true
+
+[log]
+  level = "WARNING"
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+  [entryPoints.websecure]
+    address = ":443"
+    [entryPoints.websecure.http.tls]
+      certResolver = "le"
+
+[api]
+  dashboard = true
+
+[providers]
+  [providers.docker]
+    endpoint = "tcp://docker-socket-proxy:2375"
+    exposedByDefault = false
+  [providers.file]
+    filename = "/etc/traefik/traefik-dynamic.toml"
+    watch = true
+
+[certificatesResolvers.le.acme]
+  email = "{{ admin_user.email }}"
+  storage = "acme.json"
+  [certificatesResolvers.le.acme.tlsChallenge]

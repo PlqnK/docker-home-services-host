@@ -1,0 +1,725 @@
+version: '3'
+
+services:
+  docker-socket-proxy:
+    # https://hub.docker.com/r/tecnativa/docker-socket-proxy
+    image: tecnativa/docker-socket-proxy:{{ containers_images_tags.docker_socket_proxy }}
+    container_name: docker-socket-proxy
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - socket-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: '{{ timezone }}'
+      CONTAINERS: '1'
+  openvpn-client:
+    # https://hub.docker.com/r/dperson/openvpn-client
+    image: dperson/openvpn-client:{{ containers_images_tags.openvpn_client }}
+    container_name: openvpn-client
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    networks:
+      vpn-tunnel:
+      traefik-internal:
+        aliases:
+          - 'transmission'
+    volumes:
+      - {{ containers_storage_base_path }}/config/openvpn-client:/vpn:Z
+    environment:
+      TZ: '{{ timezone }}'
+      DNS: ''
+      FIREWALL: ''
+      VPNPORT: '{{ openvpn_client.forwarded_port }}'
+      OTHER_ARGS: '{{ openvpn_client.other_args }}'
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: '0'
+  traefik:
+    # https://hub.docker.com/_/traefik/
+    image: traefik:{{ containers_images_tags.traefik }}
+    container_name: traefik
+    restart: unless-stopped
+    depends_on:
+      - docker-socket-proxy
+    networks:
+      - traefik-external
+      - traefik-internal
+      - socket-proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - {{ containers_storage_base_path }}/config/traefik/traefik.toml:/etc/traefik/traefik.toml:Z
+      - {{ containers_storage_base_path }}/config/traefik/traefik-dynamic.toml:/etc/traefik/traefik-dynamic.toml:Z
+      - {{ containers_storage_base_path }}/data/traefik/acme.json:/acme.json:Z
+    environment:
+      TZ: '{{ timezone }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.traefik.rule: 'Host(`traefik.{{ domain_name }}`)'
+      traefik.http.routers.traefik.entrypoints: 'websecure'
+      traefik.http.routers.traefik.service: 'api@internal'
+      traefik.http.routers.traefik.middlewares: 'set-security-headers@file, restrict-external-access@file, traefik-auth'
+      traefik.http.middlewares.traefik-auth.basicauth.users: '{{ traefik.api.user }}:{{ traefik.api.password | password_hash('bcrypt') | replace('$', '$$') }}'
+  transmission:
+    # https://hub.docker.com/r/linuxserver/transmission
+    image: linuxserver/transmission:{{ containers_images_tags.transmission }}
+    container_name: transmission
+    restart: unless-stopped
+    depends_on:
+      - openvpn-client
+    network_mode: service:openvpn-client
+    volumes:
+      - {{ containers_storage_base_path }}/data/transmission:/config:Z
+      - {{ autofs_base_path }}/downloads/bittorrent/downloads:/downloads:slave
+      - {{ autofs_base_path }}/downloads/bittorrent/watch:/watch:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+      USER: '{{ transmission.user }}'
+      PASS: '{{ transmission.password }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.transmission.rule: 'Host(`transmission.{{ domain_name }}`)'
+      traefik.http.routers.transmission.entrypoints: 'websecure'
+      traefik.http.routers.transmission.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.transmission.loadbalancer.server.port: '9091'
+  sabnzbd:
+    # https://hub.docker.com/r/linuxserver/sabnzbd/
+    image: linuxserver/sabnzbd:{{ containers_images_tags.sabnzbd }}
+    container_name: sabnzbd
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/sabnzbd:/config:Z
+      - {{ autofs_base_path }}/downloads/usenet/completed:/downloads:slave
+      - {{ autofs_base_path }}/downloads/usenet/processing:/incomplete-downloads:slave
+      - {{ autofs_base_path }}/downloads/usenet/watching:/watching:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.sabnzbd.rule: 'Host(`sabnzbd.{{ domain_name }}`)'
+      traefik.http.routers.sabnzbd.entrypoints: 'websecure'
+      traefik.http.routers.sabnzbd.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.sabnzbd.loadbalancer.server.port: '8080'
+  flaresolverr:
+    # https://hub.docker.com/r/flaresolverr/flaresolverr
+    image: flaresolverr/flaresolverr:{{ containers_images_tags.flaresolverr }}
+    container_name: flaresolverr
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    environment:
+      TZ: '{{ timezone }}'
+      CAPTCHA_SOLVER: 'hcaptcha-solver'
+  unpackerr:
+    # https://hub.docker.com/r/golift/unpackerr
+    image: golift/unpackerr:{{ containers_images_tags.unpackerr }}
+    container_name: unpackerr
+    restart: unless-stopped
+    networks:
+      - traefik-internal
+    volumes:
+      - {{ autofs_base_path }}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+      UN_SONARR_0_URL: 'http://sonarr:8989'
+      UN_SONARR_0_API_KEY: '{{ unpackerr.sonarr_api_key }}'
+      UN_SONARR_0_PATHS_0: '/downloads/bittorrent/downloads/tv'
+      UN_SONARR_0_PROTOCOLS: 'torrent'
+      UN_RADARR_0_URL: 'http://radarr:7878'
+      UN_RADARR_0_API_KEY: '{{ unpackerr.radarr_api_key }}'
+      UN_RADARR_0_PATHS_0: '/downloads/bittorrent/downloads/movies'
+      UN_RADARR_0_PROTOCOLS: 'torrent'
+      UN_LIDARR_0_URL: 'http://lidarr:8686'
+      UN_LIDARR_0_API_KEY: '{{ unpackerr.lidarr_api_key }}'
+      UN_LIDARR_0_PATHS_0: '/downloads/bittorrent/downloads/audio'
+      UN_LIDARR_0_PROTOCOLS: 'torrent'
+      UN_READARR_0_URL: 'http://readarr:8787'
+      UN_READARR_0_API_KEY: '{{ unpackerr.readarr_api_key }}'
+      UN_READARR_0_PATHS_0: '/downloads/bittorrent/downloads/books'
+      UN_READARR_0_PROTOCOLS: 'torrent'
+  prowlarr:
+    # https://hub.docker.com/r/linuxserver/prowlarr/
+    image: linuxserver/prowlarr:{{ containers_images_tags.prowlarr }}
+    container_name: prowlarr
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/prowlarr:/config:Z
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.prowlarr.rule: 'Host(`prowlarr.{{ domain_name }}`)'
+      traefik.http.routers.prowlarr.entrypoints: 'websecure'
+      traefik.http.routers.prowlarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.prowlarr.loadbalancer.server.port: '9696'
+  radarr:
+    # https://hub.docker.com/r/linuxserver/radarr/
+    image: linuxserver/radarr:{{ containers_images_tags.radarr }}
+    container_name: radarr
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/radarr:/config:Z
+      - {{ autofs_base_path }}/downloads:/downloads:slave
+      - {{ autofs_base_path }}/medias/movies:/movies:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.radarr.rule: 'Host(`radarr.{{ domain_name }}`)'
+      traefik.http.routers.radarr.entrypoints: 'websecure'
+      traefik.http.routers.radarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.radarr.loadbalancer.server.port: '7878'
+  sonarr:
+    # https://hub.docker.com/r/linuxserver/sonarr/
+    image: linuxserver/sonarr:{{ containers_images_tags.sonarr }}
+    container_name: sonarr
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/sonarr:/config:Z
+      - {{ autofs_base_path }}/downloads:/downloads:slave
+      - {{ autofs_base_path }}/medias/series:/tv:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.sonarr.rule: 'Host(`sonarr.{{ domain_name }}`)'
+      traefik.http.routers.sonarr.entrypoints: 'websecure'
+      traefik.http.routers.sonarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.sonarr.loadbalancer.server.port: '8989'
+  bazarr:
+    # https://hub.docker.com/r/linuxserver/bazarr
+    image: linuxserver/bazarr:{{ containers_images_tags.bazarr }}
+    container_name: bazarr
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/bazarr:/config:Z
+      - {{ autofs_base_path }}/medias/movies:/movies:slave
+      - {{ autofs_base_path }}/medias/series:/tv:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.bazarr.rule: 'Host(`bazarr.{{ domain_name }}`)'
+      traefik.http.routers.bazarr.entrypoints: 'websecure'
+      traefik.http.routers.bazarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.bazarr.loadbalancer.server.port: '6767'
+  lidarr:
+    # https://hub.docker.com/r/linuxserver/lidarr/
+    image: linuxserver/lidarr:{{ containers_images_tags.lidarr }}
+    container_name: lidarr
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/lidarr:/config:Z
+      - {{ autofs_base_path }}/downloads:/downloads:slave
+      - {{ autofs_base_path }}/medias/music:/music:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.lidarr.rule: 'Host(`lidarr.{{ domain_name }}`)'
+      traefik.http.routers.lidarr.entrypoints: 'websecure'
+      traefik.http.routers.lidarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.lidarr.loadbalancer.server.port: '8686'
+  readarr:
+    # https://hub.docker.com/r/linuxserver/readarr/
+    image: linuxserver/readarr:{{ containers_images_tags.readarr }}
+    container_name: readarr
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/readarr:/config:Z
+      - {{ autofs_base_path }}/downloads:/downloads:slave
+      - {{ autofs_base_path }}/medias/books:/books:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.readarr.rule: 'Host(`readarr.{{ domain_name }}`)'
+      traefik.http.routers.readarr.entrypoints: 'websecure'
+      traefik.http.routers.readarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.readarr.loadbalancer.server.port: '8787'
+  mylar:
+    # https://hub.docker.com/r/linuxserver/mylar3
+    image: linuxserver/mylar3:{{ containers_images_tags.mylar }}
+    container_name: mylar
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/mylar:/config:Z
+      - {{ autofs_base_path }}/downloads:/downloads:slave
+      - {{ autofs_base_path }}/medias/comics:/comics:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.mylar.rule: 'Host(`mylar.{{ domain_name }}`)'
+      traefik.http.routers.mylar.entrypoints: 'websecure'
+      traefik.http.routers.mylar.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.mylar.loadbalancer.server.port: '8090'
+  overseerr:
+    # https://hub.docker.com/r/sctx/overseerr/
+    image: sctx/overseerr:{{ containers_images_tags.overseerr }}
+    container_name: overseerr
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/overseerr:/app/config:Z
+    environment:
+      TZ: '{{ timezone }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.overseerr.rule: 'Host(`overseerr.{{ domain_name }}`)'
+      traefik.http.routers.overseerr.entrypoints: 'websecure'
+      traefik.http.routers.overseerr.middlewares: 'set-security-headers@file'
+      traefik.http.services.overseerr.loadbalancer.server.port: '5055'
+  plex:
+    # https://hub.docker.com/r/plexinc/pms-docker/
+    image: plexinc/pms-docker:{{ containers_images_tags.plex }}
+    container_name: plex
+    restart: unless-stopped
+    networks:
+      - plex-external
+      - traefik-internal
+    ports:
+      - 32400:32400/tcp
+      - 3005:3005/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    volumes:
+      - {{ containers_storage_base_path }}/data/plex:/config:Z
+      - {{ autofs_base_path }}/medias/audiobooks:/data/audiobooks:slave,ro
+      - {{ autofs_base_path }}/medias/audiodrama:/data/audiodrama:slave,ro
+      - {{ autofs_base_path }}/medias/movies:/data/movies:slave,ro
+      - {{ autofs_base_path }}/medias/music:/data/music:slave,ro
+      - {{ autofs_base_path }}/medias/series:/data/series:slave,ro
+    environment:
+      TZ: '{{ timezone }}'
+      PLEX_UID: '{{ containers_runtime_user.user.id }}'
+      PLEX_GID: '{{ containers_runtime_user.group.id }}'
+      PLEX_CLAIM: '{{ plex.claim_token }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.plex.rule: 'Host(`plex.{{ domain_name }}`)'
+      traefik.http.routers.plex.entrypoints: 'websecure'
+      traefik.http.routers.plex.middlewares: 'set-security-headers@file'
+      traefik.http.services.plex.loadbalancer.server.port: '32400'
+      traefik.http.services.plex.loadbalancer.server.scheme: 'https'
+  tautulli:
+    # https://hub.docker.com/r/tautulli/tautulli/
+    image: tautulli/tautulli:{{ containers_images_tags.tautulli }}
+    container_name: tautulli
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/tautulli:/config:Z
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.tautulli.rule: 'Host(`tautulli.{{ domain_name }}`)'
+      traefik.http.routers.tautulli.entrypoints: 'websecure'
+      traefik.http.routers.tautulli.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.tautulli.loadbalancer.server.port: '8181'
+  calibre:
+    # https://hub.docker.com/r/linuxserver/calibre
+    image: linuxserver/calibre:{{ containers_images_tags.calibre }}
+    container_name: calibre
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/calibre:/config:Z
+      - {{ autofs_base_path }}/medias/books:/books:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.calibre.rule: 'Host(`calibre.{{ domain_name }}`)'
+      traefik.http.routers.calibre.entrypoints: 'websecure'
+      traefik.http.routers.calibre.middlewares: 'set-security-headers@file, restrict-external-access@file, calibre-auth'
+      traefik.http.routers.calibre.service: 'calibre'
+      traefik.http.middlewares.calibre-auth.basicauth.users: '{{ calibre.user }}:{{ calibre.password | password_hash('bcrypt') | replace('$', '$$') }}'
+      traefik.http.services.calibre.loadbalancer.server.port: '8080'
+      traefik.http.routers.calibre-cs.rule: 'Host(`calibre-cs.{{ domain_name }}`)'
+      traefik.http.routers.calibre-cs.entrypoints: 'websecure'
+      traefik.http.routers.calibre-cs.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.routers.calibre-cs.service: 'calibre-cs'
+      traefik.http.services.calibre-cs.loadbalancer.server.port: '8081'
+  calibre-web:
+    # https://hub.docker.com/r/linuxserver/calibre-web
+    image: linuxserver/calibre-web:{{ containers_images_tags.calibre_web }}
+    container_name: calibre-web
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/calibre-web:/config:Z
+      - {{ autofs_base_path }}/medias/books:/books:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PUID: '{{ containers_runtime_user.user.id }}'
+      PGID: '{{ containers_runtime_user.group.id }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.calibre-web.rule: 'Host(`calibre-web.{{ domain_name }}`)'
+      traefik.http.routers.calibre-web.entrypoints: 'websecure'
+      traefik.http.routers.calibre-web.middlewares: 'set-security-headers@file'
+      traefik.http.services.calibre-web.loadbalancer.server.port: '8083'
+  komga:
+    # https://hub.docker.com/r/gotson/komga
+    image: gotson/komga:{{ containers_images_tags.komga }}
+    container_name: komga
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/komga:/config:Z
+      - {{ autofs_base_path }}/medias/comics:/books:slave
+    environment:
+      TZ: '{{ timezone }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.komga.rule: 'Host(`komga.{{ domain_name }}`)'
+      traefik.http.routers.komga.entrypoints: 'websecure'
+      traefik.http.routers.komga.middlewares: 'set-security-headers@file'
+      traefik.http.services.komga.loadbalancer.server.port: '8080'
+  nextcloud_mariadb:
+    # https://hub.docker.com/_/mariadb/
+    image: mariadb:{{ containers_images_tags.nextcloud.mariadb }}
+    container_name: nextcloud_mariadb
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    networks:
+      - nextcloud-internal
+    volumes:
+      - {{ containers_storage_base_path }}/runtime/nextcloud_mariadb:/var/lib/mysql:Z
+      - {{ containers_storage_base_path }}/data/nextcloud_mariadb:/opt/dumps:Z
+    environment:
+      TZ: '{{ timezone }}'
+      MYSQL_ROOT_PASSWORD: '{{ nextcloud.mariadb.root_password }}'
+      MYSQL_DATABASE: '{{ nextcloud.mariadb.database }}'
+      MYSQL_USER: '{{ nextcloud.mariadb.user }}'
+      MYSQL_PASSWORD: '{{ nextcloud.mariadb.password }}'
+  nextcloud_redis:
+    # https://hub.docker.com/_/redis/
+    image: redis:{{ containers_images_tags.nextcloud.redis }}
+    container_name: nextcloud_redis
+    restart: unless-stopped
+    command: --requirepass {{ nextcloud.redis.password }}
+    networks:
+      - nextcloud-internal
+    environment:
+      TZ: '{{ timezone }}'
+  # Need that container in order to be able to use cron as a background job in Nextcloud
+  # This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
+  # More info here: https://github.com/nextcloud/docker/pull/220
+  nextcloud_cron:
+    # https://hub.docker.com/_/nextcloud/
+    image: nextcloud:{{ containers_images_tags.nextcloud.app }}
+    container_name: nextcloud_cron
+    restart: unless-stopped
+    depends_on:
+      - nextcloud
+    networks:
+      - web-egress
+      - traefik-internal
+      - nextcloud-internal
+    entrypoint: /cron.sh
+    volumes:
+      - {{ containers_storage_base_path }}/data/nextcloud:/var/www/html:z
+      - {{ autofs_base_path }}/cloud/data:/var/www/html/data:slave
+    environment:
+      TZ: '{{ timezone }}'
+  nextcloud:
+    # https://hub.docker.com/_/nextcloud/
+    image: nextcloud:{{ containers_images_tags.nextcloud.app }}
+    container_name: nextcloud
+    restart: unless-stopped
+    depends_on:
+      - nextcloud_mariadb
+      - nextcloud_redis
+    networks:
+      - web-egress
+      - traefik-internal
+      - nextcloud-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/nextcloud:/var/www/html:z
+      - {{ autofs_base_path }}/cloud/data:/var/www/html/data:slave
+    environment:
+      TZ: '{{ timezone }}'
+      APACHE_DISABLE_REWRITE_IP: '1'
+      TRUSTED_PROXIES: '172.16.0.0/12'
+      NEXTCLOUD_TRUSTED_DOMAINS: 'cloud.{{ domain_name }}'
+      MYSQL_DATABASE: '{{ nextcloud.mariadb.database }}'
+      MYSQL_USER: '{{ nextcloud.mariadb.user }}'
+      MYSQL_PASSWORD: '{{ nextcloud.mariadb.password }}'
+      MYSQL_HOST: 'nextcloud_mariadb'
+      REDIS_HOST_PASSWORD: '{{ nextcloud.redis.password }}'
+      REDIS_HOST: 'nextcloud_redis'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.cloud.rule: 'Host(`cloud.{{ domain_name }}`)'
+      traefik.http.routers.cloud.entrypoints: 'websecure'
+      traefik.http.routers.cloud.middlewares: 'set-security-headers@file, nextcloud-dav-redirect'
+      traefik.http.services.cloud.loadbalancer.server.port: '80'
+      traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.permanent: 'true'
+      traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.regex: 'https://(.*)/.well-known/(card|cal)dav'
+      traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.replacement: 'https://$${1}/remote.php/dav/'
+  collaboraonline:
+    # https://hub.docker.com/r/collabora/code/
+    image: collabora/code:{{ containers_images_tags.collabora_online }}
+    container_name: collaboraonline
+    restart: unless-stopped
+    networks:
+      - web-egress
+      - traefik-internal
+    cap_add:
+      - MKNOD
+    environment:
+      TZ: '{{ timezone }}'
+      aliasgroup1: 'https://cloud.{{ domain_name }}:443'
+      username: '{{ collabora_online.user }}'
+      password: '{{ collabora_online.password }}'
+      dictionaries: '{{ collabora_online.dictionnaries }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.office.rule: 'Host(`office.{{ domain_name }}`)'
+      traefik.http.routers.office.entrypoints: 'websecure'
+      traefik.http.routers.office.middlewares: 'set-security-headers@file'
+      traefik.http.services.office.loadbalancer.server.port: '9980'
+      traefik.http.services.office.loadbalancer.server.scheme: 'https'
+  photoprism_mariadb:
+    # https://hub.docker.com/_/mariadb/
+    image: mariadb:{{ containers_images_tags.photoprism.mariadb }}
+    container_name: photoprism_mariadb
+    restart: unless-stopped
+    command: --innodb-buffer-pool-size=512M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
+    networks:
+      - photoprism-internal
+    volumes:
+      - {{ containers_storage_base_path }}/runtime/photoprism_mariadb:/var/lib/mysql:Z
+    environment:
+      TZ: '{{ timezone }}'
+      MYSQL_ROOT_PASSWORD: '{{ photoprism.mariadb.root_password }}'
+      MYSQL_DATABASE: '{{ photoprism.mariadb.database }}'
+      MYSQL_USER: '{{ photoprism.mariadb.user }}'
+      MYSQL_PASSWORD: '{{ photoprism.mariadb.password }}'
+  photoprism:
+    # https://hub.docker.com/r/photoprism/photoprism
+    image: photoprism/photoprism:{{ containers_images_tags.photoprism.app }}
+    container_name: photoprism
+    restart: unless-stopped
+    working_dir: /photoprism
+    depends_on:
+      - photoprism_mariadb
+    networks:
+      - web-egress
+      - traefik-internal
+      - photoprism-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/photoprism:/photoprism/storage:Z
+      - {{ containers_storage_base_path }}/runtime/photoprism/sidecar:/photoprism/sidecar:Z
+      - {{ containers_storage_base_path }}/runtime/photoprism/cache:/photoprism/cache:Z
+      - {{ autofs_base_path }}/cloud/data/{{ photoprism.pictures_path }}:/photoprism/originals/pictures:slave
+      - {{ autofs_base_path }}/cloud/data/{{ photoprism.videos_path }}:/photoprism/originals/videos:slave
+    environment:
+      TZ: '{{ timezone }}'
+      PHOTOPRISM_SITE_URL: 'https://photos.{{ domain_name }}/'
+      PHOTOPRISM_DATABASE_DRIVER: 'mysql'
+      PHOTOPRISM_DATABASE_SERVER: 'photoprism_mariadb:3306'
+      PHOTOPRISM_DATABASE_NAME: '{{ photoprism.mariadb.database }}'
+      PHOTOPRISM_DATABASE_USER: '{{ photoprism.mariadb.user }}'
+      PHOTOPRISM_DATABASE_PASSWORD: '{{ photoprism.mariadb.password }}'
+      PHOTOPRISM_SIDECAR_PATH: '/photoprism/sidecar'
+      PHOTOPRISM_CACHE_PATH: '/photoprism/cache'
+      PHOTOPRISM_ORIGINALS_LIMIT: 5000
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.photos.rule: 'Host(`photos.{{ domain_name }}`)'
+      traefik.http.routers.photos.entrypoints: 'websecure'
+      traefik.http.routers.photos.middlewares: 'set-security-headers@file'
+      traefik.http.services.photos.loadbalancer.server.port: '2342'
+  ttrss_postgres:
+    # https://hub.docker.com/_/postgres
+    image: postgres:{{ containers_images_tags.ttrss.postgres }}
+    container_name: ttrss_postgres
+    restart: unless-stopped
+    networks:
+      - ttrss-internal
+    volumes:
+      - {{ containers_storage_base_path }}/runtime/ttrss_postgres:/var/lib/postgresql/data:Z
+      - {{ containers_storage_base_path }}/data/ttrss_postgres:/opt/dumps:Z
+    environment:
+      TZ: '{{ timezone }}'
+      POSTGRES_DB: '{{ ttrss.postgres.database }}'
+      POSTGRES_USER: '{{ ttrss.postgres.user }}'
+      POSTGRES_PASSWORD: '{{ ttrss.postgres.password }}'
+  ttrss_updater:
+    # https://hub.docker.com/r/cthulhoo/ttrss-fpm-pgsql-static
+    image: cthulhoo/ttrss-fpm-pgsql-static:{{ containers_images_tags.ttrss.app }}
+    container_name: ttrss_updater
+    restart: unless-stopped
+    command: /opt/tt-rss/updater.sh
+    depends_on:
+      - ttrss_app
+    networks:
+      - web-egress
+      - ttrss-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/ttrss_app:/var/www/html:z
+    environment:
+      TZ: '{{ timezone }}'
+      OWNER_UID: '{{ containers_runtime_user.user.id }}'
+      OWNER_GID: '{{ containers_runtime_user.group.id }}'
+      TTRSS_DB_TYPE: 'pgsql'
+      TTRSS_DB_HOST: 'ttrss_postgres'
+      TTRSS_DB_NAME: '{{ ttrss.postgres.database }}'
+      TTRSS_DB_USER: '{{ ttrss.postgres.user }}'
+      TTRSS_DB_PASS: '{{ ttrss.postgres.password }}'
+      TTRSS_SELF_URL_PATH: 'https://ttrss.{{ domain_name }}/tt-rss'
+  ttrss_app:
+    # https://hub.docker.com/r/cthulhoo/ttrss-fpm-pgsql-static
+    image: cthulhoo/ttrss-fpm-pgsql-static:{{ containers_images_tags.ttrss.app }}
+    container_name: ttrss_app
+    restart: unless-stopped
+    depends_on:
+      - ttrss_postgres
+    networks:
+      - web-egress
+      - ttrss-internal
+    volumes:
+      - {{ containers_storage_base_path }}/data/ttrss_app:/var/www/html:z
+    environment:
+      TZ: '{{ timezone }}'
+      OWNER_UID: '{{ containers_runtime_user.user.id }}'
+      OWNER_GID: '{{ containers_runtime_user.group.id }}'
+      TTRSS_DB_TYPE: 'pgsql'
+      TTRSS_DB_HOST: 'ttrss_postgres'
+      TTRSS_DB_NAME: '{{ ttrss.postgres.database }}'
+      TTRSS_DB_USER: '{{ ttrss.postgres.user }}'
+      TTRSS_DB_PASS: '{{ ttrss.postgres.password }}'
+      TTRSS_SELF_URL_PATH: 'https://ttrss.{{ domain_name }}/tt-rss'
+  ttrss:
+    # https://hub.docker.com/_/nginx
+    image: nginx:{{ containers_images_tags.ttrss.nginx }}
+    container_name: ttrss
+    restart: unless-stopped
+    depends_on:
+      - ttrss_app
+    networks:
+      - web-egress
+      - traefik-internal
+    volumes:
+      - {{ containers_storage_base_path }}/config/ttrss/nginx.conf:/etc/nginx/nginx.conf:ro,Z
+      - {{ containers_storage_base_path }}/data/ttrss_app:/var/www/html:ro,z
+    environment:
+      TZ: '{{ timezone }}'
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: 'traefik-internal'
+      traefik.http.routers.ttrss.rule: 'Host(`ttrss.{{ domain_name }}`)'
+      traefik.http.routers.ttrss.entrypoints: 'websecure'
+      traefik.http.routers.ttrss.middlewares: 'set-security-headers@file'
+      traefik.http.services.ttrss.loadbalancer.server.port: '80'
+
+networks:
+  traefik-external:
+    external: true
+  plex-external:
+    external: true
+  web-egress:
+    external: true
+  vpn-tunnel:
+    external: true
+  socket-proxy:
+    external: true
+  traefik-internal:
+    external: true
+  nextcloud-internal:
+    external: true
+  photoprism-internal:
+    external: true
+  ttrss-internal:
+    external: true

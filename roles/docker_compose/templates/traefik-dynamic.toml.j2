@@ -1,0 +1,44 @@
+[tls.options]
+  [tls.options.default]
+    minVersion = "VersionTLS12"
+    sniStrict = true
+    cipherSuites = [
+      "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
+      "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+    ]
+    curvePreferences = ["X25519", "CurveP521", "CurveP384"]
+
+[http]
+  [http.routers]
+    [http.routers.web-insecure]
+      entrypoints = ["web"]
+      rule = "HostRegexp(`{host:.+}`)"
+      service = "noop@internal"
+      middlewares = ["redirect-to-https"]
+  [http.middlewares]
+    [http.middlewares.redirect-to-https.redirectScheme]
+      scheme = "https"
+      permanent = true
+    [http.middlewares.set-security-headers.headers]
+      browserXssFilter = true
+      contentTypeNosniff = true
+      customFrameOptionsValue = "SAMEORIGIN"
+      referrerPolicy = "same-origin"
+      permissionsPolicy = "accelerometer=(self), ambient-light-sensor=(self), autoplay=(self), battery=(self), camera=(self), cross-origin-isolated=(self), display-capture=(self), document-domain=(self), encrypted-media=(self), execution-while-not-rendered=(self), execution-while-out-of-viewport=(self), fullscreen=(self), geolocation=(self), gyroscope=(self), keyboard-map=(self), magnetometer=(self), microphone=(self), midi=(self), navigation-override=(self), payment=(self), picture-in-picture=(self), publickey-credentials-get=(self), screen-wake-lock=(self), sync-xhr=(self), usb=(self), web-share=(self), xr-spatial-tracking=(self)"
+      stsSeconds = 31536000
+      stsIncludeSubdomains = true
+      # Only enable if the second level domain has TLS enabled
+      stsPreload = false
+      [http.middlewares.set-security-headers.headers.customRequestHeaders]
+        X-Scheme = "https"
+        X-Forwarded-Proto = "https"
+      [http.middlewares.set-security-headers.headers.customResponseHeaders]
+        Server = ""
+        X-Powered-By = ""
+        X-Robots-Tag = "none"
+    [http.middlewares.restrict-external-access.ipWhiteList]
+      sourceRange = ["127.0.0.0/8", "10.0.0.0/8", "100.64.0.0/10", "172.16.0.0/12", "192.168.0.0/16", "::1/128", "fc00::/7"{% if traefik.ipv6_gua is not none %}, "{{ traefik.ipv6_gua }}"{% endif %}]
