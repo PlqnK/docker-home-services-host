@@ -1,0 +1,17 @@
+---
+storage_server:
+  name: 'nas'
+  fqdn: 'nas.localhost.localdomain'
+  exports_base_path: '/srv/nfs'
+nfs_exports:
+  - 'cloud/data'
+  - 'downloads/bittorrent'
+  - 'downloads/usenet'
+  - 'medias/audiobooks'
+  - 'medias/audiodrama'
+  - 'medias/books'
+  - 'medias/comics'
+  - 'medias/movies'
+  - 'medias/music'
+  - 'medias/series'
+autofs_base_path: '/mnt/{{ storage_server.name }}'

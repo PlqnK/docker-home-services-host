@@ -1,0 +1,12 @@
+---
+- name: 'Install required dependencies and common tools'
+  ansible.builtin.dnf:
+    name:
+      - 'nfs-utils'
+      - 'autofs'
+      - 'checkpolicy'
+      - 'setools-console'
+      - 'htop'
+      - 'vim'
+      - 'tmux'
+    state: 'present'
