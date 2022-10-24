@@ -1,0 +1,11 @@
+---
+- name: 'Host configuration'
+  hosts: 'docker-host'
+  roles:
+    - 'host_setup'
+    - 'docker_setup'
+
+- name: 'Docker Compose'
+  hosts: 'docker-host'
+  roles:
+    - 'docker_compose'
