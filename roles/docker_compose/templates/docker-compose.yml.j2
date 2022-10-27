@@ -2,7 +2,6 @@ version: '3'
 
 services:
   docker-socket-proxy:
-    # https://hub.docker.com/r/tecnativa/docker-socket-proxy
     image: tecnativa/docker-socket-proxy:{{ containers_images_tags.docker_socket_proxy }}
     container_name: docker-socket-proxy
     restart: unless-stopped
@@ -15,7 +14,6 @@ services:
       TZ: '{{ timezone }}'
       CONTAINERS: '1'
   gluetun:
-    # https://hub.docker.com/r/qmcgaw/gluetun
     image: qmcgaw/gluetun:{{ containers_images_tags.gluetun }}
     container_name: gluetun
     restart: unless-stopped
@@ -41,7 +39,6 @@ services:
     sysctls:
       net.ipv6.conf.all.disable_ipv6: '0'
   traefik:
-    # https://hub.docker.com/_/traefik/
     image: traefik:{{ containers_images_tags.traefik }}
     container_name: traefik
     restart: unless-stopped
@@ -69,7 +66,6 @@ services:
       traefik.http.routers.traefik.middlewares: 'set-security-headers@file, restrict-external-access@file, traefik-auth'
       traefik.http.middlewares.traefik-auth.basicauth.users: '{{ traefik.api.user }}:{{ traefik.api.password | password_hash('bcrypt') | replace('$', '$$') }}'
   transmission:
-    # https://hub.docker.com/r/linuxserver/transmission
     image: linuxserver/transmission:{{ containers_images_tags.transmission }}
     container_name: transmission
     restart: unless-stopped
@@ -93,7 +89,6 @@ services:
       traefik.http.routers.transmission.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.transmission.loadbalancer.server.port: '9091'
   sabnzbd:
-    # https://hub.docker.com/r/linuxserver/sabnzbd/
     image: linuxserver/sabnzbd:{{ containers_images_tags.sabnzbd }}
     container_name: sabnzbd
     restart: unless-stopped
@@ -117,7 +112,6 @@ services:
       traefik.http.routers.sabnzbd.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.sabnzbd.loadbalancer.server.port: '8080'
   flaresolverr:
-    # https://hub.docker.com/r/flaresolverr/flaresolverr
     image: flaresolverr/flaresolverr:{{ containers_images_tags.flaresolverr }}
     container_name: flaresolverr
     restart: unless-stopped
@@ -128,7 +122,6 @@ services:
       TZ: '{{ timezone }}'
       CAPTCHA_SOLVER: 'hcaptcha-solver'
   unpackerr:
-    # https://hub.docker.com/r/golift/unpackerr
     image: golift/unpackerr:{{ containers_images_tags.unpackerr }}
     container_name: unpackerr
     restart: unless-stopped
@@ -157,7 +150,6 @@ services:
       UN_READARR_0_PATHS_0: '/downloads/bittorrent/downloads/books'
       UN_READARR_0_PROTOCOLS: 'torrent'
   prowlarr:
-    # https://hub.docker.com/r/linuxserver/prowlarr/
     image: linuxserver/prowlarr:{{ containers_images_tags.prowlarr }}
     container_name: prowlarr
     restart: unless-stopped
@@ -178,7 +170,6 @@ services:
       traefik.http.routers.prowlarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.prowlarr.loadbalancer.server.port: '9696'
   radarr:
-    # https://hub.docker.com/r/linuxserver/radarr/
     image: linuxserver/radarr:{{ containers_images_tags.radarr }}
     container_name: radarr
     restart: unless-stopped
@@ -201,7 +192,6 @@ services:
       traefik.http.routers.radarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.radarr.loadbalancer.server.port: '7878'
   sonarr:
-    # https://hub.docker.com/r/linuxserver/sonarr/
     image: linuxserver/sonarr:{{ containers_images_tags.sonarr }}
     container_name: sonarr
     restart: unless-stopped
@@ -224,7 +214,6 @@ services:
       traefik.http.routers.sonarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.sonarr.loadbalancer.server.port: '8989'
   bazarr:
-    # https://hub.docker.com/r/linuxserver/bazarr
     image: linuxserver/bazarr:{{ containers_images_tags.bazarr }}
     container_name: bazarr
     restart: unless-stopped
@@ -247,7 +236,6 @@ services:
       traefik.http.routers.bazarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.bazarr.loadbalancer.server.port: '6767'
   lidarr:
-    # https://hub.docker.com/r/linuxserver/lidarr/
     image: linuxserver/lidarr:{{ containers_images_tags.lidarr }}
     container_name: lidarr
     restart: unless-stopped
@@ -270,7 +258,6 @@ services:
       traefik.http.routers.lidarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.lidarr.loadbalancer.server.port: '8686'
   readarr:
-    # https://hub.docker.com/r/linuxserver/readarr/
     image: linuxserver/readarr:{{ containers_images_tags.readarr }}
     container_name: readarr
     restart: unless-stopped
@@ -293,7 +280,6 @@ services:
       traefik.http.routers.readarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.readarr.loadbalancer.server.port: '8787'
   mylar:
-    # https://hub.docker.com/r/linuxserver/mylar3
     image: linuxserver/mylar3:{{ containers_images_tags.mylar }}
     container_name: mylar
     restart: unless-stopped
@@ -316,7 +302,6 @@ services:
       traefik.http.routers.mylar.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.mylar.loadbalancer.server.port: '8090'
   overseerr:
-    # https://hub.docker.com/r/sctx/overseerr/
     image: sctx/overseerr:{{ containers_images_tags.overseerr }}
     container_name: overseerr
     restart: unless-stopped
@@ -335,7 +320,6 @@ services:
       traefik.http.routers.overseerr.middlewares: 'set-security-headers@file'
       traefik.http.services.overseerr.loadbalancer.server.port: '5055'
   plex:
-    # https://hub.docker.com/r/plexinc/pms-docker/
     image: plexinc/pms-docker:{{ containers_images_tags.plex }}
     container_name: plex
     restart: unless-stopped
@@ -373,7 +357,6 @@ services:
       traefik.http.services.plex.loadbalancer.server.port: '32400'
       traefik.http.services.plex.loadbalancer.server.scheme: 'https'
   tautulli:
-    # https://hub.docker.com/r/tautulli/tautulli/
     image: tautulli/tautulli:{{ containers_images_tags.tautulli }}
     container_name: tautulli
     restart: unless-stopped
@@ -394,7 +377,6 @@ services:
       traefik.http.routers.tautulli.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.services.tautulli.loadbalancer.server.port: '8181'
   calibre:
-    # https://hub.docker.com/r/linuxserver/calibre
     image: linuxserver/calibre:{{ containers_images_tags.calibre }}
     container_name: calibre
     restart: unless-stopped
@@ -423,7 +405,6 @@ services:
       traefik.http.routers.calibre-cs.service: 'calibre-cs'
       traefik.http.services.calibre-cs.loadbalancer.server.port: '8081'
   calibre-web:
-    # https://hub.docker.com/r/linuxserver/calibre-web
     image: linuxserver/calibre-web:{{ containers_images_tags.calibre_web }}
     container_name: calibre-web
     restart: unless-stopped
@@ -445,7 +426,6 @@ services:
       traefik.http.routers.calibre-web.middlewares: 'set-security-headers@file'
       traefik.http.services.calibre-web.loadbalancer.server.port: '8083'
   komga:
-    # https://hub.docker.com/r/gotson/komga
     image: gotson/komga:{{ containers_images_tags.komga }}
     container_name: komga
     restart: unless-stopped
@@ -465,7 +445,6 @@ services:
       traefik.http.routers.komga.middlewares: 'set-security-headers@file'
       traefik.http.services.komga.loadbalancer.server.port: '8080'
   nextcloud_mariadb:
-    # https://hub.docker.com/_/mariadb/
     image: mariadb:{{ containers_images_tags.nextcloud.mariadb }}
     container_name: nextcloud_mariadb
     restart: unless-stopped
@@ -482,7 +461,6 @@ services:
       MYSQL_USER: '{{ nextcloud.mariadb.user }}'
       MYSQL_PASSWORD: '{{ nextcloud.mariadb.password }}'
   nextcloud_redis:
-    # https://hub.docker.com/_/redis/
     image: redis:{{ containers_images_tags.nextcloud.redis }}
     container_name: nextcloud_redis
     restart: unless-stopped
@@ -491,11 +469,7 @@ services:
       - nextcloud-internal
     environment:
       TZ: '{{ timezone }}'
-  # Need that container in order to be able to use cron as a background job in Nextcloud
-  # This container has one process running: cron, which execute /var/www/html/cron.php every 15 minutes
-  # More info here: https://github.com/nextcloud/docker/pull/220
   nextcloud_cron:
-    # https://hub.docker.com/_/nextcloud/
     image: nextcloud:{{ containers_images_tags.nextcloud.app }}
     container_name: nextcloud_cron
     restart: unless-stopped
@@ -512,7 +486,6 @@ services:
     environment:
       TZ: '{{ timezone }}'
   nextcloud:
-    # https://hub.docker.com/_/nextcloud/
     image: nextcloud:{{ containers_images_tags.nextcloud.app }}
     container_name: nextcloud
     restart: unless-stopped
@@ -548,7 +521,6 @@ services:
       traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.regex: 'https://(.*)/.well-known/(card|cal)dav'
       traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.replacement: 'https://$${1}/remote.php/dav/'
   collaboraonline:
-    # https://hub.docker.com/r/collabora/code/
     image: collabora/code:{{ containers_images_tags.collabora_online }}
     container_name: collaboraonline
     restart: unless-stopped
@@ -572,7 +544,6 @@ services:
       traefik.http.services.office.loadbalancer.server.port: '9980'
       traefik.http.services.office.loadbalancer.server.scheme: 'https'
   photoprism_mariadb:
-    # https://hub.docker.com/_/mariadb/
     image: mariadb:{{ containers_images_tags.photoprism.mariadb }}
     container_name: photoprism_mariadb
     restart: unless-stopped
@@ -588,7 +559,6 @@ services:
       MYSQL_USER: '{{ photoprism.mariadb.user }}'
       MYSQL_PASSWORD: '{{ photoprism.mariadb.password }}'
   photoprism:
-    # https://hub.docker.com/r/photoprism/photoprism
     image: photoprism/photoprism:{{ containers_images_tags.photoprism.app }}
     container_name: photoprism
     restart: unless-stopped
@@ -624,7 +594,6 @@ services:
       traefik.http.routers.photos.middlewares: 'set-security-headers@file'
       traefik.http.services.photos.loadbalancer.server.port: '2342'
   ttrss_postgres:
-    # https://hub.docker.com/_/postgres
     image: postgres:{{ containers_images_tags.ttrss.postgres }}
     container_name: ttrss_postgres
     restart: unless-stopped
@@ -639,7 +608,6 @@ services:
       POSTGRES_USER: '{{ ttrss.postgres.user }}'
       POSTGRES_PASSWORD: '{{ ttrss.postgres.password }}'
   ttrss_updater:
-    # https://hub.docker.com/r/cthulhoo/ttrss-fpm-pgsql-static
     image: cthulhoo/ttrss-fpm-pgsql-static:{{ containers_images_tags.ttrss.app }}
     container_name: ttrss_updater
     restart: unless-stopped
@@ -662,7 +630,6 @@ services:
       TTRSS_DB_PASS: '{{ ttrss.postgres.password }}'
       TTRSS_SELF_URL_PATH: 'https://ttrss.{{ domain_name }}/tt-rss'
   ttrss_app:
-    # https://hub.docker.com/r/cthulhoo/ttrss-fpm-pgsql-static
     image: cthulhoo/ttrss-fpm-pgsql-static:{{ containers_images_tags.ttrss.app }}
     container_name: ttrss_app
     restart: unless-stopped
@@ -684,7 +651,6 @@ services:
       TTRSS_DB_PASS: '{{ ttrss.postgres.password }}'
       TTRSS_SELF_URL_PATH: 'https://ttrss.{{ domain_name }}/tt-rss'
   ttrss:
-    # https://hub.docker.com/_/nginx
     image: nginx:{{ containers_images_tags.ttrss.nginx }}
     container_name: ttrss
     restart: unless-stopped
