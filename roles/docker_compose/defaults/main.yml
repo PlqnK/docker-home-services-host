@@ -22,6 +22,7 @@ containers_runtime_user:
     id: '3000'
 
 containers_images_tags:
+  deck_chores: '1'
   ddns_updater: 'latest'
   openvpn_client: 'latest'
   gluetun: 'latest'

@@ -13,6 +13,15 @@ services:
     environment:
       TZ: '{{ timezone }}'
       CONTAINERS: '1'
+  deck-chores:
+    image: funkyfuture/deck-chores:{{ containers_images_tags.deck_chores }}
+    container_name: 'deck-chores'
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: '{{ timezone }}'
   ddns-updater:
     image: qmcgaw/ddns-updater:{{ containers_images_tags.ddns_updater }}
     container_name: ddns-updater
@@ -476,6 +485,9 @@ services:
       MYSQL_DATABASE: '{{ nextcloud.mariadb.database }}'
       MYSQL_USER: '{{ nextcloud.mariadb.user }}'
       MYSQL_PASSWORD: '{{ nextcloud.mariadb.password }}'
+    labels:
+      deck-chores.dump.command: 'sh -c "mysqldump --single-transaction --default-character-set=utf8mb4 -u {{ nextcloud.mariadb.user }} -p{{ nextcloud.mariadb.password }} {{ nextcloud.mariadb.database }} > /opt/dumps/nextcloud.sql"'
+      deck-chores.dump.cron: '* * * * * 4 0 0'
   nextcloud_redis:
     image: redis:{{ containers_images_tags.nextcloud.redis }}
     container_name: nextcloud_redis
@@ -587,6 +599,7 @@ services:
       - photoprism-internal
     volumes:
       - {{ containers_storage_base_path }}/data/photoprism:/photoprism/storage:Z
+      - {{ containers_storage_base_path }}/data/photoprism_mariadb:/opt/dumps:Z
       - {{ containers_storage_base_path }}/runtime/photoprism/sidecar:/photoprism/sidecar:Z
       - {{ containers_storage_base_path }}/runtime/photoprism/cache:/photoprism/cache:Z
       - {{ autofs_base_path }}/cloud/data/{{ photoprism.pictures_path }}:/photoprism/originals/pictures:slave
@@ -609,6 +622,12 @@ services:
       traefik.http.routers.photos.entrypoints: 'websecure'
       traefik.http.routers.photos.middlewares: 'set-security-headers@file'
       traefik.http.services.photos.loadbalancer.server.port: '2342'
+      deck-chores.index.command: 'photoprism index --cleanup'
+      deck-chores.index.interval: 'hourly'
+      deck-chores.convert.command: 'photoprism convert'
+      deck-chores.convert.interval: 'hourly'
+      deck-chores.backup.command: 'photoprism backup -f -i /opt/dumps/photoprism.sql'
+      deck-chores.backup.cron: '* * * * * 4 0 0'
   ttrss_postgres:
     image: postgres:{{ containers_images_tags.ttrss.postgres }}
     container_name: ttrss_postgres
@@ -623,6 +642,9 @@ services:
       POSTGRES_DB: '{{ ttrss.postgres.database }}'
       POSTGRES_USER: '{{ ttrss.postgres.user }}'
       POSTGRES_PASSWORD: '{{ ttrss.postgres.password }}'
+    labels:
+      deck-chores.dump.command: 'sh -c "pg_dump --clean -U {{ ttrss.postgres.user }} {{ ttrss.postgres.database }} > /opt/dumps/ttrss.sql"'
+      deck-chores.dump.cron: '* * * * * 4 0 0'
   ttrss_updater:
     image: cthulhoo/ttrss-fpm-pgsql-static:{{ containers_images_tags.ttrss.app }}
     container_name: ttrss_updater
