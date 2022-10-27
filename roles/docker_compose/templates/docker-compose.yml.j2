@@ -14,28 +14,30 @@ services:
     environment:
       TZ: '{{ timezone }}'
       CONTAINERS: '1'
-  openvpn-client:
-    # https://hub.docker.com/r/dperson/openvpn-client
-    image: dperson/openvpn-client:{{ containers_images_tags.openvpn_client }}
-    container_name: openvpn-client
+  gluetun:
+    # https://hub.docker.com/r/qmcgaw/gluetun
+    image: qmcgaw/gluetun:{{ containers_images_tags.gluetun }}
+    container_name: gluetun
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
-    devices:
-      - /dev/net/tun
     networks:
       vpn-tunnel:
-      traefik-internal:
         aliases:
           - 'transmission'
     volumes:
-      - {{ containers_storage_base_path }}/config/openvpn-client:/vpn:Z
+      - {{ containers_storage_base_path }}/data/gluetun:/gluetun:Z
     environment:
       TZ: '{{ timezone }}'
-      DNS: ''
-      FIREWALL: ''
-      VPNPORT: '{{ openvpn_client.forwarded_port }}'
-      OTHER_ARGS: '{{ openvpn_client.other_args }}'
+      VPN_SERVICE_PROVIDER: '{{ gluetun.provider.name }}'
+      VPN_TYPE: 'wireguard'
+      VPN_INTERFACE: 'wg0'
+      WIREGUARD_PRIVATE_KEY: '{{ gluetun.wireguard.private_key }}'
+      WIREGUARD_ADDRESSES: '{{ gluetun.wireguard.addresses }}'
+      SERVER_CITIES: '{{ gluetun.provider.cities }}'
+      FIREWALL_VPN_INPUT_PORTS: '{{ gluetun.firewall.vpn_input_ports }}'
+      DOT: 'off'
+      DNS_ADDRESS: '{{ gluetun.dns.addresses }}'
     sysctls:
       net.ipv6.conf.all.disable_ipv6: '0'
   traefik:
@@ -72,8 +74,8 @@ services:
     container_name: transmission
     restart: unless-stopped
     depends_on:
-      - openvpn-client
-    network_mode: service:openvpn-client
+      - gluetun
+    network_mode: service:gluetun
     volumes:
       - {{ containers_storage_base_path }}/data/transmission:/config:Z
       - {{ autofs_base_path }}/downloads/bittorrent/downloads:/downloads:slave

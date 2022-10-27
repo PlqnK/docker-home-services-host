@@ -40,11 +40,6 @@
       owner: 'root'
       group: 'root'
       mode: '0644'
-    - src: 'files/openvpn-client/'
-      dest: '{{ containers_storage_base_path }}/config/openvpn-client/'
-      owner: 'root'
-      group: 'root'
-      mode: '0644'
 
 - name: 'Template config files to containers storage'
   ansible.builtin.template:

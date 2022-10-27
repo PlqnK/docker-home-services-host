@@ -24,6 +24,7 @@ containers_runtime_user:
 containers_images_tags:
   docker_socket_proxy: 'latest'
   openvpn_client: 'latest'
+  gluetun: 'latest'
   traefik: '2.9'
   transmission: 'latest'
   sabnzbd: 'latest'
@@ -55,9 +56,17 @@ containers_images_tags:
     nginx: '1'
     postgres: '12'
 
-openvpn_client:
-  forwarded_port: '5555'
-  other_args: '--inactive 3600 --ping 10 --ping-exit 60'
+gluetun:
+  provider:
+    name: 'providername'
+    cities: 'city'
+  wireguard:
+    private_key: 'privatekey'
+    addresses: '10.0.0.2/32,fc00:1000:1000:1000::2/128'
+  firewall:
+    vpn_input_ports: '5555'
+  dns:
+    addresses: '10.0.0.1'
 traefik:
   api:
     user: 'admin'
