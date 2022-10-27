@@ -48,6 +48,7 @@ services:
       - traefik-external
       - traefik-internal
       - socket-proxy
+      - vpn-tunnel
     ports:
       - 80:80
       - 443:443
@@ -176,6 +177,7 @@ services:
     networks:
       - web-egress
       - traefik-internal
+      - vpn-tunnel
     volumes:
       - {{ containers_storage_base_path }}/data/radarr:/config:Z
       - {{ autofs_base_path }}/downloads:/downloads:slave
@@ -198,6 +200,7 @@ services:
     networks:
       - web-egress
       - traefik-internal
+      - vpn-tunnel
     volumes:
       - {{ containers_storage_base_path }}/data/sonarr:/config:Z
       - {{ autofs_base_path }}/downloads:/downloads:slave
@@ -242,6 +245,7 @@ services:
     networks:
       - web-egress
       - traefik-internal
+      - vpn-tunnel
     volumes:
       - {{ containers_storage_base_path }}/data/lidarr:/config:Z
       - {{ autofs_base_path }}/downloads:/downloads:slave
@@ -264,6 +268,7 @@ services:
     networks:
       - web-egress
       - traefik-internal
+      - vpn-tunnel
     volumes:
       - {{ containers_storage_base_path }}/data/readarr:/config:Z
       - {{ autofs_base_path }}/downloads:/downloads:slave
@@ -286,6 +291,7 @@ services:
     networks:
       - web-egress
       - traefik-internal
+      - vpn-tunnel
     volumes:
       - {{ containers_storage_base_path }}/data/mylar:/config:Z
       - {{ autofs_base_path }}/downloads:/downloads:slave
