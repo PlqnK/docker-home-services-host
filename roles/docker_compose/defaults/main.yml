@@ -22,6 +22,7 @@ containers_runtime_user:
     id: '3000'
 
 containers_images_tags:
+  docker_socket_proxy: 'nightly'
   deck_chores: '1'
   ddns_updater: 'latest'
   openvpn_client: 'latest'
@@ -39,7 +40,7 @@ containers_images_tags:
   readarr: 'develop'
   mylar: 'latest'
   overseerr: 'latest'
-  plex: 'plexpass' # See the "Tags" section here https://hub.docker.com/r/plexinc/pms-docker/ in order to learn about the available tags
+  plex: 'latest'
   tautulli: 'latest'
   calibre: 'latest'
   calibre_web: 'latest'
