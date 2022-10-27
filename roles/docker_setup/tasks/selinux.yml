@@ -33,17 +33,4 @@
     - name: 'Install the SELinux custom policy module'
       ansible.builtin.command:
         cmd: 'semodule -i /tmp/docker-openvpn.pp'
-
-    - name: 'Load tun kernel module at boot'
-      ansible.builtin.copy:
-        content: 'tun'
-        dest: '/etc/modules-load.d/tun.conf'
-        owner: 'root'
-        group: 'root'
-        mode: '0644'
-
-    - name: 'Load tun kernel module'
-      community.general.modprobe:
-        name: 'tun'
-        state: 'present'
   when: docker_openvpn_semodule.rc == 1

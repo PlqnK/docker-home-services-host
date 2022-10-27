@@ -7,3 +7,6 @@
 
 - name: 'Configure autofs'
   ansible.builtin.import_tasks: 'autofs.yml'
+
+- name: 'Configure kernel modules'
+  ansible.builtin.import_tasks: 'kernel_modules.yml'
