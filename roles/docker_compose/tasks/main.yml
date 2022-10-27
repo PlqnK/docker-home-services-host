@@ -21,6 +21,12 @@
     regexp: '^export COMPOSE_FILE='
     line: 'export COMPOSE_FILE={{ compose_file_base_path }}/docker-compose.yml'
 
+- name: 'Add COMPOSE_HTTP_TIMEOUT=120 environment variable to {{ admin_user.user.name }} bash_profile'
+  ansible.builtin.lineinfile:
+    path: '/home/{{ admin_user.user.name }}/.bash_profile'
+    regexp: '^export COMPOSE_HTTP_TIMEOUT='
+    line: 'export COMPOSE_HTTP_TIMEOUT=120'
+
 - name: 'Copy config files to containers storage'
   ansible.builtin.copy:
     src: '{{ item.src }}'
