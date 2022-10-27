@@ -13,6 +13,16 @@ services:
     environment:
       TZ: '{{ timezone }}'
       CONTAINERS: '1'
+  ddns-updater:
+    image: qmcgaw/ddns-updater:{{ containers_images_tags.ddns_updater }}
+    container_name: ddns-updater
+    restart: unless-stopped
+    networks:
+      - web-egress
+    volumes:
+      - {{ containers_storage_base_path }}/data/ddns-updater:/updater/data:Z
+    environment:
+      TZ: '{{ timezone }}'
   gluetun:
     image: qmcgaw/gluetun:{{ containers_images_tags.gluetun }}
     container_name: gluetun

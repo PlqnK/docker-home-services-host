@@ -22,7 +22,7 @@ containers_runtime_user:
     id: '3000'
 
 containers_images_tags:
-  docker_socket_proxy: 'latest'
+  ddns_updater: 'latest'
   openvpn_client: 'latest'
   gluetun: 'latest'
   traefik: '2.9'
@@ -56,6 +56,13 @@ containers_images_tags:
     nginx: '1'
     postgres: '12'
 
+ddns_updater:
+  - provider: 'cloudflare'
+    domain: 'example.com'
+    host: 'dyn'
+    key: 'apikey'
+    ttl: 3600
+    ip_version: 'ipv4'
 gluetun:
   provider:
     name: 'providername'

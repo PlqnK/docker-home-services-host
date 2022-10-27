@@ -49,6 +49,11 @@
     group: '{{ item.group }}'
     mode: '{{ item.mode }}'
   loop:
+    - src: 'config.json.j2'
+      dest: '{{ containers_storage_base_path }}/data/ddns-updater/config.json'
+      owner: 1000
+      group: 1000
+      mode: '0400'
     - src: 'traefik.toml.j2'
       dest: '{{ containers_storage_base_path }}/config/traefik/traefik.toml'
       owner: 'root'
