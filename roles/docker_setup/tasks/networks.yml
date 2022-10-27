@@ -38,3 +38,15 @@
     - 'nextcloud-internal'
     - 'photoprism-internal'
     - 'ttrss-internal'
+
+# Docker is supposed to add the networks bridges to the firewalld docker zone on creation and startup dynamically but
+# for tome reason on my machine it only add 4 of them. So this task add them manually.
+- name: 'Add docker bridges to firewalld docker zone'
+  ansible.posix.firewalld:
+    zone: docker
+    interface: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  loop: '{{ ansible_facts.interfaces }}'
+  when: (item.startswith("br-"))
