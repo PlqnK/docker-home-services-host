@@ -80,6 +80,9 @@ traefik:
     user: 'admin'
     password: 'password'
   ipv6_gua: '2000:aaaa:bbbb:cccc::/56' # Define as empty if not using IPv6
+  proxy_protocol_trusted_ips: # Define as empty if not using a reverse proxy in front of Traefik
+    - '192.168.0.1'
+    - '2000:aaaa:bbbb:cccc::1'
 transmission:
   user: 'transmission'
   password: 'password'

@@ -13,6 +13,10 @@
     address = ":80"
   [entryPoints.websecure]
     address = ":443"
+{% if traefik.proxy_protocol_trusted_ips is not none %}
+    [entryPoints.websecure.proxyProtocol]
+      trustedIPs = [{% for ip in traefik.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
+{% endif %}
     [entryPoints.websecure.http.tls]
       certResolver = "le"
 
