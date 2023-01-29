@@ -25,14 +25,13 @@ containers_images_tags:
   docker_socket_proxy: 'nightly'
   deck_chores: '1'
   ddns_updater: 'latest'
-  openvpn_client: 'latest'
   gluetun: 'latest'
   traefik: '2.9'
   transmission: 'latest'
   sabnzbd: 'latest'
   flaresolverr: 'latest'
   unpackerr: 'latest'
-  prowlarr: 'develop'
+  prowlarr: 'latest'
   radarr: 'latest'
   sonarr: 'latest'
   bazarr: 'latest'
@@ -47,16 +46,16 @@ containers_images_tags:
   komga: 'latest'
   nextcloud:
     app: '25'
-    mariadb: '10.9'
+    mariadb: '10.10'
     redis: '7'
   collabora_online: 'latest'
   photoprism:
     app: 'latest'
-    mariadb: '10.9'
+    mariadb: '10.10'
   ttrss:
     app: 'latest'
     nginx: '1'
-    postgres: '12'
+    postgres: '15'
 
 ddns_updater:
   - provider: 'cloudflare'
