@@ -39,6 +39,9 @@
     - 'photoprism-internal'
     - 'ttrss-internal'
 
+- name: 'Refresh ansible_facts'
+  ansible.builtin.gather_facts:
+
 # Docker is supposed to add the networks bridges to the firewalld docker zone on creation and startup dynamically but
 # for tome reason on my machine it only add 4 of them. So this task add them manually.
 - name: 'Add docker bridges to firewalld docker zone'
