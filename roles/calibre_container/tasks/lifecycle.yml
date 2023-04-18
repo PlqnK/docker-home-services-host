@@ -1,0 +1,30 @@
+---
+- name: 'Stop Calibre container'
+  ansible.builtin.systemd:
+    name: 'container-calibre.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Calibre container'
+  ansible.builtin.systemd:
+    name: 'container-calibre.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Calibre image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.calibre }}:{{ containers_images_tags.calibre }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Calibre container'
+  ansible.builtin.systemd:
+    name: 'container-calibre.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Calibre container'
+  ansible.builtin.systemd:
+    name: 'container-calibre.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

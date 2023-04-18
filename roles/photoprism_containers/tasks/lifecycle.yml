@@ -1,0 +1,45 @@
+---
+- name: 'Stop Photoprism stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'container-photoprism-app.service'
+    - 'container-photoprism-mariadb.service'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Photoprism stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: false
+  loop:
+    - 'container-photoprism-app.service'
+    - 'container-photoprism-mariadb.service'
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Photoprism stack images'
+  containers.podman.podman_image:
+    name: '{{ item }}'
+    state: 'present'
+  loop:
+    - '{{ containers_images.photoprism.mariadb }}:{{ containers_images_tags.photoprism.mariadb }}'
+    - '{{ containers_images.photoprism.app }}:{{ containers_images_tags.photoprism.app }}'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Photoprism stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'started'
+  loop:
+    - 'container-photoprism-mariadb.service'
+    - 'container-photoprism-app.service'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Photoprism stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - 'container-photoprism-mariadb.service'
+    - 'container-photoprism-app.service'
+  tags: ['never', 'enable-containers']

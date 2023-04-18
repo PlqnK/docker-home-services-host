@@ -1,0 +1,41 @@
+[global]
+  checkNewVersion = false
+  sendAnonymousUsage = false
+
+[serversTransport]
+  insecureSkipVerify = true
+
+[log]
+  level = "WARNING"
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+  [entryPoints.websecure]
+    address = ":443"
+{% if traefik.proxy_protocol_trusted_ips is not none and getent_passwd.vagrant is none %}
+    [entryPoints.websecure.proxyProtocol]
+      trustedIPs = [{% for ip in traefik.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
+{% endif %}
+    [entryPoints.websecure.http.tls]
+{% if getent_passwd.vagrant is none %}
+      certResolver = "le"
+{% endif %}
+
+[api]
+  dashboard = true
+
+[providers]
+  [providers.docker]
+    endpoint = "tcp://docker-socket-proxy:2375"
+    exposedByDefault = false
+  [providers.file]
+    filename = "/etc/traefik/traefik-dynamic.toml"
+    watch = true
+
+{% if getent_passwd.vagrant is none %}
+[certificatesResolvers.le.acme]
+  email = "{{ admin_user.email }}"
+  storage = "acme.json"
+  [certificatesResolvers.le.acme.tlsChallenge]
+{% endif %}

@@ -1,0 +1,30 @@
+---
+- name: 'Stop Calibre-Web container'
+  ansible.builtin.systemd:
+    name: 'container-calibre-web.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Calibre-Web container'
+  ansible.builtin.systemd:
+    name: 'container-calibre-web.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Calibre-Web image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.calibre_web }}:{{ containers_images_tags.calibre_web }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Calibre-Web container'
+  ansible.builtin.systemd:
+    name: 'container-calibre-web.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Calibre-Web container'
+  ansible.builtin.systemd:
+    name: 'container-calibre-web.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

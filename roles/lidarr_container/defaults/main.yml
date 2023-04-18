@@ -1,0 +1,3 @@
+---
+containers_images:
+  lidarr: 'lscr.io/linuxserver/lidarr'

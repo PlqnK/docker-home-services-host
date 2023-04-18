@@ -1,0 +1,71 @@
+---
+- name: 'Create Plex bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_base_path }}/data/plex'
+      owner: 1000
+      group: 1000
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/runtime/plex'
+      owner: 1000
+      group: 1000
+      mode: '0700'
+
+- name: 'Create Plex container'
+  containers.podman.podman_container:
+    name: 'plex'
+    image: '{{ containers_images.plex }}:{{ containers_images_tags.plex }}'
+    timezone: '{{ timezone }}'
+    device:
+      - '/dev/dri/card1:/dev/dri/card1'
+      - '/dev/dri/renderD128:/dev/dri/renderD128'
+    network:
+      - 'web-egress'
+      - 'common-internal'
+    publish:
+      - '32400:32400/tcp'
+      - '3005:3005/tcp'
+      - '8324:8324/tcp'
+      - '32469:32469/tcp'
+      - '1900:1900/udp'
+      - '32410:32410/udp'
+      - '32412:32412/udp'
+      - '32413:32413/udp'
+      - '32414:32414/udp'
+    volume:
+      - '{{ containers_storage_base_path }}/data/plex:/config:Z'
+      - '{{ containers_storage_base_path }}/runtime/plex:/transcode:Z'
+      #- '{{ autofs_base_path }}/medias/audiobooks:/data/audiobooks:slave,ro'
+      #- '{{ autofs_base_path }}/medias/audiodrama:/data/audiodrama:slave,ro'
+      #- '{{ autofs_base_path }}/medias/movies:/data/movies:slave,ro'
+      #- '{{ autofs_base_path }}/medias/music:/data/music:slave,ro'
+      #- '{{ autofs_base_path }}/medias/series:/data/series:slave,ro'
+    env:
+      TZ: '{{ timezone }}'
+      PLEX_CLAIM: '{{ plex.claim_token }}'
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.plex.rule: 'Host(`plex.{{ domain_name }}`)'
+      traefik.http.routers.plex.entrypoints: 'websecure'
+      traefik.http.routers.plex.middlewares: 'set-security-headers@file'
+      traefik.http.services.plex.loadbalancer.server.port: '32400'
+      traefik.http.services.plex.loadbalancer.server.scheme: 'https'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Enable and start Plex container'
+  ansible.builtin.systemd:
+    name: 'container-plex.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

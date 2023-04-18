@@ -1,0 +1,137 @@
+---
+all:
+  hosts:
+    media:
+      ansible_host: 'media.localdomain'
+      ansible_ssh_private_key_file: '.vagrant/machines/media/libvirt/private_key'
+      ansible_become: true
+      storage_server:
+        name: 'storage'
+        fqdn: 'storage.localdomain'
+        exports_base_path: '/mnt/vault'
+      nfs_exports:
+        - 'cloud/data'
+        - 'downloads/bittorrent'
+        - 'downloads/usenet'
+        - 'medias/audiobooks'
+        - 'medias/audiodrama'
+        - 'medias/books'
+        - 'medias/comics'
+        - 'medias/movies'
+        - 'medias/music'
+        - 'medias/series'
+      autofs_base_path: '/var/mnt/{{ storage_server.name }}'
+      containers_images_tags:
+        docker_socket_proxy: 'nightly'
+        deck_chores: '1'
+        ddns_updater: 'latest'
+        gluetun: 'latest'
+        traefik: '2.9'
+        transmission: 'latest'
+        sabnzbd: 'latest'
+        flaresolverr: 'latest'
+        unpackerr: 'latest'
+        recyclarr: '4'
+        prowlarr: 'latest'
+        radarr: 'latest'
+        sonarr: 'latest'
+        bazarr: 'latest'
+        lidarr: 'latest'
+        readarr: 'develop'
+        mylar: 'latest'
+        overseerr: 'latest'
+        plex: 'latest'
+        tautulli: 'latest'
+        calibre: 'latest'
+        calibre_web: 'latest'
+        komga: 'latest'
+        nextcloud:
+          app: '26'
+          mariadb: '10.11'
+          redis: '7'
+        collabora_online: 'latest'
+        photoprism:
+          app: 'latest'
+          mariadb: '10.11'
+        ttrss:
+          app: 'latest'
+          nginx: '1'
+          postgres: '15'
+      gluetun:
+        wireguard:
+          private_key: 'kBgTzskkGscSivkDDTxl5MHFPJU6PV9PxspVFVAc8Xc='
+          addresses: '10.10.10.10/32,fc00:1111:1111:1111::1111/128'
+        provider:
+          name: ''
+          cities: ''
+        firewall:
+          vpn_input_ports: '11111'
+        dns:
+          addresses: '10.10.10.1'
+      traefik:
+        api:
+          user: 'admin'
+          password_hash: '$2b$12$1vVmIFbVIAXS123x8EYsn.0hTVEBYgp17YcDRPy9k4g0x1jQtvEwK'
+        ipv6_gua: 'fe80:ba0:bab:0::/56'
+        # proxy_protocol_trusted_ips:
+        #   - '192.168.1.1'
+        #   - 'fe80:ba0:bab:0::1'
+      transmission:
+        user: 'transmission'
+        password: 'SecretPassword1234'
+      unpackerr:
+        sonarr_api_key: '3qthkdmhaa4s574fqrkog6ssmc7oce9a'
+        radarr_api_key: 'ph74ahn475bzw6cp57uux7y42vpoh3yj'
+        lidarr_api_key: 'ncc6mk3q5xcnunuuk6edqkqn8gvwvawb'
+        readarr_api_key: 'w7nuujnd4xy72so4uirc7vjv4v2v589p'
+      calibre:
+        user: 'calibre'
+        password_hash: '$2b$12$1vVmIFbVIAXS123x8EYsn.0hTVEBYgp17YcDRPy9k4g0x1jQtvEwK'
+      plex:
+        # Get a claim token here https://www.plex.tv/claim/ claim-UQeCGthC6xCwjyfVyx3z
+        claim_token: ''
+      nextcloud:
+        mariadb:
+          root_password: 'SecretPassword1234'
+          database: 'nextcloud'
+          user: 'nextcloud'
+          password: 'SecretPassword1234'
+        redis:
+          password: 'SecretPassword1234'
+      collabora_online:
+        user: 'admin'
+        password: 'SecretPassword1234'
+        dictionnaries: 'fr_FR en_US'
+      photoprism:
+        user:
+          name: 'admin'
+          password: 'SecretPassword1234'
+        pictures_path: 'admin/files/Pictures/Albums'
+        videos_path: 'admin/files/Videos/Albums'
+        mariadb:
+          root_password: 'SecretPassword1234'
+          database: 'photoprism'
+          user: 'photoprism'
+          password: 'SecretPassword1234'
+      ttrss:
+        postgres:
+          database: 'ttrss'
+          user: 'ttrss'
+          password: 'SecretPassword1234'
+  children:
+    containers_hosts:
+      hosts:
+        media:
+      vars:
+        containers_ipv6:
+          enable: true
+        containers_storage_base_path: '/var/containers'
+  vars:
+    timezone: 'Europe/Paris'
+    domain_name: 'localhost.localdomain'
+    admin_user:
+      user:
+        name: 'vagrant'
+      group:
+        name: 'wheel'
+      email: 'vagrant@localhost'

@@ -1,0 +1,30 @@
+---
+- name: 'Stop Overseerr container'
+  ansible.builtin.systemd:
+    name: 'container-overseerr.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Overseerr container'
+  ansible.builtin.systemd:
+    name: 'container-overseerr.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Overseerr image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.overseerr }}:{{ containers_images_tags.overseerr }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Overseerr container'
+  ansible.builtin.systemd:
+    name: 'container-overseerr.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Overseerr container'
+  ansible.builtin.systemd:
+    name: 'container-overseerr.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

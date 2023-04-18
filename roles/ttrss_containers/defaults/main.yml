@@ -1,0 +1,6 @@
+---
+containers_images:
+  ttrss:
+    postgres: 'docker.io/library/postgres'
+    app: 'docker.io/cthulhoo/ttrss-fpm-pgsql-static'
+    nginx: 'docker.io/library/nginx'

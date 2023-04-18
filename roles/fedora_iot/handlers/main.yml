@@ -1,0 +1,8 @@
+---
+- name: 'Reboot host'
+  ansible.builtin.reboot:
+
+- name: 'Restart autofs service'
+  ansible.builtin.systemd:
+    name: 'autofs.service'
+    state: 'restarted'

@@ -1,0 +1,177 @@
+---
+- name: 'Create Photoprism MariaDB network'
+  containers.podman.podman_network:
+    name: 'photoprism-mariadb-internal'
+    internal: true
+    ipv6: '{{ containers_ipv6.enable }}'
+
+- name: 'Add Photoprism MariaDB to firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'photoprism-mariadb-internal'
+      register: 'podman_networks'
+    
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | json_query("[*].networks[*].subnets[*].subnet") | flatten }}'
+
+- name: 'Create Photoprism stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_base_path }}/runtime/photoprism-mariadb'
+      owner: 999
+      group: 999
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/data/photoprism-mariadb'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/env/photoprism'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/runtime/photoprism/sidecar'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/runtime/photoprism/cache'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/data/photoprism'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+
+- name: 'Create Photoprism stack secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'photoprism_mariadb_root_password'
+      data: '{{ photoprism.mariadb.root_password }}'
+    - name: 'photoprism_mariadb_user'
+      data: '{{ photoprism.mariadb.user }}'
+    - name: 'photoprism_mariadb_password'
+      data: '{{ photoprism.mariadb.password }}'
+
+- name: 'Create Photoprism container environment file'
+  ansible.builtin.copy:
+    content: |
+      PHOTOPRISM_ADMIN_USER={{ photoprism.user.name }}
+      PHOTOPRISM_ADMIN_PASSWORD={{ photoprism.user.password }}
+      PHOTOPRISM_DATABASE_USER={{ photoprism.mariadb.user }}
+      PHOTOPRISM_DATABASE_PASSWORD={{ photoprism.mariadb.password }}
+    dest: '{{ containers_storage_base_path }}/env/photoprism/photoprism.env'
+    owner: 'root'
+    group: 'root'
+    mode: '0400'
+  register: 'photoprism_environment_file'
+
+- name: 'Create MariaDB container'
+  containers.podman.podman_container:
+    name: 'photoprism-mariadb'
+    image: '{{ containers_images.photoprism.mariadb }}:{{ containers_images_tags.photoprism.mariadb }}'
+    command: '--innodb-buffer-pool-size=512M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120'
+    timezone: '{{ timezone }}'
+    network:
+      - 'photoprism-mariadb-internal'
+    expose:
+      - 3306
+    volume:
+      - '{{ containers_storage_base_path }}/runtime/photoprism-mariadb:/var/lib/mysql:Z'
+    secrets:
+      - 'photoprism_mariadb_root_password'
+      - 'photoprism_mariadb_user'
+      - 'photoprism_mariadb_password'
+    env:
+      TZ: '{{ timezone }}'
+      MARIADB_ROOT_HOST: 'localhost'
+      MARIADB_ROOT_PASSWORD_FILE: '/run/secrets/photoprism_mariadb_root_password'
+      MARIADB_DATABASE: '{{ photoprism.mariadb.database }}'
+      MARIADB_USER_FILE: '/run/secrets/photoprism_mariadb_user'
+      MARIADB_PASSWORD_FILE: '/run/secrets/photoprism_mariadb_password'
+      MARIADB_AUTO_UPGRADE: 'true'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Create App container'
+  containers.podman.podman_container:
+    name: 'photoprism-app'
+    image: '{{ containers_images.photoprism.app }}:{{ containers_images_tags.photoprism.app }}'
+    timezone: '{{ timezone }}'
+    network:
+      - 'web-egress'
+      - 'common-internal'
+      - 'photoprism-mariadb-internal'
+    expose:
+      - 2342
+    volume:
+      - '{{ containers_storage_base_path }}/data/photoprism:/photoprism/storage:Z'
+      - '{{ containers_storage_base_path }}/data/photoprism-mariadb:/opt/dumps:Z'
+      - '{{ containers_storage_base_path }}/runtime/photoprism/sidecar:/photoprism/sidecar:Z'
+      - '{{ containers_storage_base_path }}/runtime/photoprism/cache:/photoprism/cache:Z'
+      #- '{{ autofs_base_path }}/cloud/data/{{ photoprism.pictures_path }}:/photoprism/originals/pictures:slave'
+      #- '{{ autofs_base_path }}/cloud/data/{{ photoprism.videos_path }}:/photoprism/originals/videos:slave'
+    env_file: '{{ containers_storage_base_path }}/env/photoprism/photoprism.env'
+    env:
+      TZ: '{{ timezone }}'
+      PHOTOPRISM_SITE_URL: 'https://photos.{{ domain_name }}/'
+      PHOTOPRISM_DATABASE_DRIVER: 'mysql'
+      PHOTOPRISM_DATABASE_SERVER: 'photoprism-mariadb:3306'
+      PHOTOPRISM_DATABASE_NAME: '{{ photoprism.mariadb.database }}'
+      PHOTOPRISM_SIDECAR_PATH: '/photoprism/sidecar'
+      PHOTOPRISM_CACHE_PATH: '/photoprism/cache'
+      PHOTOPRISM_ORIGINALS_LIMIT: 5000
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.photos.rule: 'Host(`photos.{{ domain_name }}`)'
+      traefik.http.routers.photos.entrypoints: 'websecure'
+      traefik.http.routers.photos.middlewares: 'set-security-headers@file'
+      traefik.http.services.photos.loadbalancer.server.port: '2342'
+      #deck-chores.index.command: 'photoprism index --cleanup'
+      #deck-chores.index.interval: 'hourly'
+      #deck-chores.convert.command: 'photoprism convert'
+      #deck-chores.convert.interval: 'hourly'
+      deck-chores.backup.command: 'photoprism backup -f -i /opt/dumps/photoprism.sql'
+      deck-chores.backup.cron: '* * * * * 4 0 0'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+      after:
+        - 'container-photoprism-mariadb.service'
+      requires:
+        - 'container-photoprism-mariadb.service'
+    state: 'created'
+
+- name: 'Enable and start Photoprism stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  loop:
+    - 'container-photoprism-mariadb.service'
+    - 'container-photoprism-app.service'

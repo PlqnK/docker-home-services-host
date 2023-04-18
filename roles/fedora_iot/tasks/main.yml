@@ -1,0 +1,16 @@
+---
+- name: 'Upgrade OS'
+  ansible.builtin.import_tasks: 'upgrade.yml'
+  tags: ['never', 'upgrade-os']
+
+- name: 'Install packages'
+  ansible.builtin.import_tasks: 'packages.yml'
+
+- name: 'Configure firewalld'
+  ansible.builtin.import_tasks: 'firewalld.yml'
+
+- name: 'Configure autofs'
+  ansible.builtin.import_tasks: 'autofs.yml'
+
+- name: 'Configure kernel'
+  ansible.builtin.import_tasks: 'kernel.yml'

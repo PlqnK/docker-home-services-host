@@ -1,0 +1,45 @@
+---
+- name: 'Create Radarr bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_base_path }}/data/radarr'
+    owner: 911
+    group: 911
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create Radarr container'
+  containers.podman.podman_container:
+    name: 'radarr'
+    image: '{{ containers_images.radarr }}:{{ containers_images_tags.radarr }}'
+    timezone: '{{ timezone }}'
+    network:
+      - 'web-egress'
+      - 'common-internal'
+    expose:
+      - 7878
+    volume:
+      - '{{ containers_storage_base_path }}/data/radarr:/config:Z'
+      - '{{ autofs_base_path }}/downloads:/downloads:slave'
+      - '{{ autofs_base_path }}/medias/movies:/movies:slave'
+    env:
+      TZ: '{{ timezone }}'
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.radarr.rule: 'Host(`radarr.{{ domain_name }}`)'
+      traefik.http.routers.radarr.entrypoints: 'websecure'
+      traefik.http.routers.radarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.radarr.loadbalancer.server.port: '7878'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Enable and start Radarr container'
+  ansible.builtin.systemd:
+    name: 'container-radarr.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

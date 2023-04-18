@@ -1,0 +1,30 @@
+---
+- name: 'Stop Plex container'
+  ansible.builtin.systemd:
+    name: 'container-plex.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Plex container'
+  ansible.builtin.systemd:
+    name: 'container-plex.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Plex image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.plex }}:{{ containers_images_tags.plex }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Plex container'
+  ansible.builtin.systemd:
+    name: 'container-plex.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Plex container'
+  ansible.builtin.systemd:
+    name: 'container-plex.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

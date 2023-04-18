@@ -1,0 +1,30 @@
+---
+- name: 'Stop Deck Chores container'
+  ansible.builtin.systemd:
+    name: 'container-deck-chores.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Deck Chores container'
+  ansible.builtin.systemd:
+    name: 'container-deck-chores.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Deck Chores image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.deck_chores }}:{{ containers_images_tags.deck_chores }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Deck Chores container'
+  ansible.builtin.systemd:
+    name: 'container-deck-chores.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Deck Chores container'
+  ansible.builtin.systemd:
+    name: 'container-deck-chores.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

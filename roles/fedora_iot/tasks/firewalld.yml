@@ -1,0 +1,17 @@
+---
+- name: 'Enable and start firewalld'
+  ansible.builtin.systemd:
+    name: 'firewalld.service'
+    enabled: true
+    state: 'started'
+
+- name: 'Accept HTTP, HTTPS and Plex incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  loop:
+    - 'http'
+    - 'https'
+    - 'plex'

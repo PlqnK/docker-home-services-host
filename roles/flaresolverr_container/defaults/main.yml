@@ -1,0 +1,3 @@
+---
+containers_images:
+  flaresolverr: 'ghcr.io/flaresolverr/flaresolverr'

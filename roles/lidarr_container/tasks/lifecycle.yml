@@ -1,0 +1,30 @@
+---
+- name: 'Stop Lidarr container'
+  ansible.builtin.systemd:
+    name: 'container-lidarr.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Lidarr container'
+  ansible.builtin.systemd:
+    name: 'container-lidarr.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Lidarr image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.lidarr }}:{{ containers_images_tags.lidarr }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Lidarr container'
+  ansible.builtin.systemd:
+    name: 'container-lidarr.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Lidarr container'
+  ansible.builtin.systemd:
+    name: 'container-lidarr.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

@@ -1,0 +1,3 @@
+---
+containers_images:
+  deck_chores: 'ghcr.io/funkyfuture/deck-chores'

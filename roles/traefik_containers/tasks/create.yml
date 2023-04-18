@@ -1,0 +1,149 @@
+---
+- name: 'Check if provisioning a Vagrant VM'
+  ansible.builtin.getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: false
+
+- name: 'Create Traefik stack networks'
+  containers.podman.podman_network:
+    name: '{{ item.name }}'
+    internal: '{{ item.internal }}'
+    ipv6: '{{ containers_ipv6.enable }}'
+  loop:
+    - name: 'docker-socket-proxy-internal'
+      internal: true
+    - name: 'traefik-external'
+      internal: false
+
+- name: 'Add Traefik stack networks to firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'docker-socket-proxy-internal'
+        - 'traefik-external'
+      register: 'podman_networks'
+    
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | json_query("[*].networks[*].subnets[*].subnet") | flatten }}'
+
+- name: 'Create Traefik stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_base_path }}/config/traefik'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/data/traefik'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+
+- name: 'Create Traefik configs from templates'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+  loop:
+    - src: 'traefik.toml.j2'
+      dest: '{{ containers_storage_base_path }}/config/traefik/traefik.toml'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+    - src: 'traefik-dynamic.toml.j2'
+      dest: '{{ containers_storage_base_path }}/config/traefik/traefik-dynamic.toml'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+
+- name: 'Create Traefik certificates storage file'
+  ansible.builtin.file:
+    path: '{{ containers_storage_base_path }}/data/traefik/acme.json'
+    state: 'touch'
+    modification_time: 'preserve'
+    access_time: 'preserve'
+    mode: '0600'
+
+- name: 'Create Docker Socket Proxy container'
+  containers.podman.podman_container:
+    name: 'docker-socket-proxy'
+    image: '{{ containers_images.docker_socket_proxy }}:{{ containers_images_tags.docker_socket_proxy }}'
+    privileged: true
+    timezone: '{{ timezone }}'
+    network:
+      - 'docker-socket-proxy-internal'
+    expose:
+      - 2375
+    volume:
+      - '/var/run/podman/podman.sock:/var/run/docker.sock'
+    env:
+      TZ: '{{ timezone }}'
+      CONTAINERS: '1'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Create Traefik container'
+  containers.podman.podman_container:
+    name: 'traefik'
+    image: '{{ containers_images.traefik }}:{{ containers_images_tags.traefik }}'
+    timezone: '{{ timezone }}'
+    network:
+      - 'common-internal'
+      - 'traefik-external'
+      - 'docker-socket-proxy-internal'
+    publish:
+      - '80:80'
+      - '443:443'
+    volume:
+      - '{{ containers_storage_base_path }}/config/traefik/traefik.toml:/etc/traefik/traefik.toml:Z'
+      - '{{ containers_storage_base_path }}/config/traefik/traefik-dynamic.toml:/etc/traefik/traefik-dynamic.toml:Z'
+      - '{{ containers_storage_base_path }}/data/traefik/acme.json:/acme.json:Z'
+    env:
+      TZ: '{{ timezone }}'
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.traefik.rule: 'Host(`traefik.{{ domain_name }}`)'
+      traefik.http.routers.traefik.entrypoints: 'websecure'
+      traefik.http.routers.traefik.service: 'api@internal'
+      traefik.http.routers.traefik.middlewares: 'set-security-headers@file, restrict-external-access@file, traefik-auth'
+      traefik.http.middlewares.traefik-auth.basicauth.users: '{{ traefik.api.user }}:{{ traefik.api.password_hash }}'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+      after:
+        - 'container-docker-socket-proxy.service'
+      wants:
+        - 'container-docker-socket-proxy.service'
+    state: 'created'
+
+- name: 'Enable and start Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  loop:
+    - 'container-docker-socket-proxy.service'
+    - 'container-traefik.service'

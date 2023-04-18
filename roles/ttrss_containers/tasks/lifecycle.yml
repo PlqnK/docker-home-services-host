@@ -1,0 +1,54 @@
+---
+- name: 'Stop Tiny Tiny RSS stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'container-ttrss-nginx.service'
+    - 'container-ttrss-updater.service'
+    - 'container-ttrss-app.service'
+    - 'container-ttrss-postgres.service'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Recyclarr container'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: false
+  loop:
+    - 'container-ttrss-nginx.service'
+    - 'container-ttrss-updater.service'
+    - 'container-ttrss-app.service'
+    - 'container-ttrss-postgres.service'
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Tiny Tiny RSS stack images'
+  containers.podman.podman_image:
+    name: '{{ item }}'
+    state: 'present'
+  loop:
+    - '{{ containers_images.ttrss.postgres }}:{{ containers_images_tags.ttrss.postgres }}'
+    - '{{ containers_images.ttrss.nginx }}:{{ containers_images_tags.ttrss.nginx }}'
+    - '{{ containers_images.ttrss.app }}:{{ containers_images_tags.ttrss.app }}'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Tiny Tiny RSS stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'started'
+  loop:
+    - 'container-ttrss-postgres.service'
+    - 'container-ttrss-nginx.service'
+    - 'container-ttrss-app.service'
+    - 'container-ttrss-updater.service'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Recyclarr container'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - 'container-ttrss-postgres.service'
+    - 'container-ttrss-nginx.service'
+    - 'container-ttrss-app.service'
+    - 'container-ttrss-updater.service'
+  tags: ['never', 'enable-containers']

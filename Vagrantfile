@@ -1,29 +1,49 @@
-Vagrant.configure("2") do |config|
-  config.ssh.insert_key = false
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
 
-  config.vm.define storage-server do |subconfig|
-    subconfig.vm.box = machine[:box]
-    subconfig.vm.network "private_network", ip: "192.168.121" + machine[:ip]
-    subconfig.vm.hostname = machine[:name] + ".mbconcept.internal"
-    subconfig.hostsupdater.aliases = [machine[:alias] + ".mbconcept.internal"]
-    subconfig.vm.provider "libvirt" do |lv|
-      lv.cpus = machine[:cpus]
-      lv.memory = machine[:memory]
+Vagrant.configure("2") do |config|
+  config.hostmanager.enabled = false
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = true
+  config.hostmanager.include_offline = true
+
+  config.vm.define "storage" do |subconfig|
+    subconfig.vm.box = "generic/freebsd13"
+    subconfig.vm.hostname = "storage.localdomain"
+
+    subconfig.vm.synced_folder ".", "/vagrant", disabled: true
+
+    subconfig.vm.provider "libvirt" do |libvirt|
+      libvirt.cpus = 1
+      libvirt.memory = 1024
+      libvirt.default_prefix = ""
     end
-    subconfig.vm.provider "virtualbox" do |vb|
-      vb.gui = false
-      vb.cpus = machine[:cpus]
-      vb.memory = machine[:memory]
+    
+    subconfig.vm.provision :hostmanager
+    subconfig.vm.provision "Provision the storage", type: "shell", path:"vagrant/storage_provisioning.sh"
+  end
+
+  config.vm.define "media" do |subconfig|
+    subconfig.vm.box = "fedora/37-cloud-base"
+    subconfig.vm.hostname = "media.localdomain"
+
+    subconfig.vm.network "forwarded_port", guest: 80, host: 8080
+    subconfig.vm.network "forwarded_port", guest: 443, host: 8443
+
+    subconfig.vm.synced_folder ".", "/vagrant", disabled: true
+
+    subconfig.vm.provider "libvirt" do |libvirt|
+      libvirt.cpus = 2
+      libvirt.memory = 4096
+      libvirt.default_prefix = ""
     end
-    if index == machines.size - 1
-      subconfig.vm.provision "ansible" do |ansible|
-        ansible.galaxy_role_file = "requirements.yml"
-        ansible.galaxy_command = "ansible-galaxy collection install --requirements-file=%{role_file} --force"
-        ansible.inventory_path = "inventories/vagrant.yml"
-        ansible.playbook = "playbook.yml"
-        ansible.limit = "all"
-        ansible.extra_vars = "@vaults/local.yml"
-      end
+
+    subconfig.vm.provision :hostmanager
+    subconfig.vm.provision "Provision the host", type: "ansible" do |ansible|
+      ansible.playbook = "playbook.yml"
+      ansible.inventory_path = "inventories/vagrant.yml"
+      ansible.limit = "all"
     end
   end
 end

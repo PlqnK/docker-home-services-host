@@ -1,0 +1,18 @@
+---
+- name: 'Install required dependencies and common tools'
+  community.general.rpm_ostree_pkg:
+    name:
+      - 'firewalld'
+      - 'nfs-utils'
+      - 'autofs'
+      - 'checkpolicy'
+      - 'setools-console'
+      - 'htop'
+      - 'vim'
+      - 'tmux'
+      - 'python3-firewall'
+    state: 'present'
+  notify: 'Reboot host'
+
+- name: 'Reboot host if packages have been installed'
+  ansible.builtin.meta: 'flush_handlers'

@@ -1,0 +1,30 @@
+---
+- name: 'Stop Unpackerr container'
+  ansible.builtin.systemd:
+    name: 'container-unpackerr.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Unpackerr container'
+  ansible.builtin.systemd:
+    name: 'container-unpackerr.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Unpackerr image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.unpackerr }}:{{ containers_images_tags.unpackerr }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Unpackerr container'
+  ansible.builtin.systemd:
+    name: 'container-unpackerr.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Unpackerr container'
+  ansible.builtin.systemd:
+    name: 'container-unpackerr.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

@@ -1,0 +1,59 @@
+---
+- name: 'Create Collabora Online bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_base_path }}/env/collabora-online'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create Collabora Online container environment file'
+  ansible.builtin.copy:
+    content: |
+      username={{ collabora_online.user }}
+      password={{ collabora_online.password }}
+    dest: '{{ containers_storage_base_path }}/env/collabora-online/collabora-online.env'
+    owner: 'root'
+    group: 'root'
+    mode: '0400'
+  register: 'collabora_online_environment_file'
+
+- name: 'Create Collabora Online container'
+  containers.podman.podman_container:
+    name: 'collabora-online'
+    image: '{{ containers_images.collabora_online }}:{{ containers_images_tags.collabora_online }}'
+    timezone: '{{ timezone }}'
+    network:
+      - 'web-egress'
+      - 'common-internal'
+    expose:
+      - 9980
+    cap_add:
+      - 'MKNOD'
+    env_file: '{{ containers_storage_base_path }}/env/collabora-online/collabora-online.env'
+    env:
+      TZ: '{{ timezone }}'
+      aliasgroup1: 'https://cloud.{{ domain_name }}:443'
+      dictionaries: '{{ collabora_online.dictionnaries }}'
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.office.rule: 'Host(`office.{{ domain_name }}`)'
+      traefik.http.routers.office.entrypoints: 'websecure'
+      traefik.http.routers.office.middlewares: 'set-security-headers@file'
+      traefik.http.services.office.loadbalancer.server.port: '9980'
+      traefik.http.services.office.loadbalancer.server.scheme: 'https'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    recreate: '{{ ("true" | bool) if collabora_online_environment_file.changed else ("false" | bool) }}'
+    state: 'created'
+
+- name: 'Enable and start Collabora Online container'
+  ansible.builtin.systemd:
+    name: 'container-collabora-online.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

@@ -1,0 +1,225 @@
+---
+- name: 'Create Tiny Tiny RSS stack networks'
+  containers.podman.podman_network:
+    name: '{{ item.name }}'
+    internal: '{{ item.internal }}'
+    ipv6: '{{ containers_ipv6.enable }}'
+  loop:
+    - name: 'ttrss-postgres-internal'
+      internal: true
+    - name: 'ttrss-app-internal'
+      internal: true
+
+- name: 'Add Tiny Tiny RSS stack networks to firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'ttrss-postgres-internal'
+        - 'ttrss-app-internal'
+      register: 'podman_networks'
+    
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | json_query("[*].networks[*].subnets[*].subnet") | flatten }}'
+
+- name: 'Create Tiny Tiny RSS stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_base_path }}/runtime/ttrss-postgres'
+      owner: 999
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/data/ttrss-postgres'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/config/ttrss-nginx'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/env/ttrss-app'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/data/ttrss-app'
+      owner: 1000
+      group: 1000
+      mode: '2755'
+
+- name: 'Copy NGINX config'
+  ansible.builtin.copy:
+    src: 'nginx.conf'
+    dest: '{{ containers_storage_base_path }}/config/ttrss-nginx/nginx.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Create Tiny Tiny RSS stack secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'ttrss_postgres_user'
+      data: '{{ ttrss.postgres.user }}'
+    - name: 'ttrss_postgres_password'
+      data: '{{ ttrss.postgres.password }}'
+
+- name: 'Create Tiny Tiny RSS stack environment file'
+  ansible.builtin.copy:
+    content: |
+      TTRSS_DB_USER={{ ttrss.postgres.user }}
+      TTRSS_DB_PASS={{ ttrss.postgres.password }}
+    dest: '{{ containers_storage_base_path }}/env/ttrss-app/ttrss-app.env'
+    owner: 'root'
+    group: 'root'
+    mode: '0400'
+  register: 'ttrss_environment_file'
+
+- name: 'Create PostgreSQL container'
+  containers.podman.podman_container:
+    name: 'ttrss-postgres'
+    image: '{{ containers_images.ttrss.postgres }}:{{ containers_images_tags.ttrss.postgres }}'
+    timezone: '{{ timezone }}'
+    network:
+      - 'ttrss-postgres-internal'
+    expose:
+      - 5432
+    volume:
+      - '{{ containers_storage_base_path }}/runtime/ttrss-postgres:/var/lib/postgresql/data:Z'
+      - '{{ containers_storage_base_path }}/data/ttrss-postgres:/opt/dumps:Z'
+    secrets:
+      - 'ttrss_postgres_user'
+      - 'ttrss_postgres_password'
+    env:
+      TZ: '{{ timezone }}'
+      POSTGRES_DB: '{{ ttrss.postgres.database }}'
+      POSTGRES_USER_FILE: '/run/secrets/ttrss_postgres_user'
+      POSTGRES_PASSWORD_FILE: '/run/secrets/ttrss_postgres_password'
+    label:
+      deck-chores.dump.command: 'sh -c "pg_dump --clean -U {{ ttrss.postgres.user }} {{ ttrss.postgres.database }} > /opt/dumps/ttrss.sql"'
+      deck-chores.dump.cron: '* * * * * 4 0 0'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Create NGINX container'
+  containers.podman.podman_container:
+    name: 'ttrss-nginx'
+    image: '{{ containers_images.ttrss.nginx }}:{{ containers_images_tags.ttrss.nginx }}'
+    timezone: '{{ timezone }}'
+    network:
+      - 'web-egress'
+      - 'common-internal'
+      - 'ttrss-app-internal'
+    expose:
+      - 80
+    volume:
+      - '{{ containers_storage_base_path }}/config/ttrss-nginx/nginx.conf:/etc/nginx/nginx.conf:ro,Z'
+      - '{{ containers_storage_base_path }}/data/ttrss-app:/var/www/html:ro,z'
+    env:
+      TZ: '{{ timezone }}'
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.ttrss.rule: 'Host(`ttrss.{{ domain_name }}`)'
+      traefik.http.routers.ttrss.entrypoints: 'websecure'
+      traefik.http.routers.ttrss.middlewares: 'set-security-headers@file'
+      traefik.http.services.ttrss.loadbalancer.server.port: '80'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Create App container'
+  containers.podman.podman_container:
+    name: 'ttrss-app'
+    image: '{{ containers_images.ttrss.app }}:{{ containers_images_tags.ttrss.app }}'
+    timezone: '{{ timezone }}'
+    network:
+      - 'web-egress'
+      - 'ttrss-app-internal'
+      - 'ttrss-postgres-internal'
+    expose:
+      - 9000
+    volume:
+      - '{{ containers_storage_base_path }}/data/ttrss-app:/var/www/html:z'
+    env_file: '{{ containers_storage_base_path }}/env/ttrss-app/ttrss-app.env'
+    env:
+      TZ: '{{ timezone }}'
+      TTRSS_DB_TYPE: 'pgsql'
+      TTRSS_DB_HOST: 'ttrss-postgres'
+      TTRSS_DB_NAME: '{{ ttrss.postgres.database }}'
+      TTRSS_SELF_URL_PATH: 'https://ttrss.{{ domain_name }}/tt-rss'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+      after:
+        - 'container-ttrss-postgres.service'
+      requires:
+        - 'container-ttrss-postgres.service'
+    recreate: '{{ ("true" | bool) if ttrss_environment_file.changed else ("false" | bool) }}'
+    state: 'created'
+
+- name: 'Create Updater container'
+  containers.podman.podman_container:
+    name: 'ttrss-updater'
+    image: '{{ containers_images.ttrss.app }}:{{ containers_images_tags.ttrss.app }}'
+    command: '/opt/tt-rss/updater.sh'
+    timezone: '{{ timezone }}'
+    network:
+      - 'web-egress'
+      - 'ttrss-app-internal'
+      - 'ttrss-postgres-internal'
+    volume:
+      - '{{ containers_storage_base_path }}/data/ttrss-app:/var/www/html:z'
+    env_file: '{{ containers_storage_base_path }}/env/ttrss-app/ttrss-app.env'
+    env:
+      TZ: '{{ timezone }}'
+      TTRSS_DB_TYPE: 'pgsql'
+      TTRSS_DB_HOST: 'ttrss-postgres'
+      TTRSS_DB_NAME: '{{ ttrss.postgres.database }}'
+      TTRSS_SELF_URL_PATH: 'https://ttrss.{{ domain_name }}/tt-rss'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+      after:
+        - 'container-ttrss-app.service'
+      requires:
+        - 'container-ttrss-app.service'
+    recreate: '{{ ("true" | bool) if ttrss_environment_file.changed else ("false" | bool) }}'
+    state: 'created'
+
+- name: 'Enable and start Tiny Tiny RSS stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  loop:
+    - 'container-ttrss-postgres.service'
+    - 'container-ttrss-nginx.service'
+    - 'container-ttrss-app.service'
+    - 'container-ttrss-updater.service'

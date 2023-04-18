@@ -1,0 +1,6 @@
+---
+- name: 'Create'
+  ansible.builtin.import_tasks: 'create.yml'
+
+- name: 'Lifecycle'
+  ansible.builtin.import_tasks: 'lifecycle.yml'

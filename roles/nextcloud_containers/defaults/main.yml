@@ -1,0 +1,6 @@
+---
+containers_images:
+  nextcloud:
+    mariadb: 'docker.io/library/mariadb'
+    redis: 'docker.io/library/redis'
+    app: 'docker.io/library/nextcloud'

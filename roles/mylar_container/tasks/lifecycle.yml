@@ -1,0 +1,30 @@
+---
+- name: 'Stop Mylar container'
+  ansible.builtin.systemd:
+    name: 'container-mylar.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Mylar container'
+  ansible.builtin.systemd:
+    name: 'container-mylar.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Mylar image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.mylar }}:{{ containers_images_tags.mylar }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Mylar container'
+  ansible.builtin.systemd:
+    name: 'container-mylar.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Mylar container'
+  ansible.builtin.systemd:
+    name: 'container-mylar.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

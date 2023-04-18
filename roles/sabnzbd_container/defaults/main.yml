@@ -1,0 +1,3 @@
+---
+containers_images:
+  sabnzbd: 'lscr.io/linuxserver/sabnzbd'

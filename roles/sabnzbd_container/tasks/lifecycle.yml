@@ -1,0 +1,30 @@
+---
+- name: 'Stop SABnzbd container'
+  ansible.builtin.systemd:
+    name: 'container-sabnzbd.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable SABnzbd container'
+  ansible.builtin.systemd:
+    name: 'container-sabnzbd.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull SABnzbd image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.sabnzbd }}:{{ containers_images_tags.sabnzbd }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start SABnzbd container'
+  ansible.builtin.systemd:
+    name: 'container-sabnzbd.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable SABnzbd container'
+  ansible.builtin.systemd:
+    name: 'container-sabnzbd.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

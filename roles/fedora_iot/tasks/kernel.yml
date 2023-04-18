@@ -1,0 +1,28 @@
+---
+# https://github.com/coreos/fedora-coreos-tracker/issues/220
+- name: 'Lower Kernel Printk level'
+  ansible.builtin.copy:
+    content: 'kernel.printk=4'
+    dest: '/etc/sysctl.d/10-kernel-printk.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Load kernel modules'
+  community.general.modprobe:
+    name: '{{ item }}'
+    state: 'present'
+  loop:
+    - 'tun'
+    - 'wireguard'
+
+- name: 'Enable kernel modules at boot'
+  ansible.builtin.copy:
+    content: '{{ item }}'
+    dest: '/etc/modules-load.d/{{ item }}.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'tun'
+    - 'wireguard'

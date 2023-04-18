@@ -1,0 +1,30 @@
+---
+- name: 'Stop Radarr container'
+  ansible.builtin.systemd:
+    name: 'container-radarr.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Radarr container'
+  ansible.builtin.systemd:
+    name: 'container-radarr.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Radarr image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.radarr }}:{{ containers_images_tags.radarr }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Radarr container'
+  ansible.builtin.systemd:
+    name: 'container-radarr.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Radarr container'
+  ansible.builtin.systemd:
+    name: 'container-radarr.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

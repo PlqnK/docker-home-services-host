@@ -1,0 +1,4 @@
+---
+containers_images:
+  gluetun: 'ghcr.io/qdm12/gluetun'
+  transmission: 'lscr.io/linuxserver/transmission'

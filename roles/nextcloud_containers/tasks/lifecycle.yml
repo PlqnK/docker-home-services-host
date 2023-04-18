@@ -1,0 +1,54 @@
+---
+- name: 'Stop Nextcloud stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'container-nextcloud-cron.service'
+    - 'container-nextcloud-app.service'
+    - 'container-nextcloud-redis.service'
+    - 'container-nextcloud-mariadb.service'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Nextcloud stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: false
+  loop:
+    - 'container-nextcloud-cron.service'
+    - 'container-nextcloud-app.service'
+    - 'container-nextcloud-redis.service'
+    - 'container-nextcloud-mariadb.service'
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Nextcloud stack images'
+  containers.podman.podman_image:
+    name: '{{ item }}'
+    state: 'present'
+  loop:
+    - '{{ containers_images.nextcloud.mariadb }}:{{ containers_images_tags.nextcloud.mariadb }}'
+    - '{{ containers_images.nextcloud.redis }}:{{ containers_images_tags.nextcloud.redis }}'
+    - '{{ containers_images.nextcloud.app }}:{{ containers_images_tags.nextcloud.app }}'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Nextcloud stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'started'
+  loop:
+    - 'container-nextcloud-mariadb.service'
+    - 'container-nextcloud-redis.service'
+    - 'container-nextcloud-app.service'
+    - 'container-nextcloud-cron.service'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Nextcloud stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - 'container-nextcloud-mariadb.service'
+    - 'container-nextcloud-redis.service'
+    - 'container-nextcloud-app.service'
+    - 'container-nextcloud-cron.service'
+  tags: ['never', 'enable-containers']

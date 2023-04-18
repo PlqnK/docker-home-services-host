@@ -1,0 +1,3 @@
+---
+containers_images:
+  prowlarr: 'lscr.io/linuxserver/prowlarr'

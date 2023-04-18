@@ -1,0 +1,30 @@
+---
+- name: 'Stop Readarr container'
+  ansible.builtin.systemd:
+    name: 'container-readarr.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Readarr container'
+  ansible.builtin.systemd:
+    name: 'container-readarr.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Readarr image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.readarr }}:{{ containers_images_tags.readarr }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Readarr container'
+  ansible.builtin.systemd:
+    name: 'container-readarr.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Readarr container'
+  ansible.builtin.systemd:
+    name: 'container-readarr.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

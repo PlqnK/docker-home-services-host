@@ -1,0 +1,30 @@
+---
+- name: 'Stop FlareSolverr container'
+  ansible.builtin.systemd:
+    name: 'container-flaresolverr.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable FlareSolverr container'
+  ansible.builtin.systemd:
+    name: 'container-flaresolverr.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull FlareSolverr image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.flaresolverr }}:{{ containers_images_tags.flaresolverr }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start FlareSolverr container'
+  ansible.builtin.systemd:
+    name: 'container-flaresolverr.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable FlareSolverr container'
+  ansible.builtin.systemd:
+    name: 'container-flaresolverr.service'
+    enabled: true
+  tags: ['never', 'enable-containers']

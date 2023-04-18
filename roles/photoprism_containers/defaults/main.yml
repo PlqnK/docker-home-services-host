@@ -1,0 +1,5 @@
+---
+containers_images:
+  photoprism:
+    mariadb: 'docker.io/library/mariadb'
+    app: 'docker.io/photoprism/photoprism'

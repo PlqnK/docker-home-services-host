@@ -1,0 +1,45 @@
+---
+- name: 'Create Lidarr bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_base_path }}/data/lidarr'
+    owner: 911
+    group: 911
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create Lidarr container'
+  containers.podman.podman_container:
+    name: 'lidarr'
+    image: '{{ containers_images.lidarr }}:{{ containers_images_tags.lidarr }}'
+    timezone: '{{ timezone }}'
+    network:
+      - 'web-egress'
+      - 'common-internal'
+    expose:
+      - 8686
+    volume:
+      - '{{ containers_storage_base_path }}/data/lidarr:/config:Z'
+      - '{{ autofs_base_path }}/downloads:/downloads:slave'
+      - '{{ autofs_base_path }}/medias/music:/music:slave'
+    env:
+      TZ: '{{ timezone }}'
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.lidarr.rule: 'Host(`lidarr.{{ domain_name }}`)'
+      traefik.http.routers.lidarr.entrypoints: 'websecure'
+      traefik.http.routers.lidarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.lidarr.loadbalancer.server.port: '8686'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Enable and start Lidarr container'
+  ansible.builtin.systemd:
+    name: 'container-lidarr.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

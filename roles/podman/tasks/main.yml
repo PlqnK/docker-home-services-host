@@ -1,0 +1,12 @@
+---
+- name: 'Configure podman'
+  ansible.builtin.import_tasks: 'socket.yml'
+
+- name: 'Create containers networks'
+  ansible.builtin.import_tasks: 'networks.yml'
+
+- name: 'Configure SELinux'
+  ansible.builtin.import_tasks: 'selinux.yml'
+
+- name: 'Configure storage'
+  ansible.builtin.import_tasks: 'storage.yml'

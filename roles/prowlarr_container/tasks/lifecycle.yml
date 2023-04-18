@@ -1,0 +1,30 @@
+---
+- name: 'Stop Prowlarr container'
+  ansible.builtin.systemd:
+    name: 'container-prowlarr.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Prowlarr container'
+  ansible.builtin.systemd:
+    name: 'container-prowlarr.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Prowlarr image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.prowlarr }}:{{ containers_images_tags.prowlarr }}'
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Prowlarr container'
+  ansible.builtin.systemd:
+    name: 'container-prowlarr.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Prowlarr container'
+  ansible.builtin.systemd:
+    name: 'container-prowlarr.service'
+    enabled: true
+  tags: ['never', 'enable-containers']
