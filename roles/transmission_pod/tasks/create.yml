@@ -13,7 +13,7 @@
       loop:
         - 'gluetun-external'
       register: 'podman_networks'
-    
+
     - name: 'Add podman networks subnets to firewalld trusted zone'
       ansible.posix.firewalld:
         source: '{{ item }}'

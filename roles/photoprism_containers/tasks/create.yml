@@ -13,7 +13,7 @@
       loop:
         - 'photoprism-mariadb-internal'
       register: 'podman_networks'
-    
+
     - name: 'Add podman networks subnets to firewalld trusted zone'
       ansible.posix.firewalld:
         source: '{{ item }}'
@@ -130,8 +130,8 @@
       - '{{ containers_storage_base_path }}/data/photoprism-mariadb:/opt/dumps:Z'
       - '{{ containers_storage_base_path }}/runtime/photoprism/sidecar:/photoprism/sidecar:Z'
       - '{{ containers_storage_base_path }}/runtime/photoprism/cache:/photoprism/cache:Z'
-      #- '{{ autofs_base_path }}/cloud/data/{{ photoprism.pictures_path }}:/photoprism/originals/pictures:slave'
-      #- '{{ autofs_base_path }}/cloud/data/{{ photoprism.videos_path }}:/photoprism/originals/videos:slave'
+      # - '{{ autofs_base_path }}/cloud/data/{{ photoprism.pictures_path }}:/photoprism/originals/pictures:slave'
+      # - '{{ autofs_base_path }}/cloud/data/{{ photoprism.videos_path }}:/photoprism/originals/videos:slave'
     env_file: '{{ containers_storage_base_path }}/env/photoprism/photoprism.env'
     env:
       TZ: '{{ timezone }}'
@@ -149,10 +149,10 @@
       traefik.http.routers.photos.entrypoints: 'websecure'
       traefik.http.routers.photos.middlewares: 'set-security-headers@file'
       traefik.http.services.photos.loadbalancer.server.port: '2342'
-      #deck-chores.index.command: 'photoprism index --cleanup'
-      #deck-chores.index.interval: 'hourly'
-      #deck-chores.convert.command: 'photoprism convert'
-      #deck-chores.convert.interval: 'hourly'
+      # deck-chores.index.command: 'photoprism index --cleanup'
+      # deck-chores.index.interval: 'hourly'
+      # deck-chores.convert.command: 'photoprism convert'
+      # deck-chores.convert.interval: 'hourly'
       deck-chores.backup.command: 'photoprism backup -f -i /opt/dumps/photoprism.sql'
       deck-chores.backup.cron: '* * * * * 4 0 0'
     generate_systemd:
