@@ -1,4 +1,10 @@
 ---
+- name: 'Check if provisioning a Vagrant VM'
+  ansible.builtin.getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: false
+
 - name: 'Create Plex bind mounts paths'
   ansible.builtin.file:
     path: '{{ item.path }}'
@@ -55,7 +61,7 @@
       traefik.http.routers.plex.entrypoints: 'websecure'
       traefik.http.routers.plex.middlewares: 'set-security-headers@file'
       traefik.http.services.plex.loadbalancer.server.port: '32400'
-      traefik.http.services.plex.loadbalancer.server.scheme: 'https'
+      traefik.http.services.plex.loadbalancer.server.scheme: '{{ ("https") if getent_passwd.vagrant is none else ("http") }}'
     generate_systemd:
       names: true
       new: true
