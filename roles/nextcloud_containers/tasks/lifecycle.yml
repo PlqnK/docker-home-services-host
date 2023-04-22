@@ -24,6 +24,8 @@
 - name: 'Pull Nextcloud stack images'
   containers.podman.podman_image:
     name: '{{ item }}'
+    pull: true
+    force: true
     state: 'present'
   loop:
     - '{{ containers_images.nextcloud.mariadb }}:{{ containers_images_tags.nextcloud.mariadb }}'

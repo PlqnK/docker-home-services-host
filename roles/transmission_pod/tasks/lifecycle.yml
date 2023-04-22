@@ -14,6 +14,8 @@
 - name: 'Pull Transmission pod images'
   containers.podman.podman_image:
     name: '{{ item }}'
+    pull: true
+    force: true
     state: 'present'
   loop:
     - '{{ containers_images.gluetun }}:{{ containers_images_tags.gluetun }}'

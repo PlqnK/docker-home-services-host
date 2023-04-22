@@ -14,6 +14,8 @@
 - name: 'Pull Collabora Online image'
   containers.podman.podman_image:
     name: '{{ containers_images.collabora_online }}:{{ containers_images_tags.collabora_online }}'
+    pull: true
+    force: true
     state: 'present'
   tags: ['never', 'pull-images', 'update-containers']
 

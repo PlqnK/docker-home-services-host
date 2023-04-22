@@ -14,6 +14,8 @@
 - name: 'Pull Tautulli image'
   containers.podman.podman_image:
     name: '{{ containers_images.tautulli }}:{{ containers_images_tags.tautulli }}'
+    pull: true
+    force: true
     state: 'present'
   tags: ['never', 'pull-images', 'update-containers']
 

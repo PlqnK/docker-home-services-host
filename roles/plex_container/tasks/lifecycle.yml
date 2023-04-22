@@ -14,6 +14,8 @@
 - name: 'Pull Plex image'
   containers.podman.podman_image:
     name: '{{ containers_images.plex }}:{{ containers_images_tags.plex }}'
+    pull: true
+    force: true
     state: 'present'
   tags: ['never', 'pull-images', 'update-containers']
 

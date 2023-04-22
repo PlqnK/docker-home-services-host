@@ -14,6 +14,8 @@
 - name: 'Pull Deck Chores image'
   containers.podman.podman_image:
     name: '{{ containers_images.deck_chores }}:{{ containers_images_tags.deck_chores }}'
+    pull: true
+    force: true
     state: 'present'
   tags: ['never', 'pull-images', 'update-containers']
 

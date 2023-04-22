@@ -14,6 +14,8 @@
 - name: 'Pull Calibre-Web image'
   containers.podman.podman_image:
     name: '{{ containers_images.calibre_web }}:{{ containers_images_tags.calibre_web }}'
+    pull: true
+    force: true
     state: 'present'
   tags: ['never', 'pull-images', 'update-containers']
 

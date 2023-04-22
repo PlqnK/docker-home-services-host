@@ -14,6 +14,8 @@
 - name: 'Pull Mylar image'
   containers.podman.podman_image:
     name: '{{ containers_images.mylar }}:{{ containers_images_tags.mylar }}'
+    pull: true
+    force: true
     state: 'present'
   tags: ['never', 'pull-images', 'update-containers']
 

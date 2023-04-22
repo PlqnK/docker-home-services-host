@@ -14,6 +14,8 @@
 - name: 'Pull FlareSolverr image'
   containers.podman.podman_image:
     name: '{{ containers_images.flaresolverr }}:{{ containers_images_tags.flaresolverr }}'
+    pull: true
+    force: true
     state: 'present'
   tags: ['never', 'pull-images', 'update-containers']
 

@@ -14,6 +14,8 @@
 - name: 'Pull Overseerr image'
   containers.podman.podman_image:
     name: '{{ containers_images.overseerr }}:{{ containers_images_tags.overseerr }}'
+    pull: true
+    force: true
     state: 'present'
   tags: ['never', 'pull-images', 'update-containers']
 

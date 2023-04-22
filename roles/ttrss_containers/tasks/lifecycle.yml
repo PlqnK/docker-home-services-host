@@ -24,6 +24,8 @@
 - name: 'Pull Tiny Tiny RSS stack images'
   containers.podman.podman_image:
     name: '{{ item }}'
+    pull: true
+    force: true
     state: 'present'
   loop:
     - '{{ containers_images.ttrss.postgres }}:{{ containers_images_tags.ttrss.postgres }}'

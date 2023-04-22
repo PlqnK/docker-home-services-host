@@ -20,6 +20,8 @@
 - name: 'Pull Traefik stack images'
   containers.podman.podman_image:
     name: '{{ item }}'
+    pull: true
+    force: true
     state: 'present'
   loop:
     - '{{ containers_images.docker_socket_proxy }}:{{ containers_images_tags.docker_socket_proxy }}'

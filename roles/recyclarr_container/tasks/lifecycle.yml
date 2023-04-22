@@ -14,6 +14,8 @@
 - name: 'Pull Recyclarr image'
   containers.podman.podman_image:
     name: '{{ containers_images.recyclarr }}:{{ containers_images_tags.recyclarr }}'
+    pull: true
+    force: true
     state: 'present'
   tags: ['never', 'pull-images', 'update-containers']
 
