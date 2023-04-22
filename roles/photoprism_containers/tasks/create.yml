@@ -130,8 +130,8 @@
       - '{{ containers_storage_base_path }}/data/photoprism-mariadb:/opt/dumps:Z'
       - '{{ containers_storage_base_path }}/runtime/photoprism/sidecar:/photoprism/sidecar:Z'
       - '{{ containers_storage_base_path }}/runtime/photoprism/cache:/photoprism/cache:Z'
-      # - '{{ autofs_base_path }}/cloud/data/{{ photoprism.pictures_path }}:/photoprism/originals/pictures:slave'
-      # - '{{ autofs_base_path }}/cloud/data/{{ photoprism.videos_path }}:/photoprism/originals/videos:slave'
+      - '{{ autofs_base_path }}/cloud/data/{{ photoprism.pictures_path }}:/photoprism/originals/pictures:slave'
+      - '{{ autofs_base_path }}/cloud/data/{{ photoprism.videos_path }}:/photoprism/originals/videos:slave'
     env_file: '{{ containers_storage_base_path }}/env/photoprism/photoprism.env'
     env:
       TZ: '{{ timezone }}'
