@@ -9,4 +9,5 @@
   loop:
     - 'config'
     - 'data'
+    - 'env'
     - 'runtime'

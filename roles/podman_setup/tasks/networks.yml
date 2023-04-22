@@ -9,8 +9,10 @@
       internal: false
     - name: 'common-internal'
       internal: true
+  tags: ['containers-networks']
 
 - name: 'Add containers networks to firewalld trusted zone'
+  tags: ['containers-networks']
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:

@@ -4,7 +4,7 @@
   roles:
     - role: 'fedora_iot_setup'
       tags: 'fedora-iot-setup'
-    - role: 'podman'
+    - role: 'podman_setup'
       tags: 'podman-setup'
 
 - name: 'Media containers'
