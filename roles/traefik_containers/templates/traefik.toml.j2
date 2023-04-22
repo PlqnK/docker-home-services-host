@@ -13,9 +13,9 @@
     address = ":80"
   [entryPoints.websecure]
     address = ":443"
-{% if traefik.proxy_protocol_trusted_ips is not none and getent_passwd.vagrant is none %}
+{% if home_network.proxy_protocol_trusted_ips is not none and getent_passwd.vagrant is none %}
     [entryPoints.websecure.proxyProtocol]
-      trustedIPs = [{% for ip in traefik.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
+      trustedIPs = [{% for ip in home_network.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
 {% endif %}
     [entryPoints.websecure.http.tls]
 {% if getent_passwd.vagrant is none %}
