@@ -9,8 +9,10 @@
       internal: true
     - name: 'ttrss-app-internal'
       internal: true
+  tags: ['containers-networks']
 
 - name: 'Add Tiny Tiny RSS stack networks to firewalld trusted zone'
+  tags: ['containers-networks']
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:

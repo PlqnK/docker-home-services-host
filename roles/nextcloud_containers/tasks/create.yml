@@ -9,8 +9,10 @@
       internal: true
     - name: 'nextcloud-redis-internal'
       internal: true
+  tags: ['containers-networks']
 
 - name: 'Add Nextcloud stack networks to firewalld trusted zone'
+  tags: ['containers-networks']
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:
@@ -142,8 +144,11 @@
     env:
       TZ: '{{ timezone }}'
       APACHE_DISABLE_REWRITE_IP: '1'
-      TRUSTED_PROXIES: '172.16.0.0/12'
+      TRUSTED_PROXIES: '10.89.0.0/16'
       NEXTCLOUD_TRUSTED_DOMAINS: 'cloud.{{ domain_name }}'
+      NEXTCLOUD_INIT_HTACCESS: 'true'
+      OVERWRITEPROTOCOL: 'https'
+      OVERWRITECLIURL: 'https://cloud.{{ domain_name }}'
       MYSQL_HOST: 'nextcloud-mariadb'
       MYSQL_DATABASE: '{{ nextcloud.mariadb.database }}'
       MYSQL_USER_FILE: '/run/secrets/nextcloud_mariadb_user'
@@ -159,7 +164,7 @@
       traefik.http.services.cloud.loadbalancer.server.port: '80'
       traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.permanent: 'true'
       traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.regex: 'https://(.*)/.well-known/(card|cal)dav'
-      traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.replacement: 'https://$${1}/remote.php/dav/'
+      traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.replacement: 'https://${1}/remote.php/dav/'
     generate_systemd:
       names: true
       new: true

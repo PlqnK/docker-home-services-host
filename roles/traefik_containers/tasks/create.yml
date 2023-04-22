@@ -15,8 +15,10 @@
       internal: true
     - name: 'traefik-external'
       internal: false
+  tags: ['containers-networks']
 
 - name: 'Add Traefik stack networks to firewalld trusted zone'
+  tags: ['containers-networks']
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:
@@ -122,10 +124,11 @@
     label:
       traefik.enable: 'true'
       traefik.docker.network: 'common-internal'
-      traefik.http.routers.traefik.rule: 'Host(`traefik.{{ domain_name }}`)'
+      traefik.http.routers.traefik.rule: 'Host(`{{ ansible_hostname }}.{{ domain_name }}`) && PathPrefix(`/traefik`) || Headers(`Referer`, `https://{{ ansible_hostname }}.{{ domain_name }}/traefik/dashboard/`)'
       traefik.http.routers.traefik.entrypoints: 'websecure'
       traefik.http.routers.traefik.service: 'api@internal'
-      traefik.http.routers.traefik.middlewares: 'set-security-headers@file, restrict-external-access@file, traefik-auth'
+      traefik.http.routers.traefik.middlewares: 'set-security-headers@file, restrict-external-access@file, traefik-strip-prefix, traefik-auth'
+      traefik.http.middlewares.traefik-strip-prefix.stripprefix.prefixes: '/traefik'
       traefik.http.middlewares.traefik-auth.basicauth.users: '{{ traefik.api.user }}:{{ traefik.api.password_hash }}'
     generate_systemd:
       names: true
