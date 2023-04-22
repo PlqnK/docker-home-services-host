@@ -1,3 +1,5 @@
 ---
 containers_images:
   calibre_web: 'lscr.io/linuxserver/calibre-web'
+containers_images_tags:
+  calibre_web: 'latest'

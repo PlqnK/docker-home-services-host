@@ -4,3 +4,8 @@ containers_images:
     mariadb: 'docker.io/library/mariadb'
     redis: 'docker.io/library/redis'
     app: 'docker.io/library/nextcloud'
+containers_images_tags:
+  nextcloud:
+    mariadb: '10.11'
+    redis: '7'
+    app: '26'

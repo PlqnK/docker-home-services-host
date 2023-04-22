@@ -1,3 +1,5 @@
 ---
 containers_images:
   plex: 'docker.io/plexinc/pms-docker'
+containers_images_tags:
+  plex: 'latest'

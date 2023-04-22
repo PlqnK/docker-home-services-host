@@ -1,3 +1,5 @@
 ---
 containers_images:
   radarr: 'lscr.io/linuxserver/radarr'
+containers_images_tags:
+  radarr: 'latest'

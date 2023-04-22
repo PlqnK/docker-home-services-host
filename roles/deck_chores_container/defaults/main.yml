@@ -1,3 +1,5 @@
 ---
 containers_images:
   deck_chores: 'ghcr.io/funkyfuture/deck-chores'
+containers_images_tags:
+  deck_chores: '1'

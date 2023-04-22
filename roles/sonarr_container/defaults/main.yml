@@ -1,3 +1,5 @@
 ---
 containers_images:
   sonarr: 'lscr.io/linuxserver/sonarr'
+containers_images_tags:
+  sonarr: 'latest'

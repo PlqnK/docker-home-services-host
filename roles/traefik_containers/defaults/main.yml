@@ -2,3 +2,6 @@
 containers_images:
   docker_socket_proxy: 'ghcr.io/tecnativa/docker-socket-proxy'
   traefik: 'docker.io/library/traefik'
+containers_images_tags:
+  docker_socket_proxy: 'nightly'
+  traefik: '2.9'

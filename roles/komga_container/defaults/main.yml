@@ -1,3 +1,5 @@
 ---
 containers_images:
   komga: 'ghcr.io/gotson/komga'
+containers_images_tags:
+  komga: 'latest'

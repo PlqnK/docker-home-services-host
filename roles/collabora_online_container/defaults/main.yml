@@ -1,3 +1,5 @@
 ---
 containers_images:
   collabora_online: 'docker.io/collabora/code'
+containers_images_tags:
+  collabora_online: 'latest'

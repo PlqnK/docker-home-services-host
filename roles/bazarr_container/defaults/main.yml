@@ -1,3 +1,5 @@
 ---
 containers_images:
   bazarr: 'lscr.io/linuxserver/bazarr'
+containers_images_tags:
+  bazarr: 'latest'

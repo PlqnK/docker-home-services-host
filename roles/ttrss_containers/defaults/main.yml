@@ -4,3 +4,8 @@ containers_images:
     postgres: 'docker.io/library/postgres'
     app: 'docker.io/cthulhoo/ttrss-fpm-pgsql-static'
     nginx: 'docker.io/library/nginx'
+containers_images_tags:
+  ttrss:
+    postgres: '15'
+    app: 'latest'
+    nginx: '1'
