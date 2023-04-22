@@ -1,8 +1,8 @@
 ---
-- name: 'Hosts base configuration'
+- name: 'Containers hosts base configuration'
   hosts: 'containers_hosts'
   roles:
-    - role: 'fedora_iot'
+    - role: 'fedora_iot_setup'
       tags: 'fedora-iot-setup'
     - role: 'podman'
       tags: 'podman-setup'
@@ -58,3 +58,8 @@
       tags: 'mylar'
     - role: 'overseerr_container'
       tags: 'overseerr'
+
+- name: 'Update containers hosts OS'
+  hosts: 'containers_hosts'
+  roles:
+    - 'fedora_iot_update'

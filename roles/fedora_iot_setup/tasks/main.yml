@@ -1,8 +1,4 @@
 ---
-- name: 'Upgrade OS'
-  ansible.builtin.import_tasks: 'upgrade.yml'
-  tags: ['never', 'upgrade-os']
-
 - name: 'Install packages'
   ansible.builtin.import_tasks: 'packages.yml'
 

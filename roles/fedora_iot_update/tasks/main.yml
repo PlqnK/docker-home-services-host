@@ -1,7 +1,9 @@
 ---
-- name: 'Upgrade OS'
+- name: 'Update OS'
   ansible.posix.rpm_ostree_upgrade:
   notify: 'Reboot host'
+  tags: ['never', 'update-os']
 
 - name: 'Reboot host if OS has been upgraded'
   ansible.builtin.meta: 'flush_handlers'
+  tags: ['never', 'update-os']
