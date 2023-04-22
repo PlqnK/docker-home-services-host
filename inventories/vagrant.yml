@@ -5,58 +5,6 @@ all:
       ansible_host: 'media.localdomain'
       ansible_ssh_private_key_file: '.vagrant/machines/media/libvirt/private_key'
       ansible_become: true
-      storage_server:
-        name: 'storage'
-        fqdn: 'storage.localdomain'
-        exports_base_path: '/mnt/vault'
-      nfs_exports:
-        - 'cloud/data'
-        - 'downloads/bittorrent'
-        - 'downloads/usenet'
-        - 'medias/audiobooks'
-        - 'medias/audiodrama'
-        - 'medias/books'
-        - 'medias/comics'
-        - 'medias/movies'
-        - 'medias/music'
-        - 'medias/series'
-      autofs_base_path: '/var/mnt/{{ storage_server.name }}'
-      containers_images_tags:
-        docker_socket_proxy: 'nightly'
-        deck_chores: '1'
-        ddns_updater: 'latest'
-        gluetun: 'latest'
-        traefik: '2.9'
-        transmission: 'latest'
-        sabnzbd: 'latest'
-        flaresolverr: 'latest'
-        unpackerr: 'latest'
-        recyclarr: '4'
-        prowlarr: 'latest'
-        radarr: 'latest'
-        sonarr: 'latest'
-        bazarr: 'latest'
-        lidarr: 'latest'
-        readarr: 'develop'
-        mylar: 'latest'
-        overseerr: 'latest'
-        plex: 'latest'
-        tautulli: 'latest'
-        calibre: 'latest'
-        calibre_web: 'latest'
-        komga: 'latest'
-        nextcloud:
-          app: '26'
-          mariadb: '10.11'
-          redis: '7'
-        collabora_online: 'latest'
-        photoprism:
-          app: 'latest'
-          mariadb: '10.11'
-        ttrss:
-          app: 'latest'
-          nginx: '1'
-          postgres: '15'
       gluetun:
         wireguard:
           private_key: 'kBgTzskkGscSivkDDTxl5MHFPJU6PV9PxspVFVAc8Xc='
@@ -72,10 +20,6 @@ all:
         api:
           user: 'admin'
           password_hash: '$2b$12$1vVmIFbVIAXS123x8EYsn.0hTVEBYgp17YcDRPy9k4g0x1jQtvEwK'
-        ipv6_gua: 'fe80:ba0:bab:0::/56'
-        # proxy_protocol_trusted_ips:
-        #   - '192.168.1.1'
-        #   - 'fe80:ba0:bab:0::1'
       transmission:
         user: 'transmission'
         password: 'SecretPassword1234'
@@ -135,3 +79,24 @@ all:
       group:
         name: 'wheel'
       email: 'vagrant@localhost'
+    home_network:
+      ipv6_gua: 'fe80:ba0:bab:0::/56'
+        # proxy_protocol_trusted_ips:
+        #   - '192.168.1.1'
+        #   - 'fe80:ba0:bab:0::1'
+    storage_server:
+      name: 'storage'
+      fqdn: 'storage.localdomain'
+      exports_base_path: '/mnt/vault'
+    nfs_exports:
+      - 'cloud/data'
+      - 'downloads/bittorrent'
+      - 'downloads/usenet'
+      - 'medias/audiobooks'
+      - 'medias/audiodrama'
+      - 'medias/books'
+      - 'medias/comics'
+      - 'medias/movies'
+      - 'medias/music'
+      - 'medias/series'
+    autofs_base_path: '/var/mnt/{{ storage_server.name }}'
