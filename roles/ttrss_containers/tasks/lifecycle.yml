@@ -10,7 +10,7 @@
     - 'container-ttrss-postgres.service'
   tags: ['never', 'stop-containers', 'update-containers']
 
-- name: 'Disable Recyclarr container'
+- name: 'Disable Tiny Tiny RSS stack'
   ansible.builtin.systemd:
     name: '{{ item }}'
     enabled: false
@@ -44,7 +44,7 @@
     - 'container-ttrss-updater.service'
   tags: ['never', 'start-containers', 'update-containers']
 
-- name: 'Enable Recyclarr container'
+- name: 'Enable Tiny Tiny RSS stack'
   ansible.builtin.systemd:
     name: '{{ item }}'
     enabled: true
