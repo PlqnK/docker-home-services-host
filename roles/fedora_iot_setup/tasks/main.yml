@@ -7,6 +7,7 @@
 
 - name: 'Configure autofs'
   ansible.builtin.import_tasks: 'autofs.yml'
+  when: (storage_server is defined)
 
 - name: 'Configure kernel'
   ansible.builtin.import_tasks: 'kernel.yml'
