@@ -67,10 +67,10 @@
     label:
       traefik.enable: 'true'
       traefik.docker.network: 'common-internal'
-      traefik.http.routers.bazarr.rule: 'Host(`grafana.{{ domain_name }}`)'
-      traefik.http.routers.bazarr.entrypoints: 'websecure'
-      traefik.http.routers.bazarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
-      traefik.http.services.bazarr.loadbalancer.server.port: '3000'
+      traefik.http.routers.grafana.rule: 'Host(`grafana.{{ domain_name }}`)'
+      traefik.http.routers.grafana.entrypoints: 'websecure'
+      traefik.http.routers.grafana.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.grafana.loadbalancer.server.port: '3000'
     generate_systemd:
       names: true
       new: true

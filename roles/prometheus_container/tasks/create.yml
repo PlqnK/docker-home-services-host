@@ -67,10 +67,10 @@
     label:
       traefik.enable: 'true'
       traefik.docker.network: 'common-internal'
-      traefik.http.routers.bazarr.rule: 'Host(`prometheus.{{ domain_name }}`)'
-      traefik.http.routers.bazarr.entrypoints: 'websecure'
-      traefik.http.routers.bazarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
-      traefik.http.services.bazarr.loadbalancer.server.port: '9090'
+      traefik.http.routers.prometheus.rule: 'Host(`prometheus.{{ domain_name }}`)'
+      traefik.http.routers.prometheus.entrypoints: 'websecure'
+      traefik.http.routers.prometheus.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.prometheus.loadbalancer.server.port: '9090'
     generate_systemd:
       names: true
       new: true

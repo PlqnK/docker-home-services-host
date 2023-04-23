@@ -68,10 +68,10 @@
     label:
       traefik.enable: 'true'
       traefik.docker.network: 'common-internal'
-      traefik.http.routers.bazarr.rule: 'Host(`loki.{{ domain_name }}`)'
-      traefik.http.routers.bazarr.entrypoints: 'websecure'
-      traefik.http.routers.bazarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
-      traefik.http.services.bazarr.loadbalancer.server.port: '3100'
+      traefik.http.routers.loki.rule: 'Host(`loki.{{ domain_name }}`)'
+      traefik.http.routers.loki.entrypoints: 'websecure'
+      traefik.http.routers.loki.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.loki.loadbalancer.server.port: '3100'
     generate_systemd:
       names: true
       new: true
