@@ -1,0 +1,32 @@
+---
+- name: 'Stop Loki container'
+  ansible.builtin.systemd:
+    name: 'container-loki.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Loki container'
+  ansible.builtin.systemd:
+    name: 'container-loki.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Loki image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.loki }}:{{ containers_images_tags.loki }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Loki container'
+  ansible.builtin.systemd:
+    name: 'container-loki.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Loki container'
+  ansible.builtin.systemd:
+    name: 'container-loki.service'
+    enabled: true
+  tags: ['never', 'enable-containers']
