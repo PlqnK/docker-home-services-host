@@ -59,6 +59,16 @@
     - role: 'overseerr_container'
       tags: 'overseerr'
 
+- name: 'Monitoring containers'
+  hosts: 'monitoring'
+  roles:
+    - 'traefik_containers'
+    - 'prometheus_container'
+    #- 'loki_container'
+    - 'grafana_container'
+    - 'node_exporter_container'
+    #- 'promtail_container'
+
 - name: 'Update containers hosts OS'
   hosts: 'containers_hosts'
   roles:
