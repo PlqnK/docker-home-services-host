@@ -1,0 +1,33 @@
+---
+- name: 'Accept node_exporter incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: 'prometheus-node-exporter'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+
+- name: 'Create node_exporter container'
+  containers.podman.podman_container:
+    name: 'node_exporter'
+    image: '{{ containers_images.node_exporter }}:{{ containers_images_tags.node_exporter }}'
+    command: '--path.rootfs=/host'
+    pid: 'host'
+    network: 'host'
+    volume:
+      - '/:/host:ro,rslave'
+    timezone: '{{ timezone }}'
+    env:
+      TZ: '{{ timezone }}'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Enable and start node_exporter container'
+  ansible.builtin.systemd:
+    name: 'container-node_exporter.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

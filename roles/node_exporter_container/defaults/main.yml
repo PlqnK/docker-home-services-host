@@ -1,0 +1,5 @@
+---
+containers_images:
+  node_exporter: 'quay.io/prometheus/node-exporter'
+containers_images_tags:
+  node_exporter: 'latest'

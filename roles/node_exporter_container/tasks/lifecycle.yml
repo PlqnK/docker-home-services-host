@@ -1,0 +1,32 @@
+---
+- name: 'Stop node_exporter container'
+  ansible.builtin.systemd:
+    name: 'container-node_exporter.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable node_exporter container'
+  ansible.builtin.systemd:
+    name: 'container-node_exporter.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull node_exporter image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.node_exporter }}:{{ containers_images_tags.node_exporter }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start node_exporter container'
+  ansible.builtin.systemd:
+    name: 'container-node_exporter.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable node_exporter container'
+  ansible.builtin.systemd:
+    name: 'container-node_exporter.service'
+    enabled: true
+  tags: ['never', 'enable-containers']
