@@ -27,12 +27,12 @@
     state: 'directory'
   loop:
     - path: '{{ containers_storage_base_path }}/config/prometheus'
-      owner: 'root'
-      group: 'root'
+      owner: 65534
+      group: 65534
       mode: '0700'
     - path: '{{ containers_storage_base_path }}/runtime/prometheus'
-      owner: 'root'
-      group: 'root'
+      owner: 65534
+      group: 65534
       mode: '0700'
 
 - name: 'Create Prometheus configs from templates'
@@ -45,8 +45,8 @@
   loop:
     - src: 'prometheus.yml.j2'
       dest: '{{ containers_storage_base_path }}/config/prometheus/prometheus.yml'
-      owner: 'root'
-      group: 'root'
+      owner: 65534
+      group: 65534
       mode: '0644'
 
 - name: 'Create Prometheus container'
