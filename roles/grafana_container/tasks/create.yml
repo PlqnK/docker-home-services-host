@@ -1,0 +1,86 @@
+---
+- name: 'Check if provisioning a Vagrant VM'
+  ansible.builtin.getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: false
+
+- name: 'Create Grafana CNAME record'
+  community.general.gandi_livedns:
+    api_key: '{{ gandi_api_key }}'
+    domain: '{{ domain_name }}'
+    type: 'CNAME'
+    record: 'grafana'
+    values:
+      - '{{ ansible_hostname }}.{{ domain_name }}.'
+    ttl: 10800
+    state: 'present'
+  when: (getent_passwd.vagrant is none)
+  delegate_to: 'localhost'
+
+- name: 'Create Grafana bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_base_path }}/config/grafana'
+      owner: 472
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/data/grafana'
+      owner: 472
+      group: 'root'
+      mode: '0700'
+
+- name: 'Create Grafana configs from templates'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+  loop:
+    - src: 'grafana.ini.j2'
+      dest: '{{ containers_storage_base_path }}/config/grafana/grafana.ini'
+      owner: 472
+      group: 'root'
+      mode: '0644'
+
+- name: 'Create Grafana container'
+  containers.podman.podman_container:
+    name: 'grafana'
+    image: '{{ containers_images.grafana }}:{{ containers_images_tags.grafana }}'
+    timezone: '{{ timezone }}'
+    network:
+      - 'web-egress'
+      - 'common-internal'
+    expose:
+      - 3000
+    volume:
+      - '{{ containers_storage_base_path }}/config/grafana/grafana.ini:/etc/grafana/grafana.ini:Z'
+      - '{{ containers_storage_base_path }}/data/grafana:/var/lib/grafana:Z'
+    env:
+      TZ: '{{ timezone }}'
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.bazarr.rule: 'Host(`grafana.{{ domain_name }}`)'
+      traefik.http.routers.bazarr.entrypoints: 'websecure'
+      traefik.http.routers.bazarr.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.bazarr.loadbalancer.server.port: '3000'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Enable and start Grafana container'
+  ansible.builtin.systemd:
+    name: 'container-grafana.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

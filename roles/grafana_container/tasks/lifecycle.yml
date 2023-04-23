@@ -1,0 +1,32 @@
+---
+- name: 'Stop Grafana container'
+  ansible.builtin.systemd:
+    name: 'container-grafana.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Grafana container'
+  ansible.builtin.systemd:
+    name: 'container-grafana.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Grafana image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.grafana }}:{{ containers_images_tags.grafana }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Grafana container'
+  ansible.builtin.systemd:
+    name: 'container-grafana.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Grafana container'
+  ansible.builtin.systemd:
+    name: 'container-grafana.service'
+    enabled: true
+  tags: ['never', 'enable-containers']
