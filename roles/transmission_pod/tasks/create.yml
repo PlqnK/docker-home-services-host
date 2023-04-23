@@ -18,6 +18,25 @@
   when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
 
+- name: 'Load kernel modules'
+  community.general.modprobe:
+    name: '{{ item }}'
+    state: 'present'
+  loop:
+    - 'tun'
+    - 'wireguard'
+
+- name: 'Enable kernel modules at boot'
+  ansible.builtin.copy:
+    content: '{{ item }}'
+    dest: '/etc/modules-load.d/{{ item }}.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'tun'
+    - 'wireguard'
+
 - name: 'Create Gluetun network'
   containers.podman.podman_network:
     name: 'gluetun-external'
