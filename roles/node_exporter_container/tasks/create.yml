@@ -6,14 +6,42 @@
     immediate: true
     state: 'enabled'
 
+- name: 'Create node_exporter bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_base_path }}/config/node_exporter'
+      owner: 65534
+      group: 65534
+      mode: '0700'
+
+- name: 'Create node_exporter config from templates'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+  loop:
+    - src: 'web.yml.j2'
+      dest: '{{ containers_storage_base_path }}/config/node_exporter/web.yml'
+      owner: 65534
+      group: 65534
+      mode: '0644'
+
 - name: 'Create node_exporter container'
   containers.podman.podman_container:
     name: 'node_exporter'
     image: '{{ containers_images.node_exporter }}:{{ containers_images_tags.node_exporter }}'
-    command: '--path.rootfs=/host'
+    command: '--path.rootfs=/host --web.config.file=/etc/node_exporter/web.yml'
     pid: 'host'
     network: 'host'
     volume:
+      - '{{ containers_storage_base_path }}/config/node_exporter/web.yml:/etc/node_exporter/web.yml:Z'
       - '/:/host:ro,rslave'
     timezone: '{{ timezone }}'
     env:

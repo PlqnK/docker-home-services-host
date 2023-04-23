@@ -48,18 +48,25 @@
       owner: 65534
       group: 65534
       mode: '0644'
+    - src: 'web.yml.j2'
+      dest: '{{ containers_storage_base_path }}/config/prometheus/web.yml'
+      owner: 65534
+      group: 65534
+      mode: '0644'
 
 - name: 'Create Prometheus container'
   containers.podman.podman_container:
     name: 'prometheus'
     image: '{{ containers_images.prometheus }}:{{ containers_images_tags.prometheus }}'
+    command: '--config.file=/etc/prometheus/prometheus.yml --web.config.file=/etc/prometheus/web.yml --storage.tsdb.path=/prometheus'
     network:
       - 'web-egress'
       - 'common-internal'
     expose:
       - 9090
     volume:
-      - '{{ containers_storage_base_path }}/config/prometheus:/etc/prometheus:Z'
+      - '{{ containers_storage_base_path }}/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z'
+      - '{{ containers_storage_base_path }}/config/prometheus/web.yml:/etc/prometheus/web.yml:Z'
       - '{{ containers_storage_base_path }}/runtime/prometheus:/prometheus:Z'
     timezone: '{{ timezone }}'
     env:
