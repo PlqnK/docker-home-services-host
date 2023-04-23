@@ -1,0 +1,5 @@
+---
+containers_images:
+  promtail: 'docker.io/grafana/promtail'
+containers_images_tags:
+  promtail: 'latest'

@@ -1,0 +1,32 @@
+---
+- name: 'Stop Promtail container'
+  ansible.builtin.systemd:
+    name: 'container-promtail.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Promtail container'
+  ansible.builtin.systemd:
+    name: 'container-promtail.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Promtail image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.promtail }}:{{ containers_images_tags.promtail }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Promtail container'
+  ansible.builtin.systemd:
+    name: 'container-promtail.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Promtail container'
+  ansible.builtin.systemd:
+    name: 'container-promtail.service'
+    enabled: true
+  tags: ['never', 'enable-containers']
