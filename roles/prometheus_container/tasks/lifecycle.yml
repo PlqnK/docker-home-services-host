@@ -1,0 +1,32 @@
+---
+- name: 'Stop Prometheus container'
+  ansible.builtin.systemd:
+    name: 'container-prometheus.service'
+    state: 'stopped'
+  tags: ['never', 'stop-containers', 'update-containers']
+
+- name: 'Disable Prometheus container'
+  ansible.builtin.systemd:
+    name: 'container-prometheus.service'
+    enabled: false
+  tags: ['never', 'disable-containers']
+
+- name: 'Pull Prometheus image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.prometheus }}:{{ containers_images_tags.prometheus }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'pull-images', 'update-containers']
+
+- name: 'Start Prometheus container'
+  ansible.builtin.systemd:
+    name: 'container-prometheus.service'
+    state: 'started'
+  tags: ['never', 'start-containers', 'update-containers']
+
+- name: 'Enable Prometheus container'
+  ansible.builtin.systemd:
+    name: 'container-prometheus.service'
+    enabled: true
+  tags: ['never', 'enable-containers']
