@@ -60,7 +60,7 @@
     expose:
       - 3000
     volume:
-      - '{{ containers_storage_base_path }}/config/grafana/grafana.ini:/etc/grafana/grafana.ini:Z'
+      #- '{{ containers_storage_base_path }}/config/grafana/grafana.ini:/etc/grafana/grafana.ini:Z'
       - '{{ containers_storage_base_path }}/data/grafana:/var/lib/grafana:Z'
     env:
       TZ: '{{ timezone }}'
