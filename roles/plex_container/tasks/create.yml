@@ -35,6 +35,13 @@
       group: 1000
       mode: '0700'
 
+- name: 'Accept Plex incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: 'plex'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+
 - name: 'Create Plex container'
   containers.podman.podman_container:
     name: 'plex'

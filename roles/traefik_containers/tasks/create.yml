@@ -37,6 +37,16 @@
         state: 'enabled'
       loop: '{{ podman_networks.results | json_query("[*].networks[*].subnets[*].subnet") | flatten }}'
 
+- name: 'Accept HTTP and HTTPS incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  loop:
+    - 'http'
+    - 'https'
+
 - name: 'Create Traefik stack bind mounts paths'
   ansible.builtin.file:
     path: '{{ item.path }}'
