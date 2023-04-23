@@ -119,8 +119,8 @@
     image: '{{ containers_images.traefik }}:{{ containers_images_tags.traefik }}'
     timezone: '{{ timezone }}'
     network:
-      - 'common-internal'
       - 'traefik-external'
+      - 'common-internal'
       - 'docker-socket-proxy-internal'
     publish:
       - '80:80'
