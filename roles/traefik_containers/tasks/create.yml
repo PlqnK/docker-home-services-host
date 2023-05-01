@@ -91,6 +91,13 @@
     access_time: 'preserve'
     mode: '0600'
 
+- name: 'Create Traefik stack secret'
+  containers.podman.podman_secret:
+    name: 'traefik_gandi_api_key'
+    data: '{{ gandi_api_key }}'
+    skip_existing: true
+    state: 'present'
+
 - name: 'Create Docker Socket Proxy container'
   containers.podman.podman_container:
     name: 'docker-socket-proxy'
@@ -129,8 +136,11 @@
       - '{{ containers_storage_base_path }}/config/traefik/traefik.toml:/etc/traefik/traefik.toml:Z'
       - '{{ containers_storage_base_path }}/config/traefik/traefik-dynamic.toml:/etc/traefik/traefik-dynamic.toml:Z'
       - '{{ containers_storage_base_path }}/data/traefik/acme.json:/acme.json:Z'
+    secrets:
+      - 'traefik_gandi_api_key'
     env:
       TZ: '{{ timezone }}'
+      GANDIV5_API_KEY_FILE: 'run/secrets/traefik_gandi_api_key'
     label:
       traefik.enable: 'true'
       traefik.docker.network: 'common-internal'

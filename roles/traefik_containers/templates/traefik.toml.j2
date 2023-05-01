@@ -37,5 +37,6 @@
 [certificatesResolvers.le.acme]
   email = "{{ admin_user.email }}"
   storage = "acme.json"
-  [certificatesResolvers.le.acme.tlsChallenge]
+  [certificatesResolvers.le.acme.dnsChallenge]
+    provider = "gandiv5"
 {% endif %}
