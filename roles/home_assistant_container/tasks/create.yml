@@ -1,0 +1,71 @@
+---
+- name: 'Check if provisioning a Vagrant VM'
+  ansible.builtin.getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: false
+
+- name: 'Create Home Assistant CNAME record'
+  community.general.gandi_livedns:
+    api_key: '{{ gandi_api_key }}'
+    domain: '{{ domain_name }}'
+    type: 'CNAME'
+    record: 'home'
+    values:
+      - '{{ ansible_hostname }}'
+    ttl: 10800
+    state: 'present'
+  when: (getent_passwd.vagrant is none)
+  delegate_to: 'localhost'
+
+- name: 'Create Home Assistant bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_base_path }}/data/home-assistant'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create Home Assistant container'
+  containers.podman.podman_container:
+    name: 'home-assistant'
+    image: '{{ containers_images.home_assistant }}:{{ containers_images_tags.home_assistant }}'
+    network: 'host'
+    volume:
+      - '{{ containers_storage_base_path }}/data/home-assistant:/config:Z'
+    timezone: '{{ timezone }}'
+    env:
+      TZ: '{{ timezone }}'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Enable and start Home Assistant container'
+  ansible.builtin.systemd:
+    name: 'container-home-assistant.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+
+- name: 'Add Home Assistant container network to configuration file'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'traefik-external'
+      register: 'podman_networks'
+
+    - name: 'Authorize reverse proxy in configuration file'
+      ansible.builtin.blockinfile:
+        path: '{{ containers_storage_base_path }}/data/home-assistant/configuration.yaml'
+        block: |
+          http:
+            use_x_forwarded_for: true
+            trusted_proxies:
+          {% for proxy in podman_networks.results | json_query("[*].networks[*].subnets[*].subnet") | flatten %}
+              - {{ proxy }}
+          {% endfor %}
