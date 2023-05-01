@@ -5,19 +5,6 @@
     key: 'vagrant'
     fail_key: false
 
-- name: 'Create Prometheus CNAME record'
-  community.general.gandi_livedns:
-    api_key: '{{ gandi_api_key }}'
-    domain: '{{ domain_name }}'
-    type: 'CNAME'
-    record: 'prometheus'
-    values:
-      - '{{ ansible_hostname }}.{{ domain_name }}.'
-    ttl: 10800
-    state: 'present'
-  when: (getent_passwd.vagrant is none)
-  delegate_to: 'localhost'
-
 - name: 'Create Prometheus bind mounts paths'
   ansible.builtin.file:
     path: '{{ item.path }}'
@@ -54,6 +41,20 @@
       group: 65534
       mode: '0644'
 
+- name: 'Create Prometheus secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'prometheus_prometheus_password'
+      data: '{{ prometheus.scrape_configs.prometheus.basic_auth.password }}'
+    - name: 'prometheus_node_password'
+      data: '{{ prometheus.scrape_configs.node.basic_auth.password }}'
+    - name: 'prometheus_systemd_password'
+      data: '{{ prometheus.scrape_configs.systemd.basic_auth.password }}'
+
 - name: 'Create Prometheus container'
   containers.podman.podman_container:
     name: 'prometheus'
@@ -68,6 +69,9 @@
       - '{{ containers_storage_base_path }}/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z'
       - '{{ containers_storage_base_path }}/config/prometheus/web.yml:/etc/prometheus/web.yml:Z'
       - '{{ containers_storage_base_path }}/runtime/prometheus:/prometheus:Z'
+    secrets:
+      - 'prometheus_prometheus_password'
+      - 'prometheus_node_password'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'

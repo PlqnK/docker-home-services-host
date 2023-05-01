@@ -12,7 +12,7 @@
     type: 'CNAME'
     record: 'komga'
     values:
-      - '{{ ansible_hostname }}.{{ domain_name }}.'
+      - '{{ ansible_hostname }}'
     ttl: 10800
     state: 'present'
   when: (getent_passwd.vagrant is none)
