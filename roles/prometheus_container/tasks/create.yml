@@ -72,6 +72,7 @@
     secrets:
       - 'prometheus_prometheus_password'
       - 'prometheus_node_password'
+      - 'prometheus_systemd_password'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
