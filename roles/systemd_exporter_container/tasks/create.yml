@@ -1,0 +1,113 @@
+---
+- name: 'Create systemd_exporter firewalld service'
+  ansible.builtin.copy:
+    src: 'prometheus-systemd-exporter.xml'
+    dest: '/etc/firewalld/services/prometheus-systemd-exporter.xml'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'firewalld_service_copy'
+
+- name: 'Take new firewalld service into account'
+  when: (firewalld_service_copy.changed)
+  block:
+    - name: 'Reload firewalld to load new service'
+      ansible.builtin.systemd:
+        name: 'firewalld.service'
+        state: 'reloaded'
+
+    - name: 'Reload podman networks after firewalld reload'
+      ansible.builtin.command:
+        cmd: 'podman network reload -a'
+
+- name: 'Accept systemd_exporter incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: 'prometheus-systemd-exporter'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+
+- name: 'Create systemd_exporter network'
+  containers.podman.podman_network:
+    name: 'systemd_exporter-external'
+    internal: false
+    ipv6: '{{ containers_ipv6.enable }}'
+  tags: ['containers-networks']
+
+- name: 'Add systemd_exporter network to firewalld trusted zone'
+  tags: ['containers-networks']
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'systemd_exporter-external'
+      register: 'podman_networks'
+
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | json_query("[*].networks[*].subnets[*].subnet") | flatten }}'
+
+- name: 'Create systemd_exporter bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_base_path }}/config/systemd_exporter'
+      owner: 65534
+      group: 65534
+      mode: '0700'
+
+- name: 'Create systemd_exporter config from templates'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+  loop:
+    - src: 'web.yml.j2'
+      dest: '{{ containers_storage_base_path }}/config/systemd_exporter/web.yml'
+      owner: 65534
+      group: 65534
+      mode: '0644'
+
+- name: 'Create systemd_exporter container'
+  containers.podman.podman_container:
+    name: 'systemd_exporter'
+    image: '{{ containers_images.systemd_exporter }}:{{ containers_images_tags.systemd_exporter }}'
+    command: '--path.procfs=/host/proc --web.config.file=/etc/systemd_exporter/web.yml'
+    network:
+      - 'systemd_exporter-external'
+    publish:
+      - '9558:9558'
+    volume:
+      - '{{ containers_storage_base_path }}/config/systemd_exporter/web.yml:/etc/systemd_exporter/web.yml:Z'
+      - '/proc:/host/proc:ro,rslave'
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro,rslave'
+      - '/run/systemd:/run/systemd:ro,rslave'
+      - '/var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro'
+    timezone: '{{ timezone }}'
+    env:
+      TZ: '{{ timezone }}'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Enable and start systemd_exporter container'
+  ansible.builtin.systemd:
+    name: 'container-systemd_exporter.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
