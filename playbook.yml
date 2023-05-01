@@ -7,6 +7,23 @@
     - role: 'podman_setup'
       tags: 'podman-setup'
 
+- name: 'Monitoring containers'
+  hosts: 'monitoring'
+  roles:
+    - 'traefik_containers'
+    - 'prometheus_container'
+    - 'loki_container'
+    - 'grafana_container'
+    - 'node_exporter_container'
+    - 'systemd_exporter_container'
+    - 'promtail_container'
+
+- name: 'Home containers'
+  hosts: 'home'
+  roles:
+    - 'traefik_containers'
+    - 'home_assistant_container'
+
 - name: 'Media containers'
   hosts: 'media'
   roles:
@@ -58,16 +75,6 @@
       tags: 'mylar'
     - role: 'overseerr_container'
       tags: 'overseerr'
-
-- name: 'Monitoring containers'
-  hosts: 'monitoring'
-  roles:
-    - 'traefik_containers'
-    - 'prometheus_container'
-    #- 'loki_container'
-    - 'grafana_container'
-    - 'node_exporter_container'
-    #- 'promtail_container'
 
 - name: 'Update containers hosts OS'
   hosts: 'containers_hosts'
