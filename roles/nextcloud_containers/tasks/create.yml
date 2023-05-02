@@ -92,7 +92,6 @@
     name: 'nextcloud-mariadb'
     image: '{{ containers_images.nextcloud.mariadb }}:{{ containers_images_tags.nextcloud.mariadb }}'
     command: '--transaction-isolation=READ-COMMITTED --binlog-format=ROW'
-    timezone: '{{ timezone }}'
     network:
       - 'nextcloud-mariadb-internal'
     expose:
@@ -104,6 +103,7 @@
       - 'nextcloud_mariadb_root_password'
       - 'nextcloud_mariadb_user'
       - 'nextcloud_mariadb_password'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
       MARIADB_ROOT_HOST: 'localhost'

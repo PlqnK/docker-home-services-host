@@ -41,14 +41,14 @@
   containers.podman.podman_container:
     name: 'collabora-online'
     image: '{{ containers_images.collabora_online }}:{{ containers_images_tags.collabora_online }}'
-    timezone: '{{ timezone }}'
+    cap_add:
+      - 'MKNOD'
     network:
       - 'web-egress'
       - 'common-internal'
     expose:
       - 9980
-    cap_add:
-      - 'MKNOD'
+    timezone: '{{ timezone }}'
     env_file: '{{ containers_storage_base_path }}/env/collabora-online/collabora-online.env'
     env:
       TZ: '{{ timezone }}'

@@ -17,7 +17,6 @@
   containers.podman.podman_container:
     name: 'mylar'
     image: '{{ containers_images.mylar }}:{{ containers_images_tags.mylar }}'
-    timezone: '{{ timezone }}'
     network:
       - 'web-egress'
       - 'common-internal'
@@ -27,6 +26,7 @@
       - '{{ containers_storage_base_path }}/data/mylar:/config:Z'
       - '{{ autofs_base_path }}/downloads:/downloads:slave'
       - '{{ autofs_base_path }}/medias/comics:/comics:slave'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
     label:

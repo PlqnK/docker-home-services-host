@@ -28,13 +28,13 @@
   containers.podman.podman_container:
     name: 'recyclarr'
     image: '{{ containers_images.recyclarr }}:{{ containers_images_tags.recyclarr }}'
-    timezone: '{{ timezone }}'
     network:
       - 'web-egress'
       - 'common-internal'
     volumes:
       - '{{ containers_storage_base_path }}/runtime/recyclarr:/config:Z'
       - '{{ containers_storage_base_path }}/config/recyclarr/recyclarr.yml:/config/recyclarr.yml:Z'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
     generate_systemd:

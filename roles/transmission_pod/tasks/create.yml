@@ -151,7 +151,6 @@
     name: 'gluetun'
     image: '{{ containers_images.gluetun }}:{{ containers_images_tags.gluetun }}'
     pod: 'transmission-gluetun'
-    timezone: '{{ timezone }}'
     cap_add:
       - 'NET_ADMIN'
     sysctl:
@@ -160,6 +159,7 @@
       - '/dev/net/tun:/dev/net/tun'
     volume:
       - '{{ containers_storage_base_path }}/data/gluetun:/gluetun:Z'
+    timezone: '{{ timezone }}'
     env_file: '{{ containers_storage_base_path }}/env/gluetun/gluetun.env'
     env:
       TZ: '{{ timezone }}'
@@ -184,7 +184,6 @@
     name: 'transmission'
     image: '{{ containers_images.transmission }}:{{ containers_images_tags.transmission }}'
     pod: 'transmission-gluetun'
-    timezone: '{{ timezone }}'
     expose:
       - 9091
     volume:
@@ -194,6 +193,7 @@
     secrets:
       - 'transmission_user'
       - 'transmission_password'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
       FILE__USER: '/run/secrets/transmission_user'

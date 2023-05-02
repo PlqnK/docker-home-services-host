@@ -46,10 +46,6 @@
   containers.podman.podman_container:
     name: 'plex'
     image: '{{ containers_images.plex }}:{{ containers_images_tags.plex }}'
-    timezone: '{{ timezone }}'
-    device:
-      - '/dev/dri/card1:/dev/dri/card1'
-      - '/dev/dri/renderD128:/dev/dri/renderD128'
     network:
       - 'web-egress'
       - 'common-internal'
@@ -63,6 +59,9 @@
       - '32412:32412/udp'
       - '32413:32413/udp'
       - '32414:32414/udp'
+    device:
+      - '/dev/dri/card1:/dev/dri/card1'
+      - '/dev/dri/renderD128:/dev/dri/renderD128'
     volume:
       - '{{ containers_storage_base_path }}/data/plex:/config:Z'
       - '{{ containers_storage_base_path }}/runtime/plex:/transcode:Z'
@@ -71,6 +70,7 @@
       - '{{ autofs_base_path }}/medias/movies:/data/movies:slave,ro'
       - '{{ autofs_base_path }}/medias/music:/data/music:slave,ro'
       - '{{ autofs_base_path }}/medias/series:/data/series:slave,ro'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
       PLEX_CLAIM: '{{ plex.claim_token }}'

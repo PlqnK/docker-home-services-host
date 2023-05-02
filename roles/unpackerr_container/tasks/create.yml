@@ -24,11 +24,11 @@
   containers.podman.podman_container:
     name: 'unpackerr'
     image: '{{ containers_images.unpackerr }}:{{ containers_images_tags.unpackerr }}'
-    timezone: '{{ timezone }}'
     network:
       - 'common-internal'
     volumes:
       - '{{ autofs_base_path }}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave'
+    timezone: '{{ timezone }}'
     env_file: '{{ containers_storage_base_path }}/env/unpackerr/unpackerr.env'
     env:
       TZ: '{{ timezone }}'

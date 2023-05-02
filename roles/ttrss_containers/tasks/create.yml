@@ -114,7 +114,6 @@
   containers.podman.podman_container:
     name: 'ttrss-postgres'
     image: '{{ containers_images.ttrss.postgres }}:{{ containers_images_tags.ttrss.postgres }}'
-    timezone: '{{ timezone }}'
     network:
       - 'ttrss-postgres-internal'
     expose:
@@ -125,6 +124,7 @@
     secrets:
       - 'ttrss_postgres_user'
       - 'ttrss_postgres_password'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
       POSTGRES_DB: '{{ ttrss.postgres.database }}'
@@ -144,7 +144,6 @@
   containers.podman.podman_container:
     name: 'ttrss-nginx'
     image: '{{ containers_images.ttrss.nginx }}:{{ containers_images_tags.ttrss.nginx }}'
-    timezone: '{{ timezone }}'
     network:
       - 'web-egress'
       - 'common-internal'
@@ -154,6 +153,7 @@
     volume:
       - '{{ containers_storage_base_path }}/config/ttrss-nginx/nginx.conf:/etc/nginx/nginx.conf:ro,Z'
       - '{{ containers_storage_base_path }}/data/ttrss-app:/var/www/html:ro,z'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
     label:
@@ -174,7 +174,6 @@
   containers.podman.podman_container:
     name: 'ttrss-app'
     image: '{{ containers_images.ttrss.app }}:{{ containers_images_tags.ttrss.app }}'
-    timezone: '{{ timezone }}'
     network:
       - 'web-egress'
       - 'ttrss-app-internal'
@@ -183,6 +182,7 @@
       - 9000
     volume:
       - '{{ containers_storage_base_path }}/data/ttrss-app:/var/www/html:z'
+    timezone: '{{ timezone }}'
     env_file: '{{ containers_storage_base_path }}/env/ttrss-app/ttrss-app.env'
     env:
       TZ: '{{ timezone }}'
@@ -207,13 +207,13 @@
     name: 'ttrss-updater'
     image: '{{ containers_images.ttrss.app }}:{{ containers_images_tags.ttrss.app }}'
     command: '/opt/tt-rss/updater.sh'
-    timezone: '{{ timezone }}'
     network:
       - 'web-egress'
       - 'ttrss-app-internal'
       - 'ttrss-postgres-internal'
     volume:
       - '{{ containers_storage_base_path }}/data/ttrss-app:/var/www/html:z'
+    timezone: '{{ timezone }}'
     env_file: '{{ containers_storage_base_path }}/env/ttrss-app/ttrss-app.env'
     env:
       TZ: '{{ timezone }}'

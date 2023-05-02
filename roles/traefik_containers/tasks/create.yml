@@ -103,13 +103,13 @@
     name: 'docker-socket-proxy'
     image: '{{ containers_images.docker_socket_proxy }}:{{ containers_images_tags.docker_socket_proxy }}'
     privileged: true
-    timezone: '{{ timezone }}'
     network:
       - 'docker-socket-proxy-internal'
     expose:
       - 2375
     volume:
       - '/var/run/podman/podman.sock:/var/run/docker.sock'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
       CONTAINERS: '1'
@@ -124,7 +124,6 @@
   containers.podman.podman_container:
     name: 'traefik'
     image: '{{ containers_images.traefik }}:{{ containers_images_tags.traefik }}'
-    timezone: '{{ timezone }}'
     network:
       - 'traefik-external'
       - 'common-internal'
@@ -138,6 +137,7 @@
       - '{{ containers_storage_base_path }}/data/traefik/acme.json:/acme.json:Z'
     secrets:
       - 'traefik_gandi_api_key'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
       GANDIV5_API_KEY_FILE: 'run/secrets/traefik_gandi_api_key'

@@ -17,7 +17,6 @@
   containers.podman.podman_container:
     name: 'prowlarr'
     image: '{{ containers_images.prowlarr }}:{{ containers_images_tags.prowlarr }}'
-    timezone: '{{ timezone }}'
     network:
       - 'web-egress'
       - 'common-internal'
@@ -25,6 +24,7 @@
       - 9696
     volume:
       - '{{ containers_storage_base_path }}/data/prowlarr:/config:Z'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
     label:

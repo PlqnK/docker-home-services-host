@@ -17,7 +17,6 @@
   containers.podman.podman_container:
     name: 'sabnzbd'
     image: '{{ containers_images.sabnzbd }}:{{ containers_images_tags.sabnzbd }}'
-    timezone: '{{ timezone }}'
     network:
       - 'web-egress'
       - 'common-internal'
@@ -28,6 +27,7 @@
       - '{{ autofs_base_path }}/downloads/usenet/completed:/downloads:slave'
       - '{{ autofs_base_path }}/downloads/usenet/processing:/incomplete-downloads:slave'
       - '{{ autofs_base_path }}/downloads/usenet/watching:/watching:slave'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
     label:

@@ -17,7 +17,6 @@
   containers.podman.podman_container:
     name: 'calibre'
     image: '{{ containers_images.calibre }}:{{ containers_images_tags.calibre }}'
-    timezone: '{{ timezone }}'
     network:
       - 'web-egress'
       - 'common-internal'
@@ -27,6 +26,7 @@
     volume:
       - '{{ containers_storage_base_path }}/data/calibre:/config:Z'
       - '{{ autofs_base_path }}/medias/books:/books:slave'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
     label:
