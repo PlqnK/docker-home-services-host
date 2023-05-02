@@ -35,7 +35,7 @@
         permanent: true
         immediate: true
         state: 'enabled'
-      loop: '{{ podman_networks.results | json_query("[*].networks[*].subnets[*].subnet") | flatten }}'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
 
 - name: 'Accept HTTP and HTTPS incomming connections in default firewalld zone'
   ansible.posix.firewalld:

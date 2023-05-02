@@ -66,6 +66,6 @@
           http:
             use_x_forwarded_for: true
             trusted_proxies:
-          {% for proxy in podman_networks.results | json_query("[*].networks[*].subnets[*].subnet") | flatten %}
+          {% for proxy in podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten %}
               - {{ proxy }}
           {% endfor %}
