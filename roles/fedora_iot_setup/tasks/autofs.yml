@@ -1,5 +1,5 @@
 ---
-- name: 'Create mount points' # noqa risky-file-permissions
+- name: 'Create mount points' # noqa: risky-file-permissions
   ansible.builtin.file:
     path: '{{ autofs_base_path }}/{{ item }}'
     state: 'directory'

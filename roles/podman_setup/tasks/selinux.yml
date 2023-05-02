@@ -31,6 +31,6 @@
       args:
         creates: '/tmp/container-tun.pp'
 
-    - name: 'Install the SELinux custom policy module' # noqa no-changed-when
+    - name: 'Install the SELinux custom policy module' # noqa: no-changed-when
       ansible.builtin.command:
         cmd: 'semodule -i /tmp/container-tun.pp'
