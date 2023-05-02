@@ -13,7 +13,7 @@
 
 - name: 'Pull Home Assistant image'
   containers.podman.podman_image:
-    name: '{{ containers_images.home-assistant }}:{{ containers_images_tags.home-assistant }}'
+    name: '{{ containers_images.home_assistant }}:{{ containers_images_tags.home_assistant }}'
     pull: true
     force: true
     state: 'present'
