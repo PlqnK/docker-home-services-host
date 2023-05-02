@@ -8,7 +8,7 @@
     mode: '0644'
   register: 'firewalld_service_copy'
 
-- name: 'Take new firewalld service into account'
+- name: 'Take new firewalld service into account' # noqa: no-handler
   when: (firewalld_service_copy.changed)
   block:
     - name: 'Reload firewalld to load new service'
@@ -16,7 +16,7 @@
         name: 'firewalld.service'
         state: 'reloaded'
 
-    - name: 'Reload podman networks after firewalld reload'
+    - name: 'Reload podman networks after firewalld reload' # noqa: no-changed-when
       ansible.builtin.command:
         cmd: 'podman network reload -a'
 
