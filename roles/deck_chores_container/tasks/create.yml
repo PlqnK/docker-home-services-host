@@ -4,6 +4,7 @@
     name: 'deck-chores'
     image: '{{ containers_images.deck_chores }}:{{ containers_images_tags.deck_chores }}'
     privileged: true
+    network: 'none'
     volume:
       - '/var/run/podman/podman.sock:/var/run/docker.sock'
     timezone: '{{ timezone }}'
