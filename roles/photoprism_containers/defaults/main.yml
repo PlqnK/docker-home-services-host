@@ -5,5 +5,5 @@ containers_images:
     app: 'docker.io/photoprism/photoprism'
 containers_images_tags:
   photoprism:
-    mariadb: '10.11'
+    mariadb: 'latest'
     app: 'latest'

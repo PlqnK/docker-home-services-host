@@ -2,4 +2,4 @@
 containers_images:
   recyclarr: 'ghcr.io/recyclarr/recyclarr'
 containers_images_tags:
-  recyclarr: '4'
+  recyclarr: 'latest'

@@ -6,6 +6,6 @@ containers_images:
     nginx: 'docker.io/library/nginx'
 containers_images_tags:
   ttrss:
-    postgres: '15'
+    postgres: 'latest'
     app: 'latest'
-    nginx: '1'
+    nginx: 'latest'

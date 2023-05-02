@@ -6,6 +6,6 @@ containers_images:
     app: 'docker.io/library/nextcloud'
 containers_images_tags:
   nextcloud:
-    mariadb: '10.11'
-    redis: '7'
-    app: '26'
+    mariadb: 'latest'
+    redis: 'latest'
+    app: 'latest'
