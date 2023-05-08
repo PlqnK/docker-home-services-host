@@ -4,6 +4,7 @@ containers_images_tags:
   traefik: '2.10'
   prometheus: 'latest'
   loki: 'latest'
+  syslog_ng: 'latest'
   grafana: 'latest'
   node_exporter: 'latest'
   systemd_exporter: 'latest'

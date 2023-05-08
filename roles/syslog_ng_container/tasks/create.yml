@@ -1,0 +1,105 @@
+---
+- name: 'Create syslog-conn firewalld service'
+  ansible.builtin.copy:
+    src: 'syslog-conn.xml'
+    dest: '/etc/firewalld/services/syslog-conn.xml'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'firewalld_service_copy'
+
+- name: 'Take new firewalld service into account' # noqa: no-handler
+  when: (firewalld_service_copy.changed)
+  block:
+    - name: 'Reload firewalld to load new service'
+      ansible.builtin.systemd:
+        name: 'firewalld.service'
+        state: 'reloaded'
+
+    - name: 'Reload podman networks after firewalld reload' # noqa: no-changed-when
+      ansible.builtin.command:
+        cmd: 'podman network reload -a'
+
+- name: 'Accept syslog and syslog-conn incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  loop:
+    - 'syslog'
+    - 'syslog-conn'
+
+- name: 'Create syslog-ng network'
+  containers.podman.podman_network:
+    name: '{{ item.name }}'
+    internal: '{{ item.internal }}'
+    ipv6: '{{ containers_ipv6.enable }}'
+  loop:
+    - name: 'syslog-ng-external'
+      internal: false
+  tags: ['containers-networks']
+
+- name: 'Add syslog-ng network to firewalld trusted zone'
+  tags: ['containers-networks']
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'syslog-ng-external'
+      register: 'podman_networks'
+
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Create syslog-ng bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_base_path }}/config/syslog-ng'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create syslog-ng config from template'
+  ansible.builtin.template:
+    src: 'syslog-ng.conf.j2'
+    dest: '{{ containers_storage_base_path }}/config/syslog-ng/syslog-ng.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Create syslog-ng container'
+  containers.podman.podman_container:
+    name: 'syslog-ng'
+    image: '{{ containers_images.syslog_ng }}:{{ containers_images_tags.syslog_ng }}'
+    network:
+      - 'syslog-ng-external'
+      - 'common-internal'
+    publish:
+      - '514:514/udp'
+      - '601:601/tcp'
+    volume:
+      - '{{ containers_storage_base_path }}/config/syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:Z'
+    timezone: '{{ timezone }}'
+    env:
+      TZ: '{{ timezone }}'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Enable and start syslog-ng container'
+  ansible.builtin.systemd:
+    name: 'container-syslog-ng.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

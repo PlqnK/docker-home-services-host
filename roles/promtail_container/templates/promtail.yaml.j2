@@ -13,6 +13,23 @@ clients:
       password_file: '/run/secrets/promtail_loki_password'
 
 scrape_configs:
+{% if inventory_hostname == "monitoring" %}
+  - job_name: 'syslog'
+    syslog:
+      listen_address: '0.0.0.0:1514'
+      listen_protocol: 'tcp'
+      use_incoming_timestamp: true
+      label_structured_data: true
+      labels:
+        job: 'syslog-ng'
+    relabel_configs:
+      - source_labels: ['__syslog_message_hostname']
+        target_label: 'host'
+      - source_labels: ['__syslog_message_facility']
+        target_label: 'facility'
+      - source_labels: ['__syslog_message_app_name']
+        target_label: 'appname'
+{% endif %}
   - job_name: 'journal'
     journal:
       max_age: '12h'
@@ -20,7 +37,7 @@ scrape_configs:
         job: 'systemd-journal'
     relabel_configs:
       - source_labels: ['__journal__hostname']
-        target_label: 'hostname'
+        target_label: 'host'
       - source_labels: ['__journal__transport']
         target_label: 'transport'
       - source_labels: ['__journal__systemd_unit']

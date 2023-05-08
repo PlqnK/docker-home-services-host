@@ -17,6 +17,7 @@
     - 'node_exporter_container'
     - 'systemd_exporter_container'
     - 'promtail_container'
+    - 'syslog_ng_container'
 
 - name: 'Home containers'
   hosts: 'home'
