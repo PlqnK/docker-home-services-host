@@ -18,6 +18,42 @@
   when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
 
+- name: 'Create Plex network'
+  containers.podman.podman_network:
+    name: '{{ item.name }}'
+    internal: '{{ item.internal }}'
+    ipv6: '{{ containers_ipv6.enable }}'
+  loop:
+    - name: 'plex-external'
+      internal: false
+  tags: ['containers-networks']
+
+- name: 'Add Plex network to firewalld trusted zone'
+  tags: ['containers-networks']
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'plex-external'
+      register: 'podman_networks'
+
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Accept Plex incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: 'plex'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+
 - name: 'Create Plex bind mounts paths'
   ansible.builtin.file:
     path: '{{ item.path }}'
@@ -35,19 +71,12 @@
       group: 1000
       mode: '0700'
 
-- name: 'Accept Plex incomming connections in default firewalld zone'
-  ansible.posix.firewalld:
-    service: 'plex'
-    permanent: true
-    immediate: true
-    state: 'enabled'
-
 - name: 'Create Plex container'
   containers.podman.podman_container:
     name: 'plex'
     image: '{{ containers_images.plex }}:{{ containers_images_tags.plex }}'
     network:
-      - 'web-egress'
+      - 'plex-external'
       - 'common-internal'
     publish:
       - '32400:32400/tcp'
