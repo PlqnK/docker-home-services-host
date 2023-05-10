@@ -26,6 +26,9 @@ endif
 lint: ##  ## Run ansible-lint. ## Example: make lint
 	@ansible-lint
 
+vault: ## [env=<inventory>] ## Edit vault inventory. ## Example: make vault
+	@ansible-vault edit "inventories/$(env).yml" --vault-password-file="vault-pass.sh"
+
 ad-hoc: ## [env=<inventory>] [hosts=<hosts to target>] [module=<module to use>] [args=<module arguments>] ## Run ansible ad-hoc commands. ## Example: make ad-hoc env=vagrant hosts=monitoring,home module=shell args="echo Hello world"
 	@ansible --inventory-file="inventories/$(env).yml" $(flags) --vault-password-file="vault-pass.sh"
 
