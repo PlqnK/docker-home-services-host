@@ -8,7 +8,7 @@
     - 'container-nextcloud-app.service'
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-mariadb.service'
-  tags: ['never', 'stop-containers', 'update-containers']
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
 
 - name: 'Disable Nextcloud stack'
   ansible.builtin.systemd:
@@ -19,7 +19,7 @@
     - 'container-nextcloud-app.service'
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-mariadb.service'
-  tags: ['never', 'disable-containers']
+  tags: ['never', 'containers-disable']
 
 - name: 'Pull Nextcloud stack images'
   containers.podman.podman_image:
@@ -31,7 +31,7 @@
     - '{{ containers_images.nextcloud.mariadb }}:{{ containers_images_tags.nextcloud.mariadb }}'
     - '{{ containers_images.nextcloud.redis }}:{{ containers_images_tags.nextcloud.redis }}'
     - '{{ containers_images.nextcloud.app }}:{{ containers_images_tags.nextcloud.app }}'
-  tags: ['never', 'pull-images', 'update-containers']
+  tags: ['never', 'containers-pull', 'containers-update']
 
 - name: 'Start Nextcloud stack'
   ansible.builtin.systemd:
@@ -42,7 +42,7 @@
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-app.service'
     - 'container-nextcloud-cron.service'
-  tags: ['never', 'start-containers', 'update-containers']
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
 - name: 'Enable Nextcloud stack'
   ansible.builtin.systemd:
@@ -53,4 +53,4 @@
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-app.service'
     - 'container-nextcloud-cron.service'
-  tags: ['never', 'enable-containers']
+  tags: ['never', 'containers-enable']

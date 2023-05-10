@@ -1,6 +1,9 @@
 ---
-- name: 'Create'
-  ansible.builtin.import_tasks: 'create.yml'
+- name: 'Configure and manage node_exporter container'
+  when: (containers_list is not defined or (containers_list is defined and 'node_exporter' in containers_list))
+  block:
+    - name: 'Create'
+      ansible.builtin.import_tasks: 'create.yml'
 
-- name: 'Lifecycle'
-  ansible.builtin.import_tasks: 'lifecycle.yml'
+    - name: 'Lifecycle'
+      ansible.builtin.import_tasks: 'lifecycle.yml'

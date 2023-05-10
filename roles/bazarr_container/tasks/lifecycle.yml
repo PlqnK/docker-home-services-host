@@ -3,13 +3,13 @@
   ansible.builtin.systemd:
     name: 'container-bazarr.service'
     state: 'stopped'
-  tags: ['never', 'stop-containers', 'update-containers']
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
 
 - name: 'Disable Bazarr container'
   ansible.builtin.systemd:
     name: 'container-bazarr.service'
     enabled: false
-  tags: ['never', 'disable-containers']
+  tags: ['never', 'containers-disable']
 
 - name: 'Pull Bazarr image'
   containers.podman.podman_image:
@@ -17,16 +17,16 @@
     pull: true
     force: true
     state: 'present'
-  tags: ['never', 'pull-images', 'update-containers']
+  tags: ['never', 'containers-pull', 'containers-update']
 
 - name: 'Start Bazarr container'
   ansible.builtin.systemd:
     name: 'container-bazarr.service'
     state: 'started'
-  tags: ['never', 'start-containers', 'update-containers']
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
 - name: 'Enable Bazarr container'
   ansible.builtin.systemd:
     name: 'container-bazarr.service'
     enabled: true
-  tags: ['never', 'enable-containers']
+  tags: ['never', 'containers-enable']

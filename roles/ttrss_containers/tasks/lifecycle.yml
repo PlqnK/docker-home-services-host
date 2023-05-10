@@ -8,7 +8,7 @@
     - 'container-ttrss-updater.service'
     - 'container-ttrss-app.service'
     - 'container-ttrss-postgres.service'
-  tags: ['never', 'stop-containers', 'update-containers']
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
 
 - name: 'Disable Tiny Tiny RSS stack'
   ansible.builtin.systemd:
@@ -19,7 +19,7 @@
     - 'container-ttrss-updater.service'
     - 'container-ttrss-app.service'
     - 'container-ttrss-postgres.service'
-  tags: ['never', 'disable-containers']
+  tags: ['never', 'containers-disable']
 
 - name: 'Pull Tiny Tiny RSS stack images'
   containers.podman.podman_image:
@@ -31,7 +31,7 @@
     - '{{ containers_images.ttrss.postgres }}:{{ containers_images_tags.ttrss.postgres }}'
     - '{{ containers_images.ttrss.nginx }}:{{ containers_images_tags.ttrss.nginx }}'
     - '{{ containers_images.ttrss.app }}:{{ containers_images_tags.ttrss.app }}'
-  tags: ['never', 'pull-images', 'update-containers']
+  tags: ['never', 'containers-pull', 'containers-update']
 
 - name: 'Start Tiny Tiny RSS stack'
   ansible.builtin.systemd:
@@ -42,7 +42,7 @@
     - 'container-ttrss-nginx.service'
     - 'container-ttrss-app.service'
     - 'container-ttrss-updater.service'
-  tags: ['never', 'start-containers', 'update-containers']
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
 - name: 'Enable Tiny Tiny RSS stack'
   ansible.builtin.systemd:
@@ -53,4 +53,4 @@
     - 'container-ttrss-nginx.service'
     - 'container-ttrss-app.service'
     - 'container-ttrss-updater.service'
-  tags: ['never', 'enable-containers']
+  tags: ['never', 'containers-enable']

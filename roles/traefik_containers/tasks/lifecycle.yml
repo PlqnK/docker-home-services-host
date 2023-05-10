@@ -6,7 +6,7 @@
   loop:
     - 'container-traefik.service'
     - 'container-docker-socket-proxy.service'
-  tags: ['never', 'stop-containers', 'update-containers']
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
 
 - name: 'Disable Traefik stack'
   ansible.builtin.systemd:
@@ -15,7 +15,7 @@
   loop:
     - 'container-traefik.service'
     - 'container-docker-socket-proxy.service'
-  tags: ['never', 'disable-containers']
+  tags: ['never', 'containers-disable']
 
 - name: 'Pull Traefik stack images'
   containers.podman.podman_image:
@@ -26,7 +26,7 @@
   loop:
     - '{{ containers_images.docker_socket_proxy }}:{{ containers_images_tags.docker_socket_proxy }}'
     - '{{ containers_images.traefik }}:{{ containers_images_tags.traefik }}'
-  tags: ['never', 'pull-images', 'update-containers']
+  tags: ['never', 'containers-pull', 'containers-update']
 
 - name: 'Start Traefik stack'
   ansible.builtin.systemd:
@@ -35,7 +35,7 @@
   loop:
     - 'container-docker-socket-proxy.service'
     - 'container-traefik.service'
-  tags: ['never', 'start-containers', 'update-containers']
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
 - name: 'Enable Traefik stack'
   ansible.builtin.systemd:
@@ -44,4 +44,4 @@
   loop:
     - 'container-docker-socket-proxy.service'
     - 'container-traefik.service'
-  tags: ['never', 'enable-containers']
+  tags: ['never', 'containers-enable']
