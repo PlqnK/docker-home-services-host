@@ -5,6 +5,14 @@
     - 'fedora_iot_setup'
     - 'podman_setup'
 
+- name: 'Backup containers'
+  hosts: 'backup'
+  roles:
+    - 'mbsync_container'
+    - 'vdirsyncer_container'
+    - 'borgmatic_container'
+    - 'autorestic_container'
+
 - name: 'Monitoring containers'
   hosts: 'monitoring'
   roles:

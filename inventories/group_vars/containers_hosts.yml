@@ -1,5 +1,9 @@
 ---
 containers_images_tags:
+  mbsync: '1'
+  vdirsyncer: 'latest'
+  borgmatic: '1.7'
+  autorestic: '1.7'
   docker_socket_proxy: 'nightly'
   traefik: '2.10'
   prometheus: 'latest'
