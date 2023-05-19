@@ -1,3 +1,0 @@
-{% for export_path in nfs_exports %}
-{{ autofs_base_path }}/{{ export_path }} -rw,vers=3 {{ storage_server.fqdn }}:{{ storage_server.exports_base_path }}/{{ export_path }}
-{% endfor %}

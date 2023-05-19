@@ -6,3 +6,6 @@
 .nfs*
 .vscode/
 .vagrant/
+
+# Python
+__pycache__

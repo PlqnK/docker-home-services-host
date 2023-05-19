@@ -1,0 +1,9 @@
+[Unit]
+Description={{ storage_server.name }} {{ item }} nfs share
+
+[Automount]
+Where={{ autofs_base_path }}/{{ item }}
+TimeoutIdleSec=60
+
+[Install]
+WantedBy=multi-user.target

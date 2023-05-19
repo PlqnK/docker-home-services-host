@@ -4,7 +4,6 @@
     name:
       - 'firewalld'
       - 'nfs-utils'
-      - 'autofs'
       - 'rsync'
       - 'checkpolicy'
       - 'setools-console'
