@@ -1,0 +1,27 @@
+alias borgmatic="podman run \
+--rm \
+--interactive \
+--entrypoint "borgmatic" \
+--cap-add SYS_ADMIN \
+--device /dev/fuse \
+--security-opt label:disable \
+--hostname sox \
+--network web-egress \
+--tz=Europe/Paris \
+--env TZ=Europe/Paris \
+--volume {{ containers_storage_base_path }}/config/borgmatic/borgmatic.d:/etc/borgmatic.d \
+--volume {{ containers_storage_base_path }}/config/borgmatic/.ssh:/root/.ssh \
+--volume {{ containers_storage_base_path }}/data/borgmatic:/root/.config/borg \
+--volume {{ containers_storage_base_path }}/runtime/borgmatic:/root/.cache/borg \
+--volume {{ autofs_base_path }}/backups/groupware:{{ autofs_base_path }}/backups/groupware:slave \
+--volume {{ autofs_base_path }}/backups/servers:{{ autofs_base_path }}/backups/servers:slave \
+--volume {{ autofs_base_path }}/cloud/data:{{ autofs_base_path }}/cloud/data:slave \
+--volume {{ autofs_base_path }}/medias/audiodrama:{{ autofs_base_path }}/medias/audiodrama:slave \
+--volume {{ autofs_base_path }}/medias/audiobooks:{{ autofs_base_path }}/medias/audiobooks:slave \
+--volume {{ autofs_base_path }}/medias/books:{{ autofs_base_path }}/medias/books:slave \
+--volume {{ autofs_base_path }}/medias/comics:{{ autofs_base_path }}/medias/comics:slave \
+--secret=borgmatic_documents_encryption_passphrase \
+--secret=borgmatic_groupware_encryption_passphrase \
+--secret=borgmatic_medias_encryption_passphrase \
+--secret=borgmatic_servers_encryption_passphrase \
+{{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }} $@"

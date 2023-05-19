@@ -1,0 +1,38 @@
+location:
+  source_directories:
+    - '{{ autofs_base_path }}/cloud/data'
+  repositories:
+    - path: '{{ borgmatic.documents.repository }}'
+      label: 'borgbase'
+  exclude_patterns:
+    - '{{ autofs_base_path }}/cloud/data/files_external'
+    - '{{ autofs_base_path }}/cloud/data/appdata_*/preview'
+    - '{{ autofs_base_path }}/cloud/data/*/cache'
+    - '{{ autofs_base_path }}/cloud/data/*/files_trashbin'
+    - '{{ autofs_base_path }}/cloud/data/*/files_versions'
+    - '{{ autofs_base_path }}/cloud/data/*/uploads'
+    - '*.log'
+    - '*.log.[0123456789]'
+  exclude_if_present:
+    - '.nobackup'
+
+storage:
+  encryption_passcommand: "cat /run/secrets/borgmatic_documents_encryption_passphrase"
+  compression: 'auto,zstd'
+
+retention:
+  keep_daily: 28
+  keep_weekly: 4
+  keep_monthly: 6
+  keep_yearly: 1
+
+consistency:
+  checks:
+    - name: 'repository'
+      frequency: '2 weeks'
+    - name: 'archives'
+      frequency: '4 weeks'
+
+hooks:
+  healthchecks:
+    ping_url: 'https://hc-ping.com/{{ borgmatic.documents.healthchecks_uuid }}'

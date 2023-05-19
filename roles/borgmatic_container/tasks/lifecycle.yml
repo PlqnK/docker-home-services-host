@@ -1,0 +1,32 @@
+---
+- name: 'Stop borgmatic timer'
+  ansible.builtin.systemd:
+    name: 'container-borgmatic.timer'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable borgmatic timer'
+  ansible.builtin.systemd:
+    name: 'container-borgmatic.timer'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull borgmatic image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start borgmatic timer'
+  ansible.builtin.systemd:
+    name: 'container-borgmatic.timer'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable borgmatic timer'
+  ansible.builtin.systemd:
+    name: 'container-borgmatic.timer'
+    enabled: true
+  tags: ['never', 'containers-enable']

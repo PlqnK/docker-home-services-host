@@ -1,0 +1,8 @@
+[Unit]
+Description=Execute borgmatic container daily
+
+[Timer]
+OnCalendar=*-*-* 6:00:00
+
+[Install]
+WantedBy=timers.target
