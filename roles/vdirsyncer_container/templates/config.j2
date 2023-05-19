@@ -1,0 +1,44 @@
+[general]
+status_path = "/vdirsyncer/status/"
+
+# CARDDAV
+[pair {{ vdirsyncer.carddav.name }}_contacts]
+a = "{{ vdirsyncer.carddav.name }}_contacts_remote"
+b = "{{ vdirsyncer.carddav.name }}_contacts_local"
+collections = ["from a"]
+conflict_resolution = "a wins"
+partial_sync = "revert"
+metadata = ["displayname"]
+
+[storage {{ vdirsyncer.carddav.name }}_contacts_remote]
+type = "carddav"
+read_only = true
+url = "{{ vdirsyncer.carddav.url }}"
+username = "{{ vdirsyncer.carddav.user }}"
+password.fetch = ["command", "cat", "/run/secrets/vdirsyncer_carddav_password"]
+
+[storage {{ vdirsyncer.carddav.name }}_contacts_local]
+type = "filesystem"
+path = "/contacts/{{ vdirsyncer.carddav.name }}"
+fileext = ".vcf"
+
+# CALDAV
+[pair {{ vdirsyncer.caldav.name }}_calendar]
+a = "{{ vdirsyncer.caldav.name }}_calendar_remote"
+b = "{{ vdirsyncer.caldav.name }}_calendar_local"
+collections = ["from a"]
+conflict_resolution = "a wins"
+partial_sync = "revert"
+metadata = ["displayname", "color"]
+
+[storage {{ vdirsyncer.caldav.name }}_calendar_remote]
+type = "caldav"
+read_only = true
+url = "{{ vdirsyncer.caldav.url }}"
+username = "{{ vdirsyncer.caldav.user }}"
+password.fetch = ["command", "cat", "/run/secrets/vdirsyncer_caldav_password"]
+
+[storage {{ vdirsyncer.caldav.name }}_calendar_local]
+type = "filesystem"
+path = "/calendars/{{ vdirsyncer.caldav.name }}"
+fileext = ".ics"

@@ -1,0 +1,32 @@
+---
+- name: 'Stop vdirsyncer timer'
+  ansible.builtin.systemd:
+    name: 'container-vdirsyncer.timer'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable vdirsyncer timer'
+  ansible.builtin.systemd:
+    name: 'container-vdirsyncer.timer'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull vdirsyncer image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start vdirsyncer timer'
+  ansible.builtin.systemd:
+    name: 'container-vdirsyncer.timer'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable vdirsyncer timer'
+  ansible.builtin.systemd:
+    name: 'container-vdirsyncer.timer'
+    enabled: true
+  tags: ['never', 'containers-enable']

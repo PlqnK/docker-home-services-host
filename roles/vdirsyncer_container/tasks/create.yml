@@ -1,0 +1,78 @@
+---
+- name: 'Create vdirsyncer bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_base_path }}/config/vdirsyncer'
+      owner: 1000
+      group: 1000
+      mode: '0700'
+    - path: '{{ containers_storage_base_path }}/runtime/vdirsyncer'
+      owner: 1000
+      group: 1000
+      mode: '0700'
+
+- name: 'Create vdirsyncer config from template'
+  ansible.builtin.template:
+    src: 'config.j2'
+    dest: '{{ containers_storage_base_path }}/config/vdirsyncer/config'
+    owner: 1000
+    group: 1000
+    mode: '0644'
+
+- name: 'Copy vdirsyncer script'
+  ansible.builtin.copy:
+    src: 'vdirsyncer.sh'
+    dest: '{{ containers_storage_base_path }}/config/vdirsyncer/vdirsyncer.sh'
+    owner: 1000
+    group: 1000
+    mode: '0755'
+
+- name: 'Create vdirsyncer secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'vdirsyncer_carddav_password'
+      data: '{{ vdirsyncer.carddav.password }}'
+    - name: 'vdirsyncer_caldav_password'
+      data: '{{ vdirsyncer.caldav.password }}'
+
+- name: 'Create vdirsyncer systemd service from template'
+  ansible.builtin.template:
+    src: 'container-vdirsyncer.service.j2'
+    dest: '/etc/systemd/system/container-vdirsyncer.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy vdirsyncer systemd timer'
+  ansible.builtin.copy:
+    src: 'container-vdirsyncer.timer'
+    dest: '/etc/systemd/system/container-vdirsyncer.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0664'
+  notify: 'Reload systemd daemon'
+
+- name: 'Add vdirsyncer alias to global shell profile'
+  ansible.builtin.template:
+    src: 'vdirsyncer.sh.j2'
+    dest: '/etc/profile.d/vdirsyncer.sh'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Enable and start vdirsyncer timer'
+  ansible.builtin.systemd:
+    name: 'container-vdirsyncer.timer'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

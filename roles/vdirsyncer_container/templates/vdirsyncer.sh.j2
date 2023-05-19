@@ -1,0 +1,10 @@
+alias vdirsyncer="podman run --rm --interactive \
+--hostname sox --network web-egress --tz=Europe/Paris --env TZ=Europe/Paris \
+--volume {{ containers_storage_base_path }}/config/vdirsyncer/config:/vdirsyncer/config:Z \
+--volume {{ containers_storage_base_path }}/runtime/vdirsyncer:/vdirsyncer/status:Z \
+--volume {{ autofs_base_path }}/backups/groupware/contacts:/contacts:slave \
+--volume {{ autofs_base_path }}/backups/groupware/calendars:/calendars:slave \
+--secret vdirsyncer_carddav_password \
+--secret vdirsyncer_caldav_password \
+--entrypoint /home/vdirsyncer/.local/bin/vdirsyncer \
+{{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }} $@"
