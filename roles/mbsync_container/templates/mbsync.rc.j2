@@ -1,0 +1,23 @@
+IMAPAccount {{ mbsync.imap.name }}
+Host {{ mbsync.imap.host }}
+User {{ mbsync.imap.user }}
+PassCmd "cat /run/secrets/mbsync_imap_password"
+SSLType IMAPS
+
+IMAPStore {{ mbsync.imap.name }}-remote
+Account {{ mbsync.imap.name }}
+
+MaildirStore {{ mbsync.imap.name }}-local
+Path /mail/{{ mbsync.imap.name }}/
+Inbox /mail/{{ mbsync.imap.name }}/Inbox
+SubFolders Verbatim
+
+Channel {{ mbsync.imap.name }}
+Far :{{ mbsync.imap.name }}-remote:
+Near :{{ mbsync.imap.name }}-local:
+Patterns *
+SyncState *
+Sync Pull
+Create Near
+Remove Near
+Expunge Near
