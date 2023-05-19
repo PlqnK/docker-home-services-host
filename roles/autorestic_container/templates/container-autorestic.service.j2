@@ -1,0 +1,33 @@
+[Unit]
+Description=Podman container-autorestic.service
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=no
+TimeoutStopSec=70
+ExecStart=/usr/bin/podman container run \
+	--rm \
+	--detach \
+	--replace \
+	--name autorestic \
+	--entrypoint "autorestic" \
+	--hostname {{ ansible_hostname }} \
+	--network web-egress \
+	--volume {{ containers_storage_base_path }}/runtime/autorestic:/config:Z \
+	--volume {{ containers_storage_base_path }}/config/autorestic/autorestic.yml:/config/autorestic.yml:Z \
+	--volume {{ autofs_base_path }}/backups/groupware:{{ autofs_base_path }}/backups/groupware:slave,ro \
+	--volume {{ autofs_base_path }}/backups/servers:{{ autofs_base_path }}/backups/servers:slave,ro \
+	--volume {{ autofs_base_path }}/cloud/data:{{ autofs_base_path }}/cloud/data:slave,ro \
+	--volume {{ autofs_base_path }}/medias/audiodrama:{{ autofs_base_path }}/medias/audiodrama:slave,ro \
+	--volume {{ autofs_base_path }}/medias/audiobooks:{{ autofs_base_path }}/medias/audiobooks:slave,ro \
+	--volume {{ autofs_base_path }}/medias/books:{{ autofs_base_path }}/medias/books:slave,ro \
+	--volume {{ autofs_base_path }}/medias/comics:{{ autofs_base_path }}/medias/comics:slave,ro \
+	--tz={{ timezone }} \
+	--env TZ={{ timezone }} {{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }} -c /config/autorestic.yml --ci backup -a
+Type=forking
+
+[Install]
+WantedBy=default.target

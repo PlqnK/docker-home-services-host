@@ -1,0 +1,121 @@
+version: 2
+
+extras:
+  env: &b2_account
+    B2_ACCOUNT_ID: '{{ autorestic.b2.account_id }}'
+    B2_ACCOUNT_KEY: '{{ autorestic.b2.account_key }}'
+
+global:
+  forget: &forget
+    keep-daily: 28
+    keep-weekly: 8
+    keep-monthly: 6
+    keep-yearly: 1
+  backup: &backup
+    exclude-if-present:
+      - '.nobackup'
+
+locations:
+  documents:
+    from: '{{ autofs_base_path }}/cloud/data'
+    to: 'b2_documents'
+    forget: 'prune'
+    options:
+      forget:
+        <<: *forget
+      backup:
+        exclude:
+          - '{{ autofs_base_path }}/cloud/data/files_external'
+          - '{{ autofs_base_path }}/cloud/data/appdata_*/preview'
+          - '{{ autofs_base_path }}/cloud/data/*/cache'
+          - '{{ autofs_base_path }}/cloud/data/*/files_trashbin'
+          - '{{ autofs_base_path }}/cloud/data/*/files_versions'
+          - '{{ autofs_base_path }}/cloud/data/*/uploads'
+          - '*.log'
+          - '*.log.[0123456789]'
+        <<: *backup
+    hooks:
+      before:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.documents.healthchecks_uuid }}/start'
+      failure:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.documents.healthchecks_uuid }}/fail'
+      success:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.documents.healthchecks_uuid }}'
+  groupware:
+    from: '{{ autofs_base_path }}/backups/groupware'
+    to: 'b2_groupware'
+    forget: 'prune'
+    options:
+      forget:
+        <<: *forget
+      backup:
+        <<: *backup
+    hooks:
+      before:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.groupware.healthchecks_uuid }}/start'
+      failure:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.groupware.healthchecks_uuid }}/fail'
+      success:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.groupware.healthchecks_uuid }}'
+  medias:
+    from:
+      - '{{ autofs_base_path }}/medias/audiodrama'
+      - '{{ autofs_base_path }}/medias/audiobooks'
+      - '{{ autofs_base_path }}/medias/books'
+      - '{{ autofs_base_path }}/medias/comics'
+    to: 'b2_medias'
+    forget: 'prune'
+    options:
+      forget:
+        <<: *forget
+      backup:
+        <<: *backup
+    hooks:
+      before:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.medias.healthchecks_uuid }}/start'
+      failure:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.medias.healthchecks_uuid }}/fail'
+      success:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.medias.healthchecks_uuid }}'
+  servers:
+    from: '{{ autofs_base_path }}/backups/servers'
+    to: 'b2_servers'
+    forget: 'prune'
+    options:
+      forget:
+        <<: *forget
+      backup:
+        <<: *backup
+    hooks:
+      before:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.servers.healthchecks_uuid }}/start'
+      failure:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.servers.healthchecks_uuid }}/fail'
+      success:
+        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.servers.healthchecks_uuid }}'
+
+backends:
+  b2_documents:
+    type: 'b2'
+    path: '{{ autorestic.documents.bucket }}'
+    key: '{{ autorestic.documents.key }}'
+    env:
+      <<: *b2_account
+  b2_groupware:
+    type: 'b2'
+    path: '{{ autorestic.groupware.bucket }}'
+    key: '{{ autorestic.groupware.key }}'
+    env:
+      <<: *b2_account
+  b2_medias:
+    type: 'b2'
+    path: '{{ autorestic.medias.bucket }}'
+    key: '{{ autorestic.medias.key }}'
+    env:
+      <<: *b2_account
+  b2_servers:
+    type: 'b2'
+    path: '{{ autorestic.servers.bucket }}'
+    key: '{{ autorestic.servers.key }}'
+    env:
+      <<: *b2_account

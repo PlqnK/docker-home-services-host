@@ -1,0 +1,21 @@
+alias autorestic="podman run \
+--rm \
+--interactive \
+--entrypoint "autorestic" \
+--cap-add SYS_ADMIN \
+--security-opt label:disable \
+--device /dev/fuse \
+--hostname sox \
+--network web-egress \
+--tz=Europe/Paris \
+--env TZ=Europe/Paris \
+--volume {{ containers_storage_base_path }}/runtime/autorestic:/config:Z \
+--volume {{ containers_storage_base_path }}/config/autorestic/autorestic.yml:/config/autorestic.yml:Z \
+--volume {{ autofs_base_path }}/backups/groupware:{{ autofs_base_path }}/backups/groupware:slave \
+--volume {{ autofs_base_path }}/backups/servers:{{ autofs_base_path }}/backups/servers:slave \
+--volume {{ autofs_base_path }}/cloud/data:{{ autofs_base_path }}/cloud/data:slave \
+--volume {{ autofs_base_path }}/medias/audiodrama:{{ autofs_base_path }}/medias/audiodrama:slave \
+--volume {{ autofs_base_path }}/medias/audiobooks:{{ autofs_base_path }}/medias/audiobooks:slave \
+--volume {{ autofs_base_path }}/medias/books:{{ autofs_base_path }}/medias/books:slave \
+--volume {{ autofs_base_path }}/medias/comics:{{ autofs_base_path }}/medias/comics:slave \
+{{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }} -c /config/autorestic.yml $@"
