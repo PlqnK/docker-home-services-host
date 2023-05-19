@@ -16,15 +16,15 @@ ExecStart=/usr/bin/podman container run \
 	--entrypoint "autorestic" \
 	--hostname {{ ansible_hostname }} \
 	--network web-egress \
-	--volume {{ containers_storage_base_path }}/runtime/autorestic:/config:Z \
-	--volume {{ containers_storage_base_path }}/config/autorestic/autorestic.yml:/config/autorestic.yml:Z \
-	--volume {{ autofs_base_path }}/backups/groupware:{{ autofs_base_path }}/backups/groupware:slave,ro \
-	--volume {{ autofs_base_path }}/backups/servers:{{ autofs_base_path }}/backups/servers:slave,ro \
-	--volume {{ autofs_base_path }}/cloud/data:{{ autofs_base_path }}/cloud/data:slave,ro \
-	--volume {{ autofs_base_path }}/medias/audiodrama:{{ autofs_base_path }}/medias/audiodrama:slave,ro \
-	--volume {{ autofs_base_path }}/medias/audiobooks:{{ autofs_base_path }}/medias/audiobooks:slave,ro \
-	--volume {{ autofs_base_path }}/medias/books:{{ autofs_base_path }}/medias/books:slave,ro \
-	--volume {{ autofs_base_path }}/medias/comics:{{ autofs_base_path }}/medias/comics:slave,ro \
+	--volume {{ containers_storage_path }}/runtime/autorestic:/config:Z \
+	--volume {{ containers_storage_path }}/config/autorestic/autorestic.yml:/config/autorestic.yml:Z \
+	--volume {{ nfs_mounts_path }}/backups/groupware:{{ nfs_mounts_path }}/backups/groupware:slave,ro \
+	--volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave,ro \
+	--volume {{ nfs_mounts_path }}/cloud/data:{{ nfs_mounts_path }}/cloud/data:slave,ro \
+	--volume {{ nfs_mounts_path }}/medias/audiodrama:{{ nfs_mounts_path }}/medias/audiodrama:slave,ro \
+	--volume {{ nfs_mounts_path }}/medias/audiobooks:{{ nfs_mounts_path }}/medias/audiobooks:slave,ro \
+	--volume {{ nfs_mounts_path }}/medias/books:{{ nfs_mounts_path }}/medias/books:slave,ro \
+	--volume {{ nfs_mounts_path }}/medias/comics:{{ nfs_mounts_path }}/medias/comics:slave,ro \
 	--tz={{ timezone }} \
 	--env TZ={{ timezone }} {{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }} -c /config/autorestic.yml --ci backup -a
 Type=forking

@@ -20,7 +20,7 @@
 
 - name: 'Create Collabora Online bind mounts paths'
   ansible.builtin.file:
-    path: '{{ containers_storage_base_path }}/env/collabora-online'
+    path: '{{ containers_storage_path }}/env/collabora-online'
     owner: 'root'
     group: 'root'
     mode: '0700'
@@ -31,7 +31,7 @@
     content: |
       username={{ collabora_online.user }}
       password={{ collabora_online.password }}
-    dest: '{{ containers_storage_base_path }}/env/collabora-online/collabora-online.env'
+    dest: '{{ containers_storage_path }}/env/collabora-online/collabora-online.env'
     owner: 'root'
     group: 'root'
     mode: '0400'
@@ -49,7 +49,7 @@
     expose:
       - 9980
     timezone: '{{ timezone }}'
-    env_file: '{{ containers_storage_base_path }}/env/collabora-online/collabora-online.env'
+    env_file: '{{ containers_storage_path }}/env/collabora-online/collabora-online.env'
     env:
       TZ: '{{ timezone }}'
       aliasgroup1: 'https://cloud.{{ domain_name }}:443'

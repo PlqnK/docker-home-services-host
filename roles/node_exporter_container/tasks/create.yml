@@ -14,7 +14,7 @@
     mode: '{{ item.mode }}'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_base_path }}/config/node_exporter'
+    - path: '{{ containers_storage_path }}/config/node_exporter'
       owner: 65534
       group: 65534
       mode: '0700'
@@ -28,7 +28,7 @@
     mode: '{{ item.mode }}'
   loop:
     - src: 'web.yml.j2'
-      dest: '{{ containers_storage_base_path }}/config/node_exporter/web.yml'
+      dest: '{{ containers_storage_path }}/config/node_exporter/web.yml'
       owner: 65534
       group: 65534
       mode: '0644'
@@ -41,7 +41,7 @@
     pid: 'host'
     network: 'host'
     volume:
-      - '{{ containers_storage_base_path }}/config/node_exporter/web.yml:/etc/node_exporter/web.yml:Z'
+      - '{{ containers_storage_path }}/config/node_exporter/web.yml:/etc/node_exporter/web.yml:Z'
       - '/:/host:ro,rslave'
     timezone: '{{ timezone }}'
     env:

@@ -13,11 +13,11 @@
     mode: '{{ item.mode }}'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_base_path }}/config/loki'
+    - path: '{{ containers_storage_path }}/config/loki'
       owner: 10001
       group: 10001
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/runtime/loki'
+    - path: '{{ containers_storage_path }}/runtime/loki'
       owner: 10001
       group: 10001
       mode: '0700'
@@ -31,7 +31,7 @@
     mode: '{{ item.mode }}'
   loop:
     - src: 'loki.yaml.j2'
-      dest: '{{ containers_storage_base_path }}/config/loki/loki.yaml'
+      dest: '{{ containers_storage_path }}/config/loki/loki.yaml'
       owner: 10001
       group: 10001
       mode: '0644'
@@ -47,8 +47,8 @@
     expose:
       - 3100
     volume:
-      - '{{ containers_storage_base_path }}/config/loki/loki.yaml:/etc/loki/loki.yaml:Z'
-      - '{{ containers_storage_base_path }}/runtime/loki:/loki:Z'
+      - '{{ containers_storage_path }}/config/loki/loki.yaml:/etc/loki/loki.yaml:Z'
+      - '{{ containers_storage_path }}/runtime/loki:/loki:Z'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'

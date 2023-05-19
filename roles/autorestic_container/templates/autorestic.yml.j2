@@ -17,7 +17,7 @@ global:
 
 locations:
   documents:
-    from: '{{ autofs_base_path }}/cloud/data'
+    from: '{{ nfs_mounts_path }}/cloud/data'
     to: 'b2_documents'
     forget: 'prune'
     options:
@@ -25,12 +25,12 @@ locations:
         <<: *forget
       backup:
         exclude:
-          - '{{ autofs_base_path }}/cloud/data/files_external'
-          - '{{ autofs_base_path }}/cloud/data/appdata_*/preview'
-          - '{{ autofs_base_path }}/cloud/data/*/cache'
-          - '{{ autofs_base_path }}/cloud/data/*/files_trashbin'
-          - '{{ autofs_base_path }}/cloud/data/*/files_versions'
-          - '{{ autofs_base_path }}/cloud/data/*/uploads'
+          - '{{ nfs_mounts_path }}/cloud/data/files_external'
+          - '{{ nfs_mounts_path }}/cloud/data/appdata_*/preview'
+          - '{{ nfs_mounts_path }}/cloud/data/*/cache'
+          - '{{ nfs_mounts_path }}/cloud/data/*/files_trashbin'
+          - '{{ nfs_mounts_path }}/cloud/data/*/files_versions'
+          - '{{ nfs_mounts_path }}/cloud/data/*/uploads'
           - '*.log'
           - '*.log.[0123456789]'
         <<: *backup
@@ -42,7 +42,7 @@ locations:
       success:
         - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.documents.healthchecks_uuid }}'
   groupware:
-    from: '{{ autofs_base_path }}/backups/groupware'
+    from: '{{ nfs_mounts_path }}/backups/groupware'
     to: 'b2_groupware'
     forget: 'prune'
     options:
@@ -59,10 +59,10 @@ locations:
         - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.groupware.healthchecks_uuid }}'
   medias:
     from:
-      - '{{ autofs_base_path }}/medias/audiodrama'
-      - '{{ autofs_base_path }}/medias/audiobooks'
-      - '{{ autofs_base_path }}/medias/books'
-      - '{{ autofs_base_path }}/medias/comics'
+      - '{{ nfs_mounts_path }}/medias/audiodrama'
+      - '{{ nfs_mounts_path }}/medias/audiobooks'
+      - '{{ nfs_mounts_path }}/medias/books'
+      - '{{ nfs_mounts_path }}/medias/comics'
     to: 'b2_medias'
     forget: 'prune'
     options:
@@ -78,7 +78,7 @@ locations:
       success:
         - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.medias.healthchecks_uuid }}'
   servers:
-    from: '{{ autofs_base_path }}/backups/servers'
+    from: '{{ nfs_mounts_path }}/backups/servers'
     to: 'b2_servers'
     forget: 'prune'
     options:

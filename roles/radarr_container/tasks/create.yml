@@ -7,7 +7,7 @@
 
 - name: 'Create Radarr bind mount path'
   ansible.builtin.file:
-    path: '{{ containers_storage_base_path }}/data/radarr'
+    path: '{{ containers_storage_path }}/data/radarr'
     owner: 911
     group: 911
     mode: '0700'
@@ -23,9 +23,9 @@
     expose:
       - 7878
     volume:
-      - '{{ containers_storage_base_path }}/data/radarr:/config:Z'
-      - '{{ autofs_base_path }}/downloads:/downloads:slave'
-      - '{{ autofs_base_path }}/medias/movies:/movies:slave'
+      - '{{ containers_storage_path }}/data/radarr:/config:Z'
+      - '{{ nfs_mounts_path }}/downloads:/downloads:slave'
+      - '{{ nfs_mounts_path }}/medias/movies:/movies:slave'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'

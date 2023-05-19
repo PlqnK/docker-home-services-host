@@ -6,7 +6,7 @@ alias mbsync="podman run \
 --network web-egress \
 --tz=Europe/Paris \
 --env TZ=Europe/Paris \
---volume {{ containers_storage_base_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
---volume {{ autofs_base_path }}/backups/groupware/emails:/mail:slave \
+--volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
+--volume {{ nfs_mounts_path }}/backups/groupware/emails:/mail:slave \
 --secret=mbsync_imap_password \
 {{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }} -c /config/mbsync.rc $@"

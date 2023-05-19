@@ -1,7 +1,7 @@
 ---
 - name: 'Create containers data storage directories'
   ansible.builtin.file:
-    path: '{{ containers_storage_base_path }}/{{ item }}'
+    path: '{{ containers_storage_path }}/{{ item }}'
     owner: 'root'
     group: 'root'
     mode: '0755'

@@ -7,11 +7,11 @@
     mode: '{{ item.mode }}'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_base_path }}/config/recyclarr'
+    - path: '{{ containers_storage_path }}/config/recyclarr'
       owner: 1000
       group: 1000
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/runtime/recyclarr'
+    - path: '{{ containers_storage_path }}/runtime/recyclarr'
       owner: 1000
       group: 1000
       mode: '0700'
@@ -19,7 +19,7 @@
 - name: 'Create Recyclarr config from template'
   ansible.builtin.template:
     src: 'recyclarr.yml.j2'
-    dest: '{{ containers_storage_base_path }}/config/recyclarr/recyclarr.yml'
+    dest: '{{ containers_storage_path }}/config/recyclarr/recyclarr.yml'
     owner: 1000
     group: 1000
     mode: '0644'
@@ -32,8 +32,8 @@
       - 'web-egress'
       - 'common-internal'
     volumes:
-      - '{{ containers_storage_base_path }}/runtime/recyclarr:/config:Z'
-      - '{{ containers_storage_base_path }}/config/recyclarr/recyclarr.yml:/config/recyclarr.yml:Z'
+      - '{{ containers_storage_path }}/runtime/recyclarr:/config:Z'
+      - '{{ containers_storage_path }}/config/recyclarr/recyclarr.yml:/config/recyclarr.yml:Z'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'

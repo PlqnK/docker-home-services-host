@@ -1,6 +1,6 @@
 location:
   source_directories:
-    - '{{ autofs_base_path }}/backups/servers'
+    - '{{ nfs_mounts_path }}/backups/servers'
   repositories:
     - path: '{{ borgmatic.servers.repository }}'
       label: 'borgbase'

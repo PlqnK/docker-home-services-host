@@ -7,7 +7,7 @@
 
 - name: 'Create Calibre bind mount path'
   ansible.builtin.file:
-    path: '{{ containers_storage_base_path }}/data/calibre'
+    path: '{{ containers_storage_path }}/data/calibre'
     owner: 911
     group: 911
     mode: '0700'
@@ -24,8 +24,8 @@
       - 8080
       - 8081
     volume:
-      - '{{ containers_storage_base_path }}/data/calibre:/config:Z'
-      - '{{ autofs_base_path }}/medias/books:/books:slave'
+      - '{{ containers_storage_path }}/data/calibre:/config:Z'
+      - '{{ nfs_mounts_path }}/medias/books:/books:slave'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'

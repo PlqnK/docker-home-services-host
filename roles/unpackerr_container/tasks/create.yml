@@ -1,7 +1,7 @@
 ---
 - name: 'Create Unpackerr bind mounts paths'
   ansible.builtin.file:
-    path: '{{ containers_storage_base_path }}/env/unpackerr'
+    path: '{{ containers_storage_path }}/env/unpackerr'
     owner: 'root'
     group: 'root'
     mode: '0700'
@@ -14,7 +14,7 @@
       UN_RADARR_0_API_KEY={{ unpackerr.radarr_api_key }}
       UN_LIDARR_0_API_KEY={{ unpackerr.lidarr_api_key }}
       UN_READARR_0_API_KEY={{ unpackerr.readarr_api_key }}
-    dest: '{{ containers_storage_base_path }}/env/unpackerr/unpackerr.env'
+    dest: '{{ containers_storage_path }}/env/unpackerr/unpackerr.env'
     owner: 'root'
     group: 'root'
     mode: '0400'
@@ -27,9 +27,9 @@
     network:
       - 'common-internal'
     volumes:
-      - '{{ autofs_base_path }}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave'
+      - '{{ nfs_mounts_path }}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave'
     timezone: '{{ timezone }}'
-    env_file: '{{ containers_storage_base_path }}/env/unpackerr/unpackerr.env'
+    env_file: '{{ containers_storage_path }}/env/unpackerr/unpackerr.env'
     env:
       TZ: '{{ timezone }}'
       UN_SONARR_0_URL: 'http://sonarr:8989'

@@ -52,27 +52,27 @@
     mode: '{{ item.mode }}'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_base_path }}/runtime/photoprism-mariadb'
+    - path: '{{ containers_storage_path }}/runtime/photoprism-mariadb'
       owner: 999
       group: 999
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/data/photoprism-mariadb'
+    - path: '{{ containers_storage_path }}/data/photoprism-mariadb'
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/env/photoprism'
+    - path: '{{ containers_storage_path }}/env/photoprism'
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/runtime/photoprism/sidecar'
+    - path: '{{ containers_storage_path }}/runtime/photoprism/sidecar'
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/runtime/photoprism/cache'
+    - path: '{{ containers_storage_path }}/runtime/photoprism/cache'
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/data/photoprism'
+    - path: '{{ containers_storage_path }}/data/photoprism'
       owner: 'root'
       group: 'root'
       mode: '0700'
@@ -98,7 +98,7 @@
       PHOTOPRISM_ADMIN_PASSWORD={{ photoprism.user.password }}
       PHOTOPRISM_DATABASE_USER={{ photoprism.mariadb.user }}
       PHOTOPRISM_DATABASE_PASSWORD={{ photoprism.mariadb.password }}
-    dest: '{{ containers_storage_base_path }}/env/photoprism/photoprism.env'
+    dest: '{{ containers_storage_path }}/env/photoprism/photoprism.env'
     owner: 'root'
     group: 'root'
     mode: '0400'
@@ -115,7 +115,7 @@
     expose:
       - 3306
     volume:
-      - '{{ containers_storage_base_path }}/runtime/photoprism-mariadb:/var/lib/mysql:Z'
+      - '{{ containers_storage_path }}/runtime/photoprism-mariadb:/var/lib/mysql:Z'
     secrets:
       - 'photoprism_mariadb_root_password'
       - 'photoprism_mariadb_user'
@@ -147,13 +147,13 @@
     expose:
       - 2342
     volume:
-      - '{{ containers_storage_base_path }}/data/photoprism:/photoprism/storage:Z'
-      - '{{ containers_storage_base_path }}/data/photoprism-mariadb:/opt/dumps:Z'
-      - '{{ containers_storage_base_path }}/runtime/photoprism/sidecar:/photoprism/sidecar:Z'
-      - '{{ containers_storage_base_path }}/runtime/photoprism/cache:/photoprism/cache:Z'
-      - '{{ autofs_base_path }}/cloud/data/{{ photoprism.pictures_path }}:/photoprism/originals/pictures:slave'
-      - '{{ autofs_base_path }}/cloud/data/{{ photoprism.videos_path }}:/photoprism/originals/videos:slave'
-    env_file: '{{ containers_storage_base_path }}/env/photoprism/photoprism.env'
+      - '{{ containers_storage_path }}/data/photoprism:/photoprism/storage:Z'
+      - '{{ containers_storage_path }}/data/photoprism-mariadb:/opt/dumps:Z'
+      - '{{ containers_storage_path }}/runtime/photoprism/sidecar:/photoprism/sidecar:Z'
+      - '{{ containers_storage_path }}/runtime/photoprism/cache:/photoprism/cache:Z'
+      - '{{ nfs_mounts_path }}/cloud/data/{{ photoprism.pictures_path }}:/photoprism/originals/pictures:slave'
+      - '{{ nfs_mounts_path }}/cloud/data/{{ photoprism.videos_path }}:/photoprism/originals/videos:slave'
+    env_file: '{{ containers_storage_path }}/env/photoprism/photoprism.env'
     env:
       TZ: '{{ timezone }}'
       PHOTOPRISM_SITE_URL: 'https://photos.{{ domain_name }}/'

@@ -7,11 +7,11 @@
     mode: '{{ item.mode }}'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_base_path }}/config/autorestic'
+    - path: '{{ containers_storage_path }}/config/autorestic'
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/runtime/autorestic'
+    - path: '{{ containers_storage_path }}/runtime/autorestic'
       owner: 'root'
       group: 'root'
       mode: '0700'
@@ -19,7 +19,7 @@
 - name: 'Create autorestic config from templates'
   ansible.builtin.template:
     src: 'autorestic.yml.j2'
-    dest: '{{ containers_storage_base_path }}/config/autorestic/autorestic.yml'
+    dest: '{{ containers_storage_path }}/config/autorestic/autorestic.yml'
     owner: 'root'
     group: 'root'
     mode: '0644'

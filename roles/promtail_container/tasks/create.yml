@@ -7,11 +7,11 @@
     mode: '{{ item.mode }}'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_base_path }}/config/promtail'
+    - path: '{{ containers_storage_path }}/config/promtail'
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/runtime/promtail'
+    - path: '{{ containers_storage_path }}/runtime/promtail'
       owner: 'root'
       group: 'root'
       mode: '0700'
@@ -25,7 +25,7 @@
     mode: '{{ item.mode }}'
   loop:
     - src: 'promtail.yaml.j2'
-      dest: '{{ containers_storage_base_path }}/config/promtail/promtail.yaml'
+      dest: '{{ containers_storage_path }}/config/promtail/promtail.yaml'
       owner: 'root'
       group: 'root'
       mode: '0644'
@@ -49,8 +49,8 @@
       - '{{ "common-internal" if inventory_hostname == "monitoring" else omit }}'
     expose: '{{ "[1514]" if inventory_hostname == "monitoring" else omit }}'
     volume:
-      - '{{ containers_storage_base_path }}/config/promtail/promtail.yaml:/etc/promtail/promtail.yaml:Z'
-      - '{{ containers_storage_base_path }}/runtime/promtail:/promtail:Z'
+      - '{{ containers_storage_path }}/config/promtail/promtail.yaml:/etc/promtail/promtail.yaml:Z'
+      - '{{ containers_storage_path }}/runtime/promtail:/promtail:Z'
       - '/var/log/journal:/var/log/journal:ro'
       - '/run/log/journal:/run/log/journal:ro'
       - '/etc/machine-id:/etc/machine-id:ro'

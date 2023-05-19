@@ -1,16 +1,16 @@
 location:
   source_directories:
-    - '{{ autofs_base_path }}/cloud/data'
+    - '{{ nfs_mounts_path }}/cloud/data'
   repositories:
     - path: '{{ borgmatic.documents.repository }}'
       label: 'borgbase'
   exclude_patterns:
-    - '{{ autofs_base_path }}/cloud/data/files_external'
-    - '{{ autofs_base_path }}/cloud/data/appdata_*/preview'
-    - '{{ autofs_base_path }}/cloud/data/*/cache'
-    - '{{ autofs_base_path }}/cloud/data/*/files_trashbin'
-    - '{{ autofs_base_path }}/cloud/data/*/files_versions'
-    - '{{ autofs_base_path }}/cloud/data/*/uploads'
+    - '{{ nfs_mounts_path }}/cloud/data/files_external'
+    - '{{ nfs_mounts_path }}/cloud/data/appdata_*/preview'
+    - '{{ nfs_mounts_path }}/cloud/data/*/cache'
+    - '{{ nfs_mounts_path }}/cloud/data/*/files_trashbin'
+    - '{{ nfs_mounts_path }}/cloud/data/*/files_versions'
+    - '{{ nfs_mounts_path }}/cloud/data/*/uploads'
     - '*.log'
     - '*.log.[0123456789]'
   exclude_if_present:

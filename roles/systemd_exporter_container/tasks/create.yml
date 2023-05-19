@@ -61,7 +61,7 @@
     mode: '{{ item.mode }}'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_base_path }}/config/systemd_exporter'
+    - path: '{{ containers_storage_path }}/config/systemd_exporter'
       owner: 65534
       group: 65534
       mode: '0700'
@@ -75,7 +75,7 @@
     mode: '{{ item.mode }}'
   loop:
     - src: 'web.yml.j2'
-      dest: '{{ containers_storage_base_path }}/config/systemd_exporter/web.yml'
+      dest: '{{ containers_storage_path }}/config/systemd_exporter/web.yml'
       owner: 65534
       group: 65534
       mode: '0644'
@@ -90,7 +90,7 @@
     publish:
       - '9558:9558'
     volume:
-      - '{{ containers_storage_base_path }}/config/systemd_exporter/web.yml:/etc/systemd_exporter/web.yml:Z'
+      - '{{ containers_storage_path }}/config/systemd_exporter/web.yml:/etc/systemd_exporter/web.yml:Z'
       - '/proc:/host/proc:ro,rslave'
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro,rslave'
       - '/run/systemd:/run/systemd:ro,rslave'

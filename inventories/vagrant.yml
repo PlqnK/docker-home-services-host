@@ -69,7 +69,7 @@ all:
       vars:
         containers_ipv6:
           enable: true
-        containers_storage_base_path: '/var/containers'
+        containers_storage_path: '/var/containers'
   vars:
     timezone: 'Europe/Paris'
     domain_name: 'localhost.localdomain'
@@ -99,4 +99,4 @@ all:
       - 'medias/movies'
       - 'medias/music'
       - 'medias/series'
-    autofs_base_path: '/var/mnt/{{ storage_server.name }}'
+    nfs_mounts_path: '/var/mnt/{{ storage_server.name }}'

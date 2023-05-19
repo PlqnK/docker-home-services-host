@@ -7,11 +7,11 @@
     mode: '{{ item.mode }}'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_base_path }}/config/vdirsyncer'
+    - path: '{{ containers_storage_path }}/config/vdirsyncer'
       owner: 1000
       group: 1000
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/runtime/vdirsyncer'
+    - path: '{{ containers_storage_path }}/runtime/vdirsyncer'
       owner: 1000
       group: 1000
       mode: '0700'
@@ -19,7 +19,7 @@
 - name: 'Create vdirsyncer config from template'
   ansible.builtin.template:
     src: 'config.j2'
-    dest: '{{ containers_storage_base_path }}/config/vdirsyncer/config'
+    dest: '{{ containers_storage_path }}/config/vdirsyncer/config'
     owner: 1000
     group: 1000
     mode: '0644'
@@ -27,7 +27,7 @@
 - name: 'Copy vdirsyncer script'
   ansible.builtin.copy:
     src: 'vdirsyncer.sh'
-    dest: '{{ containers_storage_base_path }}/config/vdirsyncer/vdirsyncer.sh'
+    dest: '{{ containers_storage_path }}/config/vdirsyncer/vdirsyncer.sh'
     owner: 1000
     group: 1000
     mode: '0755'

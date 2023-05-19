@@ -7,7 +7,7 @@
 
 - name: 'Create Bazarr bind mount path'
   ansible.builtin.file:
-    path: '{{ containers_storage_base_path }}/data/bazarr'
+    path: '{{ containers_storage_path }}/data/bazarr'
     owner: 911
     group: 911
     mode: '0700'
@@ -23,9 +23,9 @@
     expose:
       - 6767
     volume:
-      - '{{ containers_storage_base_path }}/data/bazarr:/config:Z'
-      - '{{ autofs_base_path }}/medias/movies:/movies:slave'
-      - '{{ autofs_base_path }}/medias/series:/tv:slave'
+      - '{{ containers_storage_path }}/data/bazarr:/config:Z'
+      - '{{ nfs_mounts_path }}/medias/movies:/movies:slave'
+      - '{{ nfs_mounts_path }}/medias/series:/tv:slave'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'

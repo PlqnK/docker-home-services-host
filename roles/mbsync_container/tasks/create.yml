@@ -1,7 +1,7 @@
 ---
 - name: 'Create mbsync bind mount path'
   ansible.builtin.file:
-    path: '{{ containers_storage_base_path }}/config/mbsync'
+    path: '{{ containers_storage_path }}/config/mbsync'
     owner: 'root'
     group: 'root'
     mode: '0700'
@@ -10,7 +10,7 @@
 - name: 'Create mbsync config from template'
   ansible.builtin.template:
     src: 'mbsync.rc.j2'
-    dest: '{{ containers_storage_base_path }}/config/mbsync/mbsync.rc'
+    dest: '{{ containers_storage_path }}/config/mbsync/mbsync.rc'
     owner: 'root'
     group: 'root'
     mode: '0644'
@@ -18,7 +18,7 @@
 - name: 'Copy mbsync script'
   ansible.builtin.copy:
     src: 'mbsync.sh'
-    dest: '{{ containers_storage_base_path }}/config/mbsync/mbsync.sh'
+    dest: '{{ containers_storage_path }}/config/mbsync/mbsync.sh'
     owner: 'root'
     group: 'root'
     mode: '0755'

@@ -2,7 +2,7 @@
 Description={{ storage_server.name }} {{ item }} nfs share
 
 [Automount]
-Where={{ autofs_base_path }}/{{ item }}
+Where={{ nfs_mounts_path }}/{{ item }}
 TimeoutIdleSec=60
 
 [Install]

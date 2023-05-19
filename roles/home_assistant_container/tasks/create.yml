@@ -20,7 +20,7 @@
 
 - name: 'Create Home Assistant bind mounts paths'
   ansible.builtin.file:
-    path: '{{ containers_storage_base_path }}/data/home-assistant'
+    path: '{{ containers_storage_path }}/data/home-assistant'
     owner: 'root'
     group: 'root'
     mode: '0700'
@@ -32,7 +32,7 @@
     image: '{{ containers_images.home_assistant }}:{{ containers_images_tags.home_assistant }}'
     network: 'host'
     volume:
-      - '{{ containers_storage_base_path }}/data/home-assistant:/config:Z'
+      - '{{ containers_storage_path }}/data/home-assistant:/config:Z'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
@@ -61,7 +61,7 @@
 
     - name: 'Authorize reverse proxy in configuration file'
       ansible.builtin.blockinfile:
-        path: '{{ containers_storage_base_path }}/data/home-assistant/configuration.yaml'
+        path: '{{ containers_storage_path }}/data/home-assistant/configuration.yaml'
         block: |
           http:
             use_x_forwarded_for: true

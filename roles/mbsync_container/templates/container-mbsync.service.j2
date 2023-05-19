@@ -16,9 +16,9 @@ ExecStart=/usr/bin/podman container run \
 	--entrypoint /app/mbsync.sh \
 	--hostname {{ ansible_hostname }} \
 	--network web-egress \
-	--volume {{ containers_storage_base_path }}/config/mbsync/mbsync.sh:/app/mbsync.sh:Z \
-	--volume {{ containers_storage_base_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
-	--volume {{ autofs_base_path }}/backups/groupware/emails:/mail:slave \
+	--volume {{ containers_storage_path }}/config/mbsync/mbsync.sh:/app/mbsync.sh:Z \
+	--volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
+	--volume {{ nfs_mounts_path }}/backups/groupware/emails:/mail:slave \
 	--secret mbsync_imap_password \
 	--tz={{ timezone }} \
 	--env TZ={{ timezone }} \

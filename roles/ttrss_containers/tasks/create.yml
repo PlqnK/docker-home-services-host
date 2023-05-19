@@ -58,23 +58,23 @@
     mode: '{{ item.mode }}'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_base_path }}/runtime/ttrss-postgres'
+    - path: '{{ containers_storage_path }}/runtime/ttrss-postgres'
       owner: 999
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/data/ttrss-postgres'
+    - path: '{{ containers_storage_path }}/data/ttrss-postgres'
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/config/ttrss-nginx'
+    - path: '{{ containers_storage_path }}/config/ttrss-nginx'
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/env/ttrss-app'
+    - path: '{{ containers_storage_path }}/env/ttrss-app'
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_base_path }}/data/ttrss-app'
+    - path: '{{ containers_storage_path }}/data/ttrss-app'
       owner: 1000
       group: 1000
       mode: '2755'
@@ -82,7 +82,7 @@
 - name: 'Copy NGINX config'
   ansible.builtin.copy:
     src: 'nginx.conf'
-    dest: '{{ containers_storage_base_path }}/config/ttrss-nginx/nginx.conf'
+    dest: '{{ containers_storage_path }}/config/ttrss-nginx/nginx.conf'
     owner: 'root'
     group: 'root'
     mode: '0644'
@@ -104,7 +104,7 @@
     content: |
       TTRSS_DB_USER={{ ttrss.postgres.user }}
       TTRSS_DB_PASS={{ ttrss.postgres.password }}
-    dest: '{{ containers_storage_base_path }}/env/ttrss-app/ttrss-app.env'
+    dest: '{{ containers_storage_path }}/env/ttrss-app/ttrss-app.env'
     owner: 'root'
     group: 'root'
     mode: '0400'
@@ -119,8 +119,8 @@
     expose:
       - 5432
     volume:
-      - '{{ containers_storage_base_path }}/runtime/ttrss-postgres:/var/lib/postgresql/data:Z'
-      - '{{ containers_storage_base_path }}/data/ttrss-postgres:/opt/dumps:Z'
+      - '{{ containers_storage_path }}/runtime/ttrss-postgres:/var/lib/postgresql/data:Z'
+      - '{{ containers_storage_path }}/data/ttrss-postgres:/opt/dumps:Z'
     secrets:
       - 'ttrss_postgres_user'
       - 'ttrss_postgres_password'
@@ -151,8 +151,8 @@
     expose:
       - 80
     volume:
-      - '{{ containers_storage_base_path }}/config/ttrss-nginx/nginx.conf:/etc/nginx/nginx.conf:ro,Z'
-      - '{{ containers_storage_base_path }}/data/ttrss-app:/var/www/html:ro,z'
+      - '{{ containers_storage_path }}/config/ttrss-nginx/nginx.conf:/etc/nginx/nginx.conf:ro,Z'
+      - '{{ containers_storage_path }}/data/ttrss-app:/var/www/html:ro,z'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
@@ -181,9 +181,9 @@
     expose:
       - 9000
     volume:
-      - '{{ containers_storage_base_path }}/data/ttrss-app:/var/www/html:z'
+      - '{{ containers_storage_path }}/data/ttrss-app:/var/www/html:z'
     timezone: '{{ timezone }}'
-    env_file: '{{ containers_storage_base_path }}/env/ttrss-app/ttrss-app.env'
+    env_file: '{{ containers_storage_path }}/env/ttrss-app/ttrss-app.env'
     env:
       TZ: '{{ timezone }}'
       TTRSS_DB_TYPE: 'pgsql'
@@ -212,9 +212,9 @@
       - 'ttrss-app-internal'
       - 'ttrss-postgres-internal'
     volume:
-      - '{{ containers_storage_base_path }}/data/ttrss-app:/var/www/html:z'
+      - '{{ containers_storage_path }}/data/ttrss-app:/var/www/html:z'
     timezone: '{{ timezone }}'
-    env_file: '{{ containers_storage_base_path }}/env/ttrss-app/ttrss-app.env'
+    env_file: '{{ containers_storage_path }}/env/ttrss-app/ttrss-app.env'
     env:
       TZ: '{{ timezone }}'
       TTRSS_DB_TYPE: 'pgsql'

@@ -9,17 +9,17 @@ alias borgmatic="podman run \
 --network web-egress \
 --tz=Europe/Paris \
 --env TZ=Europe/Paris \
---volume {{ containers_storage_base_path }}/config/borgmatic/borgmatic.d:/etc/borgmatic.d \
---volume {{ containers_storage_base_path }}/config/borgmatic/.ssh:/root/.ssh \
---volume {{ containers_storage_base_path }}/data/borgmatic:/root/.config/borg \
---volume {{ containers_storage_base_path }}/runtime/borgmatic:/root/.cache/borg \
---volume {{ autofs_base_path }}/backups/groupware:{{ autofs_base_path }}/backups/groupware:slave \
---volume {{ autofs_base_path }}/backups/servers:{{ autofs_base_path }}/backups/servers:slave \
---volume {{ autofs_base_path }}/cloud/data:{{ autofs_base_path }}/cloud/data:slave \
---volume {{ autofs_base_path }}/medias/audiodrama:{{ autofs_base_path }}/medias/audiodrama:slave \
---volume {{ autofs_base_path }}/medias/audiobooks:{{ autofs_base_path }}/medias/audiobooks:slave \
---volume {{ autofs_base_path }}/medias/books:{{ autofs_base_path }}/medias/books:slave \
---volume {{ autofs_base_path }}/medias/comics:{{ autofs_base_path }}/medias/comics:slave \
+--volume {{ containers_storage_path }}/config/borgmatic/borgmatic.d:/etc/borgmatic.d \
+--volume {{ containers_storage_path }}/config/borgmatic/.ssh:/root/.ssh \
+--volume {{ containers_storage_path }}/data/borgmatic:/root/.config/borg \
+--volume {{ containers_storage_path }}/runtime/borgmatic:/root/.cache/borg \
+--volume {{ nfs_mounts_path }}/backups/groupware:{{ nfs_mounts_path }}/backups/groupware:slave \
+--volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave \
+--volume {{ nfs_mounts_path }}/cloud/data:{{ nfs_mounts_path }}/cloud/data:slave \
+--volume {{ nfs_mounts_path }}/medias/audiodrama:{{ nfs_mounts_path }}/medias/audiodrama:slave \
+--volume {{ nfs_mounts_path }}/medias/audiobooks:{{ nfs_mounts_path }}/medias/audiobooks:slave \
+--volume {{ nfs_mounts_path }}/medias/books:{{ nfs_mounts_path }}/medias/books:slave \
+--volume {{ nfs_mounts_path }}/medias/comics:{{ nfs_mounts_path }}/medias/comics:slave \
 --secret=borgmatic_documents_encryption_passphrase \
 --secret=borgmatic_groupware_encryption_passphrase \
 --secret=borgmatic_medias_encryption_passphrase \

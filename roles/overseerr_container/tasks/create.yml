@@ -20,7 +20,7 @@
 
 - name: 'Create Overseerr bind mount path'
   ansible.builtin.file:
-    path: '{{ containers_storage_base_path }}/data/overseerr'
+    path: '{{ containers_storage_path }}/data/overseerr'
     owner: 'root'
     group: 'root'
     mode: '0700'
@@ -36,7 +36,7 @@
     expose:
       - 5055
     volume:
-      - '{{ containers_storage_base_path }}/data/overseerr:/app/config:Z'
+      - '{{ containers_storage_path }}/data/overseerr:/app/config:Z'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
