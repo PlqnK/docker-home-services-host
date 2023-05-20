@@ -19,7 +19,15 @@
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_path }}/runtime/borgmatic'
+    - path: '{{ containers_storage_path }}/runtime/borgmatic/cache'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_path }}/runtime/borgmatic/mount'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_path }}/runtime/borgmatic/restore'
       owner: 'root'
       group: 'root'
       mode: '0700'
@@ -86,13 +94,18 @@
     mode: '0664'
   notify: 'Reload systemd daemon'
 
-- name: 'Add borgmatic alias to global shell profile'
+- name: 'Add borgmatic aliases to global shell profile'
   ansible.builtin.template:
-    src: 'borgmatic.sh.j2'
-    dest: '/etc/profile.d/borgmatic.sh'
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
     owner: 'root'
     group: 'root'
     mode: '0644'
+  loop:
+    - src: 'borgmatic.sh.j2'
+      dest: '/etc/profile.d/borgmatic.sh'
+    - src: 'borgmatic-shell.sh.j2'
+      dest: '/etc/profile.d/borgmatic-shell.sh'
 
 - name: 'Enable and start borgmatic timer'
   ansible.builtin.systemd:

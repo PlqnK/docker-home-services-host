@@ -1,7 +1,10 @@
-alias borgmatic="podman run \
+alias borgmatic-shell="podman run \
 --rm \
 --interactive \
---entrypoint borgmatic \
+--tty \
+--entrypoint bash \
+--cap-add SYS_ADMIN \
+--device /dev/fuse \
 --hostname {{ ansible_hostname }} \
 --network web-egress \
 --tz={{ timezone }} \
@@ -10,6 +13,8 @@ alias borgmatic="podman run \
 --volume {{ containers_storage_path }}/config/borgmatic/.ssh:/root/.ssh:Z \
 --volume {{ containers_storage_path }}/data/borgmatic:/root/.config/borg:Z \
 --volume {{ containers_storage_path }}/runtime/borgmatic/cache:/root/.cache/borg:Z \
+--volume {{ containers_storage_path }}/runtime/borgmatic/mount:/mount:Z \
+--volume {{ containers_storage_path }}/runtime/borgmatic/restore:/restore:Z \
 --volume {{ nfs_mounts_path }}/backups/groupware:{{ nfs_mounts_path }}/backups/groupware:slave \
 --volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave \
 --volume {{ nfs_mounts_path }}/cloud/data:{{ nfs_mounts_path }}/cloud/data:slave \
@@ -21,4 +26,4 @@ alias borgmatic="podman run \
 --secret=borgmatic_groupware_encryption_passphrase \
 --secret=borgmatic_medias_encryption_passphrase \
 --secret=borgmatic_servers_encryption_passphrase \
-{{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }} $@"
+{{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }}"
