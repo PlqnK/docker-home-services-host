@@ -8,6 +8,8 @@
 - name: 'Backup containers'
   hosts: 'backup'
   roles:
+    - 'sshd_rsync_container'
+    - 'rsync_client_container'
     - 'mbsync_container'
     - 'vdirsyncer_container'
     - 'borgmatic_container'
@@ -16,6 +18,7 @@
 - name: 'Monitoring containers'
   hosts: 'monitoring'
   roles:
+    - 'sshd_rsync_container'
     - 'traefik_containers'
     - 'prometheus_container'
     - 'loki_container'
@@ -28,12 +31,14 @@
 - name: 'Home containers'
   hosts: 'home'
   roles:
+    - 'sshd_rsync_container'
     - 'traefik_containers'
     - 'home_assistant_container'
 
 - name: 'Media containers'
   hosts: 'media'
   roles:
+    - 'sshd_rsync_container'
     - 'traefik_containers'
     - 'deck_chores_container'
     - 'nextcloud_containers'

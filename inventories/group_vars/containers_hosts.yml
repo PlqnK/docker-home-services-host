@@ -1,5 +1,7 @@
 ---
 containers_images_tags:
+  sshd_rsync: 'latest'
+  rsync_client: 'latest'
   mbsync: '1'
   vdirsyncer: 'latest'
   borgmatic: '1.7'
