@@ -2,10 +2,10 @@ alias mbsync="podman run \
 --rm \
 --interactive \
 --entrypoint mbsync \
---hostname sox \
+--hostname {{ ansible_hostname }} \
 --network web-egress \
---tz=Europe/Paris \
---env TZ=Europe/Paris \
+--tz={{ timezone }} \
+--env TZ={{ timezone }} \
 --volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
 --volume {{ nfs_mounts_path }}/backups/groupware/emails:/mail:slave \
 --secret=mbsync_imap_password \
