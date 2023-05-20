@@ -36,11 +36,11 @@ locations:
         <<: *backup
     hooks:
       before:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.documents.healthchecks_uuid }}/start'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.documents.healthchecks_uuid }}/start'
       failure:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.documents.healthchecks_uuid }}/fail'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.documents.healthchecks_uuid }}/fail'
       success:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.documents.healthchecks_uuid }}'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.documents.healthchecks_uuid }}'
   groupware:
     from: '{{ nfs_mounts_path }}/backups/groupware'
     to: 'b2_groupware'
@@ -52,11 +52,11 @@ locations:
         <<: *backup
     hooks:
       before:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.groupware.healthchecks_uuid }}/start'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.groupware.healthchecks_uuid }}/start'
       failure:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.groupware.healthchecks_uuid }}/fail'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.groupware.healthchecks_uuid }}/fail'
       success:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.groupware.healthchecks_uuid }}'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.groupware.healthchecks_uuid }}'
   medias:
     from:
       - '{{ nfs_mounts_path }}/medias/audiodrama'
@@ -72,11 +72,11 @@ locations:
         <<: *backup
     hooks:
       before:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.medias.healthchecks_uuid }}/start'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.medias.healthchecks_uuid }}/start'
       failure:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.medias.healthchecks_uuid }}/fail'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.medias.healthchecks_uuid }}/fail'
       success:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.medias.healthchecks_uuid }}'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.medias.healthchecks_uuid }}'
   servers:
     from: '{{ nfs_mounts_path }}/backups/servers'
     to: 'b2_servers'
@@ -88,11 +88,11 @@ locations:
         <<: *backup
     hooks:
       before:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.servers.healthchecks_uuid }}/start'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.servers.healthchecks_uuid }}/start'
       failure:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.servers.healthchecks_uuid }}/fail'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.servers.healthchecks_uuid }}/fail'
       success:
-        - 'wget --timeout=10 --output-document - https://hc-ping.com/{{ autorestic.servers.healthchecks_uuid }}'
+        - 'wget -T 10 -O /dev/null -o /dev/null https://hc-ping.com/{{ autorestic.servers.healthchecks_uuid }}'
 
 backends:
   b2_documents:
