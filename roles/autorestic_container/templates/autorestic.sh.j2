@@ -1,16 +1,17 @@
 alias autorestic="podman run \
 --rm \
 --interactive \
---entrypoint "autorestic" \
+--entrypoint autorestic \
 --cap-add SYS_ADMIN \
---security-opt label:disable \
 --device /dev/fuse \
---hostname sox \
+--hostname {{ ansible_hostname }} \
 --network web-egress \
---tz=Europe/Paris \
---env TZ=Europe/Paris \
---volume {{ containers_storage_path }}/runtime/autorestic:/config:Z \
+--tz={{ timezone }} \
+--env TZ={{ timezone }} \
+--volume {{ containers_storage_path }}/runtime/autorestic/lock:/config:Z \
 --volume {{ containers_storage_path }}/config/autorestic/autorestic.yml:/config/autorestic.yml:Z \
+--volume {{ containers_storage_path }}/runtime/autorestic/mount:/mount:Z \
+--volume {{ containers_storage_path }}/runtime/autorestic/restore:/restore:Z \
 --volume {{ nfs_mounts_path }}/backups/groupware:{{ nfs_mounts_path }}/backups/groupware:slave \
 --volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave \
 --volume {{ nfs_mounts_path }}/cloud/data:{{ nfs_mounts_path }}/cloud/data:slave \

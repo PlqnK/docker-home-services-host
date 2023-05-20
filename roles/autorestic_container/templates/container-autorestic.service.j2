@@ -16,7 +16,7 @@ ExecStart=/usr/bin/podman container run \
 	--entrypoint "autorestic" \
 	--hostname {{ ansible_hostname }} \
 	--network web-egress \
-	--volume {{ containers_storage_path }}/runtime/autorestic:/config:Z \
+	--volume {{ containers_storage_path }}/runtime/autorestic/lock:/config:Z \
 	--volume {{ containers_storage_path }}/config/autorestic/autorestic.yml:/config/autorestic.yml:Z \
 	--volume {{ nfs_mounts_path }}/backups/groupware:{{ nfs_mounts_path }}/backups/groupware:slave,ro \
 	--volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave,ro \
