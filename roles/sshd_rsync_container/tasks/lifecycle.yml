@@ -1,0 +1,32 @@
+---
+- name: 'Stop sshd-rsync container'
+  ansible.builtin.systemd:
+    name: 'container-sshd-rsync.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable sshd-rsync container'
+  ansible.builtin.systemd:
+    name: 'container-sshd-rsync.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull sshd-rsync image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.sshd_rsync }}:{{ containers_images_tags.sshd_rsync }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start sshd-rsync container'
+  ansible.builtin.systemd:
+    name: 'container-sshd-rsync.service'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable sshd-rsync container'
+  ansible.builtin.systemd:
+    name: 'container-sshd-rsync.service'
+    enabled: true
+  tags: ['never', 'containers-enable']
