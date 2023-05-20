@@ -1,0 +1,5 @@
+---
+containers_images:
+  rsync_client: 'ghcr.io/instrumentisto/rsync-ssh'
+containers_images_tags:
+  rsync_client: 'latest'

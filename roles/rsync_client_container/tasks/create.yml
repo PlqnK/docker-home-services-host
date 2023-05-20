@@ -1,0 +1,71 @@
+---
+- name: 'Create rsync-client bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_path }}/config/rsync-client'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_path }}/runtime/rsync-client'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+
+- name: 'Add backup server SSH key to rsync-client private keys'
+  ansible.builtin.copy:
+    content: '{{ rsync_client.private_key }}'
+    dest: '{{ containers_storage_path }}/config/rsync-client/id_ed25519'
+    owner: 'root'
+    group: 'root'
+    mode: '0600'
+
+- name: 'Copy backup-servers script'
+  ansible.builtin.copy:
+    src: 'backup-servers.sh'
+    dest: '{{ containers_storage_path }}/config/rsync-client/backup-servers.sh'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Create rsync-client systemd service from template'
+  ansible.builtin.template:
+    src: 'container-rsync-client.service.j2'
+    dest: '/etc/systemd/system/container-rsync-client.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy rsync-client systemd timer'
+  ansible.builtin.copy:
+    src: 'container-rsync-client.timer'
+    dest: '/etc/systemd/system/container-rsync-client.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0664'
+  notify: 'Reload systemd daemon'
+
+- name: 'Add rsync-client aliases to global shell profile'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - src: 'rsync-client.sh.j2'
+      dest: '/etc/profile.d/rsync-client.sh'
+    - src: 'rsync-client-shell.sh.j2'
+      dest: '/etc/profile.d/rsync-client-shell.sh'
+
+- name: 'Enable and start rsync-client timer'
+  ansible.builtin.systemd:
+    name: 'container-rsync-client.timer'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

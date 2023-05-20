@@ -1,0 +1,32 @@
+[Unit]
+Description=Podman container-rsync-client.service
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=no
+TimeoutStopSec=70
+ExecStart=/usr/bin/podman container run \
+	--rm \
+	--detach \
+	--replace \
+	--name rsync-client \
+	--entrypoint /app/backup-servers.sh \
+	--hostname {{ ansible_hostname }} \
+	--network web-egress \
+	--volume {{ containers_storage_path }}/config/rsync-client/backup-servers.sh:/app/backup-servers.sh:ro,Z \
+	--volume {{ containers_storage_path }}/config/rsync-client/id_ed25519:/root/id_ed25519:ro,Z \
+	--volume {{ containers_storage_path }}/runtime/rsync-client:/root/.ssh:Z \
+	--volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave \
+	--tz={{ timezone }} \
+	--env TZ={{ timezone }} \
+	--env HEALTHCHECKS_UUID={{ rsync_client.healthchecks_uuid }} \
+	--env BACKUP_HOSTS="{% for host in groups['containers_hosts'] %}{{ hostvars[host].ansible_host }}{{ " " if not loop.last else "" }}{% endfor %}" \
+	--env REMOTE_PATH={{ containers_storage_path }}/data \
+	--env LOCAL_PATH={{ nfs_mounts_path }}/backups/servers {{ containers_images.rsync_client }}:{{ containers_images_tags.rsync_client }}
+Type=forking
+
+[Install]
+WantedBy=default.target
