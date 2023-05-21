@@ -130,9 +130,6 @@
       POSTGRES_DB: '{{ ttrss.postgres.database }}'
       POSTGRES_USER_FILE: '/run/secrets/ttrss_postgres_user'
       POSTGRES_PASSWORD_FILE: '/run/secrets/ttrss_postgres_password'
-    label:
-      deck-chores.dump.command: 'sh -c "pg_dump --clean -U {{ ttrss.postgres.user }} {{ ttrss.postgres.database }} > /opt/dumps/ttrss.sql"'
-      deck-chores.dump.cron: '* * * * * 4 0 0'
     generate_systemd:
       names: true
       new: true
@@ -233,6 +230,24 @@
     recreate: '{{ ("true" | bool) if ttrss_environment_file.changed else ("false" | bool) }}'
     state: 'created'
 
+- name: 'Create PostgreSQL dump systemd service from template'
+  ansible.builtin.template:
+    src: 'container-exec-ttrss-postgres-dump.service.j2'
+    dest: '/etc/systemd/system/container-exec-ttrss-postgres-dump.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy PostgreSQL dump systemd timer'
+  ansible.builtin.copy:
+    src: 'container-exec-ttrss-postgres-dump.timer'
+    dest: '/etc/systemd/system/container-exec-ttrss-postgres-dump.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0664'
+  notify: 'Reload systemd daemon'
+
 - name: 'Enable and start Tiny Tiny RSS stack'
   ansible.builtin.systemd:
     name: '{{ item }}'
@@ -244,3 +259,4 @@
     - 'container-ttrss-nginx.service'
     - 'container-ttrss-app.service'
     - 'container-ttrss-updater.service'
+    - 'container-exec-ttrss-postgres-dump.timer'

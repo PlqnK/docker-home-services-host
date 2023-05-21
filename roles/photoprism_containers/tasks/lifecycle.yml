@@ -4,6 +4,9 @@
     name: '{{ item }}'
     state: 'stopped'
   loop:
+    - 'container-exec-photoprism-index.timer'
+    - 'container-exec-photoprism-convert.timer'
+    - 'container-exec-photoprism-backup.timer'
     - 'container-photoprism-app.service'
     - 'container-photoprism-mariadb.service'
   tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
@@ -13,6 +16,9 @@
     name: '{{ item }}'
     enabled: false
   loop:
+    - 'container-exec-photoprism-index.timer'
+    - 'container-exec-photoprism-convert.timer'
+    - 'container-exec-photoprism-backup.timer'
     - 'container-photoprism-app.service'
     - 'container-photoprism-mariadb.service'
   tags: ['never', 'containers-disable']
@@ -35,6 +41,9 @@
   loop:
     - 'container-photoprism-mariadb.service'
     - 'container-photoprism-app.service'
+    - 'container-exec-photoprism-backup.timer'
+    - 'container-exec-photoprism-index.timer'
+    - 'container-exec-photoprism-convert.timer'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
 - name: 'Enable Photoprism stack'
@@ -44,4 +53,7 @@
   loop:
     - 'container-photoprism-mariadb.service'
     - 'container-photoprism-app.service'
+    - 'container-exec-photoprism-backup.timer'
+    - 'container-exec-photoprism-index.timer'
+    - 'container-exec-photoprism-convert.timer'
   tags: ['never', 'containers-enable']

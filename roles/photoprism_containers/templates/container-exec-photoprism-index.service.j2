@@ -1,0 +1,12 @@
+[Unit]
+Description=Podman container-exec-photoprism-index.service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Restart=no
+ExecStart=/usr/bin/podman container exec photoprism photoprism index --cleanup
+Type=simple
+
+[Install]
+WantedBy=default.target

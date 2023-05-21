@@ -1,0 +1,10 @@
+[Unit]
+Description=Execute photoprism index hourly
+Requisite=container-photoprism-app.service
+After=container-photoprism-app.service
+
+[Timer]
+OnCalendar=hourly
+
+[Install]
+WantedBy=timers.target

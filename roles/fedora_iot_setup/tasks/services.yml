@@ -1,0 +1,9 @@
+---
+- name: 'Copy Healthchecks systemd service template'
+  ansible.builtin.copy:
+    src: 'ping-healthchecks@.service'
+    dest: '/etc/systemd/system/ping-healthchecks@.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'

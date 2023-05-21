@@ -9,6 +9,9 @@
     - name: 'Configure firewalld'
       ansible.builtin.import_tasks: 'firewalld.yml'
 
+    - name: 'Configure services'
+      ansible.builtin.import_tasks: 'services.yml'
+
     - name: 'Configure automounts'
       ansible.builtin.import_tasks: 'automount.yml'
       when: (storage_server is defined)

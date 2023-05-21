@@ -1,0 +1,15 @@
+[Unit]
+Description=Podman container-exec-photoprism-backup.service
+Wants=network-online.target
+After=network-online.target
+Wants=ping-healthchecks@{{ photoprism.backup.healthchecks_uuid }}:start.service
+OnSuccess=ping-healthchecks@{{ photoprism.backup.healthchecks_uuid }}:success.service
+OnFailure=ping-healthchecks@{{ photoprism.backup.healthchecks_uuid }}:failure.service
+
+[Service]
+Restart=no
+ExecStart=/usr/bin/podman container exec photoprism-app photoprism backup -f -i /opt/dumps/photoprism.sql
+Type=simple
+
+[Install]
+WantedBy=default.target

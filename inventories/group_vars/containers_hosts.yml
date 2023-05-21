@@ -16,7 +16,6 @@ containers_images_tags:
   systemd_exporter: 'latest'
   promtail: 'latest'
   home_assistant: 'stable'
-  deck_chores: '1'
   nextcloud:
     mariadb: '10.11'
     redis: '7'

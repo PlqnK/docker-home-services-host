@@ -40,7 +40,6 @@
   roles:
     - 'sshd_rsync_container'
     - 'traefik_containers'
-    - 'deck_chores_container'
     - 'nextcloud_containers'
     - 'collabora_online_container'
     - 'photoprism_containers'

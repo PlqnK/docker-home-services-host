@@ -170,12 +170,6 @@
       traefik.http.routers.photos.entrypoints: 'websecure'
       traefik.http.routers.photos.middlewares: 'set-security-headers@file'
       traefik.http.services.photos.loadbalancer.server.port: '2342'
-      # deck-chores.index.command: 'photoprism index --cleanup'
-      # deck-chores.index.interval: 'hourly'
-      # deck-chores.convert.command: 'photoprism convert'
-      # deck-chores.convert.interval: 'hourly'
-      deck-chores.backup.command: 'photoprism backup -f -i /opt/dumps/photoprism.sql'
-      deck-chores.backup.cron: '* * * * * 4 0 0'
     generate_systemd:
       names: true
       new: true
@@ -187,6 +181,32 @@
         - 'container-photoprism-mariadb.service'
     state: 'created'
 
+- name: 'Create Photoprism tasks systemd services from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.service.j2'
+    dest: '/etc/systemd/system/{{ item }}.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'container-exec-photoprism-backup'
+    - 'container-exec-photoprism-index'
+    - 'container-exec-photoprism-convert'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy Photoprism tasks systemd timers'
+  ansible.builtin.copy:
+    src: '{{ item }}.timer'
+    dest: '/etc/systemd/system/{{ item }}.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'container-exec-photoprism-backup'
+    - 'container-exec-photoprism-index'
+    - 'container-exec-photoprism-convert'
+  notify: 'Reload systemd daemon'
+
 - name: 'Enable and start Photoprism stack'
   ansible.builtin.systemd:
     name: '{{ item }}'
@@ -196,3 +216,6 @@
   loop:
     - 'container-photoprism-mariadb.service'
     - 'container-photoprism-app.service'
+    - 'container-exec-photoprism-backup.timer'
+    - 'container-exec-photoprism-index.timer'
+    - 'container-exec-photoprism-convert.timer'

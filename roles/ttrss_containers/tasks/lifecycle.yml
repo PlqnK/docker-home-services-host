@@ -4,6 +4,7 @@
     name: '{{ item }}'
     state: 'stopped'
   loop:
+    - 'container-exec-ttrss-postgres-dump.timer'
     - 'container-ttrss-nginx.service'
     - 'container-ttrss-updater.service'
     - 'container-ttrss-app.service'
@@ -15,6 +16,7 @@
     name: '{{ item }}'
     enabled: false
   loop:
+    - 'container-exec-ttrss-postgres-dump.timer'
     - 'container-ttrss-nginx.service'
     - 'container-ttrss-updater.service'
     - 'container-ttrss-app.service'
@@ -42,6 +44,7 @@
     - 'container-ttrss-nginx.service'
     - 'container-ttrss-app.service'
     - 'container-ttrss-updater.service'
+    - 'container-exec-ttrss-postgres-dump.timer'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
 - name: 'Enable Tiny Tiny RSS stack'
@@ -53,4 +56,5 @@
     - 'container-ttrss-nginx.service'
     - 'container-ttrss-app.service'
     - 'container-ttrss-updater.service'
+    - 'container-exec-ttrss-postgres-dump.timer'
   tags: ['never', 'containers-enable']

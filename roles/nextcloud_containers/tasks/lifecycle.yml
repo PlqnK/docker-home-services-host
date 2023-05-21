@@ -4,6 +4,7 @@
     name: '{{ item }}'
     state: 'stopped'
   loop:
+    - 'container-exec-nextcloud-mariadb-dump.timer'
     - 'container-nextcloud-cron.service'
     - 'container-nextcloud-app.service'
     - 'container-nextcloud-redis.service'
@@ -15,6 +16,7 @@
     name: '{{ item }}'
     enabled: false
   loop:
+    - 'container-exec-nextcloud-mariadb-dump.timer'
     - 'container-nextcloud-cron.service'
     - 'container-nextcloud-app.service'
     - 'container-nextcloud-redis.service'
@@ -42,6 +44,7 @@
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-app.service'
     - 'container-nextcloud-cron.service'
+    - 'container-exec-nextcloud-mariadb-dump.timer'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
 - name: 'Enable Nextcloud stack'
@@ -53,4 +56,5 @@
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-app.service'
     - 'container-nextcloud-cron.service'
+    - 'container-exec-nextcloud-mariadb-dump.timer'
   tags: ['never', 'containers-enable']
