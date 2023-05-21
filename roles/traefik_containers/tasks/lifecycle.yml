@@ -5,7 +5,7 @@
     state: 'stopped'
   loop:
     - 'container-traefik.service'
-    - 'container-docker-socket-proxy.service'
+    - 'container-cetusguard.service'
   tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
 
 - name: 'Disable Traefik stack'
@@ -14,7 +14,7 @@
     enabled: false
   loop:
     - 'container-traefik.service'
-    - 'container-docker-socket-proxy.service'
+    - 'container-cetusguard.service'
   tags: ['never', 'containers-disable']
 
 - name: 'Pull Traefik stack images'
@@ -24,7 +24,7 @@
     force: true
     state: 'present'
   loop:
-    - '{{ containers_images.docker_socket_proxy }}:{{ containers_images_tags.docker_socket_proxy }}'
+    - '{{ containers_images.cetusguard }}:{{ containers_images_tags.cetusguard }}'
     - '{{ containers_images.traefik }}:{{ containers_images_tags.traefik }}'
   tags: ['never', 'containers-pull', 'containers-update']
 
@@ -33,7 +33,7 @@
     name: '{{ item }}'
     state: 'started'
   loop:
-    - 'container-docker-socket-proxy.service'
+    - 'container-cetusguard.service'
     - 'container-traefik.service'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
@@ -42,6 +42,6 @@
     name: '{{ item }}'
     enabled: true
   loop:
-    - 'container-docker-socket-proxy.service'
+    - 'container-cetusguard.service'
     - 'container-traefik.service'
   tags: ['never', 'containers-enable']

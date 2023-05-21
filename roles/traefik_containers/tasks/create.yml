@@ -11,7 +11,7 @@
     internal: '{{ item.internal }}'
     ipv6: '{{ containers_ipv6.enable }}'
   loop:
-    - name: 'docker-socket-proxy-internal'
+    - name: 'cetusguard-internal'
       internal: true
     - name: 'traefik-external'
       internal: false
@@ -24,7 +24,7 @@
       containers.podman.podman_network_info:
         name: '{{ item }}'
       loop:
-        - 'docker-socket-proxy-internal'
+        - 'cetusguard-internal'
         - 'traefik-external'
       register: 'podman_networks'
 
@@ -98,21 +98,31 @@
     skip_existing: true
     state: 'present'
 
-- name: 'Create Docker Socket Proxy container'
+- name: 'Create CetusGuard container'
   containers.podman.podman_container:
-    name: 'docker-socket-proxy'
-    image: '{{ containers_images.docker_socket_proxy }}:{{ containers_images_tags.docker_socket_proxy }}'
+    name: 'cetusguard'
+    image: '{{ containers_images.cetusguard }}:{{ containers_images_tags.cetusguard }}'
+    read_only: true
     privileged: true
     network:
-      - 'docker-socket-proxy-internal'
+      - 'cetusguard-internal'
     expose:
       - 2375
     volume:
-      - '/var/run/podman/podman.sock:/var/run/docker.sock'
+      - '/var/run/podman/podman.sock:/var/run/podman/podman.sock'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
-      CONTAINERS: '1'
+      CETUSGUARD_BACKEND_ADDR: 'unix:///var/run/podman/podman.sock'
+      CETUSGUARD_FRONTEND_ADDR: 'tcp://:2375'
+      CETUSGUARD_RULES: |
+        ! Monitor events
+        GET %API_PREFIX_EVENTS%
+        ! List containers
+        GET %API_PREFIX_CONTAINERS%/json
+        ! Inspect a container
+        GET %API_PREFIX_CONTAINERS%/%CONTAINER_ID_OR_NAME%/json
+      CETUSGUARD_LOG_LEVEL: '6'
     generate_systemd:
       names: true
       new: true
@@ -127,7 +137,7 @@
     network:
       - 'traefik-external'
       - 'common-internal'
-      - 'docker-socket-proxy-internal'
+      - 'cetusguard-internal'
     publish:
       - '80:80'
       - '443:443'
@@ -156,9 +166,9 @@
       path: '/etc/systemd/system'
       restart_policy: 'on-failure'
       after:
-        - 'container-docker-socket-proxy.service'
+        - 'container-cetusguard.service'
       wants:
-        - 'container-docker-socket-proxy.service'
+        - 'container-cetusguard.service'
     state: 'created'
 
 - name: 'Enable and start Traefik stack'
@@ -168,5 +178,5 @@
     enabled: true
     state: 'started'
   loop:
-    - 'container-docker-socket-proxy.service'
+    - 'container-cetusguard.service'
     - 'container-traefik.service'

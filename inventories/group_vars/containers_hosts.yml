@@ -6,7 +6,7 @@ containers_images_tags:
   vdirsyncer: 'latest'
   borgmatic: '1.7'
   autorestic: '1.7'
-  docker_socket_proxy: 'nightly'
+  cetusguard: 'v1'
   traefik: '2.10'
   prometheus: 'latest'
   loki: 'latest'

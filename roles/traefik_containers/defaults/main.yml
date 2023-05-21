@@ -1,7 +1,7 @@
 ---
 containers_images:
-  docker_socket_proxy: 'ghcr.io/tecnativa/docker-socket-proxy'
+  cetusguard: 'docker.io/hectorm/cetusguard'
   traefik: 'docker.io/library/traefik'
 containers_images_tags:
-  docker_socket_proxy: 'latest'
+  cetusguard: 'latest'
   traefik: 'latest'
