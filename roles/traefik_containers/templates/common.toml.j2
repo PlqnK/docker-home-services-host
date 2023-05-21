@@ -19,18 +19,6 @@
       rule = "HostRegexp(`{host:.+}`)"
       service = "noop@internal"
       middlewares = ["redirect-to-https"]
-{% if inventory_hostname == "home" %}
-    [http.routers.home-assistant]
-      entryPoints = ["websecure"]
-      rule = "Host(`home.{{ domain_name }}`)"
-      service = "home-assistant"
-      middlewares = ["set-security-headers"]
-{% endif %}
-{% if inventory_hostname == "home" %}
-  [http.services]
-    [[http.services.home-assistant.loadBalancer.servers]]
-      url = "http://{{ ansible_host }}:8123"
-{% endif %}
   [http.middlewares]
     [http.middlewares.redirect-to-https.redirectScheme]
       scheme = "https"

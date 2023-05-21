@@ -1,0 +1,10 @@
+[http]
+  [http.routers]
+    [http.routers.cockpit]
+      entryPoints = ["websecure"]
+      rule = "Host(`cockpit.{{ ansible_hostname }}.{{ domain_name }}`)"
+      service = "cockpit"
+      middlewares = ["set-security-headers", "restrict-external-access"]
+  [http.services]
+    [[http.services.cockpit.loadBalancer.servers]]
+      url = "https://{{ ansible_host }}:9090"

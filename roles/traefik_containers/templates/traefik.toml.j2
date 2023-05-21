@@ -34,7 +34,7 @@
     endpoint = "tcp://cetusguard:2375"
     exposedByDefault = false
   [providers.file]
-    filename = "/etc/traefik/traefik-dynamic.toml"
+    directory = "/etc/traefik/providers"
     watch = true
 
 {% if getent_passwd.vagrant is none %}
