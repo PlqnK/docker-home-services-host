@@ -1,0 +1,32 @@
+---
+- name: 'Stop Cockpit container'
+  ansible.builtin.systemd:
+    name: 'container-cockpit.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable Cockpit container'
+  ansible.builtin.systemd:
+    name: 'container-cockpit.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull Cockpit image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.cockpit }}:{{ containers_images_tags.cockpit }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start Cockpit container'
+  ansible.builtin.systemd:
+    name: 'container-cockpit.service'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable Cockpit container'
+  ansible.builtin.systemd:
+    name: 'container-cockpit.service'
+    enabled: true
+  tags: ['never', 'containers-enable']

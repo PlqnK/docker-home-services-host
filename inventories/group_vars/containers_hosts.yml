@@ -1,5 +1,6 @@
 ---
 containers_images_tags:
+  cockpit: 'latest'
   sshd_rsync: 'latest'
   rsync_client: 'latest'
   mbsync: '1'

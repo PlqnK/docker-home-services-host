@@ -4,10 +4,16 @@
     name:
       - 'firewalld'
       - 'nfs-utils'
-      - 'rsync'
       - 'checkpolicy'
       - 'setools-console'
       - 'python3-firewall'
+      - 'google-authenticator'
+      - 'cockpit-system'
+      - 'cockpit-storaged'
+      - 'cockpit-networkmanager'
+      - 'cockpit-ostree'
+      - 'cockpit-podman'
+      - 'cockpit-selinux'
     state: 'present'
   notify: 'Reboot host'
 

@@ -2,9 +2,9 @@
 - name: 'Reboot host'
   ansible.builtin.reboot:
 
-- name: 'Restart autofs service'
+- name: 'Restart sshd service'
   ansible.builtin.systemd:
-    name: 'autofs.service'
+    name: 'sshd.service'
     state: 'restarted'
 
 - name: 'Reload systemd daemon'

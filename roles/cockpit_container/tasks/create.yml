@@ -1,0 +1,42 @@
+---
+- name: 'Create Cockpit config directory'
+  ansible.builtin.file:
+    path: '/etc/cockpit'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: 'directory'
+
+- name: 'Create Cockpit config file from template'
+  ansible.builtin.template:
+    src: 'cockpit.conf.j2'
+    dest: '/etc/cockpit/cockpit.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Create Cockpit container'
+  containers.podman.podman_container:
+    name: 'cockpit'
+    image: '{{ containers_images.cockpit }}:{{ containers_images_tags.cockpit }}'
+    privileged: true
+    pid: 'host'
+    network: 'host'
+    volume:
+      - '/:/host'
+    timezone: '{{ timezone }}'
+    env:
+      TZ: '{{ timezone }}'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Enable and start Cockpit container'
+  ansible.builtin.systemd:
+    name: 'container-cockpit.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

@@ -1,0 +1,5 @@
+[WebService]
+Origins = https://cockpit.{{ ansible_hostname }}.{{ domain_name }} wss://cockpit.{{ ansible_hostname }}.{{ domain_name }}
+ProtocolHeader = X-Forwarded-Proto
+ForwardedForHeader = X-Forwarded-For
+LoginTo = false
