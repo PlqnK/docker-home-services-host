@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 Restart=no
-ExecStart=/usr/bin/podman container exec photoprism photoprism convert
+ExecStart=/usr/bin/podman container exec photoprism-app photoprism convert
 Type=simple
 
 [Install]

@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 Restart=no
-ExecStart=/usr/bin/podman container exec photoprism photoprism index --cleanup
+ExecStart=/usr/bin/podman container exec photoprism-app photoprism index --cleanup
 Type=simple
 
 [Install]
