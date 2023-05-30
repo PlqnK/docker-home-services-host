@@ -7,4 +7,4 @@
       middlewares = ["set-security-headers", "restrict-external-access"]
   [http.services]
     [[http.services.cockpit.loadBalancer.servers]]
-      url = "https://{{ ansible_host }}:9090"
+      url = "https://{{ ansible_fqdn }}:9090"
