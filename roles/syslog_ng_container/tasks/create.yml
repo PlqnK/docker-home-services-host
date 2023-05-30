@@ -77,6 +77,7 @@
       - 'common-internal'
     publish:
       - '514:514/udp'
+      - '514:514/tcp'
       - '601:601/tcp'
     volume:
       - '{{ containers_storage_path }}/config/syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:Z'

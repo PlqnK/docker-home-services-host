@@ -1,4 +1,4 @@
-@version: 4.1
+@version: 4.2
 
 options {
 	keep-hostname(yes);
@@ -16,11 +16,12 @@ source s_network {
 	# Not using default-network-drivers() here because it doesn't listen on IPv6 by default and it can't be configured
 	# to do so.
 	network(transport("udp") port(514){% if containers_ipv6.enable %} ip-protocol(6){% endif %});
+	network(transport("tcp") port(514){% if containers_ipv6.enable %} ip-protocol(6){% endif %});
 	syslog(transport("tcp") port(601){% if containers_ipv6.enable %} ip-protocol(6){% endif %});
 };
 
 destination d_promtail {
-	syslog("promtail" transport("tcp") port(1514));
+	syslog("promtail" transport("tcp") port(1610));
 };
 
 log {
