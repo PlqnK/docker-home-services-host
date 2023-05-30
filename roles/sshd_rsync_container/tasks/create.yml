@@ -32,10 +32,8 @@
     name: 'sshd-rsync-external'
     internal: false
     ipv6: '{{ containers_ipv6.enable }}'
-  tags: ['containers-networks']
 
 - name: 'Add sshd-rsync network to firewalld trusted zone'
-  tags: ['containers-networks']
   block:
     - name: 'Get podman network info'
       containers.podman.podman_network_info:

@@ -3,7 +3,7 @@
   when: (containers_list is not defined or (containers_list is defined and 'sshd-rsync' in containers_list))
   block:
     - name: 'Create'
-      ansible.builtin.import_tasks: 'create.yml'
+      ansible.builtin.include_tasks: 'create.yml'
 
     - name: 'Lifecycle'
       ansible.builtin.import_tasks: 'lifecycle.yml'

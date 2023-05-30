@@ -15,10 +15,8 @@
       internal: true
     - name: 'traefik-external'
       internal: false
-  tags: ['containers-networks']
 
 - name: 'Add Traefik stack networks to firewalld trusted zone'
-  tags: ['containers-networks']
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:

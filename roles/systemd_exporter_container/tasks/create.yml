@@ -32,10 +32,8 @@
     name: 'systemd_exporter-external'
     internal: false
     ipv6: '{{ containers_ipv6.enable }}'
-  tags: ['containers-networks']
 
 - name: 'Add systemd_exporter network to firewalld trusted zone'
-  tags: ['containers-networks']
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:
