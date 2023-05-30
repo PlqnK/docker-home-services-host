@@ -29,7 +29,7 @@
 
 - name: 'Create systemd_exporter network'
   containers.podman.podman_network:
-    name: 'systemd_exporter-external'
+    name: 'systemd-exporter-external'
     internal: false
     ipv6: '{{ containers_ipv6.enable }}'
 
@@ -37,7 +37,7 @@
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:
-        name: 'systemd_exporter-external'
+        name: 'systemd-exporter-external'
       register: 'podman_network'
 
     - name: 'Add podman networks subnets to firewalld trusted zone'
@@ -51,7 +51,7 @@
 
 - name: 'Create systemd_exporter bind mount path'
   ansible.builtin.file:
-    path: '{{ containers_storage_path }}/config/systemd_exporter'
+    path: '{{ containers_storage_path }}/config/systemd-exporter'
     owner: 65534
     group: 65534
     mode: '0700'
@@ -60,22 +60,22 @@
 - name: 'Create systemd_exporter config from templates'
   ansible.builtin.template:
     src: 'web.yml.j2'
-    dest: '{{ containers_storage_path }}/config/systemd_exporter/web.yml'
+    dest: '{{ containers_storage_path }}/config/systemd-exporter/web.yml'
     owner: 65534
     group: 65534
     mode: '0644'
 
 - name: 'Create systemd_exporter container'
   containers.podman.podman_container:
-    name: 'systemd_exporter'
+    name: 'systemd-exporter'
     image: '{{ containers_images.systemd_exporter }}:{{ containers_images_tags.systemd_exporter }}'
-    command: '--path.procfs=/host/proc --web.config.file=/etc/systemd_exporter/web.yml'
+    command: '--path.procfs=/host/proc --web.config.file=/etc/systemd-exporter/web.yml'
     network:
-      - 'systemd_exporter-external'
+      - 'systemd-exporter-external'
     publish:
       - '9558:9558'
     volume:
-      - '{{ containers_storage_path }}/config/systemd_exporter/web.yml:/etc/systemd_exporter/web.yml:Z'
+      - '{{ containers_storage_path }}/config/systemd-exporter/web.yml:/etc/systemd-exporter/web.yml:Z'
       - '/proc:/host/proc:ro,rslave'
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro,rslave'
       - '/run/systemd:/run/systemd:ro,rslave'
@@ -92,7 +92,7 @@
 
 - name: 'Enable and start systemd_exporter container'
   ansible.builtin.systemd:
-    name: 'container-systemd_exporter.service'
+    name: 'container-systemd-exporter.service'
     daemon_reload: true
     enabled: true
     state: 'started'

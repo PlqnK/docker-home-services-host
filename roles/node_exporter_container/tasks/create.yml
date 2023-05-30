@@ -8,7 +8,7 @@
 
 - name: 'Create node_exporter config bind mount path'
   ansible.builtin.file:
-    path: '{{ containers_storage_path }}/config/node_exporter'
+    path: '{{ containers_storage_path }}/config/node-exporter'
     owner: 65534
     group: 65534
     mode: '0700'
@@ -17,20 +17,20 @@
 - name: 'Create node_exporter config from template'
   ansible.builtin.template:
     src: 'web.yml.j2'
-    dest: '{{ containers_storage_path }}/config/node_exporter/web.yml'
+    dest: '{{ containers_storage_path }}/config/node-exporter/web.yml'
     owner: 65534
     group: 65534
     mode: '0644'
 
 - name: 'Create node_exporter container'
   containers.podman.podman_container:
-    name: 'node_exporter'
+    name: 'node-exporter'
     image: '{{ containers_images.node_exporter }}:{{ containers_images_tags.node_exporter }}'
-    command: '--path.rootfs=/host --web.config.file=/etc/node_exporter/web.yml'
+    command: '--path.rootfs=/host --web.config.file=/etc/node-exporter/web.yml'
     pid: 'host'
     network: 'host'
     volume:
-      - '{{ containers_storage_path }}/config/node_exporter/web.yml:/etc/node_exporter/web.yml:Z'
+      - '{{ containers_storage_path }}/config/node-exporter/web.yml:/etc/node-exporter/web.yml:Z'
       - '/:/host:ro,rslave'
     timezone: '{{ timezone }}'
     env:
@@ -44,7 +44,7 @@
 
 - name: 'Enable and start node_exporter container'
   ansible.builtin.systemd:
-    name: 'container-node_exporter.service'
+    name: 'container-node-exporter.service'
     daemon_reload: true
     enabled: true
     state: 'started'
