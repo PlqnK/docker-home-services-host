@@ -39,10 +39,8 @@
   block:
     - name: 'Get podman network info'
       containers.podman.podman_network_info:
-        name: '{{ item }}'
-      loop:
-        - 'sshd-rsync-external'
-      register: 'podman_networks'
+        name: 'sshd-rsync-external'
+      register: 'podman_network'
 
     - name: 'Add podman network subnet to firewalld trusted zone'
       ansible.posix.firewalld:
@@ -51,24 +49,18 @@
         permanent: true
         immediate: true
         state: 'enabled'
-      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+      loop: '{{ podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
 
 - name: 'Create sshd-rsync bind mounts paths'
   ansible.builtin.file:
-    path: '{{ item.path }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_path }}/config/sshd-rsync'
-      owner: 'root'
-      group: 'root'
-      mode: '0700'
-    - path: '{{ containers_storage_path }}/runtime/sshd-rsync'
-      owner: 'root'
-      group: 'root'
-      mode: '0700'
+    - 'config/sshd-rsync'
+    - 'runtime/sshd-rsync'
 
 - name: 'Add backup server SSH key to sshd-rsync authorized_keys'
   ansible.builtin.copy:

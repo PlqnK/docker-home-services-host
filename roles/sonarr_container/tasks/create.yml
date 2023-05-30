@@ -1,11 +1,5 @@
 ---
-- name: 'Check if provisioning a Vagrant VM'
-  ansible.builtin.getent:
-    database: 'passwd'
-    key: 'vagrant'
-    fail_key: false
-
-- name: 'Create Sonarr bind mount path'
+- name: 'Create Sonarr data bind mount path'
   ansible.builtin.file:
     path: '{{ containers_storage_path }}/data/sonarr'
     owner: 911

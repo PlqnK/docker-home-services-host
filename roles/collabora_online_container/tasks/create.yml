@@ -18,7 +18,7 @@
   when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
 
-- name: 'Create Collabora Online bind mounts paths'
+- name: 'Create Collabora Online env bind mount path'
   ansible.builtin.file:
     path: '{{ containers_storage_path }}/env/collabora-online'
     owner: 'root'
@@ -26,7 +26,7 @@
     mode: '0700'
     state: 'directory'
 
-- name: 'Create Collabora Online container environment file'
+- name: 'Create Collabora Online environment file'
   ansible.builtin.copy:
     content: |
       username={{ collabora_online.user }}

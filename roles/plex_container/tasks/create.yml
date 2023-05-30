@@ -20,12 +20,9 @@
 
 - name: 'Create Plex network'
   containers.podman.podman_network:
-    name: '{{ item.name }}'
-    internal: '{{ item.internal }}'
+    name: 'plex-external'
+    internal: false
     ipv6: '{{ containers_ipv6.enable }}'
-  loop:
-    - name: 'plex-external'
-      internal: false
   tags: ['containers-networks']
 
 - name: 'Add Plex network to firewalld trusted zone'
@@ -33,10 +30,8 @@
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:
-        name: '{{ item }}'
-      loop:
-        - 'plex-external'
-      register: 'podman_networks'
+        name: 'plex-external'
+      register: 'podman_network'
 
     - name: 'Add podman networks subnets to firewalld trusted zone'
       ansible.posix.firewalld:
@@ -45,7 +40,7 @@
         permanent: true
         immediate: true
         state: 'enabled'
-      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+      loop: '{{ podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
 
 - name: 'Accept Plex incomming connections in default firewalld zone'
   ansible.posix.firewalld:
@@ -56,20 +51,14 @@
 
 - name: 'Create Plex bind mounts paths'
   ansible.builtin.file:
-    path: '{{ item.path }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 1000
+    group: 1000
+    mode: '0700'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_path }}/data/plex'
-      owner: 1000
-      group: 1000
-      mode: '0700'
-    - path: '{{ containers_storage_path }}/runtime/plex'
-      owner: 1000
-      group: 1000
-      mode: '0700'
+    - 'data/plex'
+    - 'runtime/plex'
 
 - name: 'Create Plex container'
   containers.podman.podman_container:

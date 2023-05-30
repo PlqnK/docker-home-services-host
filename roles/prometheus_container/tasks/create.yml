@@ -7,39 +7,25 @@
 
 - name: 'Create Prometheus bind mounts paths'
   ansible.builtin.file:
-    path: '{{ item.path }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 65534
+    group: 65534
+    mode: '0700'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_path }}/config/prometheus'
-      owner: 65534
-      group: 65534
-      mode: '0700'
-    - path: '{{ containers_storage_path }}/runtime/prometheus'
-      owner: 65534
-      group: 65534
-      mode: '0700'
+    - 'config/prometheus'
+    - 'runtime/prometheus'
 
 - name: 'Create Prometheus configs from templates'
   ansible.builtin.template:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
+    src: '{{ item }}.j2'
+    dest: '{{ containers_storage_path }}/config/prometheus/{{ item }}'
+    owner: 65534
+    group: 65534
+    mode: '0644'
   loop:
-    - src: 'prometheus.yml.j2'
-      dest: '{{ containers_storage_path }}/config/prometheus/prometheus.yml'
-      owner: 65534
-      group: 65534
-      mode: '0644'
-    - src: 'web.yml.j2'
-      dest: '{{ containers_storage_path }}/config/prometheus/web.yml'
-      owner: 65534
-      group: 65534
-      mode: '0644'
+    - 'prometheus.yml'
+    - 'web.yml'
 
 - name: 'Create Prometheus secrets'
   containers.podman.podman_secret:

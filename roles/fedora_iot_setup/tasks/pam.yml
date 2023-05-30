@@ -6,8 +6,11 @@
     owner: '{{ admin_user.user.name }}'
     group: '{{ admin_user.user.name }}'
     mode: '0400'
+    # The PAM module adds information in the file when used so this task won't be idempotent.
+    # So we disable templating if the file already exists. If the TOTP secret needs to be changed, the file will need to be deleted manually.
+    force: false
 
-- name: 'Enable password and challengeresponse authentication for SSH connections'
+- name: 'Enable password and challenge response authentication for SSH connections'
   ansible.builtin.copy:
     content: '{{ item.content }}'
     dest: '/etc/ssh/sshd_config.d/{{ item.file }}'

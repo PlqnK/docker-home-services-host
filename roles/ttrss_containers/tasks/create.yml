@@ -21,13 +21,11 @@
 - name: 'Create Tiny Tiny RSS stack networks'
   containers.podman.podman_network:
     name: '{{ item.name }}'
-    internal: '{{ item.internal }}'
+    internal: true
     ipv6: '{{ containers_ipv6.enable }}'
   loop:
-    - name: 'ttrss-postgres-internal'
-      internal: true
-    - name: 'ttrss-app-internal'
-      internal: true
+    - 'ttrss-postgres-internal'
+    - 'ttrss-app-internal'
   tags: ['containers-networks']
 
 - name: 'Add Tiny Tiny RSS stack networks to firewalld trusted zone'
@@ -99,7 +97,7 @@
     - name: 'ttrss_postgres_password'
       data: '{{ ttrss.postgres.password }}'
 
-- name: 'Create Tiny Tiny RSS stack environment file'
+- name: 'Create App environment file'
   ansible.builtin.copy:
     content: |
       TTRSS_DB_USER={{ ttrss.postgres.user }}

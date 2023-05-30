@@ -49,24 +49,15 @@
 
 - name: 'Create Traefik stack bind mounts paths'
   ansible.builtin.file:
-    path: '{{ item.path }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_path }}/config/traefik'
-      owner: 'root'
-      group: 'root'
-      mode: '0700'
-    - path: '{{ containers_storage_path }}/config/traefik/providers'
-      owner: 'root'
-      group: 'root'
-      mode: '0700'
-    - path: '{{ containers_storage_path }}/data/traefik'
-      owner: 'root'
-      group: 'root'
-      mode: '0700'
+    - 'config/traefik'
+    - 'config/traefik/providers'
+    - 'data/traefik'
 
 - name: 'Create Traefik common configs from templates'
   ansible.builtin.template:

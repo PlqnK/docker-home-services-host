@@ -20,14 +20,12 @@
 
 - name: 'Create Nextcloud stack networks'
   containers.podman.podman_network:
-    name: '{{ item.name }}'
-    internal: '{{ item.internal }}'
+    name: '{{ item }}'
+    internal: true
     ipv6: '{{ containers_ipv6.enable }}'
   loop:
-    - name: 'nextcloud-mariadb-internal'
-      internal: true
-    - name: 'nextcloud-redis-internal'
-      internal: true
+    - 'nextcloud-mariadb-internal'
+    - 'nextcloud-redis-internal'
   tags: ['containers-networks']
 
 - name: 'Add Nextcloud stack networks to firewalld trusted zone'
@@ -52,30 +50,26 @@
 
 - name: 'Create Nextcloud stack bind mounts paths'
   ansible.builtin.file:
-    path: '{{ item.path }}'
+    path: '{{ containers_storage_path }}/{{ item.path }}'
     owner: '{{ item.owner }}'
     group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
+    mode: '0700'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_path }}/config/nextcloud-mariadb'
+    - path: 'config/nextcloud-mariadb'
       owner: 'root'
       group: 'root'
-      mode: '0700'
-    - path: '{{ containers_storage_path }}/runtime/nextcloud-mariadb'
+    - path: 'runtime/nextcloud-mariadb'
       owner: 999
       group: 999
-      mode: '0700'
-    - path: '{{ containers_storage_path }}/data/nextcloud-mariadb'
+    - path: 'data/nextcloud-mariadb'
       owner: 'root'
       group: 'root'
-      mode: '0700'
-    - path: '{{ containers_storage_path }}/data/nextcloud-app'
+    - path: 'data/nextcloud-app'
       owner: 33
       group: 33
-      mode: '0700'
 
-- name: 'Create MariaDB .my.cnf from template'
+- name: 'Create MariaDB dump config from template'
   ansible.builtin.template:
     src: 'my.cnf.j2'
     dest: '{{ containers_storage_path }}/config/nextcloud-mariadb/.my.cnf'

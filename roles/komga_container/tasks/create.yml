@@ -18,7 +18,7 @@
   when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
 
-- name: 'Create Komga bind mount path'
+- name: 'Create Komga data bind mount path'
   ansible.builtin.file:
     path: '{{ containers_storage_path }}/data/komga'
     owner: 'root'

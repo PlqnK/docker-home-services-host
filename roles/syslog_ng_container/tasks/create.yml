@@ -32,12 +32,9 @@
 
 - name: 'Create syslog-ng network'
   containers.podman.podman_network:
-    name: '{{ item.name }}'
-    internal: '{{ item.internal }}'
+    name: 'syslog-ng-external'
+    internal: false
     ipv6: '{{ containers_ipv6.enable }}'
-  loop:
-    - name: 'syslog-ng-external'
-      internal: false
   tags: ['containers-networks']
 
 - name: 'Add syslog-ng network to firewalld trusted zone'
@@ -45,10 +42,8 @@
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:
-        name: '{{ item }}'
-      loop:
-        - 'syslog-ng-external'
-      register: 'podman_networks'
+        name: 'syslog-ng-external'
+      register: 'podman_network'
 
     - name: 'Add podman networks subnets to firewalld trusted zone'
       ansible.posix.firewalld:
@@ -57,7 +52,7 @@
         permanent: true
         immediate: true
         state: 'enabled'
-      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+      loop: '{{ podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
 
 - name: 'Create syslog-ng bind mount path'
   ansible.builtin.file:

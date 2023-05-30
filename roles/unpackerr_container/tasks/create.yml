@@ -1,5 +1,5 @@
 ---
-- name: 'Create Unpackerr bind mounts paths'
+- name: 'Create Unpackerr env bind mount path'
   ansible.builtin.file:
     path: '{{ containers_storage_path }}/env/unpackerr'
     owner: 'root'
@@ -7,7 +7,7 @@
     mode: '0700'
     state: 'directory'
 
-- name: 'Create Unpackerr container environment file'
+- name: 'Create Unpackerr environment file'
   ansible.builtin.copy:
     content: |
       UN_SONARR_0_API_KEY={{ unpackerr.sonarr_api_key }}

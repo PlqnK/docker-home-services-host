@@ -18,7 +18,7 @@
   when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
 
-- name: 'Create Home Assistant bind mounts paths'
+- name: 'Create Home Assistant data bind mount path'
   ansible.builtin.file:
     path: '{{ containers_storage_path }}/data/home-assistant'
     owner: 'root'
@@ -50,14 +50,12 @@
     enabled: true
     state: 'started'
 
-- name: 'Add Home Assistant container network to configuration file'
+- name: 'Add Traefik container network to Home Assistant trusted proxies'
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:
-        name: '{{ item }}'
-      loop:
-        - 'traefik-external'
-      register: 'podman_networks'
+        name: 'traefik-external'
+      register: 'podman_network'
 
     - name: 'Authorize reverse proxy in configuration file'
       ansible.builtin.blockinfile:
@@ -66,6 +64,6 @@
           http:
             use_x_forwarded_for: true
             trusted_proxies:
-          {% for proxy in podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten %}
-              - {{ proxy }}
+          {% for subnet in podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten %}
+              - {{ subnet }}
           {% endfor %}

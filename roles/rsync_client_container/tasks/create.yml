@@ -1,20 +1,14 @@
 ---
 - name: 'Create rsync-client bind mounts paths'
   ansible.builtin.file:
-    path: '{{ item.path }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_path }}/config/rsync-client'
-      owner: 'root'
-      group: 'root'
-      mode: '0700'
-    - path: '{{ containers_storage_path }}/runtime/rsync-client'
-      owner: 'root'
-      group: 'root'
-      mode: '0700'
+    - 'config/rsync-client'
+    - 'runtime/rsync-client'
 
 - name: 'Add backup server SSH key to rsync-client private keys'
   ansible.builtin.copy:
@@ -52,16 +46,14 @@
 
 - name: 'Add rsync-client aliases to global shell profile'
   ansible.builtin.template:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
+    src: '{{ item }}.j2'
+    dest: '/etc/profile.d/{{ item }}'
     owner: 'root'
     group: 'root'
     mode: '0644'
   loop:
-    - src: 'rsync-client.sh.j2'
-      dest: '/etc/profile.d/rsync-client.sh'
-    - src: 'rsync-client-shell.sh.j2'
-      dest: '/etc/profile.d/rsync-client-shell.sh'
+    - 'rsync-client.sh'
+    - 'rsync-client-shell.sh'
 
 - name: 'Enable and start rsync-client timer'
   ansible.builtin.systemd:

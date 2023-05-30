@@ -39,10 +39,8 @@
   block:
     - name: 'Get podman networks info'
       containers.podman.podman_network_info:
-        name: '{{ item }}'
-      loop:
-        - 'systemd_exporter-external'
-      register: 'podman_networks'
+        name: 'systemd_exporter-external'
+      register: 'podman_network'
 
     - name: 'Add podman networks subnets to firewalld trusted zone'
       ansible.posix.firewalld:
@@ -51,34 +49,23 @@
         permanent: true
         immediate: true
         state: 'enabled'
-      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+      loop: '{{ podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
 
-- name: 'Create systemd_exporter bind mounts paths'
+- name: 'Create systemd_exporter bind mount path'
   ansible.builtin.file:
-    path: '{{ item.path }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
+    path: '{{ containers_storage_path }}/config/systemd_exporter'
+    owner: 65534
+    group: 65534
+    mode: '0700'
     state: 'directory'
-  loop:
-    - path: '{{ containers_storage_path }}/config/systemd_exporter'
-      owner: 65534
-      group: 65534
-      mode: '0700'
 
 - name: 'Create systemd_exporter config from templates'
   ansible.builtin.template:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
-  loop:
-    - src: 'web.yml.j2'
-      dest: '{{ containers_storage_path }}/config/systemd_exporter/web.yml'
-      owner: 65534
-      group: 65534
-      mode: '0644'
+    src: 'web.yml.j2'
+    dest: '{{ containers_storage_path }}/config/systemd_exporter/web.yml'
+    owner: 65534
+    group: 65534
+    mode: '0644'
 
 - name: 'Create systemd_exporter container'
   containers.podman.podman_container:

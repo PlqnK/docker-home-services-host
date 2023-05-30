@@ -18,7 +18,7 @@
   when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
 
-- name: 'Create Calibre-Web bind mount path'
+- name: 'Create Calibre-Web data bind mount path'
   ansible.builtin.file:
     path: '{{ containers_storage_path }}/data/calibre-web'
     owner: 911

@@ -2,7 +2,7 @@
 - name: 'Upgrade OS and reboot'
   when: (containers_list is not defined)
   block:
-    - name: 'Update OS'
+    - name: 'Upgrade OS'
       ansible.posix.rpm_ostree_upgrade:
       notify: 'Reboot host'
       tags: ['never', 'os-upgrade']

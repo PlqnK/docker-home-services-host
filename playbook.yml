@@ -66,4 +66,4 @@
 - name: 'Update containers hosts OS'
   hosts: 'containers_hosts'
   roles:
-    - 'fedora_iot_update'
+    - 'fedora_iot_upgrade'

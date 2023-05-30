@@ -1,40 +1,22 @@
 ---
-- name: 'Check if provisioning a Vagrant VM'
-  ansible.builtin.getent:
-    database: 'passwd'
-    key: 'vagrant'
-    fail_key: false
-
 - name: 'Create Grafana bind mounts paths'
   ansible.builtin.file:
-    path: '{{ item.path }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 472
+    group: 'root'
+    mode: '0700'
     state: 'directory'
   loop:
-    - path: '{{ containers_storage_path }}/config/grafana'
-      owner: 472
-      group: 'root'
-      mode: '0700'
-    - path: '{{ containers_storage_path }}/data/grafana'
-      owner: 472
-      group: 'root'
-      mode: '0700'
+    - 'config/grafana'
+    - 'data/grafana'
 
-- name: 'Create Grafana configs from templates'
+- name: 'Create Grafana config from template'
   ansible.builtin.template:
-    src: '{{ item.src }}'
-    dest: '{{ item.dest }}'
-    owner: '{{ item.owner }}'
-    group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
-  loop:
-    - src: 'grafana.ini.j2'
-      dest: '{{ containers_storage_path }}/config/grafana/grafana.ini'
-      owner: 472
-      group: 'root'
-      mode: '0644'
+    src: 'grafana.ini.j2'
+    dest: '{{ containers_storage_path }}/config/grafana/grafana.ini'
+    owner: 472
+    group: 'root'
+    mode: '0644'
 
 - name: 'Create Grafana container'
   containers.podman.podman_container:

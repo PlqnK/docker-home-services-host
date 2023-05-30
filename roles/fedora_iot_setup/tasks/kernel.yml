@@ -1,6 +1,6 @@
 ---
 # https://github.com/coreos/fedora-coreos-tracker/issues/220
-- name: 'Lower Kernel Printk level'
+- name: 'Lower kernel printk level'
   ansible.builtin.copy:
     content: 'kernel.printk=4'
     dest: '/etc/sysctl.d/10-kernel-printk.conf'
