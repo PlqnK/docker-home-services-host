@@ -10,7 +10,7 @@
     - 'config/promtail'
     - 'runtime/promtail'
 
-- name: 'Create Promtail configs from templates'
+- name: 'Create Promtail config from template'
   ansible.builtin.template:
     src: 'promtail.yaml.j2'
     dest: '{{ containers_storage_path }}/config/promtail/promtail.yaml'
@@ -35,7 +35,7 @@
     network:
       - 'web-egress'
       - '{{ "common-internal" if inventory_hostname == "monitoring" else omit }}'
-    expose: '{{ "[1610]" if inventory_hostname == "monitoring" else omit }}'
+    expose: '{{ "[1601]" if inventory_hostname == "monitoring" else omit }}'
     volume:
       - '{{ containers_storage_path }}/config/promtail/promtail.yaml:/etc/promtail/promtail.yaml:Z'
       - '{{ containers_storage_path }}/runtime/promtail:/promtail:Z'

@@ -57,7 +57,7 @@
     mode: '0700'
     state: 'directory'
 
-- name: 'Create systemd_exporter config from templates'
+- name: 'Create systemd_exporter config from template'
   ansible.builtin.template:
     src: 'web.yml.j2'
     dest: '{{ containers_storage_path }}/config/systemd-exporter/web.yml'
