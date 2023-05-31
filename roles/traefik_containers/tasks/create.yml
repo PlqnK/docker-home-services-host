@@ -147,7 +147,7 @@
     label:
       traefik.enable: 'true'
       traefik.docker.network: 'common-internal'
-      traefik.http.routers.traefik.rule: 'Host(`traefik.{{ ansible_hostname }}.{{ domain_name }}`)'
+      traefik.http.routers.traefik.rule: 'Host(`traefik.{{ ansible_fqdn }}`)'
       traefik.http.routers.traefik.entrypoints: 'websecure'
       traefik.http.routers.traefik.service: 'api@internal'
       traefik.http.routers.traefik.middlewares: 'set-security-headers@file, restrict-external-access@file, traefik-auth'

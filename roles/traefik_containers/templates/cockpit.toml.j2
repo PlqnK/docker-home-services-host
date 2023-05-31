@@ -2,7 +2,7 @@
   [http.routers]
     [http.routers.cockpit]
       entryPoints = ["websecure"]
-      rule = "Host(`cockpit.{{ ansible_hostname }}.{{ domain_name }}`)"
+      rule = "Host(`{{ ansible_fqdn }}`)"
       service = "cockpit"
       middlewares = ["set-security-headers", "restrict-external-access"]
   [http.services]
