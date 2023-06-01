@@ -20,7 +20,7 @@
 
 - name: 'Create Tiny Tiny RSS stack networks'
   containers.podman.podman_network:
-    name: '{{ item.name }}'
+    name: '{{ item }}'
     internal: true
     ipv6: '{{ containers_ipv6.enable }}'
     opt:
