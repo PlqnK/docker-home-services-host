@@ -10,6 +10,7 @@
     - 'config/borgmatic/borgmatic.d'
     - 'config/borgmatic/.ssh'
     - 'data/borgmatic'
+    - 'runtime/borgmatic/borgmatic'
     - 'runtime/borgmatic/cache'
     - 'runtime/borgmatic/mount'
     - 'runtime/borgmatic/restore'
