@@ -68,6 +68,8 @@
     name: 'gluetun-external'
     internal: false
     ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
 
 - name: 'Add Gluetun network to firewalld trusted zone'
   block:

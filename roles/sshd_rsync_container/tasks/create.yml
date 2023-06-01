@@ -32,6 +32,8 @@
     name: 'sshd-rsync-external'
     internal: false
     ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
 
 - name: 'Add sshd-rsync network to firewalld trusted zone'
   block:

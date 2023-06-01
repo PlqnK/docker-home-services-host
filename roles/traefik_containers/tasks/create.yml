@@ -10,6 +10,8 @@
     name: '{{ item.name }}'
     internal: '{{ item.internal }}'
     ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
   loop:
     - name: 'cetusguard-internal'
       internal: true

@@ -35,6 +35,8 @@
     name: 'syslog-ng-external'
     internal: false
     ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
 
 - name: 'Add syslog-ng network to firewalld trusted zone'
   block:

@@ -23,6 +23,8 @@
     name: '{{ item.name }}'
     internal: true
     ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
   loop:
     - 'ttrss-postgres-internal'
     - 'ttrss-app-internal'
