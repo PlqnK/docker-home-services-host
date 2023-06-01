@@ -21,3 +21,6 @@
 
     - name: 'Configure kernel'
       ansible.builtin.import_tasks: 'kernel.yml'
+
+    - name: 'Fix parsec'
+      ansible.builtin.import_tasks: 'parsec.yml'

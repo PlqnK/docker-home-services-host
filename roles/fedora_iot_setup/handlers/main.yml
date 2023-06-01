@@ -10,3 +10,8 @@
 - name: 'Reload systemd daemon'
   ansible.builtin.systemd:
     daemon_reload: true
+
+- name: 'Start dbus-parsec service'
+  ansible.builtin.systemd:
+    name: 'dbus-parsec.service'
+    state: 'started'
