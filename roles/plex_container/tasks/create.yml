@@ -23,8 +23,8 @@
     name: 'plex-external'
     internal: false
     ipv6: '{{ containers_ipv6.enable }}'
-    opt:
-      isolate: true
+    #opt:
+    #  isolate: true
 
 - name: 'Add Plex network to firewalld trusted zone'
   block:

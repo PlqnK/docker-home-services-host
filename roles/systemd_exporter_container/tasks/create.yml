@@ -32,8 +32,8 @@
     name: 'systemd-exporter-external'
     internal: false
     ipv6: '{{ containers_ipv6.enable }}'
-    opt:
-      isolate: true
+    #opt:
+    #  isolate: true
 
 - name: 'Add systemd_exporter network to firewalld trusted zone'
   block:

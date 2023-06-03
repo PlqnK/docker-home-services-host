@@ -11,10 +11,11 @@
     internal: '{{ item.internal }}'
     ipv6: '{{ containers_ipv6.enable }}'
     opt:
-      isolate: true
+      isolate: '{{ item.isolate | default(omit) }}'
   loop:
     - name: 'cetusguard-internal'
       internal: true
+      isolate: true
     - name: 'traefik-external'
       internal: false
 
