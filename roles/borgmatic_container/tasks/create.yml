@@ -44,16 +44,20 @@
     - name: 'borgmatic_servers_encryption_passphrase'
       data: '{{ borgmatic.servers.encryption_passphrase }}'
 
-- name: 'Create borgmatic SSH keypair'
-  community.crypto.openssh_keypair:
-    path: '{{ containers_storage_path }}/config/borgmatic/.ssh/id_ed25519'
-    type: 'ed25519'
-    comment: 'borgmatic@{{ ansible_hostname }}-{{ ansible_date_time.date }}'
+- name: 'Copy borgmatic SSH keypair'
+  ansible.builtin.copy:
+    content: '{{ item.content }}'
+    dest: '{{ containers_storage_path }}/{{ item.dest }}'
     owner: 'root'
     group: 'root'
-    mode: '0400'
-    regenerate: 'never'
-    state: 'present'
+    mode: '{{ item.mode }}'
+  loop:
+    - content: '{{ borgmatic.ssh_key.private }}'
+      dest: 'id_ed25519'
+      mode: '0600'
+    - content: '{{ borgmatic.ssh_key.public }}'
+      dest: 'id_ed25519.pub'
+      mode: '0644'
 
 - name: 'Create borgmatic systemd service from template'
   ansible.builtin.template:
