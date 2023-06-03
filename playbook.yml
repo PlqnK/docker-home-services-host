@@ -8,9 +8,12 @@
 - name: 'Common containers'
   hosts: 'containers_hosts'
   roles:
+    - 'traefik_containers'
     - 'cockpit_container'
     - 'sshd_rsync_container'
-    - 'traefik_containers'
+    - 'promtail_container'
+    - 'node_exporter_container'
+    - 'systemd_exporter_container'
 
 - name: 'Backup containers'
   hosts: 'backup'
@@ -24,12 +27,9 @@
 - name: 'Monitoring containers'
   hosts: 'monitoring'
   roles:
+    - 'grafana_container'
     - 'prometheus_container'
     - 'loki_container'
-    - 'grafana_container'
-    - 'node_exporter_container'
-    - 'systemd_exporter_container'
-    - 'promtail_container'
     - 'syslog_ng_container'
 
 - name: 'Home containers'
