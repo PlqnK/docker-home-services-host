@@ -1,14 +1,17 @@
 ---
-- name: 'Create syslog-conn firewalld service'
+- name: 'Create firewalld services'
   ansible.builtin.copy:
-    src: 'syslog-conn.xml'
-    dest: '/etc/firewalld/services/syslog-conn.xml'
+    src: '{{ item }}'
+    dest: '/etc/firewalld/services/{{ item }}'
     owner: 'root'
     group: 'root'
     mode: '0644'
+  loop:
+    - 'syslog-tcp.xml'
+    - 'syslog-conn.xml'
   register: 'firewalld_service_copy'
 
-- name: 'Take new firewalld service into account' # noqa: no-handler
+- name: 'Take new firewalld services into account' # noqa: no-handler
   when: (firewalld_service_copy.changed)
   block:
     - name: 'Reload firewalld to load new service'
@@ -20,7 +23,7 @@
       ansible.builtin.command:
         cmd: 'podman network reload -a'
 
-- name: 'Accept syslog and syslog-conn incomming connections in default firewalld zone'
+- name: 'Accept syslog incomming connections in default firewalld zone'
   ansible.posix.firewalld:
     service: '{{ item }}'
     permanent: true
@@ -28,6 +31,7 @@
     state: 'enabled'
   loop:
     - 'syslog'
+    - 'syslog-tcp'
     - 'syslog-conn'
 
 - name: 'Create syslog-ng network'
