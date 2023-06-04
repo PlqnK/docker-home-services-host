@@ -129,6 +129,7 @@
   ansible.builtin.copy:
     content: |
       WIREGUARD_PRIVATE_KEY={{ gluetun.wireguard.private_key }}
+      WIREGUARD_PRESHARED_KEY={{ gluetun.wireguard.endpoint.preshared_key }}
     dest: '{{ containers_storage_path }}/env/gluetun/gluetun.env'
     owner: 'root'
     group: 'root'
@@ -155,8 +156,10 @@
       VPN_TYPE: 'wireguard'
       VPN_INTERFACE: 'wg0'
       VPN_SERVICE_PROVIDER: '{{ gluetun.provider.name }}'
+      VPN_ENDPOINT_IP: '{{ gluetun.wireguard.endpoint.ip }}'
+      VPN_ENDPOINT_PORT: '{{ gluetun.wireguard.endpoint.port }}'
+      WIREGUARD_PUBLIC_KEY: '{{ gluetun.wireguard.endpoint.public_key }}'
       WIREGUARD_ADDRESSES: '{{ gluetun.wireguard.addresses }}'
-      SERVER_CITIES: '{{ gluetun.provider.cities }}'
       FIREWALL_VPN_INPUT_PORTS: '{{ gluetun.firewall.vpn_input_ports }}'
       DOT: 'off'
       DNS_ADDRESS: '{{ gluetun.dns.addresses }}'
