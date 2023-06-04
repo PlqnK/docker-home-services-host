@@ -29,6 +29,7 @@ containers_images_tags:
     postgres: '15'
     app: 'latest'
     nginx: '1'
+  freshrss: 'latest'
   plex: 'latest'
   tautulli: 'latest'
   calibre: 'latest'

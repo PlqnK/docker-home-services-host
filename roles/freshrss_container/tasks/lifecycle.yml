@@ -1,0 +1,32 @@
+---
+- name: 'Stop FreshRSS container'
+  ansible.builtin.systemd:
+    name: 'container-freshrss.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable FreshRSS container'
+  ansible.builtin.systemd:
+    name: 'container-freshrss.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull FreshRSS image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.freshrss }}:{{ containers_images_tags.freshrss }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start FreshRSS container'
+  ansible.builtin.systemd:
+    name: 'container-freshrss.service'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable FreshRSS container'
+  ansible.builtin.systemd:
+    name: 'container-freshrss.service'
+    enabled: true
+  tags: ['never', 'containers-enable']

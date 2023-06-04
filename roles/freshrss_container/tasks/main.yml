@@ -1,0 +1,9 @@
+---
+- name: 'Configure and manage FreshRSS container'
+  when: (containers_list is not defined or (containers_list is defined and 'freshrss' in containers_list))
+  block:
+    - name: 'Create'
+      ansible.builtin.include_tasks: 'create.yml'
+
+    - name: 'Lifecycle'
+      ansible.builtin.import_tasks: 'lifecycle.yml'

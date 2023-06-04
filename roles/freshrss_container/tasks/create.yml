@@ -1,0 +1,68 @@
+---
+- name: 'Check if provisioning a Vagrant VM'
+  ansible.builtin.getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: false
+
+- name: 'Create FreshRSS CNAME record'
+  community.general.gandi_livedns:
+    api_key: '{{ gandi_api_key }}'
+    domain: '{{ domain_name }}'
+    type: 'CNAME'
+    record: 'freshrss'
+    values:
+      - '{{ ansible_hostname }}'
+    ttl: 10800
+    state: 'present'
+  when: (getent_passwd.vagrant is none)
+  delegate_to: 'localhost'
+
+- name: 'Create FreshRSS container bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 'root'
+    group: 33
+    mode: '0700'
+    state: 'directory'
+  loop:
+    - 'data/freshrss/data'
+    - 'data/freshrss/extensions'
+
+- name: 'Create FreshRSS container'
+  containers.podman.podman_container:
+    name: 'freshrss'
+    image: '{{ containers_images.freshrss }}:{{ containers_images_tags.freshrss }}'
+    network:
+      - 'web-egress'
+      - 'common-internal'
+    expose:
+      - 80
+    volume:
+      - '{{ containers_storage_path }}/data/freshrss/data:/var/www/FreshRSS/data:Z'
+      - '{{ containers_storage_path }}/data/freshrss/extensions:/var/www/FreshRSS/extensions:Z'
+    timezone: '{{ timezone }}'
+    env:
+      TZ: '{{ timezone }}'
+      CRON_MIN: '1,31'
+      SERVER_DNS: 'freshrss.{{ domain_name }}'
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.freshrss.rule: 'Host(`freshrss.{{ domain_name }}`)'
+      traefik.http.routers.freshrss.entrypoints: 'websecure'
+      traefik.http.routers.freshrss.middlewares: 'set-security-headers@file'
+      traefik.http.services.freshrss.loadbalancer.server.port: '80'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Enable and start FreshRSS container'
+  ansible.builtin.systemd:
+    name: 'container-freshrss.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

@@ -44,6 +44,7 @@
     - 'collabora_online_container'
     - 'photoprism_containers'
     - 'ttrss_containers'
+    - 'freshrss_container'
     - 'plex_container'
     - 'tautulli_container'
     - 'calibre_container'
