@@ -18,13 +18,16 @@
   when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
 
-- name: 'Create Komga data bind mount path'
+- name: 'Create Komga bind mounts paths'
   ansible.builtin.file:
-    path: '{{ containers_storage_path }}/data/komga'
+    path: '{{ containers_storage_path }}/{{ item }}'
     owner: 'root'
     group: 'root'
     mode: '0700'
     state: 'directory'
+  loop:
+    - 'data/komga'
+    - 'runtime/komga'
 
 - name: 'Create Komga container'
   containers.podman.podman_container:
@@ -37,6 +40,7 @@
       - 8080
     volume:
       - '{{ containers_storage_path }}/data/komga:/config:Z'
+      - '{{ containers_storage_path }}/runtime/komga:/tmp:Z'
       - '{{ nfs_mounts_path }}/medias/comics:/books:slave'
     timezone: '{{ timezone }}'
     env:

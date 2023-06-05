@@ -62,6 +62,9 @@
     - path: 'runtime/nextcloud-mariadb'
       owner: 999
       group: 999
+    - path: 'runtime/nextcloud-redis'
+      owner: 999
+      group: 999
     - path: 'data/nextcloud-mariadb'
       owner: 'root'
       group: 'root'
@@ -136,6 +139,8 @@
       - 'nextcloud-redis-internal'
     expose:
       - 6379
+    volume:
+      - '{{ containers_storage_path }}/runtime/nextcloud-redis:/data:Z'
     env:
       TZ: '{{ timezone }}'
     generate_systemd:
