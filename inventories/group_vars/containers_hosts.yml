@@ -25,6 +25,14 @@ containers_images_tags:
   photoprism:
     mariadb: '10.11'
     app: 'latest'
+  immich:
+    postgres: '15'
+    redis: '7'
+    typesense: '0.24.1'
+    machine_learning: 'release'
+    server: 'release'
+    web: 'release'
+    proxy: 'release'
   ttrss:
     postgres: '15'
     app: 'latest'

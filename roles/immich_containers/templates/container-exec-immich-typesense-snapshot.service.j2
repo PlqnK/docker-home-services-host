@@ -1,0 +1,19 @@
+[Unit]
+Description=Podman container-exec-immich-typesense-snapshot.service
+Wants=network-online.target
+After=network-online.target
+Wants=ping-healthchecks@{{ immich.typesense.snapshot.healthchecks_uuid }}:start.service
+OnSuccess=ping-healthchecks@{{ immich.typesense.snapshot.healthchecks_uuid }}:success.service
+OnFailure=ping-healthchecks@{{ immich.typesense.snapshot.healthchecks_uuid }}:failure.service
+
+[Service]
+Restart=no
+ExecStart=/usr/bin/podman image pull quay.io/curl/curl:latest
+ExecStart=/usr/bin/podman container run --rm --name curl --network immich-typesense-internal quay.io/curl/curl:latest \
+        curl -s -m 10 -X POST -H "Content-Type: application/json" -H "X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}" \
+        "http://immich-typesense:8108/operations/snapshot?snapshot_path=/opt/snapshot"
+ExecStart=/usr/bin/bash -c "cd {{ containers_storage_path }}/data/immich-typesense/state/snapshot && ls -tr | head -n -1 | xargs -r rm -rf"
+Type=oneshot
+
+[Install]
+WantedBy=default.target

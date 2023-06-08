@@ -1,0 +1,19 @@
+---
+containers_images:
+  immich:
+    postgres: 'docker.io/library/postgres'
+    redis: 'docker.io/library/redis'
+    typesense: 'docker.io/typesense/typesense'
+    machine_learning: 'ghcr.io/immich-app/immich-machine-learning'
+    server: 'ghcr.io/immich-app/immich-server'
+    web: 'ghcr.io/immich-app/immich-web'
+    proxy: 'ghcr.io/immich-app/immich-proxy'
+containers_images_tags:
+  immich:
+    postgres: 'latest'
+    redis: 'latest'
+    typesense: 'latest'
+    machine_learning: 'latest'
+    server: 'latest'
+    web: 'latest'
+    proxy: 'latest'

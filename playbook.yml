@@ -43,6 +43,7 @@
     - 'nextcloud_containers'
     - 'collabora_online_container'
     - 'photoprism_containers'
+    - 'immich_containers'
     - 'ttrss_containers'
     - 'freshrss_container'
     - 'plex_container'
