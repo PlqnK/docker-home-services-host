@@ -1,16 +1,16 @@
 location:
   source_directories:
-    - '{{ nfs_mounts_path }}/cloud/data'
+    - '{{ nfs_mounts_path }}/data/containers/nextcloud'
   repositories:
     - path: '{{ borgmatic.documents.repository }}'
       label: 'borgbase'
   exclude_patterns:
-    - '{{ nfs_mounts_path }}/cloud/data/files_external'
-    - '{{ nfs_mounts_path }}/cloud/data/appdata_*/preview'
-    - '{{ nfs_mounts_path }}/cloud/data/*/cache'
-    - '{{ nfs_mounts_path }}/cloud/data/*/files_trashbin'
-    - '{{ nfs_mounts_path }}/cloud/data/*/files_versions'
-    - '{{ nfs_mounts_path }}/cloud/data/*/uploads'
+    - '{{ nfs_mounts_path }}/data/containers/nextcloud/files_external'
+    - '{{ nfs_mounts_path }}/data/containers/nextcloud/appdata_*/preview'
+    - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/cache'
+    - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/files_trashbin'
+    - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/files_versions'
+    - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/uploads'
     - '*.log'
     - '*.log.[0123456789]'
   exclude_if_present:

@@ -14,7 +14,7 @@ alias autorestic="podman run \
 --volume {{ containers_storage_path }}/runtime/autorestic/restore:/restore:Z \
 --volume {{ nfs_mounts_path }}/backups/groupware:{{ nfs_mounts_path }}/backups/groupware:slave \
 --volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave \
---volume {{ nfs_mounts_path }}/cloud/data:{{ nfs_mounts_path }}/cloud/data:slave \
+--volume {{ nfs_mounts_path }}/data/containers/nextcloud:{{ nfs_mounts_path }}/data/containers/nextcloud:slave \
 --volume {{ nfs_mounts_path }}/medias/audiodrama:{{ nfs_mounts_path }}/medias/audiodrama:slave \
 --volume {{ nfs_mounts_path }}/medias/audiobooks:{{ nfs_mounts_path }}/medias/audiobooks:slave \
 --volume {{ nfs_mounts_path }}/medias/books:{{ nfs_mounts_path }}/medias/books:slave \

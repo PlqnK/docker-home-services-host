@@ -164,7 +164,7 @@
       - 80
     volume:
       - '{{ containers_storage_path }}/data/nextcloud-app:/var/www/html:z'
-      - '{{ nfs_mounts_path }}/cloud/data:/var/www/html/data:slave'
+      - '{{ nfs_mounts_path }}/data/containers/nextcloud:/var/www/html/data:slave'
     secrets:
       - 'nextcloud_mariadb_user'
       - 'nextcloud_mariadb_password'
@@ -219,7 +219,7 @@
       - 'nextcloud-redis-internal'
     volume:
       - '{{ containers_storage_path }}/data/nextcloud-app:/var/www/html:z'
-      - '{{ nfs_mounts_path }}/cloud/data:/var/www/html/data:slave'
+      - '{{ nfs_mounts_path }}/data/containers/nextcloud:/var/www/html/data:slave'
     env:
       TZ: '{{ timezone }}'
     generate_systemd:

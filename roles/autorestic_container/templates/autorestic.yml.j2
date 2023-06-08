@@ -17,7 +17,7 @@ global:
 
 locations:
   documents:
-    from: '{{ nfs_mounts_path }}/cloud/data'
+    from: '{{ nfs_mounts_path }}/data/containers/nextcloud'
     to: 'b2_documents'
     forget: 'prune'
     options:
@@ -25,12 +25,12 @@ locations:
         <<: *forget
       backup:
         exclude:
-          - '{{ nfs_mounts_path }}/cloud/data/files_external'
-          - '{{ nfs_mounts_path }}/cloud/data/appdata_*/preview'
-          - '{{ nfs_mounts_path }}/cloud/data/*/cache'
-          - '{{ nfs_mounts_path }}/cloud/data/*/files_trashbin'
-          - '{{ nfs_mounts_path }}/cloud/data/*/files_versions'
-          - '{{ nfs_mounts_path }}/cloud/data/*/uploads'
+          - '{{ nfs_mounts_path }}/data/containers/nextcloud/files_external'
+          - '{{ nfs_mounts_path }}/data/containers/nextcloud/appdata_*/preview'
+          - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/cache'
+          - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/files_trashbin'
+          - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/files_versions'
+          - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/uploads'
           - '*.log'
           - '*.log.[0123456789]'
         <<: *backup
