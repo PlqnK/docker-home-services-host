@@ -134,13 +134,13 @@
     name: 'nextcloud-redis'
     image: '{{ containers_images.nextcloud.redis }}:{{ containers_images_tags.nextcloud.redis }}'
     command: '--requirepass {{ nextcloud.redis.password }}'
-    timezone: '{{ timezone }}'
     network:
       - 'nextcloud-redis-internal'
     expose:
       - 6379
     volume:
       - '{{ containers_storage_path }}/runtime/nextcloud-redis:/data:Z'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
     generate_systemd:
@@ -154,7 +154,6 @@
   containers.podman.podman_container:
     name: 'nextcloud-app'
     image: '{{ containers_images.nextcloud.app }}:{{ containers_images_tags.nextcloud.app }}'
-    timezone: '{{ timezone }}'
     network:
       - 'web-egress'
       - 'common-internal'
@@ -169,6 +168,7 @@
       - 'nextcloud_mariadb_user'
       - 'nextcloud_mariadb_password'
       - 'nextcloud_redis_password'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
       APACHE_DISABLE_REWRITE_IP: '1'
@@ -211,7 +211,6 @@
     name: 'nextcloud-cron'
     image: '{{ containers_images.nextcloud.app }}:{{ containers_images_tags.nextcloud.app }}'
     entrypoint: '/cron.sh'
-    timezone: '{{ timezone }}'
     network:
       - 'web-egress'
       - 'common-internal'
@@ -220,6 +219,7 @@
     volume:
       - '{{ containers_storage_path }}/data/nextcloud-app:/var/www/html:z'
       - '{{ nfs_mounts_path }}/data/containers/nextcloud:/var/www/html/data:slave'
+    timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
     generate_systemd:
