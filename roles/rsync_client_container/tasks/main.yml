@@ -1,6 +1,6 @@
 ---
 - name: 'Configure and manage autorestic container'
-  when: (containers_list is not defined or (containers_list is defined and 'autorestic' in containers_list))
+  when: (containers_list is not defined or (containers_list is defined and 'rsync-client' in containers_list))
   block:
     - name: 'Create'
       ansible.builtin.import_tasks: 'create.yml'
