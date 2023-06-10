@@ -146,7 +146,7 @@
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
-      GANDIV5_API_KEY_FILE: 'run/secrets/traefik_gandi_api_key'
+      GANDIV5_API_KEY_FILE: '/run/secrets/traefik_gandi_api_key'
     label:
       traefik.enable: 'true'
       traefik.docker.network: 'common-internal'
