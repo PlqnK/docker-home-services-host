@@ -1,4 +1,11 @@
-alias mbsync="podman run \
+#!/usr/bin/env bash
+
+if [[ ${EUID} -ne 0 ]]; then
+  echo "Must be ran as root."
+  exit 1
+fi
+
+podman run \
 --rm \
 --interactive \
 --entrypoint mbsync \
@@ -9,4 +16,4 @@ alias mbsync="podman run \
 --volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
 --volume {{ nfs_mounts_path }}/backups/groupware/emails:/mail:slave \
 --secret=mbsync_imap_password \
-{{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }} -c /config/mbsync.rc $@"
+{{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }} -c /config/mbsync.rc $@

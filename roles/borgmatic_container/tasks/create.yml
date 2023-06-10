@@ -77,16 +77,16 @@
     mode: '0664'
   notify: 'Reload systemd daemon'
 
-- name: 'Add borgmatic aliases to global shell profile'
+- name: 'Add borgmatic scripts to /usr/local/bin'
   ansible.builtin.template:
     src: '{{ item }}.j2'
-    dest: '/etc/profile.d/{{ item }}'
+    dest: '/usr/local/bin/{{ item }}'
     owner: 'root'
     group: 'root'
-    mode: '0644'
+    mode: '0755'
   loop:
-    - 'borgmatic.sh'
-    - 'borgmatic-shell.sh'
+    - 'borgmatic'
+    - 'borgmatic-shell'
 
 - name: 'Enable and start borgmatic timer'
   ansible.builtin.systemd:

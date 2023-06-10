@@ -44,16 +44,16 @@
     mode: '0664'
   notify: 'Reload systemd daemon'
 
-- name: 'Add rsync-client aliases to global shell profile'
+- name: 'Add rsync-client scripts to /usr/local/bin'
   ansible.builtin.template:
     src: '{{ item }}.j2'
-    dest: '/etc/profile.d/{{ item }}'
+    dest: '/usr/local/bin/{{ item }}'
     owner: 'root'
     group: 'root'
-    mode: '0644'
+    mode: '0755'
   loop:
-    - 'rsync-client.sh'
-    - 'rsync-client-shell.sh'
+    - 'rsync-client'
+    - 'rsync-client-shell'
 
 - name: 'Enable and start rsync-client timer'
   ansible.builtin.systemd:

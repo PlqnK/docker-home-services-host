@@ -1,4 +1,11 @@
-alias vdirsyncer="podman run \
+#!/usr/bin/env bash
+
+if [[ ${EUID} -ne 0 ]]; then
+  echo "Must be ran as root."
+  exit 1
+fi
+
+podman run \
 --rm \
 --interactive \
 --entrypoint /home/vdirsyncer/.local/bin/vdirsyncer \
@@ -12,4 +19,4 @@ alias vdirsyncer="podman run \
 --volume {{ nfs_mounts_path }}/backups/groupware/calendars:/calendars:slave \
 --secret vdirsyncer_carddav_password \
 --secret vdirsyncer_caldav_password \
-{{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }} $@"
+{{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }} $@

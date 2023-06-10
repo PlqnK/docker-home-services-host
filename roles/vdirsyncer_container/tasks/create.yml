@@ -56,13 +56,13 @@
     mode: '0664'
   notify: 'Reload systemd daemon'
 
-- name: 'Add vdirsyncer alias to global shell profile'
+- name: 'Add vdirsyncer script to /usr/local/bin'
   ansible.builtin.template:
-    src: 'vdirsyncer.sh.j2'
-    dest: '/etc/profile.d/vdirsyncer.sh'
+    src: 'vdirsyncer.j2'
+    dest: '/usr/local/bin/vdirsyncer'
     owner: 'root'
     group: 'root'
-    mode: '0644'
+    mode: '0755'
 
 - name: 'Enable and start vdirsyncer timer'
   ansible.builtin.systemd:

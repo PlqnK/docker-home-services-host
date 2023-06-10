@@ -1,7 +1,15 @@
-alias rsync-client="podman run \
+#!/usr/bin/env bash
+
+if [[ ${EUID} -ne 0 ]]; then
+  echo "Must be ran as root."
+  exit 1
+fi
+
+podman run \
 --rm \
 --interactive \
---entrypoint rsync \
+--tty \
+--entrypoint sh \
 --hostname {{ ansible_hostname }} \
 --network web-egress \
 --tz={{ timezone }} \
@@ -14,4 +22,4 @@ alias rsync-client="podman run \
 --volume {{ containers_storage_path }}/config/rsync-client/id_ed25519:/root/id_ed25519:ro,Z \
 --volume {{ containers_storage_path }}/runtime/rsync-client:/root/.ssh:Z \
 --volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave \
-{{ containers_images.rsync_client }}:{{ containers_images_tags.rsync_client }} -e \"ssh -i /root/id_ed25519 -p 2222\" $@"
+{{ containers_images.rsync_client }}:{{ containers_images_tags.rsync_client }}

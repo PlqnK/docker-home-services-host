@@ -1,4 +1,11 @@
-alias autorestic="podman run \
+#!/usr/bin/env bash
+
+if [[ ${EUID} -ne 0 ]]; then
+  echo "Must be ran as root."
+  exit 1
+fi
+
+podman run \
 --rm \
 --interactive \
 --entrypoint autorestic \
@@ -19,4 +26,4 @@ alias autorestic="podman run \
 --volume {{ nfs_mounts_path }}/medias/audiobooks:{{ nfs_mounts_path }}/medias/audiobooks:slave \
 --volume {{ nfs_mounts_path }}/medias/books:{{ nfs_mounts_path }}/medias/books:slave \
 --volume {{ nfs_mounts_path }}/medias/comics:{{ nfs_mounts_path }}/medias/comics:slave \
-{{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }} -c /config/autorestic.yml $@"
+{{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }} -c /config/autorestic.yml $@

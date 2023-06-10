@@ -1,10 +1,14 @@
-alias borgmatic-shell="podman run \
+#!/usr/bin/env bash
+
+if [[ ${EUID} -ne 0 ]]; then
+  echo "Must be ran as root."
+  exit 1
+fi
+
+podman run \
 --rm \
 --interactive \
---tty \
---entrypoint bash \
---cap-add SYS_ADMIN \
---device /dev/fuse \
+--entrypoint borgmatic \
 --hostname {{ ansible_hostname }} \
 --network web-egress \
 --tz={{ timezone }} \
@@ -14,8 +18,6 @@ alias borgmatic-shell="podman run \
 --volume {{ containers_storage_path }}/data/borgmatic:/root/.config/borg:Z \
 --volume {{ containers_storage_path }}/runtime/borgmatic/borgmatic:/root/.borgmatic:Z \
 --volume {{ containers_storage_path }}/runtime/borgmatic/cache:/root/.cache/borg:Z \
---volume {{ containers_storage_path }}/runtime/borgmatic/mount:/mount:Z \
---volume {{ containers_storage_path }}/runtime/borgmatic/restore:/restore:Z \
 --volume {{ nfs_mounts_path }}/backups/groupware:{{ nfs_mounts_path }}/backups/groupware:slave \
 --volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave \
 --volume {{ nfs_mounts_path }}/data/containers/nextcloud:{{ nfs_mounts_path }}/data/containers/nextcloud:slave \
@@ -27,4 +29,4 @@ alias borgmatic-shell="podman run \
 --secret=borgmatic_groupware_encryption_passphrase \
 --secret=borgmatic_medias_encryption_passphrase \
 --secret=borgmatic_servers_encryption_passphrase \
-{{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }}"
+{{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }} $@
