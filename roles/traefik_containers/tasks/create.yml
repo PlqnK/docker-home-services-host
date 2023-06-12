@@ -155,6 +155,10 @@
       traefik.http.routers.traefik.service: 'api@internal'
       traefik.http.routers.traefik.middlewares: 'set-security-headers@file, restrict-external-access@file, traefik-auth'
       traefik.http.middlewares.traefik-auth.basicauth.users: '{{ traefik.api.user }}:{{ traefik.api.password_hash }}'
+      traefik.http.routers.traefik-ping.rule: 'Host(`traefik.{{ ansible_fqdn }}`) && Path(`/ping`)'
+      traefik.http.routers.traefik-ping.entrypoints: 'websecure'
+      traefik.http.routers.traefik-ping.service: 'ping@internal'
+      traefik.http.routers.traefik-ping.middlewares: 'set-security-headers@file, restrict-external-access@file'
     generate_systemd:
       names: true
       new: true
