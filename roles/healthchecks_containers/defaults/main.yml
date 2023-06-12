@@ -1,0 +1,9 @@
+---
+containers_images:
+  healthchecks:
+    postgres: 'docker.io/library/postgres'
+    app: 'docker.io/healthchecks/healthchecks'
+containers_images_tags:
+  healthchecks:
+    postgres: 'latest'
+    app: 'latest'

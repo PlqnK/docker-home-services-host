@@ -28,6 +28,7 @@
   hosts: 'monitoring'
   roles:
     - 'uptime_kuma_container'
+    - 'healthchecks_containers'
     - 'grafana_container'
     - 'prometheus_container'
     - 'loki_container'

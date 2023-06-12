@@ -1,0 +1,51 @@
+---
+- name: 'Stop Healthchecks stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'container-exec-healthchecks-postgres-dump.timer'
+    - 'container-healthchecks-app.service'
+    - 'container-healthchecks-postgres.service'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable Healthchecks stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: false
+  loop:
+    - 'container-exec-healthchecks-postgres-dump.timer'
+    - 'container-healthchecks-app.service'
+    - 'container-healthchecks-postgres.service'
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull Healthchecks stack images'
+  containers.podman.podman_image:
+    name: '{{ item }}'
+    pull: true
+    force: true
+    state: 'present'
+  loop:
+    - '{{ containers_images.healthchecks.postgres }}:{{ containers_images_tags.healthchecks.postgres }}'
+    - '{{ containers_images.healthchecks.app }}:{{ containers_images_tags.healthchecks.app }}'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start Healthchecks stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'started'
+  loop:
+    - 'container-healthchecks-postgres.service'
+    - 'container-healthchecks-app.service'
+    - 'container-exec-healthchecks-postgres-dump.timer'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable Healthchecks stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - 'container-healthchecks-postgres.service'
+    - 'container-healthchecks-app.service'
+    - 'container-exec-healthchecks-postgres-dump.timer'
+  tags: ['never', 'containers-enable']

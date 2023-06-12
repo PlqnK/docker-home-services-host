@@ -1,0 +1,182 @@
+---
+- name: 'Create Healthchecks stack network'
+  containers.podman.podman_network:
+    name: 'healthchecks-postgres-internal'
+    internal: true
+    ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
+
+- name: 'Add Healthchecks stack networks to firewalld trusted zone'
+  block:
+    - name: 'Get podman network info'
+      containers.podman.podman_network_info:
+        name: 'healthchecks-postgres-internal'
+      register: 'podman_network'
+
+    - name: 'Add podman network subnet to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Create Healthchecks stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_path }}/env/healthchecks-app'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_path }}/runtime/healthchecks-postgres'
+      owner: 999
+      group: 999
+      mode: '0700'
+    - path: '{{ containers_storage_path }}/data/healthchecks-postgres'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+
+- name: 'Create Healthchecks stack secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'healthchecks_postgres_user'
+      data: '{{ healthchecks.postgres.user }}'
+    - name: 'healthchecks_postgres_password'
+      data: '{{ healthchecks.postgres.password }}'
+
+- name: 'Create App environment file'
+  ansible.builtin.copy:
+    content: |
+      SECRET_KEY={{ healthchecks.app.secret_key }}
+      DB_USER={{ healthchecks.postgres.user }}
+      DB_PASSWORD={{ healthchecks.postgres.password }}
+      EMAIL_HOST_USER={{ healthchecks.app.email.user }}
+      EMAIL_HOST_PASSWORD={{ healthchecks.app.email.password }}
+      PUSHOVER_API_TOKEN={{ healthchecks.app.pushover.api_token }}
+    dest: '{{ containers_storage_path }}/env/healthchecks-app/healthchecks-app.env'
+    owner: 'root'
+    group: 'root'
+    mode: '0400'
+  register: 'healthchecks_environment_file'
+
+- name: 'Create PostgreSQL container'
+  containers.podman.podman_container:
+    name: 'healthchecks-postgres'
+    image: '{{ containers_images.healthchecks.postgres }}:{{ containers_images_tags.healthchecks.postgres }}'
+    network:
+      - 'healthchecks-postgres-internal'
+    expose:
+      - 5432
+    volume:
+      - '{{ containers_storage_path }}/runtime/healthchecks-postgres:/var/lib/postgresql/data:Z'
+      - '{{ containers_storage_path }}/data/healthchecks-postgres:/opt/dumps:Z'
+    secrets:
+      - 'healthchecks_postgres_user'
+      - 'healthchecks_postgres_password'
+    #timezone: '{{ timezone }}' # See https://github.com/healthchecks/healthchecks/issues/657
+    env:
+      TZ: '{{ timezone }}'
+      POSTGRES_DB: '{{ healthchecks.postgres.database }}'
+      POSTGRES_USER_FILE: '/run/secrets/healthchecks_postgres_user'
+      POSTGRES_PASSWORD_FILE: '/run/secrets/healthchecks_postgres_password'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+
+- name: 'Create App container'
+  containers.podman.podman_container:
+    name: 'healthchecks-app'
+    image: '{{ containers_images.healthchecks.app }}:{{ containers_images_tags.healthchecks.app }}'
+    network:
+      - 'web-egress'
+      - 'common-internal'
+      - 'healthchecks-postgres-internal'
+    expose:
+      - 8000
+    timezone: '{{ timezone }}'
+    env_file: '{{ containers_storage_path }}/env/healthchecks-app/healthchecks-app.env'
+    env:
+      TZ: '{{ timezone }}'
+      UWSGI_DISABLE_LOGGING: '1'
+      DEBUG: 'False'
+      DB: 'postgres'
+      DB_HOST: 'healthchecks-postgres'
+      DB_PORT: '5432'
+      DB_NAME: '{{ healthchecks.postgres.database }}'
+      SITE_NAME: 'Healthchecks'
+      SITE_ROOT: 'https://healthchecks.{{ domain_name }}'
+      #SITE_LOGO_URL: ''
+      ALLOWED_HOSTS: 'healthchecks.{{ domain_name }}'
+      ADMINS: '{{ admin_user.email }}'
+      REGISTRATION_OPEN: 'False'
+      PING_BODY_LIMIT: '10000'
+      PROMETHEUS_ENABLED: 'True'
+      DEFAULT_FROM_EMAIL: '{{ healthchecks.app.email.from }}'
+      EMAIL_HOST: '{{ healthchecks.app.email.host }}'
+      EMAIL_PORT: '{{ healthchecks.app.email.port }}'
+      EMAIL_USE_TLS: '{{ healthchecks.app.email.starttls }}'
+      EMAIL_USE_SSL: '{{ healthchecks.app.email.ssl }}'
+      EMAIL_USE_VERIFICATION: 'True'
+      PUSHOVER_SUBSCRIPTION_URL: '{{ healthchecks.app.pushover.subscription_url }}'
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.healthchecks.rule: 'Host(`healthchecks.{{ domain_name }}`)'
+      traefik.http.routers.healthchecks.entrypoints: 'websecure'
+      traefik.http.routers.healthchecks.middlewares: 'set-security-headers@file, restrict-external-access@file'
+      traefik.http.services.healthchecks.loadbalancer.server.port: '8000'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+      after:
+        - 'container-healthchecks-postgres.service'
+      requires:
+        - 'container-healthchecks-postgres.service'
+    recreate: '{{ ("true" | bool) if healthchecks_environment_file.changed else ("false" | bool) }}'
+    state: 'created'
+
+- name: 'Create PostgreSQL dump systemd service from template'
+  ansible.builtin.template:
+    src: 'container-exec-healthchecks-postgres-dump.service.j2'
+    dest: '/etc/systemd/system/container-exec-healthchecks-postgres-dump.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy PostgreSQL dump systemd timer'
+  ansible.builtin.copy:
+    src: 'container-exec-healthchecks-postgres-dump.timer'
+    dest: '/etc/systemd/system/container-exec-healthchecks-postgres-dump.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0664'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Healthchecks stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  loop:
+    - 'container-healthchecks-postgres.service'
+    - 'container-healthchecks-app.service'
+    - 'container-exec-healthchecks-postgres-dump.timer'

@@ -10,6 +10,9 @@ containers_images_tags:
   cetusguard: 'v1'
   traefik: '2.10'
   uptime_kuma: '1'
+  healthchecks:
+    postgres: '15'
+    app: 'v2.9.2'
   prometheus: 'latest'
   loki: 'latest'
   syslog_ng: 'latest'
