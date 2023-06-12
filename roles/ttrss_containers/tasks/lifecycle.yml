@@ -41,9 +41,9 @@
     state: 'started'
   loop:
     - 'container-ttrss-postgres.service'
-    - 'container-ttrss-nginx.service'
     - 'container-ttrss-app.service'
     - 'container-ttrss-updater.service'
+    - 'container-ttrss-nginx.service'
     - 'container-exec-ttrss-postgres-dump.timer'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
@@ -53,8 +53,8 @@
     enabled: true
   loop:
     - 'container-ttrss-postgres.service'
-    - 'container-ttrss-nginx.service'
     - 'container-ttrss-app.service'
     - 'container-ttrss-updater.service'
+    - 'container-ttrss-nginx.service'
     - 'container-exec-ttrss-postgres-dump.timer'
   tags: ['never', 'containers-enable']

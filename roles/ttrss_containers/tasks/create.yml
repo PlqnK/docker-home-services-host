@@ -58,7 +58,7 @@
   loop:
     - path: '{{ containers_storage_path }}/runtime/ttrss-postgres'
       owner: 999
-      group: 'root'
+      group: 999
       mode: '0700'
     - path: '{{ containers_storage_path }}/data/ttrss-postgres'
       owner: 'root'
