@@ -27,6 +27,7 @@
 - name: 'Monitoring containers'
   hosts: 'monitoring'
   roles:
+    - 'uptime_kuma_container'
     - 'grafana_container'
     - 'prometheus_container'
     - 'loki_container'
