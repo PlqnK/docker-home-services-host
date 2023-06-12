@@ -3,7 +3,7 @@ location:
     - '{{ nfs_mounts_path }}/backups/servers'
   repositories:
     - path: '{{ borgmatic.servers.repository }}'
-      label: 'borgbase'
+      label: 'borgbase-servers'
   exclude_if_present:
     - '.nobackup'
 

@@ -6,7 +6,7 @@ location:
     - '{{ nfs_mounts_path }}/medias/comics'
   repositories:
     - path: '{{ borgmatic.medias.repository }}'
-      label: 'borgbase'
+      label: 'borgbase-medias'
   exclude_if_present:
     - '.nobackup'
 

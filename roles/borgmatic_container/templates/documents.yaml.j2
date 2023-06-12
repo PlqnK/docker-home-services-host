@@ -3,7 +3,7 @@ location:
     - '{{ nfs_mounts_path }}/data/containers/nextcloud'
   repositories:
     - path: '{{ borgmatic.documents.repository }}'
-      label: 'borgbase'
+      label: 'borgbase-documents'
   exclude_patterns:
     - '{{ nfs_mounts_path }}/data/containers/nextcloud/files_external'
     - '{{ nfs_mounts_path }}/data/containers/nextcloud/appdata_*/preview'
