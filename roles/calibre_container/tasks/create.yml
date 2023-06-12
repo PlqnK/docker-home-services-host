@@ -7,6 +7,13 @@
     mode: '0700'
     state: 'directory'
 
+- name: 'Create Calibre secret'
+  containers.podman.podman_secret:
+    name: 'calibre_password'
+    data: '{{ calibre.password }}'
+    skip_existing: true
+    state: 'present'
+
 - name: 'Create Calibre container'
   containers.podman.podman_container:
     name: 'calibre'
@@ -17,20 +24,28 @@
     expose:
       - 8080
       - 8081
+    device:
+      - '/dev/dri/card1:/dev/dri/card1'
+      - '/dev/dri/renderD128:/dev/dri/renderD128'
     volume:
       - '{{ containers_storage_path }}/data/calibre:/config:Z'
       - '{{ nfs_mounts_path }}/medias/books:/books:slave'
+    secrets:
+      - 'calibre_password'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
+      CUSTOM_USER: '{{ calibre.user }}'
+      FILE__PASSWORD: '/run/secrets/calibre_password'
+      TITLE: 'Calibre'
+      DRINODE: '/dev/dri/renderD128'
     label:
       traefik.enable: 'true'
       traefik.docker.network: 'common-internal'
       traefik.http.routers.calibre.rule: 'Host(`calibre.{{ domain_name }}`)'
       traefik.http.routers.calibre.entrypoints: 'websecure'
-      traefik.http.routers.calibre.middlewares: 'set-security-headers@file, restrict-external-access@file, calibre-auth'
+      traefik.http.routers.calibre.middlewares: 'set-security-headers@file, restrict-external-access@file'
       traefik.http.routers.calibre.service: 'calibre'
-      traefik.http.middlewares.calibre-auth.basicauth.users: '{{ calibre.user }}:{{ calibre.password_hash }}'
       traefik.http.services.calibre.loadbalancer.server.port: '8080'
       traefik.http.routers.calibre-cs.rule: 'Host(`calibre-cs.{{ domain_name }}`)'
       traefik.http.routers.calibre-cs.entrypoints: 'websecure'
