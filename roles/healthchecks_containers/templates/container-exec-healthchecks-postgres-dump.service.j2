@@ -8,7 +8,7 @@ OnFailure=ping-healthchecks@{{ healthchecks.postgres.pg_dump.healthchecks_uuid }
 
 [Service]
 Restart=no
-ExecStart=/usr/bin/podman container exec ttrss-postgres pg_dump --clean -U {{ healthchecks.postgres.user }} {{ healthchecks.postgres.database }} -f /opt/dumps/ttrss.sql
+ExecStart=/usr/bin/podman container exec healthchecks-postgres pg_dump --clean -U {{ healthchecks.postgres.user }} {{ healthchecks.postgres.database }} -f /opt/dumps/healthchecks.sql
 Type=simple
 
 [Install]
