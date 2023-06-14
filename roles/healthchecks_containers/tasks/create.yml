@@ -35,14 +35,31 @@
       owner: 'root'
       group: 'root'
       mode: '0700'
-    - path: '{{ containers_storage_path }}/runtime/healthchecks-postgres'
-      owner: 999
-      group: 999
+    - path: '{{ containers_storage_path }}/config/healthchecks-app'
+      owner: 'root'
+      group: 'root'
       mode: '0700'
     - path: '{{ containers_storage_path }}/data/healthchecks-postgres'
       owner: 'root'
       group: 'root'
       mode: '0700'
+    - path: '{{ containers_storage_path }}/runtime/healthchecks-postgres'
+      owner: 999
+      group: 999
+      mode: '0700'
+
+- name: 'Download Healthchecks assets'
+  ansible.builtin.get_url:
+    url: '{{ item.url }}'
+    dest: '{{ containers_storage_path }}/config/healthchecks-app/{{ item.dest }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - url: 'https://raw.githubusercontent.com/healthchecks/healthchecks/0c363f5c01bdd998a36c7b8e7d2cdbcb6922406c/static/img/logo.png'
+      dest: 'logo.png'
+    - url: 'https://raw.githubusercontent.com/healthchecks/healthchecks/b3395f1314b9a5f2a5a5653b7ce256326a33a7a6/static/img/apple-touch-180.png'
+      dest: 'apple-touch-180.png'
 
 - name: 'Create Healthchecks stack secrets'
   containers.podman.podman_secret:
@@ -108,6 +125,9 @@
       - 'healthchecks-postgres-internal'
     expose:
       - 8000
+    volume:
+      - '{{ containers_storage_path }}/config/healthchecks-app/logo.png:/opt/healthchecks/static-collected/img/logo.png:Z'
+      - '{{ containers_storage_path }}/config/healthchecks-app/apple-touch-180.png:/opt/healthchecks/static-collected/img/apple-touch-180.png:Z'
     timezone: '{{ timezone }}'
     env_file: '{{ containers_storage_path }}/env/healthchecks-app/healthchecks-app.env'
     env:
