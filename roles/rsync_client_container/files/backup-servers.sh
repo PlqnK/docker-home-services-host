@@ -29,7 +29,7 @@
 sync_errors=0
 
 echo "Pinging Healthchecks.io: Start"
-wget -T 10 -O /dev/null -o /dev/null "https://hc-ping.com/${HEALTHCHECKS_UUID}/start"
+wget -T 10 -O- -q "https://hc-ping.com/${HEALTHCHECKS_UUID}/start"
 echo "Begining servers backup..."
 for host in ${BACKUP_HOSTS}; do
   echo "Rsyncing ${host}..."
@@ -44,10 +44,10 @@ done
 if [ ${sync_errors} -eq 0 ]; then
   echo "Rsyncing complete!"
   echo "Pinging Healthchecks.io: Success"
-  wget -T 10 -O /dev/null -o /dev/null "https://hc-ping.com/${HEALTHCHECKS_UUID}"
+  wget -T 10 -O- -q "https://hc-ping.com/${HEALTHCHECKS_UUID}"
 else
   echo "Error while rsyncing server(s)!"
   echo "Pinging Healthchecks.io: Fail"
-  wget -T 10 -O /dev/null -o /dev/null "https://hc-ping.com/${HEALTHCHECKS_UUID}/fail"
+  wget -T 10 -O- -q "https://hc-ping.com/${HEALTHCHECKS_UUID}/fail"
   exit 1
 fi
