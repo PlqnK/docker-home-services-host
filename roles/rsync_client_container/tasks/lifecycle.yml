@@ -1,17 +1,17 @@
 ---
-- name: 'Stop autorestic timer'
+- name: 'Stop rsync-client timer'
   ansible.builtin.systemd:
-    name: 'container-autorestic.timer'
+    name: 'container-rsync-client.timer'
     state: 'stopped'
   tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
 
-- name: 'Disable autorestic timer'
+- name: 'Disable rsync-client timer'
   ansible.builtin.systemd:
-    name: 'container-autorestic.timer'
+    name: 'container-rsync-client.timer'
     enabled: false
   tags: ['never', 'containers-disable']
 
-- name: 'Pull autorestic image'
+- name: 'Pull rsync-client image'
   containers.podman.podman_image:
     name: '{{ containers_images.rsync_client }}:{{ containers_images_tags.rsync_client }}'
     pull: true
@@ -19,14 +19,14 @@
     state: 'present'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Start autorestic timer'
+- name: 'Start rsync-client timer'
   ansible.builtin.systemd:
-    name: 'container-autorestic.timer'
+    name: 'container-rsync-client.timer'
     state: 'started'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
-- name: 'Enable autorestic timer'
+- name: 'Enable rsync-client timer'
   ansible.builtin.systemd:
-    name: 'container-autorestic.timer'
+    name: 'container-rsync-client.timer'
     enabled: true
   tags: ['never', 'containers-enable']
