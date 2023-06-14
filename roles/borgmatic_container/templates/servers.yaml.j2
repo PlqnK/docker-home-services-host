@@ -10,6 +10,8 @@ location:
 storage:
   encryption_passcommand: "cat /run/secrets/borgmatic_servers_encryption_passphrase"
   compression: 'auto,zstd'
+  retries: 5
+  retry_wait: 5
 
 retention:
   keep_daily: 28

@@ -47,7 +47,7 @@
 - name: 'Copy borgmatic SSH keypair'
   ansible.builtin.copy:
     content: '{{ item.content }}'
-    dest: '{{ containers_storage_path }}/{{ item.dest }}'
+    dest: '{{ containers_storage_path }}/config/borgmatic/.ssh/{{ item.dest }}'
     owner: 'root'
     group: 'root'
     mode: '{{ item.mode }}'
@@ -58,6 +58,14 @@
     - content: '{{ borgmatic.ssh_key.public }}'
       dest: 'id_ed25519.pub'
       mode: '0644'
+
+- name: 'Copy borgmatic SSH config'
+  ansible.builtin.copy:
+    src: 'config'
+    dest: '{{ containers_storage_path }}/config/borgmatic/.ssh/config'
+    owner: 'root'
+    group: 'root'
+    mode: '600'
 
 - name: 'Create borgmatic systemd service from template'
   ansible.builtin.template:
