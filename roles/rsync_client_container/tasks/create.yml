@@ -18,9 +18,9 @@
     group: 'root'
     mode: '0600'
 
-- name: 'Copy backup-servers script'
-  ansible.builtin.copy:
-    src: 'backup-servers.sh'
+- name: 'Template backup-servers script'
+  ansible.builtin.template:
+    src: 'backup-servers.sh.j2'
     dest: '{{ containers_storage_path }}/config/rsync-client/backup-servers.sh'
     owner: 'root'
     group: 'root'

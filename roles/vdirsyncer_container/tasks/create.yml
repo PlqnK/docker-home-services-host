@@ -18,9 +18,9 @@
     group: 1000
     mode: '0644'
 
-- name: 'Copy vdirsyncer script'
-  ansible.builtin.copy:
-    src: 'vdirsyncer.sh'
+- name: 'Template vdirsyncer script'
+  ansible.builtin.template:
+    src: 'vdirsyncer.sh.j2'
     dest: '{{ containers_storage_path }}/config/vdirsyncer/vdirsyncer.sh'
     owner: 1000
     group: 1000

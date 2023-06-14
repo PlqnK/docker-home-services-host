@@ -31,4 +31,4 @@ consistency:
 
 hooks:
   healthchecks:
-    ping_url: 'https://hc-ping.com/{{ borgmatic.medias.healthchecks_uuid }}'
+    ping_url: 'https://healthchecks.{{ domain_name }}/ping/{{ borgmatic.medias.healthchecks_uuid }}'

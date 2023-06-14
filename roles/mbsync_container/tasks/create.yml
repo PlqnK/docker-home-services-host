@@ -15,9 +15,9 @@
     group: 'root'
     mode: '0644'
 
-- name: 'Copy mbsync script'
-  ansible.builtin.copy:
-    src: 'mbsync.sh'
+- name: 'Template mbsync script'
+  ansible.builtin.template:
+    src: 'mbsync.sh.j2'
     dest: '{{ containers_storage_path }}/config/mbsync/mbsync.sh'
     owner: 'root'
     group: 'root'

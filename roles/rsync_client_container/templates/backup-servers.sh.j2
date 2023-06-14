@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 # Copyright (c) 2023, Victor Bouvier-Deleau. All rights reserved.
 #
 # This program is free software, you can redistribute it and/or modify it under
@@ -26,18 +26,28 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-PATH=~/.local/bin:$PATH
+sync_errors=0
 
 echo "Pinging Healthchecks.io: Start"
-curl -fsS -m 10 --retry 5 -o /dev/null "https://hc-ping.com/${HEALTHCHECKS_UUID}/start"
-echo "Synchronizing DAV account(s)..."
-if vdirsyncer discover && vdirsyncer metasync && vdirsyncer sync; then
-  echo "Synchronization complete!"
+wget -T 10 -O- -q "https://healthchecks.{{ domain_name }}/ping/${HEALTHCHECKS_UUID}/start"
+echo "Begining servers backup..."
+for host in ${BACKUP_HOSTS}; do
+  echo "Rsyncing ${host}..."
+  mkdir -p "${LOCAL_PATH}/${host}/${REMOTE_PATH}"
+  if rsync -e "ssh -i /root/id_ed25519 -p 2222" -a --delete root@"${host}":"${REMOTE_PATH}/" "${LOCAL_PATH}/${host}/${REMOTE_PATH}/"; then
+    echo "Successfuly synced ${host}!"
+  else
+    echo "Error while syncing ${host}!"
+    sync_errors=$((sync_errors + 1))
+  fi
+done
+if [ ${sync_errors} -eq 0 ]; then
+  echo "Rsyncing complete!"
   echo "Pinging Healthchecks.io: Success"
-  curl -fsS -m 10 --retry 5 -o /dev/null "https://hc-ping.com/${HEALTHCHECKS_UUID}"
+  wget -T 10 -O- -q "https://healthchecks.{{ domain_name }}/ping/${HEALTHCHECKS_UUID}"
 else
-  echo "Error while synchronizing DAV account(s)!"
+  echo "Error while rsyncing server(s)!"
   echo "Pinging Healthchecks.io: Fail"
-  curl -fsS -m 10 --retry 5 -o /dev/null "https://hc-ping.com/${HEALTHCHECKS_UUID}/fail"
+  wget -T 10 -O- -q "https://healthchecks.{{ domain_name }}/ping/${HEALTHCHECKS_UUID}/fail"
   exit 1
 fi
