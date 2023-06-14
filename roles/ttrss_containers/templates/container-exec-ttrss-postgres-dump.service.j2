@@ -2,9 +2,9 @@
 Description=Podman container-exec-ttrss-postgres-dump.service
 Wants=network-online.target
 After=network-online.target
-Wants=ping-healthchecks@{{ ttrss.pg_dump.healthchecks_uuid }}:start.service
-OnSuccess=ping-healthchecks@{{ ttrss.pg_dump.healthchecks_uuid }}:success.service
-OnFailure=ping-healthchecks@{{ ttrss.pg_dump.healthchecks_uuid }}:failure.service
+Wants=ping-healthchecks@{{ ttrss.postgres.dump.healthchecks_uuid }}:start.service
+OnSuccess=ping-healthchecks@{{ ttrss.postgres.dump.healthchecks_uuid }}:success.service
+OnFailure=ping-healthchecks@{{ ttrss.postgres.dump.healthchecks_uuid }}:failure.service
 
 [Service]
 Restart=no
