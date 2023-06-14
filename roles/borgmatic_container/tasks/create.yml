@@ -69,8 +69,8 @@
 
 - name: 'Create borgmatic systemd service from template'
   ansible.builtin.template:
-    src: 'container-borgmatic.service.j2'
-    dest: '/etc/systemd/system/container-borgmatic.service'
+    src: 'container-run-borgmatic.service.j2'
+    dest: '/etc/systemd/system/container-run-borgmatic.service'
     owner: 'root'
     group: 'root'
     mode: '0644'
@@ -78,8 +78,8 @@
 
 - name: 'Copy borgmatic systemd timer'
   ansible.builtin.copy:
-    src: 'container-borgmatic.timer'
-    dest: '/etc/systemd/system/container-borgmatic.timer'
+    src: 'container-run-borgmatic.timer'
+    dest: '/etc/systemd/system/container-run-borgmatic.timer'
     owner: 'root'
     group: 'root'
     mode: '0664'
@@ -98,7 +98,7 @@
 
 - name: 'Enable and start borgmatic timer'
   ansible.builtin.systemd:
-    name: 'container-borgmatic.timer'
+    name: 'container-run-borgmatic.timer'
     daemon_reload: true
     enabled: true
     state: 'started'

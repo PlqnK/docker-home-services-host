@@ -1,13 +1,13 @@
 ---
 - name: 'Stop autorestic timer'
   ansible.builtin.systemd:
-    name: 'container-autorestic.timer'
+    name: 'container-run-autorestic.timer'
     state: 'stopped'
   tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
 
 - name: 'Disable autorestic timer'
   ansible.builtin.systemd:
-    name: 'container-autorestic.timer'
+    name: 'container-run-autorestic.timer'
     enabled: false
   tags: ['never', 'containers-disable']
 
@@ -21,12 +21,12 @@
 
 - name: 'Start autorestic timer'
   ansible.builtin.systemd:
-    name: 'container-autorestic.timer'
+    name: 'container-run-autorestic.timer'
     state: 'started'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
 - name: 'Enable autorestic timer'
   ansible.builtin.systemd:
-    name: 'container-autorestic.timer'
+    name: 'container-run-autorestic.timer'
     enabled: true
   tags: ['never', 'containers-enable']

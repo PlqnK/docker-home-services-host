@@ -28,8 +28,8 @@
 
 - name: 'Create rsync-client systemd service from template'
   ansible.builtin.template:
-    src: 'container-rsync-client.service.j2'
-    dest: '/etc/systemd/system/container-rsync-client.service'
+    src: 'container-run-rsync-client.service.j2'
+    dest: '/etc/systemd/system/container-run-rsync-client.service'
     owner: 'root'
     group: 'root'
     mode: '0644'
@@ -37,8 +37,8 @@
 
 - name: 'Copy rsync-client systemd timer'
   ansible.builtin.copy:
-    src: 'container-rsync-client.timer'
-    dest: '/etc/systemd/system/container-rsync-client.timer'
+    src: 'container-run-rsync-client.timer'
+    dest: '/etc/systemd/system/container-run-rsync-client.timer'
     owner: 'root'
     group: 'root'
     mode: '0664'
@@ -57,7 +57,7 @@
 
 - name: 'Enable and start rsync-client timer'
   ansible.builtin.systemd:
-    name: 'container-rsync-client.timer'
+    name: 'container-run-rsync-client.timer'
     daemon_reload: true
     enabled: true
     state: 'started'

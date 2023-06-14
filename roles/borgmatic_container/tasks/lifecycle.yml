@@ -1,13 +1,13 @@
 ---
 - name: 'Stop borgmatic timer'
   ansible.builtin.systemd:
-    name: 'container-borgmatic.timer'
+    name: 'container-run-borgmatic.timer'
     state: 'stopped'
   tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
 
 - name: 'Disable borgmatic timer'
   ansible.builtin.systemd:
-    name: 'container-borgmatic.timer'
+    name: 'container-run-borgmatic.timer'
     enabled: false
   tags: ['never', 'containers-disable']
 
@@ -21,12 +21,12 @@
 
 - name: 'Start borgmatic timer'
   ansible.builtin.systemd:
-    name: 'container-borgmatic.timer'
+    name: 'container-run-borgmatic.timer'
     state: 'started'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
 - name: 'Enable borgmatic timer'
   ansible.builtin.systemd:
-    name: 'container-borgmatic.timer'
+    name: 'container-run-borgmatic.timer'
     enabled: true
   tags: ['never', 'containers-enable']

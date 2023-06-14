@@ -40,8 +40,8 @@
 
 - name: 'Create vdirsyncer systemd service from template'
   ansible.builtin.template:
-    src: 'container-vdirsyncer.service.j2'
-    dest: '/etc/systemd/system/container-vdirsyncer.service'
+    src: 'container-run-vdirsyncer.service.j2'
+    dest: '/etc/systemd/system/container-run-vdirsyncer.service'
     owner: 'root'
     group: 'root'
     mode: '0644'
@@ -49,8 +49,8 @@
 
 - name: 'Copy vdirsyncer systemd timer'
   ansible.builtin.copy:
-    src: 'container-vdirsyncer.timer'
-    dest: '/etc/systemd/system/container-vdirsyncer.timer'
+    src: 'container-run-vdirsyncer.timer'
+    dest: '/etc/systemd/system/container-run-vdirsyncer.timer'
     owner: 'root'
     group: 'root'
     mode: '0664'
@@ -66,7 +66,7 @@
 
 - name: 'Enable and start vdirsyncer timer'
   ansible.builtin.systemd:
-    name: 'container-vdirsyncer.timer'
+    name: 'container-run-vdirsyncer.timer'
     daemon_reload: true
     enabled: true
     state: 'started'

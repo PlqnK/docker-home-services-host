@@ -22,8 +22,8 @@
 
 - name: 'Create autorestic systemd service from template'
   ansible.builtin.template:
-    src: 'container-autorestic.service.j2'
-    dest: '/etc/systemd/system/container-autorestic.service'
+    src: 'container-run-autorestic.service.j2'
+    dest: '/etc/systemd/system/container-run-autorestic.service'
     owner: 'root'
     group: 'root'
     mode: '0644'
@@ -31,8 +31,8 @@
 
 - name: 'Copy autorestic systemd timer'
   ansible.builtin.copy:
-    src: 'container-autorestic.timer'
-    dest: '/etc/systemd/system/container-autorestic.timer'
+    src: 'container-run-autorestic.timer'
+    dest: '/etc/systemd/system/container-run-autorestic.timer'
     owner: 'root'
     group: 'root'
     mode: '0664'
@@ -48,7 +48,7 @@
 
 - name: 'Enable and start autorestic timer'
   ansible.builtin.systemd:
-    name: 'container-autorestic.timer'
+    name: 'container-run-autorestic.timer'
     daemon_reload: true
     enabled: true
     state: 'started'

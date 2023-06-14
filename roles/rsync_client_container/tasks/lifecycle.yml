@@ -1,13 +1,13 @@
 ---
 - name: 'Stop rsync-client timer'
   ansible.builtin.systemd:
-    name: 'container-rsync-client.timer'
+    name: 'container-run-rsync-client.timer'
     state: 'stopped'
   tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
 
 - name: 'Disable rsync-client timer'
   ansible.builtin.systemd:
-    name: 'container-rsync-client.timer'
+    name: 'container-run-rsync-client.timer'
     enabled: false
   tags: ['never', 'containers-disable']
 
@@ -21,12 +21,12 @@
 
 - name: 'Start rsync-client timer'
   ansible.builtin.systemd:
-    name: 'container-rsync-client.timer'
+    name: 'container-run-rsync-client.timer'
     state: 'started'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
 - name: 'Enable rsync-client timer'
   ansible.builtin.systemd:
-    name: 'container-rsync-client.timer'
+    name: 'container-run-rsync-client.timer'
     enabled: true
   tags: ['never', 'containers-enable']

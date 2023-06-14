@@ -32,8 +32,8 @@
 
 - name: 'Create mbsync systemd service from template'
   ansible.builtin.template:
-    src: 'container-mbsync.service.j2'
-    dest: '/etc/systemd/system/container-mbsync.service'
+    src: 'container-run-mbsync.service.j2'
+    dest: '/etc/systemd/system/container-run-mbsync.service'
     owner: 'root'
     group: 'root'
     mode: '0644'
@@ -41,8 +41,8 @@
 
 - name: 'Copy mbsync systemd timer'
   ansible.builtin.copy:
-    src: 'container-mbsync.timer'
-    dest: '/etc/systemd/system/container-mbsync.timer'
+    src: 'container-run-mbsync.timer'
+    dest: '/etc/systemd/system/container-run-mbsync.timer'
     owner: 'root'
     group: 'root'
     mode: '0664'
@@ -58,7 +58,7 @@
 
 - name: 'Enable and start mbsync timer'
   ansible.builtin.systemd:
-    name: 'container-mbsync.timer'
+    name: 'container-run-mbsync.timer'
     daemon_reload: true
     enabled: true
     state: 'started'
