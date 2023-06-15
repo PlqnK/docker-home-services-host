@@ -14,7 +14,7 @@ podman run \
 --tz={{ timezone }} \
 --env TZ={{ timezone }} \
 --env HEALTHCHECKS_UUID={{ rsync_client.healthchecks_uuid }} \
---env BACKUP_HOSTS=\"{% for host in groups['containers_hosts'] %}{{ hostvars[host].ansible_host }}{{ " " if not loop.last else "" }}{% endfor %}\" \
+--env BACKUP_HOSTS="{% for host in groups['containers_hosts'] %}{{ hostvars[host].ansible_host }}{{ " " if not loop.last else "" }}{% endfor %}" \
 --env REMOTE_PATH={{ containers_storage_path }}/data \
 --env LOCAL_PATH={{ nfs_mounts_path }}/backups/servers \
 --volume {{ containers_storage_path }}/config/rsync-client/backup-servers.sh:/app/backup-servers.sh:ro,Z \
