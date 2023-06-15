@@ -28,16 +28,16 @@
 
 PATH=~/.local/bin:$PATH
 
-echo "Pinging Healthchecks.io: Start"
-curl -fsS -m 10 --retry 5 -o /dev/null "https://healthchecks.{{ domain_name }}/ping/${HEALTHCHECKS_UUID}/start"
+echo "Pinging Healthchecks: start"
+curl -fsS -m 10 --retry 5 -o /dev/null "https://${HEALTHCHECKS_URL}/${HEALTHCHECKS_UUID}/start"
 echo "Synchronizing DAV account(s)..."
 if vdirsyncer discover && vdirsyncer metasync && vdirsyncer sync; then
-  echo "Synchronization complete!"
-  echo "Pinging Healthchecks.io: Success"
-  curl -fsS -m 10 --retry 5 -o /dev/null "https://healthchecks.{{ domain_name }}/ping/${HEALTHCHECKS_UUID}"
+  echo "Synchronization completed successfully!"
+  echo "Pinging Healthchecks: success"
+  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HEALTHCHECKS_URL}/${HEALTHCHECKS_UUID}"
 else
   echo "Error while synchronizing DAV account(s)!"
-  echo "Pinging Healthchecks.io: Fail"
-  curl -fsS -m 10 --retry 5 -o /dev/null "https://healthchecks.{{ domain_name }}/ping/${HEALTHCHECKS_UUID}/fail"
+  echo "Pinging Healthchecks: fail"
+  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HEALTHCHECKS_URL}/${HEALTHCHECKS_UUID}/fail"
   exit 1
 fi

@@ -26,16 +26,28 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-echo "Pinging Healthchecks.io: Start"
-curl -fsS -m 10 --retry 5 -o /dev/null "https://healthchecks.{{ domain_name }}/ping/${HEALTHCHECKS_UUID}/start"
-echo "Synchronizing IMAP account(s)..."
-if mbsync -c /config/mbsync.rc -a -V; then
-  echo "Synchronization complete!"
-  echo "Pinging Healthchecks.io: Success"
-  curl -fsS -m 10 --retry 5 -o /dev/null "https://healthchecks.{{ domain_name }}/ping/${HEALTHCHECKS_UUID}"
+sync_errors=0
+
+echo "Pinging Healthchecks: start"
+wget -T 10 -O- -q "https://${HEALTHCHECKS_URL}/${HEALTHCHECKS_UUID}/start"
+echo "Begining servers backup..."
+for host in ${BACKUP_HOSTS}; do
+  echo "Rsyncing ${host}..."
+  mkdir -p "${LOCAL_PATH}/${host}/${REMOTE_PATH}"
+  if rsync -e "ssh -i /root/id_ed25519 -p 2222" -a --delete root@"${host}":"${REMOTE_PATH}/" "${LOCAL_PATH}/${host}/${REMOTE_PATH}/"; then
+    echo "Successfuly synced ${host}!"
+  else
+    echo "Error while syncing ${host}!"
+    sync_errors=$((sync_errors + 1))
+  fi
+done
+if [ ${sync_errors} -eq 0 ]; then
+  echo "Rsyncing completed successfully!"
+  echo "Pinging Healthchecks: success"
+  wget -T 10 -O- -q "https://${HEALTHCHECKS_URL}/${HEALTHCHECKS_UUID}"
 else
-  echo "Error while synchronizing IMAP account(s)!"
-  echo "Pinging Healthchecks.io: Fail"
-  curl -fsS -m 10 --retry 5 -o /dev/null "https://healthchecks.{{ domain_name }}/ping/${HEALTHCHECKS_UUID}/fail"
+  echo "Error while rsyncing server(s)!"
+  echo "Pinging Healthchecks: fail"
+  wget -T 10 -O- -q "https://${HEALTHCHECKS_URL}/${HEALTHCHECKS_UUID}/fail"
   exit 1
 fi

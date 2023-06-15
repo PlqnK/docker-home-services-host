@@ -15,9 +15,9 @@
     group: 'root'
     mode: '0644'
 
-- name: 'Template mbsync script'
-  ansible.builtin.template:
-    src: 'mbsync.sh.j2'
+- name: 'Copy mbsync sync script'
+  ansible.builtin.copy:
+    src: 'mbsync.sh'
     dest: '{{ containers_storage_path }}/config/mbsync/mbsync.sh'
     owner: 'root'
     group: 'root'
@@ -48,7 +48,7 @@
     mode: '0664'
   notify: 'Reload systemd daemon'
 
-- name: 'Add mbsync script to /usr/local/bin'
+- name: 'Add mbsync command script to /usr/local/bin'
   ansible.builtin.template:
     src: 'mbsync.j2'
     dest: '/usr/local/bin/mbsync'

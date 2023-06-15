@@ -25,6 +25,7 @@ ExecStart=/usr/bin/podman container run \
 	--secret vdirsyncer_caldav_password \
 	--tz={{ timezone }} \
 	--env TZ={{ timezone }} \
+	--env HEALTHCHECKS_URL=healthchecks.{{ domain_name }}/ping \
 	--env HEALTHCHECKS_UUID={{ vdirsyncer.healthchecks_uuid }} {{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }}
 Type=forking
 
