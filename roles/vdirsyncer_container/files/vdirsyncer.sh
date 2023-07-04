@@ -26,8 +26,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-PATH=~/.local/bin:$PATH
-
 echo "Pinging Healthchecks: start"
 curl -fsS -m 10 --retry 5 -o /dev/null "https://${HEALTHCHECKS_URL}/${HEALTHCHECKS_UUID}/start"
 echo "Synchronizing DAV account(s)..."

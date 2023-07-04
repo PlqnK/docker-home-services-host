@@ -8,7 +8,7 @@ fi
 podman run \
 --rm \
 --interactive \
---entrypoint /home/vdirsyncer/.local/bin/vdirsyncer \
+--entrypoint vdirsyncer \
 --hostname {{ ansible_hostname }} \
 --network web-egress \
 --tz={{ timezone }} \
