@@ -37,7 +37,7 @@
       - 'web-egress'
       - 'common-internal'
     expose:
-      - 8080
+      - 25600
     volume:
       - '{{ containers_storage_path }}/data/komga:/config:Z'
       - '{{ containers_storage_path }}/runtime/komga:/tmp:Z'
@@ -51,7 +51,7 @@
       traefik.http.routers.komga.rule: 'Host(`komga.{{ domain_name }}`)'
       traefik.http.routers.komga.entrypoints: 'websecure'
       traefik.http.routers.komga.middlewares: 'set-security-headers@file'
-      traefik.http.services.komga.loadbalancer.server.port: '8080'
+      traefik.http.services.komga.loadbalancer.server.port: '25600'
     generate_systemd:
       names: true
       new: true
