@@ -12,7 +12,7 @@ containers_images_tags:
   uptime_kuma: '1'
   healthchecks:
     postgres: '15'
-    app: 'v2.9.2'
+    app: 'v2.10'
   prometheus: 'latest'
   loki: 'latest'
   syslog_ng: 'latest'
@@ -52,7 +52,7 @@ containers_images_tags:
   sabnzbd: 'latest'
   flaresolverr: 'latest'
   unpackerr: 'latest'
-  recyclarr: '4'
+  recyclarr: '5'
   prowlarr: 'latest'
   radarr: 'latest'
   sonarr: 'latest'
