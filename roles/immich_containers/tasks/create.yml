@@ -203,11 +203,9 @@
       - 3003
     volume:
       - '{{ containers_storage_path }}/runtime/immich-machine-learning:/cache:Z'
-      - '{{ nfs_mounts_path }}/data/containers/immich:/usr/src/app/upload:slave'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
-      UPLOAD_LOCATION: '/usr/src/app/upload'
       IMMICH_WEB_URL: 'http://immich-web:3000'
       IMMICH_SERVER_URL: 'http://immich-server:3001'
       IMMICH_MACHINE_LEARNING_URL: 'http://immich-machine-learning:3003'
