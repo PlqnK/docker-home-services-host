@@ -43,7 +43,7 @@
     - '{{ containers_images.immich.postgres }}:{{ containers_images_tags.immich.postgres }}'
     - '{{ containers_images.immich.redis }}:{{ containers_images_tags.immich.redis }}'
     - '{{ containers_images.immich.typesense }}:{{ containers_images_tags.immich.typesense }}'
-    - '{{ containers_images.immich.machine-learning }}:{{ containers_images_tags.immich.machine-learning }}'
+    - '{{ containers_images.immich.machine_learning }}:{{ containers_images_tags.immich.machine_learning }}'
     - '{{ containers_images.immich.server }}:{{ containers_images_tags.immich.server }}'
     - '{{ containers_images.immich.web }}:{{ containers_images_tags.immich.web }}'
     - '{{ containers_images.immich.proxy }}:{{ containers_images_tags.immich.proxy }}'
