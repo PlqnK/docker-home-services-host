@@ -23,6 +23,7 @@
     name: 'plex-external'
     internal: false
     ipv6: '{{ containers_ipv6.enable }}'
+    # See https://github.com/containers/netavark/issues/709
     #opt:
     #  isolate: true
 
