@@ -1,0 +1,44 @@
+---
+- name: 'Ensure the user really wants to remove the mbsync container'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE MBSYNC CONTAINER?\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop mbsync timer'
+  ansible.builtin.systemd:
+    name: 'container-run-mbsync.timer'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  register: systemd_unit
+  failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
+
+- name: 'Remove mbsync container systemd units'
+  ansible.builtin.file:
+    path: '/etc/systemd/system/{{ item }}'
+    state: 'absent'
+  loop:
+    - 'container-run-mbsync.timer'
+    - 'container-run-mbsync.service'
+  notify: 'Reload systemd daemon'
+
+- name: 'Remove mbsync command script from /usr/local/bin'
+  ansible.builtin.file:
+    path: '/usr/local/bin/mbsync'
+    state: 'absent'
+
+- name: 'Remove mbsync secret'
+  containers.podman.podman_secret:
+    name: 'mbsync_imap_password'
+    state: 'absent'
+
+- name: 'Remove mbsync config bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/config/mbsync'
+    state: 'absent'

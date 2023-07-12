@@ -7,3 +7,7 @@
 
     - name: 'Lifecycle'
       ansible.builtin.import_tasks: 'lifecycle.yml'
+
+    - name: 'Remove'
+      ansible.builtin.import_tasks: 'remove.yml'
+      tags: ['never', 'containers-remove']

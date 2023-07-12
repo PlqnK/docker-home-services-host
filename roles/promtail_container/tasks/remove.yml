@@ -1,0 +1,39 @@
+---
+- name: 'Ensure the user really wants to remove the Promtail container'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE PROMTAIL CONTAINER?\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop Promtail container'
+  ansible.builtin.systemd:
+    name: 'container-promtail.service'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  register: systemd_unit
+  failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
+
+- name: 'Remove Promtail container systemd unit'
+  ansible.builtin.file:
+    path: '/etc/systemd/system/container-promtail.service'
+    state: 'absent'
+  notify: 'Reload systemd daemon'
+
+- name: 'Remove Promtail secret'
+  containers.podman.podman_secret:
+    name: 'promtail_loki_password'
+    state: 'absent'
+
+- name: 'Remove Promtail bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item }}'
+    state: 'absent'
+  loop:
+    - 'config/promtail'
+    - 'runtime/promtail'

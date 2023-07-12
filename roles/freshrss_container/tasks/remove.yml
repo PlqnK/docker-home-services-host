@@ -1,0 +1,49 @@
+---
+- name: 'Ensure the user really wants to remove the FreshRSS stack'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE FRESHRSS STACK?\nTHIS ACTION WILL DELETE ALL FRESHRSS APP DATA AND IS IRREVERSIBLE!\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop FreshRSS container'
+  ansible.builtin.systemd:
+    name: 'container-freshrss.service'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  register: systemd_unit
+  failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
+
+- name: 'Remove FreshRSS container systemd unit'
+  ansible.builtin.file:
+    path: '/etc/systemd/system/container-freshrss.service'
+    state: 'absent'
+  notify: 'Reload systemd daemon'
+
+- name: 'Remove FreshRSS data bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/data/freshrss'
+    state: 'absent'
+
+- name: 'Check if provisioning a Vagrant VM'
+  ansible.builtin.getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: false
+
+- name: 'Remove FreshRSS CNAME record'
+  community.general.gandi_livedns:
+    api_key: '{{ gandi_api_key }}'
+    domain: '{{ domain_name }}'
+    type: 'CNAME'
+    record: 'freshrss'
+    values:
+      - '{{ ansible_hostname }}'
+    state: 'absent'
+  when: (getent_passwd.vagrant is none)
+  delegate_to: 'localhost'
