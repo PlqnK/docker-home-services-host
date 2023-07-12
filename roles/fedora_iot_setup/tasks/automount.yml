@@ -20,7 +20,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Flush handlers'
-  meta: 'flush_handlers'
+  ansible.builtin.meta: 'flush_handlers'
 
 - name: 'Enable and start systemd automount units'
   ansible.builtin.systemd:

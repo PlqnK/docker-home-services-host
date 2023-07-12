@@ -1,6 +1,6 @@
 ---
 # https://bugzilla.redhat.com/show_bug.cgi?id=2170957
-- name: 'Fix /var/lib/parsec/mappings ownership'
+- name: 'Fix /var/lib/parsec/mappings ownership' # noqa: risky-file-permissions
   ansible.builtin.file:
     path: '/var/lib/parsec/mappings'
     owner: 'parsec'

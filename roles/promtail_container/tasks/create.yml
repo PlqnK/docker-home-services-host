@@ -32,7 +32,7 @@
     command: '-config.file=/etc/promtail/promtail.yaml'
     security_opt:
       - 'label=disable'
-    network: '{{ ["web-egress","common-internal"] if inventory_hostname == "monitoring" else ["web-egress"] }}'
+    network: '{{ ["web-egress", "common-internal"] if inventory_hostname == "monitoring" else ["web-egress"] }}'
     expose: '{{ [1601] if inventory_hostname == "monitoring" else omit }}'
     volume:
       - '{{ containers_storage_path }}/config/promtail/promtail.yaml:/etc/promtail/promtail.yaml:Z'
