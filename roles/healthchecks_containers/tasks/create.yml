@@ -28,25 +28,21 @@
     path: '{{ item.path }}'
     owner: '{{ item.owner }}'
     group: '{{ item.group }}'
-    mode: '{{ item.mode }}'
+    mode: '0700'
     state: 'directory'
   loop:
     - path: '{{ containers_storage_path }}/env/healthchecks-app'
       owner: 'root'
       group: 'root'
-      mode: '0700'
     - path: '{{ containers_storage_path }}/config/healthchecks-app'
       owner: 'root'
       group: 'root'
-      mode: '0700'
     - path: '{{ containers_storage_path }}/data/healthchecks-postgres'
       owner: 'root'
       group: 'root'
-      mode: '0700'
     - path: '{{ containers_storage_path }}/runtime/healthchecks-postgres'
       owner: 999
       group: 999
-      mode: '0700'
 
 - name: 'Download Healthchecks assets'
   ansible.builtin.get_url:

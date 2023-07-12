@@ -50,22 +50,22 @@
     mode: '0700'
     state: 'directory'
   loop:
-    - path: 'runtime/photoprism-mariadb'
-      owner: 999
-      group: 999
-    - path: 'data/photoprism-mariadb'
-      owner: 'root'
-      group: 'root'
     - path: 'env/photoprism'
       owner: 'root'
       group: 'root'
+    - path: 'data/photoprism-mariadb'
+      owner: 'root'
+      group: 'root'
+    - path: 'data/photoprism'
+      owner: 'root'
+      group: 'root'
+    - path: 'runtime/photoprism-mariadb'
+      owner: 999
+      group: 999
     - path: 'runtime/photoprism/sidecar'
       owner: 'root'
       group: 'root'
     - path: 'runtime/photoprism/cache'
-      owner: 'root'
-      group: 'root'
-    - path: 'data/photoprism'
       owner: 'root'
       group: 'root'
 
