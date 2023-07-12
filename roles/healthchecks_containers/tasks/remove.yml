@@ -1,7 +1,7 @@
 ---
 - name: 'Ensure the user really wants to remove the Healthchecks stack'
   ansible.builtin.pause:
-    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE HEALTHCHECKS STACK?\nTHIS ACTION WILL DELETE ALL HEALTHCHECKS DATA AND IS IRREVERSIBLE!\nAnswer yes in capital letters to confirm"
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE HEALTHCHECKS STACK?\nTHIS ACTION WILL DELETE ALL HEALTHCHECKS APP DATA AND IS IRREVERSIBLE!\nAnswer yes in capital letters to confirm"
     echo: true
   register: remove_prompt
 
@@ -32,6 +32,7 @@
     - 'container-exec-healthchecks-postgres-dump.service'
     - 'container-healthchecks-app.service'
     - 'container-healthchecks-postgres.service'
+  notify: 'Reload systemd daemon'
 
 - name: 'Remove Healthchecks stack network from firewalld trusted zone'
   block:
@@ -69,5 +70,6 @@
     state: 'absent'
   loop:
     - 'env/healthchecks-app'
+    - 'config/healthchecks-app'
     - 'data/healthchecks-postgres'
     - 'runtime/healthchecks-postgres'

@@ -1,7 +1,7 @@
 ---
 - name: 'Ensure the user really wants to remove the Uptime Kuma container'
   ansible.builtin.pause:
-    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE UPTIME KUMA STACK?\nTHIS ACTION WILL DELETE ALL UPTIME KUMA DATA AND IS IRREVERSIBLE!\nAnswer yes in capital letters to confirm"
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE UPTIME KUMA CONTAINER?\nTHIS ACTION WILL DELETE ALL UPTIME KUMA APP DATA AND IS IRREVERSIBLE!\nAnswer yes in capital letters to confirm"
     echo: true
   register: remove_prompt
 
@@ -23,8 +23,9 @@
   ansible.builtin.file:
     path: '/etc/systemd/system/container-uptime-kuma.service'
     state: 'absent'
+  notify: 'Reload systemd daemon'
 
-- name: 'Remove Uptime Kuma container bind mount path'
+- name: 'Remove Uptime Kuma data bind mount path'
   ansible.builtin.file:
     path: '{{ containers_storage_path }}/data/uptime-kuma'
     state: 'absent'
