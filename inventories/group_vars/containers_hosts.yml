@@ -24,7 +24,7 @@ containers_images_tags:
   nextcloud:
     mariadb: '10.11'
     redis: '7'
-    app: '26'
+    app: '27'
   collabora_online: 'latest'
   photoprism:
     mariadb: '10.11'
