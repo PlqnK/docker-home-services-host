@@ -154,7 +154,8 @@
       PHOTOPRISM_DATABASE_NAME: '{{ photoprism.mariadb.database }}'
       PHOTOPRISM_SIDECAR_PATH: '/photoprism/sidecar'
       PHOTOPRISM_CACHE_PATH: '/photoprism/cache'
-      PHOTOPRISM_ORIGINALS_LIMIT: 5000
+      PHOTOPRISM_ORIGINALS_LIMIT: '5000'
+      PHOTOPRISM_DISABLE_TLS: 'true'
     label:
       traefik.enable: 'true'
       traefik.docker.network: 'common-internal'
