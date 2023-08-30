@@ -1,4 +1,10 @@
 ---
+- name: 'Check if provisioning a Vagrant VM'
+  ansible.builtin.getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: false
+
 - name: 'Create Traefik stack networks'
   containers.podman.podman_network:
     name: '{{ item.name }}'
