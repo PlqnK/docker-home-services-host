@@ -23,7 +23,7 @@
     path: '{{ containers_storage_path }}/{{ item }}'
     owner: 'root'
     group: 33
-    mode: '0700'
+    mode: '0770'
     state: 'directory'
   loop:
     - 'data/freshrss/data'
