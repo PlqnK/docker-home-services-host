@@ -229,6 +229,9 @@
       - 'immich-postgres-internal'
     expose:
       - 3002
+    device:
+      - '/dev/dri/card1:/dev/dri/card1'
+      - '/dev/dri/renderD128:/dev/dri/renderD128'
     volume:
       - '{{ nfs_mounts_path }}/data/containers/immich:/usr/src/app/upload:slave'
     secrets:
@@ -271,6 +274,8 @@
     name: 'immich-server'
     image: '{{ containers_images.immich.server }}:{{ containers_images_tags.immich.server }}'
     command: 'start-server.sh'
+    sysctl:
+      net.ipv6.conf.all.disable_ipv6: '1'
     network:
       - 'web-egress'
       - 'immich-server-internal'
