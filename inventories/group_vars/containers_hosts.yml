@@ -32,7 +32,7 @@ containers_images_tags:
   immich:
     postgres: '15'
     redis: '7'
-    typesense: '0.24.1'
+    typesense: '0.25.0'
     machine_learning: 'release'
     server: 'release'
     web: 'release'
