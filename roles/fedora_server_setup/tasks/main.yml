@@ -1,0 +1,19 @@
+---
+- name: 'Configure OS'
+  when: (containers_list is not defined)
+  tags: ['os-setup']
+  block:
+    - name: 'Install packages'
+      ansible.builtin.import_tasks: 'packages.yml'
+
+    - name: 'Configure pam'
+      ansible.builtin.import_tasks: 'pam.yml'
+
+    - name: 'Configure firewalld'
+      ansible.builtin.import_tasks: 'firewalld.yml'
+
+    - name: 'Configure services'
+      ansible.builtin.import_tasks: 'services.yml'
+
+    - name: 'Configure Wireguard'
+      ansible.builtin.import_tasks: 'wireguard.yml'

@@ -1,0 +1,67 @@
+---
+- name: 'Template Wireguard comfiguration'
+  ansible.builtin.template:
+    src: 'wg0.conf.j2'
+    dest: '/etc/wireguard/wg0.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0600'
+
+- name: 'Enable and start wireguard tunnel'
+  ansible.builtin.systemd:
+    name: 'wg-quick@wg0.service'
+    enabled: true
+    state: 'started'
+
+- name: 'Accept Wireguard incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: 'wireguard'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+
+- name: 'Create firewalld VPN zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    permanent: true
+    state: 'present'
+  notify: 'Reload firewalld service'
+
+- name: 'Reload firewalld if VPN zone has been created'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Add wireguard interface to firewalld VPN zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    interface: 'wg0'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+
+- name: 'Get firewalld VPN zone information'
+  ansible.builtin.command:
+    cmd: 'firewall-cmd --info-zone=vpn'
+  register: firewalld_info_zone_vpn
+  changed_when: false
+
+- name: 'Enable firewalld VPN zone forwarding'
+  ansible.builtin.command:
+    cmd: 'firewall-cmd --permanent --zone=vpn --add-forward'
+  vars:
+    search_string: 'forward: no'
+  when: (search_string in firewalld_info_zone_vpn.stdout)
+  notify: 'Reload firewalld service'
+
+- name: 'Reload firewalld if forwarding has been enabled'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Add default services to firewalld VPN zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  loop:
+    - 'mdns'
+    - 'ssh'
