@@ -5,18 +5,51 @@
     key: 'vagrant'
     fail_key: false
 
-- name: 'Create Immich CNAME record'
-  community.general.gandi_livedns:
-    api_key: '{{ gandi_api_key }}'
-    domain: '{{ domain_name }}'
-    type: 'CNAME'
-    record: 'immich'
-    values:
-      - '{{ ansible_hostname }}'
-    ttl: 10800
-    state: 'present'
+- name: 'Manage Immich CNAME record'
   when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
+  block:
+    - name: 'Get Immich CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/immich/CNAME/'
+        method: 'GET'
+        status_code: [200, 404]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+      register: desec_rrsets_get
+
+    - name: 'Create Immich CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/'
+        method: 'POST'
+        status_code: [201]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          subname: 'immich'
+          type: 'CNAME'
+          ttl: 3600
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_post
+      when: (desec_rrsets_get.status == 404)
+      changed_when: (desec_rrsets_post.status == 201)
+
+    - name: 'Update Immich CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/immich/CNAME/'
+        method: 'PATCH'
+        status_code: [200]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_patch
+      when: (desec_rrsets_get.status == 200 and desec_rrsets_get.json.records != ["{{ ansible_fqdn }}."])
+      changed_when: (desec_rrsets_patch.status == 200)
 
 - name: 'Create Immich stack networks'
   containers.podman.podman_network:
