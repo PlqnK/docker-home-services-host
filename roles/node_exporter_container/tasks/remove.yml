@@ -31,6 +31,16 @@
     permanent: true
     immediate: true
     state: 'disabled'
+  when: ("home_hosts" in group_names)
+
+- name: 'Reject node_exporter incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: 'prometheus-node-exporter'
+    permanent: true
+    immediate: true
+    state: 'disabled'
+  when: ("cloud_hosts" in group_names)
 
 - name: 'Remove node_exporter config bind mount path'
   ansible.builtin.file:

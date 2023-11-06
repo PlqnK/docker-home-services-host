@@ -26,6 +26,16 @@
     permanent: true
     immediate: true
     state: 'enabled'
+  when: ("home_hosts" in group_names)
+
+- name: 'Accept SSH on port 2222 incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: 'ssh-alt'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  when: ("cloud_hosts" in group_names)
 
 - name: 'Create sshd-rsync network'
   containers.podman.podman_network:

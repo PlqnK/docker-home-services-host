@@ -48,6 +48,18 @@
     - 'http'
     - 'https'
 
+- name: 'Accept HTTP and HTTPS incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    service: '{{ item }}'
+    zone: 'vpn'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  loop:
+    - 'http'
+    - 'https'
+  when: ("cloud_hosts" in group_names)
+
 - name: 'Create Traefik stack bind mounts paths'
   ansible.builtin.file:
     path: '{{ containers_storage_path }}/{{ item }}'

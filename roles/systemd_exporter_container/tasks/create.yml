@@ -26,6 +26,16 @@
     permanent: true
     immediate: true
     state: 'enabled'
+  when: ("home_hosts" in group_names)
+
+- name: 'Accept systemd_exporter incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: 'prometheus-systemd-exporter'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  when: ("cloud_hosts" in group_names)
 
 - name: 'Create systemd_exporter network'
   containers.podman.podman_network:

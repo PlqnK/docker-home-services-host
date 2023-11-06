@@ -69,6 +69,18 @@
     - 'http'
     - 'https'
 
+- name: 'Reject HTTP and HTTPS incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: 'disabled'
+  loop:
+    - 'http'
+    - 'https'
+  when: ("cloud_hosts" in group_names)
+
 - name: 'Remove Traefik stack secret'
   containers.podman.podman_secret:
     name: 'traefik_desec_token'

@@ -5,6 +5,16 @@
     permanent: true
     immediate: true
     state: 'enabled'
+  when: ("home_hosts" in group_names)
+
+- name: 'Accept node_exporter incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: 'prometheus-node-exporter'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  when: ("cloud_hosts" in group_names)
 
 - name: 'Create node_exporter config bind mount path'
   ansible.builtin.file:

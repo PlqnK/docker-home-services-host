@@ -53,6 +53,16 @@
     permanent: true
     immediate: true
     state: 'disabled'
+  when: ("home_hosts" in group_names)
+
+- name: 'Reject SSH on port 2222 incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: 'ssh-alt'
+    permanent: true
+    immediate: true
+    state: 'disabled'
+  when: ("cloud_hosts" in group_names)
 
 - name: 'Remove ssh-alt firewalld service'
   ansible.builtin.file:
