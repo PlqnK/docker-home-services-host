@@ -89,8 +89,8 @@
 
 - name: 'Create Traefik stack secret'
   containers.podman.podman_secret:
-    name: 'traefik_gandi_api_key'
-    data: '{{ gandi_api_key }}'
+    name: 'traefik_desec_token'
+    data: '{{ desec_token }}'
     skip_existing: true
     state: 'present'
 
@@ -142,11 +142,11 @@
       - '{{ containers_storage_path }}/config/traefik/providers:/etc/traefik/providers:Z'
       - '{{ containers_storage_path }}/data/traefik/acme.json:/acme.json:Z'
     secrets:
-      - 'traefik_gandi_api_key'
+      - 'traefik_desec_token'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
-      GANDIV5_API_KEY_FILE: '/run/secrets/traefik_gandi_api_key'
+      DESEC_TOKEN_FILE: '/run/secrets/traefik_desec_token'
     label:
       traefik.enable: 'true'
       traefik.docker.network: 'common-internal'

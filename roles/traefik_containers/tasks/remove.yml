@@ -71,7 +71,7 @@
 
 - name: 'Remove Traefik stack secret'
   containers.podman.podman_secret:
-    name: 'traefik_gandi_api_key'
+    name: 'traefik_desec_token'
     state: 'absent'
 
 - name: 'Remove Traefik bind mounts paths'

@@ -45,5 +45,7 @@
   email = "{{ admin_user.email }}"
   storage = "acme.json"
   [certificatesResolvers.le.acme.dnsChallenge]
-    provider = "gandiv5"
+    provider = "desec"
+    delayBeforeCheck = 60
+    resolvers = ["1.1.1.1:53", "1.0.0.1:53"]
 {% endif %}
