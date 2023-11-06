@@ -7,6 +7,14 @@
     mode: '0700'
     state: 'directory'
 
+- name: 'Create mbsync email store path'
+  ansible.builtin.file:
+    path: '{{ nfs_mounts_path }}/backups/groupware/emails/{{ mbsync.imap.name }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+
 - name: 'Create mbsync config from template'
   ansible.builtin.template:
     src: 'mbsync.rc.j2'
