@@ -15,3 +15,8 @@
   ansible.builtin.systemd:
     name: 'firewalld.service'
     state: 'reloaded'
+
+- name: 'Reload fail2ban service'
+  ansible.builtin.systemd:
+    name: 'fail2ban.service'
+    state: 'reloaded'

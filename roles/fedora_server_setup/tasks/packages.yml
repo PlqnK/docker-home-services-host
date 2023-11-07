@@ -3,6 +3,7 @@
   ansible.builtin.dnf:
     name:
       - 'firewalld'
+      - 'fail2ban'
       - 'wireguard-tools'
       - 'podman'
       - 'checkpolicy'
