@@ -12,6 +12,9 @@
     - name: 'Configure firewalld'
       ansible.builtin.import_tasks: 'firewalld.yml'
 
+    - name: 'Configure fail2ban'
+      ansible.builtin.import_tasks: 'fail2ban.yml'
+
     - name: 'Configure services'
       ansible.builtin.import_tasks: 'services.yml'
 
