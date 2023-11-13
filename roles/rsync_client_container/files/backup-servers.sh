@@ -31,10 +31,20 @@ sync_errors=0
 echo "Pinging Healthchecks: start"
 wget -T 10 -O- -q "https://${HEALTHCHECKS_URL}/${HEALTHCHECKS_UUID}/start"
 echo "Begining servers backup..."
-for host in ${BACKUP_HOSTS}; do
-  echo "Rsyncing ${host}..."
-  mkdir -p "${LOCAL_PATH}/${host}/${REMOTE_PATH}"
-  if rsync -e "ssh -i /root/id_ed25519 -p 2222" -a --delete root@"${host}":"${REMOTE_PATH}/" "${LOCAL_PATH}/${host}/${REMOTE_PATH}/"; then
+for host in ${CONTAINERS_HOSTS}; do
+  echo "Rsyncing container host ${host}..."
+  mkdir -p "${CONTAINERS_HOSTS_LOCAL_PATH}/${host}/${CONTAINERS_HOSTS_REMOTE_PATH}"
+  if rsync -e "ssh -i /root/id_ed25519 -p 2222" -a --delete root@"${host}":"${CONTAINERS_HOSTS_REMOTE_PATH}/" "${CONTAINERS_HOSTS_LOCAL_PATH}/${host}/${CONTAINERS_HOSTS_REMOTE_PATH}/"; then
+    echo "Successfuly synced ${host}!"
+  else
+    echo "Error while syncing ${host}!"
+    sync_errors=$((sync_errors + 1))
+  fi
+done
+for host in ${DOCUMENTS_HOSTS}; do
+  echo "Rsyncing documents host ${host}..."
+  mkdir -p "${DOCUMENTS_HOSTS_LOCAL_PATH}/${host}/${DOCUMENTS_HOSTS_REMOTE_PATH}"
+  if rsync -e "ssh -i /root/id_ed25519 -p 2222" -a --delete root@"${host}":"${DOCUMENTS_HOSTS_REMOTE_PATH}/" "${DOCUMENTS_HOSTS_LOCAL_PATH}/${host}/${DOCUMENTS_HOSTS_REMOTE_PATH}/"; then
     echo "Successfuly synced ${host}!"
   else
     echo "Error while syncing ${host}!"

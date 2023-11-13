@@ -2,9 +2,9 @@
 Description=Podman container-exec-nextcloud-mariadb-dump.service
 Wants=network-online.target
 After=network-online.target
-Wants=ping-healthchecks@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:start.service
-OnSuccess=ping-healthchecks@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:success.service
-OnFailure=ping-healthchecks@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:failure.service
+Wants=ping-healthchecks-io@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:start.service
+OnSuccess=ping-healthchecks-io@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:success.service
+OnFailure=ping-healthchecks-io@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:failure.service
 
 [Service]
 Restart=no

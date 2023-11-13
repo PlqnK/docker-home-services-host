@@ -48,15 +48,18 @@
   roles:
     - 'home_assistant_container'
 
-- name: 'Media containers'
-  hosts: 'media'
+- name: 'Document containers'
+  hosts: 'documents'
   roles:
     - 'nextcloud_containers'
     - 'collabora_online_container'
-    - 'photoprism_containers'
     - 'immich_containers'
     - 'ttrss_containers'
     - 'freshrss_container'
+
+- name: 'Media containers'
+  hosts: 'medias'
+  roles:
     - 'plex_container'
     - 'tautulli_container'
     - 'calibre_container'

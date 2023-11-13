@@ -1,16 +1,18 @@
 location:
   source_directories:
-    - '{{ nfs_mounts_path }}/data/containers/nextcloud'
+    - '{{ nfs_mounts_path }}/backups/documents'
   repositories:
     - path: '{{ borgmatic.documents.repository }}'
       label: 'borgbase-documents'
   exclude_patterns:
-    - '{{ nfs_mounts_path }}/data/containers/nextcloud/files_external'
-    - '{{ nfs_mounts_path }}/data/containers/nextcloud/appdata_*/preview'
-    - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/cache'
-    - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/files_trashbin'
-    - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/files_versions'
-    - '{{ nfs_mounts_path }}/data/containers/nextcloud/*/uploads'
+    - '{{ nfs_mounts_path }}/backups/documents/immich/encoded-video'
+    - '{{ nfs_mounts_path }}/backups/documents/immich/thumbs'
+    - '{{ nfs_mounts_path }}/backups/documents/nextcloud/files_external'
+    - '{{ nfs_mounts_path }}/backups/documents/nextcloud/appdata_*/preview'
+    - '{{ nfs_mounts_path }}/backups/documents/nextcloud/*/cache'
+    - '{{ nfs_mounts_path }}/backups/documents/nextcloud/*/files_trashbin'
+    - '{{ nfs_mounts_path }}/backups/documents/nextcloud/*/files_versions'
+    - '{{ nfs_mounts_path }}/backups/documents/nextcloud/*/uploads'
     - '*.log'
     - '*.log.[0123456789]'
   exclude_if_present:

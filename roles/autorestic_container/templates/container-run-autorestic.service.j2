@@ -18,9 +18,9 @@ ExecStart=/usr/bin/podman container run \
 	--network web-egress \
 	--volume {{ containers_storage_path }}/runtime/autorestic/lock:/config:Z \
 	--volume {{ containers_storage_path }}/config/autorestic/autorestic.yml:/config/autorestic.yml:Z \
+	--volume {{ nfs_mounts_path }}/backups/documents:{{ nfs_mounts_path }}/backups/documents:slave,ro \
 	--volume {{ nfs_mounts_path }}/backups/groupware:{{ nfs_mounts_path }}/backups/groupware:slave,ro \
 	--volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave,ro \
-	--volume {{ nfs_mounts_path }}/data/containers/nextcloud:{{ nfs_mounts_path }}/data/containers/nextcloud:slave,ro \
 	--volume {{ nfs_mounts_path }}/medias/audiodrama:{{ nfs_mounts_path }}/medias/audiodrama:slave,ro \
 	--volume {{ nfs_mounts_path }}/medias/audiobooks:{{ nfs_mounts_path }}/medias/audiobooks:slave,ro \
 	--volume {{ nfs_mounts_path }}/medias/books:{{ nfs_mounts_path }}/medias/books:slave,ro \

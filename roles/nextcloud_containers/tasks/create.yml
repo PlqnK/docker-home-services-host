@@ -105,6 +105,14 @@
       owner: 33
       group: 33
 
+- name: 'Create Nextcloud documents storage path'
+  ansible.builtin.file:
+    path: '{{ volume_mount_path }}/documents/nextcloud'
+    owner: 33
+    group: 33
+    mode: '0700'
+    state: 'directory'
+
 - name: 'Create MariaDB dump config from template'
   ansible.builtin.template:
     src: 'my.cnf.j2'
@@ -196,7 +204,7 @@
       - 80
     volume:
       - '{{ containers_storage_path }}/data/nextcloud-app:/var/www/html:z'
-      - '{{ nfs_mounts_path }}/data/containers/nextcloud:/var/www/html/data:slave'
+      - '{{ volume_mount_path }}/documents/nextcloud:/var/www/html/data:z'
     secrets:
       - 'nextcloud_mariadb_user'
       - 'nextcloud_mariadb_password'
@@ -251,7 +259,7 @@
       - 'nextcloud-redis-internal'
     volume:
       - '{{ containers_storage_path }}/data/nextcloud-app:/var/www/html:z'
-      - '{{ nfs_mounts_path }}/data/containers/nextcloud:/var/www/html/data:slave'
+      - '{{ volume_mount_path }}/documents/nextcloud:/var/www/html/data:z'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'

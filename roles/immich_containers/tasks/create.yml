@@ -120,6 +120,14 @@
       owner: 'root'
       group: 'root'
 
+- name: 'Create Immich pictures storage path'
+  ansible.builtin.file:
+    path: '{{ volume_mount_path }}/documents/immich'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+
 - name: 'Create Immich stack secrets'
   containers.podman.podman_secret:
     name: '{{ item.name }}'
@@ -262,11 +270,8 @@
       - 'immich-postgres-internal'
     expose:
       - 3002
-    device:
-      - '/dev/dri/card1:/dev/dri/card1'
-      - '/dev/dri/renderD128:/dev/dri/renderD128'
     volume:
-      - '{{ nfs_mounts_path }}/data/containers/immich:/usr/src/app/upload:slave'
+      - '{{ volume_mount_path }}/documents/immich:/usr/src/app/upload:z'
     secrets:
       - 'immich_postgres_user'
       - 'immich_postgres_password'
@@ -318,7 +323,7 @@
     expose:
       - 3001
     volume:
-      - '{{ nfs_mounts_path }}/data/containers/immich:/usr/src/app/upload:slave'
+      - '{{ volume_mount_path }}/documents/immich:/usr/src/app/upload:z'
     secrets:
       - 'immich_postgres_user'
       - 'immich_postgres_password'

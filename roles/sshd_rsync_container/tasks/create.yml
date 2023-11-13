@@ -107,6 +107,36 @@
       path: '/etc/systemd/system'
       restart_policy: 'on-failure'
     state: 'created'
+  when: ("home_hosts" in group_names)
+
+- name: 'Create sshd-rsync container'
+  containers.podman.podman_container:
+    name: 'sshd-rsync'
+    image: '{{ containers_images.sshd_rsync }}:{{ containers_images_tags.sshd_rsync }}'
+    # This container needs access to other containers data labeled using the "Z" exclusive SELinux context mount option.
+    # Instead of changing every other containers mounts options, we disable SELinux labelling on this container mounts.
+    security_opt:
+      - 'label=disable'
+    network:
+      - 'sshd-rsync-external'
+    publish:
+      - '2222:22'
+    volume:
+      - '{{ containers_storage_path }}/config/sshd-rsync/authorized_keys:/root/.ssh/authorized_keys:ro,Z'
+      - '{{ containers_storage_path }}/runtime/sshd-rsync:/etc/ssh/keys:Z'
+      - '{{ containers_storage_path }}/data:{{ containers_storage_path }}/data:ro'
+      - '{{ volume_mount_path }}/documents:{{ volume_mount_path }}/documents:ro'
+    timezone: '{{ timezone }}'
+    env:
+      TZ: '{{ timezone }}'
+      SSH_ENABLE_ROOT: 'true'
+    generate_systemd:
+      names: true
+      new: true
+      path: '/etc/systemd/system'
+      restart_policy: 'on-failure'
+    state: 'created'
+  when: ("cloud_hosts" in group_names)
 
 - name: 'Enable and start sshd-rsync container'
   ansible.builtin.systemd:
