@@ -35,7 +35,7 @@
     dest: '/etc/systemd/system/container-run-autorestic.timer'
     owner: 'root'
     group: 'root'
-    mode: '0664'
+    mode: '0644'
   notify: 'Reload systemd daemon'
 
 - name: 'Add autorestic script to /usr/local/bin'

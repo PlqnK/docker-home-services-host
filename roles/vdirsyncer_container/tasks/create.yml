@@ -53,7 +53,7 @@
     dest: '/etc/systemd/system/container-run-vdirsyncer.timer'
     owner: 'root'
     group: 'root'
-    mode: '0664'
+    mode: '0644'
   notify: 'Reload systemd daemon'
 
 - name: 'Add vdirsyncer command script to /usr/local/bin'

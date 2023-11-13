@@ -82,7 +82,7 @@
     dest: '/etc/systemd/system/container-run-borgmatic.timer'
     owner: 'root'
     group: 'root'
-    mode: '0664'
+    mode: '0644'
   notify: 'Reload systemd daemon'
 
 - name: 'Add borgmatic scripts to /usr/local/bin'

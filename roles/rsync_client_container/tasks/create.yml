@@ -41,7 +41,7 @@
     dest: '/etc/systemd/system/container-run-rsync-client.timer'
     owner: 'root'
     group: 'root'
-    mode: '0664'
+    mode: '0644'
   notify: 'Reload systemd daemon'
 
 - name: 'Add rsync-client commands scripts to /usr/local/bin'

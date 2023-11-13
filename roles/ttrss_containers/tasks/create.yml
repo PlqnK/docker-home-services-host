@@ -272,7 +272,7 @@
     dest: '/etc/systemd/system/container-exec-ttrss-postgres-dump.timer'
     owner: 'root'
     group: 'root'
-    mode: '0664'
+    mode: '0644'
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Tiny Tiny RSS stack'

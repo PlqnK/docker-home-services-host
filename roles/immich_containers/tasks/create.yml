@@ -457,7 +457,7 @@
     dest: '/etc/systemd/system/{{ item }}'
     owner: 'root'
     group: 'root'
-    mode: '0664'
+    mode: '0644'
   loop:
     - 'container-exec-immich-postgres-dump.timer'
     - 'container-exec-immich-typesense-snapshot.timer'
