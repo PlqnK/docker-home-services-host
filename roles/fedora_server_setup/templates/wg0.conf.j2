@@ -2,7 +2,7 @@
 Address = {% for cidr in wireguard_tunnel.interface.addresses %}{{ cidr }}{{ "," if not loop.last else "" }}{% endfor %} 
 ListenPort = 51820
 PrivateKey = {{ wireguard_tunnel.interface.private_key }}
-PostUp = resolvectl dns %i {% for ip in wireguard_tunnel.interface.dns_servers %}{{ ip }}{{ " " if not loop.last else "" }}{% endfor %}; resolvectl domain %i ~{{ wireguard_tunnel.interface.search_domain }}
+PostUp = resolvectl dns %i {% for ip in wireguard_tunnel.interface.dns_servers %}{{ ip }}{{ " " if not loop.last else "" }}{% endfor %}; resolvectl domain %i {% for domain in wireguard_tunnel.interface.search_domains %}~{{ domain }}{{ " " if not loop.last else "" }}{% endfor %}
 
 [Peer]
 PublicKey = {{ wireguard_tunnel.peer.public_key }}
