@@ -48,7 +48,7 @@
           records:
             - '{{ ansible_fqdn }}.'
       register: desec_rrsets_patch
-      when: (desec_rrsets_get.status == 200 and desec_rrsets_get.json.records != ["{{ ansible_fqdn }}."])
+      when: (desec_rrsets_get.status == 200 and desec_rrsets_get.json.records != [ansible_fqdn + "."])
       changed_when: (desec_rrsets_patch.status == 200)
 
 - name: 'Create Komga bind mounts paths'
