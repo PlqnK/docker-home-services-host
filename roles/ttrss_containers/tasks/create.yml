@@ -105,6 +105,10 @@
       owner: 1000
       group: 1000
       mode: '2755'
+    - path: '{{ containers_storage_path }}/runtime/ttrss-postgres'
+      owner: 999
+      group: 999
+      mode: '0700'
 
 - name: 'Copy NGINX config'
   ansible.builtin.copy:
