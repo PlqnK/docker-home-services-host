@@ -24,8 +24,8 @@
     - 'node_exporter_container'
     - 'systemd_exporter_container'
 
-- name: 'Backup containers'
-  hosts: 'backup'
+- name: 'Backups containers'
+  hosts: 'backups'
   roles:
     - 'rsync_client_container'
     - 'mbsync_container'
@@ -48,7 +48,7 @@
   roles:
     - 'home_assistant_container'
 
-- name: 'Document containers'
+- name: 'Documents containers'
   hosts: 'documents'
   roles:
     - 'nextcloud_containers'
@@ -57,7 +57,7 @@
     - 'ttrss_containers'
     - 'freshrss_container'
 
-- name: 'Media containers'
+- name: 'Medias containers'
   hosts: 'medias'
   roles:
     - 'plex_container'
