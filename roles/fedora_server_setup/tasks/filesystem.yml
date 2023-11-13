@@ -1,0 +1,30 @@
+---
+- name: 'Copy Btrfs scrub systemd service template'
+  ansible.builtin.copy:
+    src: 'btrfs-scrub@.service'
+    dest: '/etc/systemd/system/btrfs-scrub@.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy Btrfs scrub systemd timer template'
+  ansible.builtin.copy:
+    src: 'btrfs-scrub@.timer'
+    dest: '/etc/systemd/system/btrfs-scrub@.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Reload systemd daemon to load new units'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Enable and start Btrfs scrub timers'
+  ansible.builtin.systemd:
+    name: 'btrfs-scrub@{{ item }}.timer'
+    enabled: true
+    state: 'started'
+  loop:
+    - 'var-containers'
+    - 'mnt-vol01'

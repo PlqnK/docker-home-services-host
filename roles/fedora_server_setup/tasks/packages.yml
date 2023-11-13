@@ -2,6 +2,7 @@
 - name: 'Install required dependencies and common tools'
   ansible.builtin.dnf:
     name:
+      - 'btrfs-progs'
       - 'firewalld'
       - 'fail2ban'
       - 'wireguard-tools'

@@ -6,6 +6,9 @@
     - name: 'Install packages'
       ansible.builtin.import_tasks: 'packages.yml'
 
+    - name: 'Configure filesystem'
+      ansible.builtin.import_tasks: 'filesystem.yml'
+
     - name: 'Configure pam'
       ansible.builtin.import_tasks: 'pam.yml'
 
