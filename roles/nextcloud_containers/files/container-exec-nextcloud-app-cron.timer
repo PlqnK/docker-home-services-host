@@ -1,0 +1,8 @@
+[Unit]
+Description=Execute Nextcloud cron.php every 5 minutes
+
+[Timer]
+OnCalendar=*-*-* *:0/5:00
+
+[Install]
+WantedBy=timers.target

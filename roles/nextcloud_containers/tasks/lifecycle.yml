@@ -5,7 +5,7 @@
     state: 'stopped'
   loop:
     - 'container-exec-nextcloud-mariadb-dump.timer'
-    - 'container-nextcloud-cron.service'
+    - 'container-exec-nextcloud-app-cron.timer'
     - 'container-nextcloud-app.service'
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-mariadb.service'
@@ -17,7 +17,7 @@
     enabled: false
   loop:
     - 'container-exec-nextcloud-mariadb-dump.timer'
-    - 'container-nextcloud-cron.service'
+    - 'container-exec-nextcloud-app-cron.timer'
     - 'container-nextcloud-app.service'
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-mariadb.service'
@@ -43,7 +43,7 @@
     - 'container-nextcloud-mariadb.service'
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-app.service'
-    - 'container-nextcloud-cron.service'
+    - 'container-exec-nextcloud-app-cron.timer'
     - 'container-exec-nextcloud-mariadb-dump.timer'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
 
@@ -55,6 +55,6 @@
     - 'container-nextcloud-mariadb.service'
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-app.service'
-    - 'container-nextcloud-cron.service'
+    - 'container-exec-nextcloud-app-cron.timer'
     - 'container-exec-nextcloud-mariadb-dump.timer'
   tags: ['never', 'containers-enable']

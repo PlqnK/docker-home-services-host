@@ -247,49 +247,28 @@
         - 'container-nextcloud-redis.service'
     state: 'created'
 
-- name: 'Create Cron container'
-  containers.podman.podman_container:
-    name: 'nextcloud-cron'
-    image: '{{ containers_images.nextcloud.app }}:{{ containers_images_tags.nextcloud.app }}'
-    entrypoint: '/cron.sh'
-    network:
-      - 'web-egress'
-      - 'common-internal'
-      - 'nextcloud-mariadb-internal'
-      - 'nextcloud-redis-internal'
-    volume:
-      - '{{ containers_storage_path }}/data/nextcloud-app:/var/www/html:z'
-      - '{{ volume_mount_path }}/documents/nextcloud:/var/www/html/data:z'
-    timezone: '{{ timezone }}'
-    env:
-      TZ: '{{ timezone }}'
-    generate_systemd:
-      names: true
-      new: true
-      path: '/etc/systemd/system'
-      restart_policy: 'on-failure'
-      after:
-        - 'container-nextcloud-app.service'
-      requires:
-        - 'container-nextcloud-app.service'
-    state: 'created'
-
-- name: 'Create MariaDB dump systemd service from template'
+- name: 'Create Nextcloud tasks systemd services from templates'
   ansible.builtin.template:
-    src: 'container-exec-nextcloud-mariadb-dump.service.j2'
-    dest: '/etc/systemd/system/container-exec-nextcloud-mariadb-dump.service'
+    src: '{{ item }}.service.j2'
+    dest: '/etc/systemd/system/{{ item }}.service'
     owner: 'root'
     group: 'root'
     mode: '0644'
+  loop:
+    - 'container-exec-nextcloud-app-cron'
+    - 'container-exec-nextcloud-mariadb-dump'
   notify: 'Reload systemd daemon'
 
-- name: 'Copy MariaDB dump systemd timer'
+- name: 'Copy Nextcloud tasks systemd timers'
   ansible.builtin.copy:
-    src: 'container-exec-nextcloud-mariadb-dump.timer'
-    dest: '/etc/systemd/system/container-exec-nextcloud-mariadb-dump.timer'
+    src: '{{ item }}.timer'
+    dest: '/etc/systemd/system/{{ item }}.timer'
     owner: 'root'
     group: 'root'
     mode: '0644'
+  loop:
+    - 'container-exec-nextcloud-app-cron'
+    - 'container-exec-nextcloud-mariadb-dump'
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Nextcloud stack'
@@ -302,5 +281,5 @@
     - 'container-nextcloud-mariadb.service'
     - 'container-nextcloud-redis.service'
     - 'container-nextcloud-app.service'
-    - 'container-nextcloud-cron.service'
+    - 'container-exec-nextcloud-app-cron.timer'
     - 'container-exec-nextcloud-mariadb-dump.timer'
