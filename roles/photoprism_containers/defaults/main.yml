@@ -1,9 +1,0 @@
----
-containers_images:
-  photoprism:
-    mariadb: 'docker.io/library/mariadb'
-    app: 'docker.io/photoprism/photoprism'
-containers_images_tags:
-  photoprism:
-    mariadb: 'latest'
-    app: 'latest'
