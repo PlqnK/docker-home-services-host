@@ -1,31 +1,26 @@
-location:
-  source_directories:
-    - '{{ nfs_mounts_path }}/backups/groupware'
-  repositories:
-    - path: '{{ borgmatic.groupware.repository }}'
-      label: 'borgbase-groupware'
-  exclude_if_present:
-    - '.nobackup'
+source_directories:
+  - '{{ nfs_mounts_path }}/backups/groupware'
+repositories:
+  - path: '{{ borgmatic.groupware.repository }}'
+    label: 'borgbase-groupware'
+exclude_if_present:
+  - '.nobackup'
 
-storage:
-  encryption_passcommand: "cat /run/secrets/borgmatic_groupware_encryption_passphrase"
-  compression: 'auto,zstd'
-  retries: 5
-  retry_wait: 5
+encryption_passcommand: "cat /run/secrets/borgmatic_groupware_encryption_passphrase"
+compression: 'auto,zstd'
+retries: 5
+retry_wait: 5
 
-retention:
-  keep_daily: 28
-  keep_weekly: 4
-  keep_monthly: 6
-  keep_yearly: 1
+keep_daily: 28
+keep_weekly: 4
+keep_monthly: 6
+keep_yearly: 1
 
-consistency:
-  checks:
-    - name: 'repository'
-      frequency: '2 weeks'
-    - name: 'archives'
-      frequency: '4 weeks'
+checks:
+  - name: 'repository'
+    frequency: '2 weeks'
+  - name: 'archives'
+    frequency: '4 weeks'
 
-hooks:
-  healthchecks:
-    ping_url: 'https://healthchecks.{{ domain_name }}/ping/{{ borgmatic.groupware.healthchecks_uuid }}'
+healthchecks:
+  ping_url: 'https://healthchecks.{{ domain_name }}/ping/{{ borgmatic.groupware.healthchecks_uuid }}'
