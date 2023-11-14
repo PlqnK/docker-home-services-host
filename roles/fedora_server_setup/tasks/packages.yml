@@ -14,7 +14,7 @@
       - 'cockpit-system'
       - 'cockpit-storaged'
       - 'cockpit-networkmanager'
-      - 'cockpit-ostree'
+      - 'cockpit-packagekit'
       - 'cockpit-podman'
       - 'cockpit-selinux'
     state: 'present'
