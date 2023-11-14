@@ -41,16 +41,13 @@ for host in ${CONTAINERS_HOSTS}; do
     sync_errors=$((sync_errors + 1))
   fi
 done
-for host in ${DOCUMENTS_HOSTS}; do
-  echo "Rsyncing documents host ${host}..."
-  mkdir -p "${DOCUMENTS_HOSTS_LOCAL_PATH}/${host}/${DOCUMENTS_HOSTS_REMOTE_PATH}"
-  if rsync -e "ssh -i /root/id_ed25519 -p 2222" -a --delete root@"${host}":"${DOCUMENTS_HOSTS_REMOTE_PATH}/" "${DOCUMENTS_HOSTS_LOCAL_PATH}/${host}/${DOCUMENTS_HOSTS_REMOTE_PATH}/"; then
-    echo "Successfuly synced ${host}!"
-  else
-    echo "Error while syncing ${host}!"
-    sync_errors=$((sync_errors + 1))
-  fi
-done
+echo "Rsyncing documents host ${DOCUMENTS_HOST}..."
+if rsync -e "ssh -i /root/id_ed25519 -p 2222" -a --delete root@"${DOCUMENTS_HOST}":"${DOCUMENTS_HOST_REMOTE_PATH}/" "${DOCUMENTS_HOST_LOCAL_PATH}/"; then
+  echo "Successfuly synced ${DOCUMENTS_HOST}!"
+else
+  echo "Error while syncing ${DOCUMENTS_HOST}!"
+  sync_errors=$((sync_errors + 1))
+fi
 if [ ${sync_errors} -eq 0 ]; then
   echo "Rsyncing completed successfully!"
   echo "Pinging Healthchecks: success"
