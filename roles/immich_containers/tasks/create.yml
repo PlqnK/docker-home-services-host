@@ -63,7 +63,6 @@
     - 'immich-redis-internal'
     - 'immich-typesense-internal'
     - 'immich-server-internal'
-    - 'immich-web-internal'
 
 - name: 'Add Immich stack networks to firewalld trusted zone'
   block:
@@ -75,7 +74,6 @@
         - 'immich-redis-internal'
         - 'immich-typesense-internal'
         - 'immich-server-internal'
-        - 'immich-web-internal'
       register: 'podman_networks'
 
     - name: 'Add podman networks subnets to firewalld trusted zone'
@@ -247,9 +245,7 @@
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
-      IMMICH_WEB_URL: 'http://immich-web:3000'
       IMMICH_SERVER_URL: 'http://immich-server:3001'
-      IMMICH_MACHINE_LEARNING_URL: 'http://immich-machine-learning:3003'
     generate_systemd:
       names: true
       new: true
@@ -261,7 +257,7 @@
   containers.podman.podman_container:
     name: 'immich-micro-services'
     image: '{{ containers_images.immich.server }}:{{ containers_images_tags.immich.server }}'
-    command: 'start-microservices.sh'
+    command: ['start.sh', 'microservices']
     network:
       - 'web-egress'
       - 'immich-server-internal'
@@ -286,7 +282,6 @@
       REDIS_HOSTNAME: 'immich-redis'
       TYPESENSE_HOST: 'immich-typesense'
       UPLOAD_LOCATION: '/usr/src/app/upload'
-      IMMICH_WEB_URL: 'http://immich-web:3000'
       IMMICH_SERVER_URL: 'http://immich-server:3001'
       IMMICH_MACHINE_LEARNING_URL: 'http://immich-machine-learning:3003'
     generate_systemd:
@@ -311,11 +306,10 @@
   containers.podman.podman_container:
     name: 'immich-server'
     image: '{{ containers_images.immich.server }}:{{ containers_images_tags.immich.server }}'
-    command: 'start-server.sh'
-    sysctl:
-      net.ipv6.conf.all.disable_ipv6: '1'
+    command: ['start.sh', 'immich']
     network:
       - 'web-egress'
+      - 'common-internal'
       - 'immich-server-internal'
       - 'immich-typesense-internal'
       - 'immich-redis-internal'
@@ -338,9 +332,14 @@
       REDIS_HOSTNAME: 'immich-redis'
       TYPESENSE_HOST: 'immich-typesense'
       UPLOAD_LOCATION: '/usr/src/app/upload'
-      IMMICH_WEB_URL: 'http://immich-web:3000'
-      IMMICH_SERVER_URL: 'http://immich-server:3001'
       IMMICH_MACHINE_LEARNING_URL: 'http://immich-machine-learning:3003'
+    label:
+      traefik.enable: 'true'
+      traefik.docker.network: 'common-internal'
+      traefik.http.routers.immich.rule: 'Host(`immich.{{ domain_name }}`)'
+      traefik.http.routers.immich.entrypoints: 'websecure'
+      traefik.http.routers.immich.middlewares: 'set-security-headers@file'
+      traefik.http.services.immich.loadbalancer.server.port: '3001'
     generate_systemd:
       names: true
       new: true
@@ -357,74 +356,6 @@
         - 'container-immich-typesense.service'
         - 'container-immich-machine-learning.service'
     recreate: '{{ ("true" | bool) if server_environment_file.changed else ("false" | bool) }}'
-    state: 'created'
-
-- name: 'Create Web container'
-  containers.podman.podman_container:
-    name: 'immich-web'
-    image: '{{ containers_images.immich.web }}:{{ containers_images_tags.immich.web }}'
-    network:
-      - 'web-egress'
-      - 'immich-web-internal'
-      - 'immich-server-internal'
-    expose:
-      - 3000
-    timezone: '{{ timezone }}'
-    env:
-      TZ: '{{ timezone }}'
-      IMMICH_WEB_URL: 'http://immich-web:3000'
-      IMMICH_SERVER_URL: 'http://immich-server:3001'
-      IMMICH_MACHINE_LEARNING_URL: 'http://immich-machine-learning:3003'
-    generate_systemd:
-      names: true
-      new: true
-      path: '/etc/systemd/system'
-      restart_policy: 'on-failure'
-      after:
-        - 'container-immich-server.service'
-      wants:
-        - 'container-immich-server.service'
-    state: 'created'
-
-- name: 'Create Proxy container'
-  containers.podman.podman_container:
-    name: 'immich-proxy'
-    image: '{{ containers_images.immich.proxy }}:{{ containers_images_tags.immich.proxy }}'
-    # The proxy can't access the web and server containers over IPv6. I suspect it has to do with the opt.isolate: true on those conainers networks.
-    # This option is pretty new in podman and I think the IPv6 ACL are not there yet. Or maybe the services in those containers isn't listening on IPv6.
-    # Either way, for now I haven't had the time to troubleshoot this issue so I just disable IPv6 in this container.
-    sysctl:
-      net.ipv6.conf.all.disable_ipv6: '1'
-    network:
-      - 'web-egress'
-      - 'common-internal'
-      - 'immich-web-internal'
-      - 'immich-server-internal'
-    expose:
-      - 8080
-    timezone: '{{ timezone }}'
-    env:
-      TZ: '{{ timezone }}'
-      IMMICH_WEB_URL: 'http://immich-web:3000'
-      IMMICH_SERVER_URL: 'http://immich-server:3001'
-    label:
-      traefik.enable: 'true'
-      traefik.docker.network: 'common-internal'
-      traefik.http.routers.immich.rule: 'Host(`immich.{{ domain_name }}`)'
-      traefik.http.routers.immich.entrypoints: 'websecure'
-      traefik.http.routers.immich.middlewares: 'set-security-headers@file'
-      traefik.http.services.immich.loadbalancer.server.port: '8080'
-    generate_systemd:
-      names: true
-      new: true
-      path: '/etc/systemd/system'
-      restart_policy: 'on-failure'
-      after:
-        - 'container-immich-server.service'
-        - 'container-immich-web.service'
-      wants:
-        - 'container-immich-server.service'
-        - 'container-immich-web.service'
     state: 'created'
 
 - name: 'Create Immich tasks systemd services from templates'
@@ -481,7 +412,5 @@
     - 'container-immich-machine-learning.service'
     - 'container-immich-micro-services.service'
     - 'container-immich-server.service'
-    - 'container-immich-web.service'
-    - 'container-immich-proxy.service'
     - 'container-exec-immich-postgres-dump.timer'
     - 'container-exec-immich-typesense-snapshot.timer'

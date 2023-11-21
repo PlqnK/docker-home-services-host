@@ -6,8 +6,6 @@
   loop:
     - 'container-exec-immich-typesense-snapshot.timer'
     - 'container-exec-immich-postgres-dump.timer'
-    - 'container-immich-proxy.service'
-    - 'container-immich-web.service'
     - 'container-immich-server.service'
     - 'container-immich-micro-services.service'
     - 'container-immich-machine-learning.service'
@@ -23,8 +21,6 @@
   loop:
     - 'container-exec-immich-typesense-snapshot.timer'
     - 'container-exec-immich-postgres-dump.timer'
-    - 'container-immich-proxy.service'
-    - 'container-immich-web.service'
     - 'container-immich-server.service'
     - 'container-immich-micro-services.service'
     - 'container-immich-machine-learning.service'
@@ -45,8 +41,6 @@
     - '{{ containers_images.immich.typesense }}:{{ containers_images_tags.immich.typesense }}'
     - '{{ containers_images.immich.machine_learning }}:{{ containers_images_tags.immich.machine_learning }}'
     - '{{ containers_images.immich.server }}:{{ containers_images_tags.immich.server }}'
-    - '{{ containers_images.immich.web }}:{{ containers_images_tags.immich.web }}'
-    - '{{ containers_images.immich.proxy }}:{{ containers_images_tags.immich.proxy }}'
   tags: ['never', 'containers-pull', 'containers-update']
 
 - name: 'Start Immich stack'
@@ -60,8 +54,6 @@
     - 'container-immich-machine-learning.service'
     - 'container-immich-micro-services.service'
     - 'container-immich-server.service'
-    - 'container-immich-web.service'
-    - 'container-immich-proxy.service'
     - 'container-exec-immich-postgres-dump.timer'
     - 'container-exec-immich-typesense-snapshot.timer'
   tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
@@ -77,8 +69,6 @@
     - 'container-immich-machine-learning.service'
     - 'container-immich-micro-services.service'
     - 'container-immich-server.service'
-    - 'container-immich-web.service'
-    - 'container-immich-proxy.service'
     - 'container-exec-immich-postgres-dump.timer'
     - 'container-exec-immich-typesense-snapshot.timer'
   tags: ['never', 'containers-enable']

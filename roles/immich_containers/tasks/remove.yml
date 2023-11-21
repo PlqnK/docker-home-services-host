@@ -19,8 +19,6 @@
   loop:
     - 'container-exec-immich-typesense-snapshot.timer'
     - 'container-exec-immich-postgres-dump.timer'
-    - 'container-immich-proxy.service'
-    - 'container-immich-web.service'
     - 'container-immich-server.service'
     - 'container-immich-micro-services.service'
     - 'container-immich-machine-learning.service'
@@ -40,8 +38,6 @@
     - 'container-exec-immich-typesense-snapshot.service.d'
     - 'container-exec-immich-postgres-dump.timer'
     - 'container-exec-immich-postgres-dump.service'
-    - 'container-immich-proxy.service'
-    - 'container-immich-web.service'
     - 'container-immich-server.service'
     - 'container-immich-micro-services.service'
     - 'container-immich-machine-learning.service'
@@ -60,7 +56,6 @@
         - 'immich-redis-internal'
         - 'immich-typesense-internal'
         - 'immich-server-internal'
-        - 'immich-web-internal'
       register: 'podman_networks'
       failed_when: (podman_networks.failed and not "network not found" in podman_networks.msg)
 
@@ -82,7 +77,6 @@
     - 'immich-redis-internal'
     - 'immich-typesense-internal'
     - 'immich-server-internal'
-    - 'immich-web-internal'
 
 - name: 'Remove Immich stack secrets'
   containers.podman.podman_secret:

@@ -35,8 +35,6 @@ containers_images_tags:
     typesense: '0.25.1'
     machine_learning: 'release'
     server: 'release'
-    web: 'release'
-    proxy: 'release'
   ttrss:
     postgres: '15'
     app: 'latest'
