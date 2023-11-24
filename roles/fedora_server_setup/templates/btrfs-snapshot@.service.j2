@@ -2,7 +2,6 @@
 Description=Btrfs snapshot of %f
 ConditionPathIsMountPoint=%f
 RequiresMountsFor=%f
-Wants=ping-healthchecks-io-slug@{{ ansible_hostname }}-btrfs-snapshot-%i:start.service
 OnSuccess=ping-healthchecks-io-slug@{{ ansible_hostname }}-btrfs-snapshot-%i:success.service
 OnFailure=ping-healthchecks-io-slug@{{ ansible_hostname }}-btrfs-snapshot-%i:failure.service
 
