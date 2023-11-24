@@ -5,6 +5,8 @@
       - 'firewalld'
       - 'nfs-utils'
       - 'rsync'
+      - 'msmtp'
+      - 'mailx'
       - 'checkpolicy'
       - 'setools-console'
       - 'python3-firewall'

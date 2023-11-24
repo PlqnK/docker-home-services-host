@@ -22,5 +22,8 @@
     - name: 'Configure kernel'
       ansible.builtin.import_tasks: 'kernel.yml'
 
+    - name: 'Configure email'
+      ansible.builtin.import_tasks: 'email.yml'
+
     - name: 'Fix parsec'
       ansible.builtin.import_tasks: 'parsec.yml'
