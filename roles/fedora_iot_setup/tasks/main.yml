@@ -25,5 +25,9 @@
     - name: 'Configure email'
       ansible.builtin.import_tasks: 'email.yml'
 
+    - name: 'Configure smart'
+      ansible.builtin.import_tasks: 'smart.yml'
+      when: (ansible_virtualization_role == "host")
+
     - name: 'Fix parsec'
       ansible.builtin.import_tasks: 'parsec.yml'
