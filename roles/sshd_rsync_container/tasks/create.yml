@@ -96,7 +96,7 @@
     volume:
       - '{{ containers_storage_path }}/config/sshd-rsync/authorized_keys:/root/.ssh/authorized_keys:ro,Z'
       - '{{ containers_storage_path }}/runtime/sshd-rsync:/etc/ssh/keys:Z'
-      - '{{ containers_storage_path }}/data:{{ containers_storage_path }}/data:ro'
+      - '{{ containers_storage_path }}:{{ containers_storage_path }}:ro,rslave'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
@@ -124,8 +124,8 @@
     volume:
       - '{{ containers_storage_path }}/config/sshd-rsync/authorized_keys:/root/.ssh/authorized_keys:ro,Z'
       - '{{ containers_storage_path }}/runtime/sshd-rsync:/etc/ssh/keys:Z'
-      - '{{ containers_storage_path }}/data:{{ containers_storage_path }}/data:ro'
-      - '{{ volume_mount_path }}/documents:{{ volume_mount_path }}/documents:ro'
+      - '{{ containers_storage_path }}:{{ containers_storage_path }}:ro,rslave'
+      - '{{ volume_mount_path }}:{{ volume_mount_path }}:ro,rslave'
     timezone: '{{ timezone }}'
     env:
       TZ: '{{ timezone }}'
