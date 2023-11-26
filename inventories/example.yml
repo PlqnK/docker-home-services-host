@@ -1,0 +1,384 @@
+---
+all:
+  hosts:
+    backups:
+      ansible_host: 'backups.domain.tld'
+      ansible_user: 'core'
+      ansible_become: true
+      linux_password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=yescrypt
+      totp:
+        key: '' # cat /dev/urandom | tr -dc 'A-Z0-9' | fold -w 26 | head -n 1
+        recovery_codes: | # for i in {1..5}; do cat /dev/urandom | tr -dc '0-9' | fold -w 6 | head -n 1; done
+          020932
+          803780
+          742117
+          859969
+          595151
+      storage_server:
+        name: 'nas'
+        fqdn: 'nas.domain.tld'
+        exports_base_path: '/mnt/nas'
+      nfs_exports:
+        - 'backups/documents'
+        - 'backups/groupware'
+        - 'backups/servers'
+        - 'medias/audiobooks'
+        - 'medias/audiodrama'
+        - 'medias/books'
+        - 'medias/comics'
+      traefik:
+        api:
+          user: ''
+          password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
+      rsync_client:
+        private_key: |
+          -----BEGIN OPENSSH PRIVATE KEY-----
+          xxx
+          -----END OPENSSH PRIVATE KEY-----
+        healthchecks_uuid: ''
+      groupware_provider:
+        name: ''
+        user: ''
+      mbsync:
+        imap:
+          name: '{{ groupware_provider.name }}'
+          host: ''
+          user: '{{ groupware_provider.user }}'
+          password: ''
+        healthchecks_uuid: ''
+      vdirsyncer:
+        carddav:
+          name: '{{ groupware_provider.name }}'
+          url: ''
+          user: '{{ groupware_provider.user }}'
+          password: ''
+        caldav:
+          name: '{{ groupware_provider.name }}'
+          url: ''
+          user: '{{ groupware_provider.user }}'
+          password: ''
+        healthchecks_uuid: ''
+      borgmatic:
+        ssh_key:
+          private: |
+            -----BEGIN OPENSSH PRIVATE KEY-----
+            xxx
+            -----END OPENSSH PRIVATE KEY-----
+          public: 'ssh-ed25519 xxx'
+        documents:
+          repository: ''
+          encryption_passphrase: ''
+          healthchecks_uuid: ''
+        groupware:
+          repository: ''
+          encryption_passphrase: ''
+          healthchecks_uuid: ''
+        medias:
+          repository: ''
+          encryption_passphrase: ''
+          healthchecks_uuid: ''
+        servers:
+          repository: ''
+          encryption_passphrase: ''
+          healthchecks_uuid: ''
+      autorestic:
+        b2:
+          account_id: ''
+          account_key: ''
+        documents:
+          bucket: ''
+          key: ''
+          healthchecks_uuid: ''
+        groupware:
+          bucket: ''
+          key: ''
+          healthchecks_uuid: ''
+        medias:
+          bucket: ''
+          key: ''
+          healthchecks_uuid: ''
+        servers:
+          bucket: ''
+          key: ''
+          healthchecks_uuid: ''
+    monitoring:
+      ansible_host: 'monitoring.domain.tld'
+      ansible_user: 'core'
+      ansible_become: true
+      linux_password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=yescrypt
+      totp:
+        key: '' # cat /dev/urandom | tr -dc 'A-Z0-9' | fold -w 26 | head -n 1
+        recovery_codes: | # for i in {1..5}; do cat /dev/urandom | tr -dc '0-9' | fold -w 6 | head -n 1; done
+          020932
+          803780
+          742117
+          859969
+          595151
+      traefik:
+        api:
+          user: ''
+          password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
+      healthchecks:
+        postgres:
+          database: 'hc'
+          user: 'hc'
+          password: ''
+          dump:
+            healthchecks_uuid: ''
+        app:
+          email:
+            from: 'Healthchecks <healthchecks@domain.tld>'
+            host: ''
+            port: ''
+            starttls: ''
+            ssl: ''
+            user: ''
+            password: ''
+          pushover:
+            api_token: ''
+            subscription_url: ''
+          secret_key: '' # cat /dev/urandom | tr -dc '[:graph:]' | fold -w 50 | head -n 1
+      prometheus:
+        user: ''
+        password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
+        scrape_configs:
+          prometheus:
+            basic_auth:
+              user: ''
+              password: ''
+          node:
+            hosts:
+              - 'backups.domain.tld'
+              - 'monitoring.domain.tld'
+              - 'home.domain.tld'
+              - 'documents.domain.tld'
+              - 'medias.domain.tld'
+            basic_auth:
+              user: ''
+              password: ''
+          systemd:
+            hosts:
+              - 'backups.domain.tld'
+              - 'monitoring.domain.tld'
+              - 'home.domain.tld'
+              - 'documents.domain.tld'
+              - 'medias.domain.tld'
+            basic_auth:
+              user: ''
+              password: ''
+      loki:
+        user: '' # Same user as groupvars['containers_hosts']['promtail']['clients']['basic_auth']['user']
+        password_hash: '' # Hash password created for groupvars['containers_hosts']['promtail']['clients']['basic_auth']['password'] with podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
+    home:
+      ansible_host: 'home.domain.tld'
+      ansible_user: 'core'
+      ansible_become: true
+      linux_password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=yescrypt
+      totp:
+        key: '' # cat /dev/urandom | tr -dc 'A-Z0-9' | fold -w 26 | head -n 1
+        recovery_codes: | # for i in {1..5}; do cat /dev/urandom | tr -dc '0-9' | fold -w 6 | head -n 1; done
+          020932
+          803780
+          742117
+          859969
+          595151
+      traefik:
+        api:
+          user: ''
+          password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
+    documents:
+      ansible_host: 'documents.domain.tld'
+      ansible_user: 'core'
+      ansible_become: true
+      linux_password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=yescrypt
+      totp:
+        key: '' # cat /dev/urandom | tr -dc 'A-Z0-9' | fold -w 26 | head -n 1
+        recovery_codes: | # for i in {1..5}; do cat /dev/urandom | tr -dc '0-9' | fold -w 6 | head -n 1; done
+          020932
+          803780
+          742117
+          859969
+          595151
+      network_config:
+        ipv6:
+          address: ''
+      wireguard_tunnel:
+        interface:
+          addresses:
+            - '10.0.0.2/32'
+            - 'fc00::2/128'
+          private_key: '' # wg genkey
+          dns_servers:
+            - '10.0.0.1'
+            - 'fc00::1'
+          search_domains:
+            - 'domain.tld'
+        peer:
+          endpoint: 'wgpeer.domain.tld:51820'
+          public_key: ''
+          preshared_key: '' # wg genpsk
+          allowed_ips:
+            - '10.0.0.0/8'
+            - 'fc00::/8'
+      traefik:
+        api:
+          user: ''
+          password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
+      nextcloud:
+        mariadb:
+          root_password: ''
+          database: 'nextcloud'
+          user: 'nextcloud'
+          password: ''
+          dump:
+            healthchecks_uuid: ''
+        redis:
+          password: ''
+      collabora_online:
+        user: ''
+        password: ''
+        dictionnaries: 'fr_FR en_US'
+      immich:
+        postgres:
+          database: 'immich'
+          user: 'immich'
+          password: ''
+          dump:
+            healthchecks_uuid: ''
+        redis:
+          password: ''
+        typesense:
+          api_key: ''
+          snapshot:
+            healthchecks_uuid: ''
+      ttrss:
+        postgres:
+          database: 'ttrss'
+          user: 'ttrss'
+          password: ''
+          dump:
+            healthchecks_uuid: ''
+    medias:
+      ansible_host: 'medias.domain.tld'
+      ansible_user: 'core'
+      ansible_become: true
+      linux_password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=yescrypt
+      totp:
+        key: '' # cat /dev/urandom | tr -dc 'A-Z0-9' | fold -w 26 | head -n 1
+        recovery_codes: | # for i in {1..5}; do cat /dev/urandom | tr -dc '0-9' | fold -w 6 | head -n 1; done
+          020932
+          803780
+          742117
+          859969
+          595151
+      storage_server:
+        name: 'nas'
+        fqdn: 'nas.domain.tld'
+        exports_base_path: '/mnt/nas'
+      nfs_exports:
+        - 'downloads/bittorrent'
+        - 'downloads/usenet'
+        - 'medias/audiobooks'
+        - 'medias/audiodrama'
+        - 'medias/books'
+        - 'medias/comics'
+        - 'medias/movies'
+        - 'medias/music'
+        - 'medias/series'
+      traefik:
+        api:
+          user: ''
+          password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
+      plex:
+        claim_token: '' # https://www.plex.tv/claim/
+      calibre:
+        user: ''
+        password: ''
+      gluetun:
+        provider:
+          name: 'custom'
+        wireguard:
+          private_key: '' # wg genkey
+          addresses: '172.16.0.2/32,fd00::2/128'
+          endpoint:
+            public_key: ''
+            preshared_key: '' # wg genpsk
+            ip: ''
+            port: ''
+        firewall:
+          vpn_input_ports: ''
+        dns:
+          addresses: '172.16.0.1'
+      transmission:
+        user: ''
+        password: ''
+      unpackerr:
+        sonarr_api_key: '' # https://sonarr.domain.tld/settings/general > Security > API Key
+        radarr_api_key: '' # https://radarr.domain.tld/settings/general > Security > API Key
+        lidarr_api_key: '' # https://lidarr.domain.tld/settings/general > Security > API Key
+        readarr_api_key: '' # https://readarr.domain.tld/settings/general > Security > API Key
+  children:
+    home_hosts:
+      hosts:
+        backups:
+        monitoring:
+        home:
+        medias:
+      vars:
+    cloud_hosts:
+      hosts:
+        documents:
+    containers_hosts:
+      hosts:
+        backups:
+        monitoring:
+        home:
+        documents:
+        medias:
+      vars:
+        containers_ipv6:
+          enable: true
+        containers_storage_path: '/var/containers'
+        volume_mount_path: '/mnt/vol01'
+        backup_server_key: 'ssh-ed25519 xxx' # Public key part of the key generated for hostvars['backups']['rsync_client']['private_key']
+        promtail:
+          clients:
+            basic_auth:
+              user: ''
+              password: ''
+        node_exporter:
+          user: '' # Same user as hostvars['monitoring']['prometheus']['scrape_configs']['node']['basic_auth']['user']
+          password_hash: '' # Hash password created for hostvars['monitoring']['prometheus']['scrape_configs']['node']['basic_auth']['password'] with podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
+        systemd_exporter:
+          user: '' # Same user as hostvars['monitoring']['prometheus']['scrape_configs']['node']['basic_auth']['user']
+          password_hash: '' # Hash password created for hostvars['monitoring']['prometheus']['scrape_configs']['node']['basic_auth']['password'] with podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
+    nfs_clients:
+      hosts:
+        backups:
+        medias:
+      vars:
+        nfs_mounts_path: '/var/mnt/{{ storage_server.name }}'
+  vars:
+    timezone: 'Europe/Paris'
+    domain_name: 'domain.tld'
+    desec_token: '' # https://desec.readthedocs.io/en/latest/auth/tokens.html
+    root_user:
+      email: ''
+    admin_user:
+      name: 'core'
+      email: ''
+      ssh_keys:
+        - 'ssh-ed25519 xxx'
+    home_network:
+      ipv6_gua: 'fe80:ba0:bab:0::/56'
+      proxy_protocol_trusted_ips:
+        - '192.168.0.1'
+        - 'fe80:ba0:bab:0::1'
+    healthchecks_ping_key: '' # https://healthchecks.domain.tld/projects/PROJECT_UUID/settings/ > API Access > Ping key
+    healthchecksio_ping_key: '' # https://healthchecks.io/projects/PROJECT_UUID/settings/ > API Access > Ping key
+    smtp_relay:
+      name: ''
+      host: ''
+      from_domain: ''
+      user: ''
+      password: ''
