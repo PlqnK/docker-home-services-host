@@ -11,3 +11,6 @@
 
     - name: 'Configure storage'
       ansible.builtin.import_tasks: 'storage.yml'
+
+    - name: 'Configure image pruning'
+      ansible.builtin.import_tasks: 'prune.yml'
