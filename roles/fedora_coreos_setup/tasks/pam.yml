@@ -2,9 +2,9 @@
 - name: 'Configure TOTP settings for the admin user'
   ansible.builtin.template:
     src: 'google-authenticator.j2'
-    dest: '/home/{{ admin_user.user.name }}/.ssh/.google_authenticator'
-    owner: '{{ admin_user.user.name }}'
-    group: '{{ admin_user.user.name }}'
+    dest: '/home/{{ admin_user.name }}/.ssh/.google_authenticator'
+    owner: '{{ admin_user.name }}'
+    group: '{{ admin_user.name }}'
     mode: '0400'
     # The PAM module adds information in the file when used so this task won't be idempotent.
     # So we disable templating if the file already exists. If the TOTP secret needs to be changed, the file will need to be deleted manually.

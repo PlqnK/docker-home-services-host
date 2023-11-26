@@ -1,0 +1,13 @@
+[Unit]
+Description=Btrfs scrub on %f
+ConditionPathIsMountPoint=%f
+RequiresMountsFor=%f
+Wants=ping-healthchecks{% if "cloud_hosts" in group_names %}-io{% endif %}-slug@{{ ansible_hostname }}-btrfs-scrub-%i:start.service
+OnSuccess=ping-healthchecks{% if "cloud_hosts" in group_names %}-io{% endif %}-slug@{{ ansible_hostname }}-btrfs-scrub-%i:success.service
+OnFailure=ping-healthchecks{% if "cloud_hosts" in group_names %}-io{% endif %}-slug@{{ ansible_hostname }}-btrfs-scrub-%i:failure.service
+
+[Service]
+Nice=19
+IOSchedulingClass=idle
+KillSignal=SIGINT
+ExecStart=/usr/sbin/btrfs scrub start -B %f

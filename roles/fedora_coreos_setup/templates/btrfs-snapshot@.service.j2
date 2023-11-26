@@ -2,8 +2,8 @@
 Description=Btrfs snapshot of %f
 ConditionPathIsMountPoint=%f
 RequiresMountsFor=%f
-OnSuccess=ping-healthchecks-io-slug@{{ ansible_hostname }}-btrfs-snapshot-%i:success.service
-OnFailure=ping-healthchecks-io-slug@{{ ansible_hostname }}-btrfs-snapshot-%i:failure.service
+OnSuccess=ping-healthchecks{% if "cloud_hosts" in group_names %}-io{% endif %}-slug@{{ ansible_hostname }}-btrfs-snapshot-%i:success.service
+OnFailure=ping-healthchecks{% if "cloud_hosts" in group_names %}-io{% endif %}-slug@{{ ansible_hostname }}-btrfs-snapshot-%i:failure.service
 
 [Service]
 ExecStart=/usr/bin/bash -c "[ -d %f/.snapshot ] && /usr/sbin/btrfs subvolume delete %f/.snapshot; /usr/sbin/btrfs subvolume snapshot -r %f %f/.snapshot"

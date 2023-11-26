@@ -1,6 +1,0 @@
----
-- name: 'Enable and start firewalld'
-  ansible.builtin.systemd:
-    name: 'firewalld.service'
-    enabled: true
-    state: 'started'

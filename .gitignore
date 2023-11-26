@@ -9,3 +9,7 @@
 
 # Python
 __pycache__
+
+# Specific
+files/coreos/*.bu
+files/coreos/*.ign

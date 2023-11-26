@@ -26,13 +26,28 @@
 - name: 'Reload systemd daemon to load new units'
   ansible.builtin.meta: 'flush_handlers'
 
-- name: 'Enable and start Btrfs tasks timers'
+- name: 'Enable and start Btrfs scrub timers'
   ansible.builtin.systemd:
-    name: '{{ item }}.timer'
+    name: 'btrfs-scrub@{{ item.instance }}.timer'
     enabled: true
     state: 'started'
+  when: (item.hosts == "all" or item.hosts in group_names)
   loop:
-    - 'btrfs-scrub@var-containers'
-    - 'btrfs-scrub@mnt-vol01'
-    - 'btrfs-snapshot@var-containers'
-    - 'btrfs-snapshot@mnt-vol01'
+    - instance: '-'
+      hosts: 'all'
+    - instance: 'var-containers'
+      hosts: 'all'
+    - instance: 'var-mnt-vol01'
+      hosts: 'cloud_hosts'
+
+- name: 'Enable and start Btrfs snapshot timers'
+  ansible.builtin.systemd:
+    name: 'btrfs-snapshot@{{ item.instance }}.timer'
+    enabled: true
+    state: 'started'
+  when: (item.hosts == "all" or item.hosts in group_names)
+  loop:
+    - instance: 'var-containers'
+      hosts: 'all'
+    - instance: 'var-mnt-vol01'
+      hosts: 'cloud_hosts'

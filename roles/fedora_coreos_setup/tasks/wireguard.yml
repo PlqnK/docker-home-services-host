@@ -55,13 +55,10 @@
 - name: 'Reload firewalld if forwarding has been enabled'
   ansible.builtin.meta: 'flush_handlers'
 
-- name: 'Add default services to firewalld VPN zone'
+- name: 'Add SSH service to firewalld VPN zone'
   ansible.posix.firewalld:
     zone: 'vpn'
-    service: '{{ item }}'
+    service: 'ssh'
     permanent: true
     immediate: true
     state: 'enabled'
-  loop:
-    - 'mdns'
-    - 'ssh'

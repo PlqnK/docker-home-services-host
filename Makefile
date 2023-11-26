@@ -36,13 +36,16 @@ console: ## [env=<inventory>] [hosts=<hosts to target>] ## Open an ansible conso
 	@ansible-console --inventory-file="inventories/$(env).yml" $(flags) --vault-password-file="vault-pass.sh"
 
 dry-run: ## [env=<inventory>] [limit=<subset of hosts to target>] [tags=<tags to execute>] [app=<containers roles to execute>] ## Dry-run the playbook. ## Example: make dry-run env=vagrant limit=home,medias tags=containers-enable,containers-start app=traefik,node_exporter
-	@$(env_vars) ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) playbook.yml --diff --check --vault-password-file="vault-pass.sh"
+	@$(env_vars) ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) provision.yml --diff --check --vault-password-file="vault-pass.sh"
 
 provision: ## [env=<inventory>] [limit=<subset of hosts to target>] [tags=<tags to execute>] [app=<containers roles to execute>] ## Provision the hosts. ## Example: make provision env=vagrant limit=home,medias tags=containers-disable,containers-stop app=promtail,systemd_exporter
-	@$(env_vars) ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) playbook.yml --vault-password-file="vault-pass.sh"
+	@$(env_vars) ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) provision.yml --vault-password-file="vault-pass.sh"
 
 update: ## [env=<inventory>] [limit=<subset of hosts to target>] ## Update the hosts. ## Example: make update env=vagrant limit=home,monitoring
-	@ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) --tags="containers-stop,containers-pull,os-upgrade,os-reboot" playbook.yml --vault-password-file="vault-pass.sh"
+	@ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) --tags="containers-stop,containers-pull,os-upgrade,os-reboot" provision.yml --vault-password-file="vault-pass.sh"
+
+ignition: ## [env=<inventory>] ## Generate ignition provisionining files. ## Example: make ignition env=production
+	@ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) ignition.yml --vault-password-file="vault-pass.sh"
 
 help: ##  ## Display this help. ## Example: make help
 	@echo Usage: make [target] [options]

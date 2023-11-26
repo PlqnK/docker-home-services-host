@@ -1,13 +1,4 @@
 ---
-- name: 'Install smartmontools'
-  community.general.rpm_ostree_pkg:
-    name: 'smartmontools'
-    state: 'present'
-  notify: 'Reboot host'
-
-- name: 'Reboot host if packages have been installed'
-  ansible.builtin.meta: 'flush_handlers'
-
 - name: 'Template SMART test systemd service'
   ansible.builtin.template:
     src: 'smart-test@.service.j2'

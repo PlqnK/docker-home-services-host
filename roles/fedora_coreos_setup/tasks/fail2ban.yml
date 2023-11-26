@@ -6,7 +6,7 @@
     owner: 'root'
     group: 'root'
     mode: '0644'
-  notify: 'Reload fail2ban'
+  notify: 'Reload fail2ban service'
 
 - name: 'Enable and start fail2ban'
   ansible.builtin.systemd:

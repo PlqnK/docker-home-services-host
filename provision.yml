@@ -1,17 +1,8 @@
 ---
-- name: 'Home hosts OS configuration'
-  hosts: 'home_hosts'
-  roles:
-    - 'fedora_iot_setup'
-
-- name: 'Cloud hosts OS configuration'
-  hosts: 'cloud_hosts'
-  roles:
-    - 'fedora_server_setup'
-
 - name: 'Containers hosts base configuration'
   hosts: 'containers_hosts'
   roles:
+    - 'fedora_coreos_setup'
     - 'podman_setup'
 
 - name: 'Common containers'
@@ -79,12 +70,7 @@
     - 'mylar_container'
     - 'overseerr_container'
 
-- name: 'Update home hosts OS'
-  hosts: 'home_hosts'
+- name: 'Update containers hosts OS'
+  hosts: 'containers_hosts'
   roles:
-    - 'fedora_iot_upgrade'
-
-- name: 'Update cloud hosts OS'
-  hosts: 'cloud_hosts'
-  roles:
-    - 'fedora_server_upgrade'
+    - 'fedora_coreos_upgrade'
