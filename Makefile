@@ -7,8 +7,8 @@ endif
 ifneq ("$(module)", "")
 	flags := $(flags) --module-name="$(module)"
 endif
-ifneq ("$(module-args)", "")
-	flags := $(flags) --args="$(module-args)"
+ifneq ("$(args)", "")
+	flags := $(flags) --args="$(args)"
 endif
 ifneq ("$(limit)", "")
 	flags := $(flags) --limit="$(limit)"
