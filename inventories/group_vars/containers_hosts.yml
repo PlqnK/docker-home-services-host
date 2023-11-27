@@ -26,9 +26,6 @@ containers_images_tags:
     redis: '7'
     app: '27'
   collabora_online: 'latest'
-  photoprism:
-    mariadb: '10.11'
-    app: 'latest'
   immich:
     postgres: '15'
     redis: '7'
