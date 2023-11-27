@@ -1,0 +1,32 @@
+---
+- name: 'Stop Collabora Online container'
+  ansible.builtin.systemd:
+    name: 'collabora-online.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable Collabora Online container'
+  ansible.builtin.systemd:
+    name: 'collabora-online.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull Collabora Online image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.collabora_online }}:{{ containers_images_tags.collabora_online }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start Collabora Online container'
+  ansible.builtin.systemd:
+    name: 'collabora-online.service'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable Collabora Online container'
+  ansible.builtin.systemd:
+    name: 'collabora-online.service'
+    enabled: true
+  tags: ['never', 'containers-enable']

@@ -1,0 +1,22 @@
+[Unit]
+Description=Immich Redis
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=immich-redis
+Image={{ containers_images.immich.redis }}:{{ containers_images_tags.immich.redis }}
+Exec=--requirepass {{ immich.redis.password }}
+Network=immich-redis-internal
+ExposeHostPort=6379
+Volume={{ containers_storage_path }}/runtime/immich-redis:/data:Z
+Timezone={{ timezone }}
+Environment=TZ="{{ timezone }}"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

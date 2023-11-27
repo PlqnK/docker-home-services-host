@@ -42,11 +42,11 @@
 - name: 'Documents containers'
   hosts: 'documents'
   roles:
-    - 'nextcloud_containers'
-    - 'collabora_online_container'
-    - 'immich_containers'
-    - 'ttrss_containers'
-    - 'freshrss_container'
+    - 'nextcloud'
+    - 'collabora_online'
+    - 'immich'
+    - 'ttrss'
+    - 'freshrss'
 
 - name: 'Medias containers'
   hosts: 'medias'

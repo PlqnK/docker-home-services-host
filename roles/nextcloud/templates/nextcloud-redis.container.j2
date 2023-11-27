@@ -1,0 +1,22 @@
+[Unit]
+Description=Nextcloud Redis
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=nextcloud-redis
+Image={{ containers_images.nextcloud.redis }}:{{ containers_images_tags.nextcloud.redis }}
+Exec=--requirepass {{ nextcloud.redis.password }}
+Network=nextcloud-redis-internal
+ExposeHostPort=6379
+Volume={{ containers_storage_path }}/runtime/nextcloud-redis:/data:Z
+Timezone={{ timezone }}
+Environment=TZ="{{ timezone }}"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

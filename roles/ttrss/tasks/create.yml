@@ -1,0 +1,187 @@
+---
+- name: 'Check if provisioning a Vagrant VM'
+  ansible.builtin.getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: false
+
+- name: 'Manage Tiny Tiny RSS CNAME record'
+  when: (getent_passwd.vagrant is none)
+  delegate_to: 'localhost'
+  block:
+    - name: 'Get Tiny Tiny RSS CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/ttrss/CNAME/'
+        method: 'GET'
+        status_code: [200, 404]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+      register: desec_rrsets_get
+
+    - name: 'Create Tiny Tiny RSS CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/'
+        method: 'POST'
+        status_code: [201]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          subname: 'ttrss'
+          type: 'CNAME'
+          ttl: 3600
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_post
+      when: (desec_rrsets_get.status == 404)
+      changed_when: (desec_rrsets_post.status == 201)
+
+    - name: 'Update Tiny Tiny RSS CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/ttrss/CNAME/'
+        method: 'PATCH'
+        status_code: [200]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_patch
+      when: (desec_rrsets_get.status == 200 and desec_rrsets_get.json.records != [ansible_fqdn + "."])
+      changed_when: (desec_rrsets_patch.status == 200)
+
+- name: 'Create Tiny Tiny RSS stack networks'
+  containers.podman.podman_network:
+    name: '{{ item }}'
+    internal: true
+    ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
+  loop:
+    - 'ttrss-postgres-internal'
+    - 'ttrss-server-internal'
+
+- name: 'Add Tiny Tiny RSS stack networks to firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'ttrss-postgres-internal'
+        - 'ttrss-server-internal'
+      register: 'podman_networks'
+
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Create Tiny Tiny RSS stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_path }}/env/ttrss-server'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_path }}/data/ttrss-postgres'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: '{{ containers_storage_path }}/data/ttrss-server'
+      owner: 1000
+      group: 1000
+      mode: '2755'
+    - path: '{{ containers_storage_path }}/runtime/ttrss-postgres'
+      owner: 999
+      group: 999
+      mode: '0700'
+
+- name: 'Create Tiny Tiny RSS stack secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'ttrss_postgres_user'
+      data: '{{ ttrss.postgres.user }}'
+    - name: 'ttrss_postgres_password'
+      data: '{{ ttrss.postgres.password }}'
+
+- name: 'Create App environment file'
+  ansible.builtin.copy:
+    content: |
+      TTRSS_DB_USER={{ ttrss.postgres.user }}
+      TTRSS_DB_PASS={{ ttrss.postgres.password }}
+    dest: '{{ containers_storage_path }}/env/ttrss-server/ttrss-server.env'
+    owner: 'root'
+    group: 'root'
+    mode: '0400'
+  register: 'ttrss_environment_file'
+
+- name: 'Create Tiny Tiny RSS stack quadlet units from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.container.j2'
+    dest: '/etc/containers/systemd/{{ item }}.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'ttrss-postgres'
+    - 'ttrss-server'
+    - 'ttrss-updater'
+    - 'ttrss-nginx'
+  register: 'quadlet_units'
+  notify: 'Reload systemd daemon'
+
+- name: 'Create PostgreSQL dump systemd service from template'
+  ansible.builtin.template:
+    src: 'ttrss-postgres-dump.service.j2'
+    dest: '/etc/systemd/system/ttrss-postgres-dump.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy PostgreSQL dump systemd timer'
+  ansible.builtin.copy:
+    src: 'ttrss-postgres-dump.timer'
+    dest: '/etc/systemd/system/ttrss-postgres-dump.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Tiny Tiny RSS stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+  loop:
+    - 'ttrss-postgres.service'
+    - 'ttrss-server.service'
+    - 'ttrss-updater.service'
+    - 'ttrss-nginx.service'
+    - 'ttrss-postgres-dump.timer'
+
+- name: 'Restart Tiny Tiny RSS services if quadlet unit was changed'
+  ansible.builtin.systemd:
+    name: '{{ item.1.name }}'
+    daemon_reload: true
+    state: 'restarted'
+  loop: '{{ quadlet_units.results | ansible.builtin.zip(systemd_start.results) | list }}'
+  loop_control:
+    label: '{{ item.1.name }}'
+  when: (item.0.changed and not item.1.changed)

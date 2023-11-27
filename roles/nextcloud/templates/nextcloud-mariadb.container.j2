@@ -1,0 +1,33 @@
+[Unit]
+Description=Nextcloud MariaDB
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=nextcloud-mariadb
+Image={{ containers_images.nextcloud.mariadb }}:{{ containers_images_tags.nextcloud.mariadb }}
+Exec=--transaction-isolation=READ-COMMITTED --binlog-format=ROW
+Network=nextcloud-mariadb-internal
+ExposeHostPort=3306
+Volume={{ containers_storage_path }}/config/nextcloud-mariadb/.my.cnf:/root/.my.cnf:Z
+Volume={{ containers_storage_path }}/runtime/nextcloud-mariadb:/var/lib/mysql:Z
+Volume={{ containers_storage_path }}/data/nextcloud-mariadb:/opt/dumps:Z
+Secret=nextcloud_mariadb_root_password
+Secret=nextcloud_mariadb_user
+Secret=nextcloud_mariadb_password
+Timezone={{ timezone }}
+Environment=TZ="{{ timezone }}"
+Environment=MARIADB_ROOT_HOST="localhost"
+Environment=MARIADB_ROOT_PASSWORD_FILE="/run/secrets/nextcloud_mariadb_root_password"
+Environment=MARIADB_DATABASE="{{ nextcloud.mariadb.database }}"
+Environment=MARIADB_USER_FILE="/run/secrets/nextcloud_mariadb_user"
+Environment=MARIADB_PASSWORD_FILE="/run/secrets/nextcloud_mariadb_password"
+Environment=MARIADB_AUTO_UPGRADE="true"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

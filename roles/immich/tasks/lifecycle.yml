@@ -1,0 +1,74 @@
+---
+- name: 'Stop Immich stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'immich-typesense-snapshot.timer'
+    - 'immich-postgres-dump.timer'
+    - 'immich-server.service'
+    - 'immich-microservices.service'
+    - 'immich-machine-learning.service'
+    - 'immich-typesense.service'
+    - 'immich-redis.service'
+    - 'immich-postgres.service'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable Immich stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: false
+  loop:
+    - 'immich-typesense-snapshot.timer'
+    - 'immich-postgres-dump.timer'
+    - 'immich-server.service'
+    - 'immich-microservices.service'
+    - 'immich-machine-learning.service'
+    - 'immich-typesense.service'
+    - 'immich-redis.service'
+    - 'immich-postgres.service'
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull Immich stack images'
+  containers.podman.podman_image:
+    name: '{{ item }}'
+    pull: true
+    force: true
+    state: 'present'
+  loop:
+    - '{{ containers_images.immich.postgres }}:{{ containers_images_tags.immich.postgres }}'
+    - '{{ containers_images.immich.redis }}:{{ containers_images_tags.immich.redis }}'
+    - '{{ containers_images.immich.typesense }}:{{ containers_images_tags.immich.typesense }}'
+    - '{{ containers_images.immich.machine_learning }}:{{ containers_images_tags.immich.machine_learning }}'
+    - '{{ containers_images.immich.server }}:{{ containers_images_tags.immich.server }}'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start Immich stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'started'
+  loop:
+    - 'immich-postgres.service'
+    - 'immich-redis.service'
+    - 'immich-typesense.service'
+    - 'immich-machine-learning.service'
+    - 'immich-microservices.service'
+    - 'immich-server.service'
+    - 'immich-postgres-dump.timer'
+    - 'immich-typesense-snapshot.timer'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable Immich stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - 'immich-postgres.service'
+    - 'immich-redis.service'
+    - 'immich-typesense.service'
+    - 'immich-machine-learning.service'
+    - 'immich-microservices.service'
+    - 'immich-server.service'
+    - 'immich-postgres-dump.timer'
+    - 'immich-typesense-snapshot.timer'
+  tags: ['never', 'containers-enable']

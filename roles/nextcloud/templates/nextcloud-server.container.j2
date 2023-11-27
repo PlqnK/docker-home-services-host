@@ -1,0 +1,51 @@
+[Unit]
+Description=Nextcloud App
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+After=nextcloud-mariadb.service nextcloud-redis.service
+Requires=nextcloud-mariadb.service nextcloud-redis.service
+
+[Container]
+ContainerName=nextcloud-server
+Image={{ containers_images.nextcloud.server }}:{{ containers_images_tags.nextcloud.server }}
+Network=web-egress
+Network=common-internal
+Network=nextcloud-mariadb-internal
+Network=nextcloud-redis-internal
+ExposeHostPort=80
+Volume={{ containers_storage_path }}/data/nextcloud-server:/var/www/html:z
+Volume={{ volume_mount_path }}/documents/nextcloud:/var/www/html/data:z
+Secret=nextcloud_mariadb_user
+Secret=nextcloud_mariadb_password
+Secret=nextcloud_redis_password
+Timezone={{ timezone }}
+Environment=TZ="{{ timezone }}"
+Environment=APACHE_DISABLE_REWRITE_IP="1"
+Environment=TRUSTED_PROXIES="10.89.0.0/16"
+Environment=NEXTCLOUD_TRUSTED_DOMAINS="cloud.{{ domain_name }}"
+Environment=NEXTCLOUD_INIT_HTACCESS="true"
+Environment=OVERWRITEPROTOCOL="https"
+Environment=OVERWRITECLIURL="https://cloud.{{ domain_name }}"
+Environment=MYSQL_HOST="nextcloud-mariadb"
+Environment=MYSQL_DATABASE="{{ nextcloud.mariadb.database }}"
+Environment=MYSQL_USER_FILE="/run/secrets/nextcloud_mariadb_user"
+Environment=MYSQL_PASSWORD_FILE="/run/secrets/nextcloud_mariadb_password"
+Environment=REDIS_HOST="nextcloud-redis"
+Environment=REDIS_HOST_PASSWORD_FILE="/run/secrets/nextcloud_redis_password"
+Label=traefik.enable="true"
+Label=traefik.docker.network="common-internal"
+Label=traefik.http.routers.cloud.rule="Host(`cloud.{{ domain_name }}`)"
+Label=traefik.http.routers.cloud.entrypoints="websecure"
+Label=traefik.http.routers.cloud.middlewares="set-security-headers@file, nextcloud-dav-redirect"
+Label=traefik.http.services.cloud.loadbalancer.server.port="80"
+Label=traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.permanent="true"
+Label=traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.regex="https://(.*)/.well-known/(card|cal)dav"
+Label=traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.replacement="https://$${1}/remote.php/dav/"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

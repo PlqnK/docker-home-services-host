@@ -1,0 +1,200 @@
+---
+- name: 'Check if provisioning a Vagrant VM'
+  ansible.builtin.getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: false
+
+- name: 'Manage Nextcloud CNAME record'
+  when: (getent_passwd.vagrant is none)
+  delegate_to: 'localhost'
+  block:
+    - name: 'Get Nextcloud CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/cloud/CNAME/'
+        method: 'GET'
+        status_code: [200, 404]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+      register: desec_rrsets_get
+
+    - name: 'Create Nextcloud CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/'
+        method: 'POST'
+        status_code: [201]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          subname: 'cloud'
+          type: 'CNAME'
+          ttl: 3600
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_post
+      when: (desec_rrsets_get.status == 404)
+      changed_when: (desec_rrsets_post.status == 201)
+
+    - name: 'Update Nextcloud CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/cloud/CNAME/'
+        method: 'PATCH'
+        status_code: [200]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_patch
+      when: (desec_rrsets_get.status == 200 and desec_rrsets_get.json.records != [ansible_fqdn + "."])
+      changed_when: (desec_rrsets_patch.status == 200)
+
+- name: 'Create Nextcloud stack networks'
+  containers.podman.podman_network:
+    name: '{{ item }}'
+    internal: true
+    ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
+  loop:
+    - 'nextcloud-mariadb-internal'
+    - 'nextcloud-redis-internal'
+
+- name: 'Add Nextcloud stack networks to firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'nextcloud-mariadb-internal'
+        - 'nextcloud-redis-internal'
+      register: 'podman_networks'
+
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Create Nextcloud stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '0700'
+    state: 'directory'
+  loop:
+    - path: 'config/nextcloud-mariadb'
+      owner: 'root'
+      group: 'root'
+    - path: 'runtime/nextcloud-mariadb'
+      owner: 999
+      group: 999
+    - path: 'runtime/nextcloud-redis'
+      owner: 999
+      group: 999
+    - path: 'data/nextcloud-mariadb'
+      owner: 'root'
+      group: 'root'
+    - path: 'data/nextcloud-server'
+      owner: 33
+      group: 33
+
+- name: 'Create Nextcloud documents storage path'
+  ansible.builtin.file:
+    path: '{{ volume_mount_path }}/documents/nextcloud'
+    owner: 33
+    group: 33
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create MariaDB dump config from template'
+  ansible.builtin.template:
+    src: 'my.cnf.j2'
+    dest: '{{ containers_storage_path }}/config/nextcloud-mariadb/.my.cnf'
+    owner: 'root'
+    group: 'root'
+    mode: '0600'
+
+- name: 'Create Nextcloud stack secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'nextcloud_mariadb_root_password'
+      data: '{{ nextcloud.mariadb.root_password }}'
+    - name: 'nextcloud_mariadb_user'
+      data: '{{ nextcloud.mariadb.user }}'
+    - name: 'nextcloud_mariadb_password'
+      data: '{{ nextcloud.mariadb.password }}'
+    - name: 'nextcloud_redis_password'
+      data: '{{ nextcloud.redis.password }}'
+
+- name: 'Create Nextcloud stack quadlet units from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.container.j2'
+    dest: '/etc/containers/systemd/{{ item }}.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'nextcloud-mariadb'
+    - 'nextcloud-redis'
+    - 'nextcloud-server'
+  register: 'quadlet_units'
+  notify: 'Reload systemd daemon'
+
+- name: 'Create Nextcloud tasks systemd services from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.service.j2'
+    dest: '/etc/systemd/system/{{ item }}.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'nextcloud-cron'
+    - 'nextcloud-mariadb-dump'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy Nextcloud tasks systemd timers'
+  ansible.builtin.copy:
+    src: '{{ item }}.timer'
+    dest: '/etc/systemd/system/{{ item }}.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'nextcloud-cron'
+    - 'nextcloud-mariadb-dump'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Nextcloud stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+  loop:
+    - 'nextcloud-mariadb.service'
+    - 'nextcloud-redis.service'
+    - 'nextcloud-server.service'
+    - 'nextcloud-cron.timer'
+    - 'nextcloud-mariadb-dump.timer'
+
+- name: 'Restart Nextcloud services if quadlet unit was changed'
+  ansible.builtin.systemd:
+    name: '{{ item.1.name }}'
+    daemon_reload: true
+    state: 'restarted'
+  loop: '{{ quadlet_units.results | ansible.builtin.zip(systemd_start.results) | list }}'
+  loop_control:
+    label: '{{ item.1.name }}'
+  when: (item.0.changed and not item.1.changed)

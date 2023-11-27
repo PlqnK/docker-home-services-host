@@ -1,0 +1,96 @@
+---
+- name: 'Check if provisioning a Vagrant VM'
+  ansible.builtin.getent:
+    database: 'passwd'
+    key: 'vagrant'
+    fail_key: false
+
+- name: 'Manage Collabora Online CNAME record'
+  when: (getent_passwd.vagrant is none)
+  delegate_to: 'localhost'
+  block:
+    - name: 'Get Collabora Online CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/office/CNAME/'
+        method: 'GET'
+        status_code: [200, 404]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+      register: desec_rrsets_get
+
+    - name: 'Create Collabora Online CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/'
+        method: 'POST'
+        status_code: [201]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          subname: 'office'
+          type: 'CNAME'
+          ttl: 3600
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_post
+      when: (desec_rrsets_get.status == 404)
+      changed_when: (desec_rrsets_post.status == 201)
+
+    - name: 'Update Collabora Online CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/office/CNAME/'
+        method: 'PATCH'
+        status_code: [200]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_patch
+      when: (desec_rrsets_get.status == 200 and desec_rrsets_get.json.records != [ansible_fqdn + "."])
+      changed_when: (desec_rrsets_patch.status == 200)
+
+- name: 'Create Collabora Online env bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/env/collabora-online'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create Collabora Online environment file'
+  ansible.builtin.copy:
+    content: |
+      username={{ collabora_online.user }}
+      password={{ collabora_online.password }}
+    dest: '{{ containers_storage_path }}/env/collabora-online/collabora-online.env'
+    owner: 'root'
+    group: 'root'
+    mode: '0400'
+  register: 'collabora_online_environment_file'
+
+- name: 'Create Collabora Online quadlet unit from template'
+  ansible.builtin.template:
+    src: 'collabora-online.container.j2'
+    dest: '/etc/containers/systemd/collabora-online.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'quadlet_unit'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Collabora Online container'
+  ansible.builtin.systemd:
+    name: 'collabora-online.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+
+- name: 'Restart Collabora Online service if quadlet unit was changed'
+  ansible.builtin.systemd:
+    name: 'collabora-online.service'
+    daemon_reload: true
+    state: 'restarted'
+  when: (quadlet_unit.changed and not systemd_start.changed)
