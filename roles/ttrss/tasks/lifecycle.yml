@@ -32,7 +32,7 @@
   loop:
     - '{{ containers_images.ttrss.postgres }}:{{ containers_images_tags.ttrss.postgres }}'
     - '{{ containers_images.ttrss.nginx }}:{{ containers_images_tags.ttrss.nginx }}'
-    - '{{ containers_images.ttrss.app }}:{{ containers_images_tags.ttrss.app }}'
+    - '{{ containers_images.ttrss.server }}:{{ containers_images_tags.ttrss.server }}'
   tags: ['never', 'containers-pull', 'containers-update']
 
 - name: 'Start Tiny Tiny RSS stack'

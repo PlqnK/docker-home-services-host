@@ -32,7 +32,7 @@
   loop:
     - '{{ containers_images.nextcloud.mariadb }}:{{ containers_images_tags.nextcloud.mariadb }}'
     - '{{ containers_images.nextcloud.redis }}:{{ containers_images_tags.nextcloud.redis }}'
-    - '{{ containers_images.nextcloud.app }}:{{ containers_images_tags.nextcloud.app }}'
+    - '{{ containers_images.nextcloud.server }}:{{ containers_images_tags.nextcloud.server }}'
   tags: ['never', 'containers-pull', 'containers-update']
 
 - name: 'Start Nextcloud stack'

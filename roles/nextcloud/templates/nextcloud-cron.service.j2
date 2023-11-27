@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 Restart=no
-ExecStart=/usr/bin/podman container exec -u www-data nextcloud-app php /var/www/html/cron.php
+ExecStart=/usr/bin/podman container exec -u www-data nextcloud-server php /var/www/html/cron.php
 Type=simple
 
 [Install]
