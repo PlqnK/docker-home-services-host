@@ -234,12 +234,12 @@
     - 'immich-postgres-dump.timer'
     - 'immich-typesense-snapshot.timer'
 
-- name: 'Restart Immich services if quadlet unit was changed'
+- name: 'Restart Immich services if quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
-    name: '{{ item.1.name }}'
+    name: '{{ item. }}'
     daemon_reload: true
     state: 'restarted'
-  loop: '{{ quadlet_units.results | ansible.builtin.zip(systemd_start.results) | list }}'
-  loop_control:
-    label: '{{ item.1.name }}'
-  when: (item.0.changed and not item.1.changed)
+  vars:
+    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | product([".service"]) | map("join") }}'
+    systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
+  loop: '{{ quadlet_units_map | difference(systemd_start_map) }}'
