@@ -81,7 +81,7 @@
     state: 'started'
   register: 'systemd_start'
 
-- name: 'Restart Collabora Online service if quadlet unit was changed'
+- name: 'Restart Collabora Online service if quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: 'collabora-online.service'
     daemon_reload: true

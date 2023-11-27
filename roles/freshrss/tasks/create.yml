@@ -73,7 +73,7 @@
     state: 'started'
   register: 'systemd_start'
 
-- name: 'Restart FreshRSS service if quadlet unit was changed'
+- name: 'Restart FreshRSS service if quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: 'freshrss.service'
     daemon_reload: true
