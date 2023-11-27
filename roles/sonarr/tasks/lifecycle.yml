@@ -1,0 +1,32 @@
+---
+- name: 'Stop Sonarr container'
+  ansible.builtin.systemd:
+    name: 'sonarr.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable Sonarr container'
+  ansible.builtin.systemd:
+    name: 'sonarr.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull Sonarr image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.sonarr }}:{{ containers_images_tags.sonarr }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start Sonarr container'
+  ansible.builtin.systemd:
+    name: 'sonarr.service'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable Sonarr container'
+  ansible.builtin.systemd:
+    name: 'sonarr.service'
+    enabled: true
+  tags: ['never', 'containers-enable']

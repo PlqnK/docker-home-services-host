@@ -1,0 +1,35 @@
+---
+- name: 'Stop Transmission pod'
+  ansible.builtin.systemd:
+    name: 'transmission-gluetun.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable Transmission pod'
+  ansible.builtin.systemd:
+    name: 'transmission-gluetun.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull Transmission pod images'
+  containers.podman.podman_image:
+    name: '{{ item }}'
+    pull: true
+    force: true
+    state: 'present'
+  loop:
+    - '{{ containers_images.gluetun }}:{{ containers_images_tags.gluetun }}'
+    - '{{ containers_images.transmission }}:{{ containers_images_tags.transmission }}'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start Transmission pod'
+  ansible.builtin.systemd:
+    name: 'transmission-gluetun.service'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable Transmission pod'
+  ansible.builtin.systemd:
+    name: 'transmission-gluetun.service'
+    enabled: true
+  tags: ['never', 'containers-enable']

@@ -1,0 +1,32 @@
+---
+- name: 'Stop Tautulli container'
+  ansible.builtin.systemd:
+    name: 'tautulli.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable Tautulli container'
+  ansible.builtin.systemd:
+    name: 'tautulli.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull Tautulli image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.tautulli }}:{{ containers_images_tags.tautulli }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start Tautulli container'
+  ansible.builtin.systemd:
+    name: 'tautulli.service'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable Tautulli container'
+  ansible.builtin.systemd:
+    name: 'tautulli.service'
+    enabled: true
+  tags: ['never', 'containers-enable']

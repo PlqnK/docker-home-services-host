@@ -1,0 +1,31 @@
+[Unit]
+Description=SABnzbd
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=sabnzbd
+Image={{ containers_images.sabnzbd }}:{{ containers_images_tags.sabnzbd }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=8080
+Volume={{ containers_storage_path }}/data/sabnzbd:/config:Z
+Volume={{ nfs_mounts_path }}/downloads/usenet/completed:/downloads:slave
+Volume={{ nfs_mounts_path }}/downloads/usenet/processing:/incomplete-downloads:slave
+Volume={{ nfs_mounts_path }}/downloads/usenet/watching:/watching:slave
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.{{ domain_name }}`)"
+Label="traefik.http.routers.sabnzbd.entrypoints=websecure"
+Label="traefik.http.routers.sabnzbd.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

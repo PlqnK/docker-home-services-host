@@ -1,0 +1,40 @@
+---
+- name: 'Create Calibre data bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/data/calibre'
+    owner: 911
+    group: 911
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create Calibre secret'
+  containers.podman.podman_secret:
+    name: 'calibre_password'
+    data: '{{ calibre.password }}'
+    skip_existing: true
+    state: 'present'
+
+- name: 'Create Calibre quadlet unit from template'
+  ansible.builtin.template:
+    src: 'calibre.container.j2'
+    dest: '/etc/containers/systemd/calibre.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'quadlet_unit'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Calibre container'
+  ansible.builtin.systemd:
+    name: 'calibre.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+
+- name: 'Restart Calibre service if quadlet unit has changed while service was already started'
+  ansible.builtin.systemd:
+    name: 'calibre.service'
+    daemon_reload: true
+    state: 'restarted'
+  when: (quadlet_unit.changed and not systemd_start.changed)
