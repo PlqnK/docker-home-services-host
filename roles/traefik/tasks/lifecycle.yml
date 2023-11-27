@@ -1,0 +1,47 @@
+---
+- name: 'Stop Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'traefik.service'
+    - 'cetusguard.service'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: false
+  loop:
+    - 'traefik.service'
+    - 'cetusguard.service'
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull Traefik stack images'
+  containers.podman.podman_image:
+    name: '{{ item }}'
+    pull: true
+    force: true
+    state: 'present'
+  loop:
+    - '{{ containers_images.cetusguard }}:{{ containers_images_tags.cetusguard }}'
+    - '{{ containers_images.traefik }}:{{ containers_images_tags.traefik }}'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'started'
+  loop:
+    - 'cetusguard.service'
+    - 'traefik.service'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - 'cetusguard.service'
+    - 'traefik.service'
+  tags: ['never', 'containers-enable']

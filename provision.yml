@@ -8,12 +8,12 @@
 - name: 'Common containers'
   hosts: 'containers_hosts'
   roles:
-    - 'traefik_containers'
-    - 'cockpit_container'
-    - 'sshd_rsync_container'
-    - 'promtail_container'
-    - 'node_exporter_container'
-    - 'systemd_exporter_container'
+    - 'traefik'
+    - 'cockpit'
+    - 'sshd_rsync'
+    - 'promtail'
+    - 'node_exporter'
+    - 'systemd_exporter'
 
 - name: 'Backups containers'
   hosts: 'backups'

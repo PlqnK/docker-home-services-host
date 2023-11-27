@@ -1,0 +1,133 @@
+---
+- name: 'Create Traefik stack networks'
+  containers.podman.podman_network:
+    name: '{{ item.name }}'
+    internal: '{{ item.internal }}'
+    ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: '{{ item.isolate | default(omit) }}'
+  loop:
+    - name: 'cetusguard-internal'
+      internal: true
+      isolate: true
+    - name: 'traefik-external'
+      internal: false
+
+- name: 'Add Traefik stack networks to firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'cetusguard-internal'
+        - 'traefik-external'
+      register: 'podman_networks'
+
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Accept HTTP and HTTPS incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  loop:
+    - 'http'
+    - 'https'
+
+- name: 'Accept HTTP and HTTPS incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    service: '{{ item }}'
+    zone: 'vpn'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  loop:
+    - 'http'
+    - 'https'
+  when: ("cloud_hosts" in group_names)
+
+- name: 'Create Traefik stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+  loop:
+    - 'config/traefik/providers'
+    - 'data/traefik'
+
+- name: 'Create Traefik common configs from templates'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - src: 'traefik.toml.j2'
+      dest: '{{ containers_storage_path }}/config/traefik/traefik.toml'
+    - src: 'common.toml.j2'
+      dest: '{{ containers_storage_path }}/config/traefik/providers/common.toml'
+    - src: 'cockpit.toml.j2'
+      dest: '{{ containers_storage_path }}/config/traefik/providers/cockpit.toml'
+    - src: 'home-assistant.toml.j2'
+      dest: '{{ containers_storage_path }}/config/traefik/providers/home-assistant.toml'
+      host: 'home'
+  when: (item.host is not defined or (item.host is defined and inventory_hostname == item.host))
+
+- name: 'Create Traefik certificates storage file'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/data/traefik/acme.json'
+    state: 'touch'
+    modification_time: 'preserve'
+    access_time: 'preserve'
+    mode: '0600'
+
+- name: 'Create Traefik stack secret'
+  containers.podman.podman_secret:
+    name: 'traefik_desec_token'
+    data: '{{ desec_token }}'
+    skip_existing: true
+    state: 'present'
+
+- name: 'Create Traefik stack quadlet units from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.container.j2'
+    dest: '/etc/containers/systemd/{{ item }}.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'cetusguard'
+    - 'traefik'
+  register: 'quadlet_units'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  loop:
+    - 'cetusguard.service'
+    - 'traefik.service'
+
+- name: 'Restart Traefik services if quadlet unit has changed while service was already started'
+  ansible.builtin.systemd:
+    name: '{{ item. }}'
+    daemon_reload: true
+    state: 'restarted'
+  vars:
+    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | product([".service"]) | map("join") }}'
+    systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
+  loop: '{{ quadlet_units_map | difference(systemd_start_map) }}'

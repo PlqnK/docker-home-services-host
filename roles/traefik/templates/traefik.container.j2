@@ -1,0 +1,41 @@
+[Unit]
+Description=Traefik
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+After=cetusguard.service
+Requires=cetusguard.service
+
+[Container]
+ContainerName=traefik
+Image={{ containers_images.traefik }}:{{ containers_images_tags.traefik }}
+Network=traefik-external
+Network=common-internal
+Network=cetusguard-internal
+PublishPort=80:80
+PublishPort=443:443
+Volume={{ containers_storage_path }}/config/traefik/traefik.toml:/etc/traefik/traefik.toml:Z
+Volume={{ containers_storage_path }}/config/traefik/providers:/etc/traefik/providers:Z
+Volume={{ containers_storage_path }}/data/traefik/acme.json:/acme.json:Z
+Secret=traefik_desec_token
+Timezone={{ timezone }}
+Environment=TZ="{{ timezone }}"
+Environment=DESEC_TOKEN_FILE="/run/secrets/traefik_desec_token"
+Label=traefik.enable="true"
+Label=traefik.docker.network="common-internal"
+Label=traefik.http.routers.traefik.rule="Host(`traefik.{{ ansible_fqdn }}`)"
+Label=traefik.http.routers.traefik.entrypoints="websecure"
+Label=traefik.http.routers.traefik.service="api@internal"
+Label=traefik.http.routers.traefik.middlewares="set-security-headers@file, restrict-external-access@file, traefik-auth"
+Label=traefik.http.middlewares.traefik-auth.basicauth.users="{{ traefik.api.user }}:{{ traefik.api.password_hash }}"
+Label=traefik.http.routers.traefik-ping.rule="Host(`traefik.{{ ansible_fqdn }}`) && Path(`/ping`)"
+Label=traefik.http.routers.traefik-ping.entrypoints="websecure"
+Label=traefik.http.routers.traefik-ping.service="ping@internal"
+Label=traefik.http.routers.traefik-ping.middlewares="set-security-headers@file, restrict-external-access@file"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

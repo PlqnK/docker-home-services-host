@@ -1,0 +1,21 @@
+[Unit]
+Description=Cockpit
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=cockpit
+Image={{ containers_images.cockpit }}:{{ containers_images_tags.cockpit }}
+PodmanArgs=--privileged --pid=host
+Network=host
+Volume=/:/host
+Timezone={{ timezone }}
+Environment=TZ="{{ timezone }}"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

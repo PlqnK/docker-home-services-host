@@ -1,0 +1,32 @@
+[Unit]
+Description=Cetusguard
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=cetusguard
+Image={{ containers_images.cetusguard }}:{{ containers_images_tags.cetusguard }}
+ReadOnly=true
+PodmanArgs=--privileged
+Network=cetusguard-internal
+ExposeHostPort=2375
+Volume=/var/run/podman/podman.sock:/var/run/podman/podman.sock
+Timezone={{ timezone }}
+Environment=TZ="{{ timezone }}"
+Environment=CETUSGUARD_BACKEND_ADDR="unix:///var/run/podman/podman.sock"
+Environment=CETUSGUARD_FRONTEND_ADDR="tcp://:2375"
+Environment=CETUSGUARD_RULES="! Monitor events
+GET %API_PREFIX_EVENTS%
+! List containers
+GET %API_PREFIX_CONTAINERS%/json
+! Inspect a container
+GET %API_PREFIX_CONTAINERS%/%CONTAINER_ID_OR_NAME%/json"
+Environment=CETUSGUARD_LOG_LEVEL="6"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

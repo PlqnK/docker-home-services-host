@@ -1,0 +1,58 @@
+---
+- name: 'Accept node_exporter incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: 'prometheus-node-exporter'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  when: ("home_hosts" in group_names)
+
+- name: 'Accept node_exporter incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: 'prometheus-node-exporter'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  when: ("cloud_hosts" in group_names)
+
+- name: 'Create node_exporter config bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/config/node-exporter'
+    owner: 65534
+    group: 65534
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create node_exporter config from template'
+  ansible.builtin.template:
+    src: 'web.yml.j2'
+    dest: '{{ containers_storage_path }}/config/node-exporter/web.yml'
+    owner: 65534
+    group: 65534
+    mode: '0644'
+
+- name: 'Create node_exporter quadlet unit from template'
+  ansible.builtin.template:
+    src: 'node-exporter.container.j2'
+    dest: '/etc/containers/systemd/node-exporter.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'quadlet_unit'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start node_exporter container'
+  ansible.builtin.systemd:
+    name: 'node-exporter.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+
+- name: 'Restart node_exporter service if quadlet unit has changed while service was already started'
+  ansible.builtin.systemd:
+    name: 'node-exporter.service'
+    daemon_reload: true
+    state: 'restarted'
+  when: (quadlet_unit.changed and not systemd_start.changed)
