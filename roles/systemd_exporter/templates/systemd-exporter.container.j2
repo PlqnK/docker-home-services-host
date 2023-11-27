@@ -16,7 +16,7 @@ Volume=/sys/fs/cgroup:/sys/fs/cgroup:ro,rslave
 Volume=/run/systemd:/run/systemd:ro,rslave
 Volume=/var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
+Environment="TZ={{ timezone }}"
 
 [Service]
 Restart=on-failure

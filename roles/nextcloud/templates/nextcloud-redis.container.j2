@@ -12,7 +12,7 @@ Network=nextcloud-redis-internal
 ExposeHostPort=6379
 Volume={{ containers_storage_path }}/runtime/nextcloud-redis:/data:Z
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
+Environment="TZ={{ timezone }}"
 
 [Service]
 Restart=on-failure

@@ -14,10 +14,10 @@ Volume={{ containers_storage_path }}/data/ttrss-postgres:/opt/dumps:Z
 Secret=ttrss_postgres_user
 Secret=ttrss_postgres_password
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Environment=POSTGRES_DB="{{ ttrss.postgres.database }}"
-Environment=POSTGRES_USER_FILE="/run/secrets/ttrss_postgres_user"
-Environment=POSTGRES_PASSWORD_FILE="/run/secrets/ttrss_postgres_password"
+Environment="TZ={{ timezone }}"
+Environment="POSTGRES_DB={{ ttrss.postgres.database }}"
+Environment="POSTGRES_USER_FILE=/run/secrets/ttrss_postgres_user"
+Environment="POSTGRES_PASSWORD_FILE=/run/secrets/ttrss_postgres_password"
 
 [Service]
 Restart=on-failure

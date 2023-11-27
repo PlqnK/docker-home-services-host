@@ -21,7 +21,7 @@ Volume=/run/log/journal:/run/log/journal:ro
 Volume=/etc/machine-id:/etc/machine-id:ro
 Secret=promtail_loki_password
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
+Environment="TZ={{ timezone }}"
 
 [Service]
 Restart=on-failure

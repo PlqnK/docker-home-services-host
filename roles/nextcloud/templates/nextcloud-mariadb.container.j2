@@ -17,13 +17,13 @@ Secret=nextcloud_mariadb_root_password
 Secret=nextcloud_mariadb_user
 Secret=nextcloud_mariadb_password
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Environment=MARIADB_ROOT_HOST="localhost"
-Environment=MARIADB_ROOT_PASSWORD_FILE="/run/secrets/nextcloud_mariadb_root_password"
-Environment=MARIADB_DATABASE="{{ nextcloud.mariadb.database }}"
-Environment=MARIADB_USER_FILE="/run/secrets/nextcloud_mariadb_user"
-Environment=MARIADB_PASSWORD_FILE="/run/secrets/nextcloud_mariadb_password"
-Environment=MARIADB_AUTO_UPGRADE="true"
+Environment="TZ={{ timezone }}"
+Environment="MARIADB_ROOT_HOST=localhost"
+Environment="MARIADB_ROOT_PASSWORD_FILE=/run/secrets/nextcloud_mariadb_root_password"
+Environment="MARIADB_DATABASE={{ nextcloud.mariadb.database }}"
+Environment="MARIADB_USER_FILE=/run/secrets/nextcloud_mariadb_user"
+Environment="MARIADB_PASSWORD_FILE=/run/secrets/nextcloud_mariadb_password"
+Environment="MARIADB_AUTO_UPGRADE=true"
 
 [Service]
 Restart=on-failure

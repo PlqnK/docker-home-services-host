@@ -12,8 +12,8 @@ Network=immich-server-internal
 ExposeHostPort=3003
 Volume={{ containers_storage_path }}/runtime/immich-machine-learning:/cache:Z
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Environment=IMMICH_SERVER_URL="http://immich-server:3001"
+Environment="TZ={{ timezone }}"
+Environment="IMMICH_SERVER_URL=http://immich-server:3001"
 
 [Service]
 Restart=on-failure

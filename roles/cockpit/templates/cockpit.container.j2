@@ -11,7 +11,7 @@ PodmanArgs=--privileged --pid=host
 Network=host
 Volume=/:/host
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
+Environment="TZ={{ timezone }}"
 
 [Service]
 Restart=on-failure

@@ -14,7 +14,7 @@ PublishPort=514:514/tcp
 PublishPort=601:601/tcp
 Volume={{ containers_storage_path }}/config/syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:Z
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
+Environment="TZ={{ timezone }}"
 
 [Service]
 Restart=on-failure

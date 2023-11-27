@@ -10,7 +10,7 @@ Image={{ containers_images.home_assistant }}:{{ containers_images_tags.home_assi
 Network=host
 Volume={{ containers_storage_path }}/data/home-assistant:/config:Z
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
+Environment="TZ={{ timezone }}"
 
 [Service]
 Restart=on-failure

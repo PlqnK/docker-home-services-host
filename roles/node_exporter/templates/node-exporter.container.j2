@@ -13,7 +13,7 @@ Network=host
 Volume={{ containers_storage_path }}/config/node-exporter/web.yml:/etc/node-exporter/web.yml:Z
 Volume=/:/host:ro,rslave
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
+Environment="TZ={{ timezone }}"
 
 [Service]
 Restart=on-failure

@@ -19,8 +19,8 @@ Volume={{ containers_storage_path }}:{{ containers_storage_path }}:ro,rslave
 Volume={{ volume_mount_path }}:{{ volume_mount_path }}:ro,rslave
 {% endif %}
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Environment=SSH_ENABLE_ROOT="true"
+Environment="TZ={{ timezone }}"
+Environment="SSH_ENABLE_ROOT=true"
 
 [Service]
 Restart=on-failure

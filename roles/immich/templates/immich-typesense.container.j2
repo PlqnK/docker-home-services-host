@@ -13,8 +13,8 @@ Volume={{ containers_storage_path }}/runtime/immich-typesense:/data:Z
 Volume={{ containers_storage_path }}/data/immich-typesense:/opt/snapshot:Z
 Timezone={{ timezone }}
 EnvironmentFile={{ containers_storage_path }}/env/immich-typesense/immich-typesense.env
-Environment=TZ="{{ timezone }}"
-Environment=TYPESENSE_DATA_DIR="/data"
+Environment="TZ={{ timezone }}"
+Environment="TYPESENSE_DATA_DIR=/data"
 
 [Service]
 Restart=on-failure
