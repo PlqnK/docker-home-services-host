@@ -118,13 +118,14 @@
     daemon_reload: true
     enabled: true
     state: 'started'
+  register: 'systemd_start'
   loop:
     - 'cetusguard.service'
     - 'traefik.service'
 
 - name: 'Restart Traefik services if quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
-    name: '{{ item. }}'
+    name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'
   vars:

@@ -229,7 +229,7 @@
 
 - name: 'Restart Immich services if quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
-    name: '{{ item. }}'
+    name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'
   vars:
