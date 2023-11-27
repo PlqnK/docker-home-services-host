@@ -1,0 +1,32 @@
+---
+- name: 'Stop mbsync timer'
+  ansible.builtin.systemd:
+    name: 'mbsync.timer'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable mbsync timer'
+  ansible.builtin.systemd:
+    name: 'mbsync.timer'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull mbsync image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start mbsync timer'
+  ansible.builtin.systemd:
+    name: 'mbsync.timer'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable mbsync timer'
+  ansible.builtin.systemd:
+    name: 'mbsync.timer'
+    enabled: true
+  tags: ['never', 'containers-enable']

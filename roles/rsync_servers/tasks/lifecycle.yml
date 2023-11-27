@@ -1,0 +1,32 @@
+---
+- name: 'Stop rsync-servers timer'
+  ansible.builtin.systemd:
+    name: 'rsync-servers.timer'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable rsync-servers timer'
+  ansible.builtin.systemd:
+    name: 'rsync-servers.timer'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull rsync-servers image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.rsync_client }}:{{ containers_images_tags.rsync_client }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start rsync-servers timer'
+  ansible.builtin.systemd:
+    name: 'rsync-servers.timer'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable rsync-servers timer'
+  ansible.builtin.systemd:
+    name: 'rsync-servers.timer'
+    enabled: true
+  tags: ['never', 'containers-enable']

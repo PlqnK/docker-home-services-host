@@ -1,0 +1,63 @@
+---
+- name: 'Create rsync-servers bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+  loop:
+    - 'config/rsync-servers'
+    - 'runtime/rsync-servers'
+
+- name: 'Add backup server SSH key to rsync-servers private keys'
+  ansible.builtin.copy:
+    content: '{{ rsync_client.private_key }}'
+    dest: '{{ containers_storage_path }}/config/rsync-servers/id_ed25519'
+    owner: 'root'
+    group: 'root'
+    mode: '0600'
+
+- name: 'Copy backup-servers script'
+  ansible.builtin.copy:
+    src: 'backup-servers.sh'
+    dest: '{{ containers_storage_path }}/config/rsync-servers/backup-servers.sh'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Create rsync-servers systemd service from template'
+  ansible.builtin.template:
+    src: 'rsync-servers.service.j2'
+    dest: '/etc/systemd/system/rsync-servers.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy rsync-servers systemd timer'
+  ansible.builtin.copy:
+    src: 'rsync-servers.timer'
+    dest: '/etc/systemd/system/rsync-servers.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Add rsync-servers commands scripts to /usr/local/bin'
+  ansible.builtin.template:
+    src: '{{ item }}.j2'
+    dest: '/usr/local/bin/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  loop:
+    - 'rsync-servers'
+    - 'rsync-servers-shell'
+
+- name: 'Enable and start rsync-servers timer'
+  ansible.builtin.systemd:
+    name: 'rsync-servers.timer'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

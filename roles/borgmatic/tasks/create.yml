@@ -1,0 +1,104 @@
+---
+- name: 'Create borgmatic bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+  loop:
+    - 'config/borgmatic/borgmatic.d'
+    - 'config/borgmatic/.ssh'
+    - 'data/borgmatic'
+    - 'runtime/borgmatic/borgmatic'
+    - 'runtime/borgmatic/cache'
+    - 'runtime/borgmatic/mount'
+    - 'runtime/borgmatic/restore'
+
+- name: 'Create borgmatic configs from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.j2'
+    dest: '{{ containers_storage_path }}/config/borgmatic/borgmatic.d/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'documents.yaml'
+    - 'groupware.yaml'
+    - 'medias.yaml'
+    - 'servers.yaml'
+
+- name: 'Create borgmatic secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'borgmatic_documents_encryption_passphrase'
+      data: '{{ borgmatic.documents.encryption_passphrase }}'
+    - name: 'borgmatic_groupware_encryption_passphrase'
+      data: '{{ borgmatic.groupware.encryption_passphrase }}'
+    - name: 'borgmatic_medias_encryption_passphrase'
+      data: '{{ borgmatic.medias.encryption_passphrase }}'
+    - name: 'borgmatic_servers_encryption_passphrase'
+      data: '{{ borgmatic.servers.encryption_passphrase }}'
+
+- name: 'Copy borgmatic SSH keypair'
+  ansible.builtin.copy:
+    content: '{{ item.content }}'
+    dest: '{{ containers_storage_path }}/config/borgmatic/.ssh/{{ item.dest }}'
+    owner: 'root'
+    group: 'root'
+    mode: '{{ item.mode }}'
+  loop:
+    - content: '{{ borgmatic.ssh_key.private }}'
+      dest: 'id_ed25519'
+      mode: '0600'
+    - content: '{{ borgmatic.ssh_key.public }}'
+      dest: 'id_ed25519.pub'
+      mode: '0644'
+
+- name: 'Copy borgmatic SSH config'
+  ansible.builtin.copy:
+    src: 'config'
+    dest: '{{ containers_storage_path }}/config/borgmatic/.ssh/config'
+    owner: 'root'
+    group: 'root'
+    mode: '600'
+
+- name: 'Create borgmatic systemd service from template'
+  ansible.builtin.template:
+    src: 'borgmatic.service.j2'
+    dest: '/etc/systemd/system/borgmatic.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy borgmatic systemd timer'
+  ansible.builtin.copy:
+    src: 'borgmatic.timer'
+    dest: '/etc/systemd/system/borgmatic.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Add borgmatic scripts to /usr/local/bin'
+  ansible.builtin.template:
+    src: '{{ item }}.j2'
+    dest: '/usr/local/bin/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  loop:
+    - 'borgmatic'
+    - 'borgmatic-shell'
+
+- name: 'Enable and start borgmatic timer'
+  ansible.builtin.systemd:
+    name: 'borgmatic.timer'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

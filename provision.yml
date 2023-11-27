@@ -18,11 +18,11 @@
 - name: 'Backups containers'
   hosts: 'backups'
   roles:
-    - 'rsync_client_container'
-    - 'mbsync_container'
-    - 'vdirsyncer_container'
-    - 'borgmatic_container'
-    - 'autorestic_container'
+    - 'rsync_servers'
+    - 'mbsync'
+    - 'vdirsyncer'
+    - 'borgmatic'
+    - 'autorestic'
 
 - name: 'Monitoring containers'
   hosts: 'monitoring'

@@ -1,8 +1,0 @@
-[Unit]
-Description=Execute vdirsyncer container daily
-
-[Timer]
-OnCalendar=*-*-* 5:00:00
-
-[Install]
-WantedBy=timers.target
