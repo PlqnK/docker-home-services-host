@@ -27,7 +27,7 @@
     state: 'present'
   loop:
     - '{{ containers_images.healthchecks.postgres }}:{{ containers_images_tags.healthchecks.postgres }}'
-    - '{{ containers_images.healthchecks.app }}:{{ containers_images_tags.healthchecks.app }}'
+    - '{{ containers_images.healthchecks.server }}:{{ containers_images_tags.healthchecks.server }}'
   tags: ['never', 'containers-pull', 'containers-update']
 
 - name: 'Start Healthchecks stack'

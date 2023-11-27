@@ -72,12 +72,12 @@
 - name: 'Create Server environment file'
   ansible.builtin.copy:
     content: |
-      SECRET_KEY={{ healthchecks.app.secret_key }}
+      SECRET_KEY={{ healthchecks.server.secret_key }}
       DB_USER={{ healthchecks.postgres.user }}
       DB_PASSWORD={{ healthchecks.postgres.password }}
-      EMAIL_HOST_USER={{ healthchecks.app.email.user }}
-      EMAIL_HOST_PASSWORD={{ healthchecks.app.email.password }}
-      PUSHOVER_API_TOKEN={{ healthchecks.app.pushover.api_token }}
+      EMAIL_HOST_USER={{ healthchecks.server.email.user }}
+      EMAIL_HOST_PASSWORD={{ healthchecks.server.email.password }}
+      PUSHOVER_API_TOKEN={{ healthchecks.server.pushover.api_token }}
     dest: '{{ containers_storage_path }}/env/healthchecks-server/healthchecks-server.env'
     owner: 'root'
     group: 'root'
@@ -129,7 +129,7 @@
 
 - name: 'Restart Healthchecks services if quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
-    name: '{{ item. }}'
+    name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'
   vars:

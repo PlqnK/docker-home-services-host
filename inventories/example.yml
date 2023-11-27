@@ -125,7 +125,7 @@ all:
           password: ''
           dump:
             healthchecks_uuid: ''
-        app:
+        server:
           email:
             from: 'Healthchecks <healthchecks@domain.tld>'
             host: ''
