@@ -1,12 +1,5 @@
 ---
-- name: 'Check if provisioning a Vagrant VM'
-  ansible.builtin.getent:
-    database: 'passwd'
-    key: 'vagrant'
-    fail_key: false
-
 - name: 'Manage Plex CNAME record'
-  when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
   block:
     - name: 'Get Plex CNAME record'
@@ -133,7 +126,7 @@
       traefik.http.routers.plex.entrypoints: 'websecure'
       traefik.http.routers.plex.middlewares: 'set-security-headers@file'
       traefik.http.services.plex.loadbalancer.server.port: '32400'
-      traefik.http.services.plex.loadbalancer.server.scheme: '{{ ("https") if getent_passwd.vagrant is none else ("http") }}'
+      traefik.http.services.plex.loadbalancer.server.scheme: 'https'
     generate_systemd:
       names: true
       new: true

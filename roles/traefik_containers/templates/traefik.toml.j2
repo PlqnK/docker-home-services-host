@@ -11,20 +11,18 @@
 [entryPoints]
   [entryPoints.web]
     address = ":80"
-{% if "home_hosts" in group_names and home_network.proxy_protocol_trusted_ips is not none and getent_passwd.vagrant is none %}
+{% if "home_hosts" in group_names and home_network.proxy_protocol_trusted_ips is not none %}
     [entryPoints.web.proxyProtocol]
       trustedIPs = [{% for ip in home_network.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
 {% endif %}
   [entryPoints.websecure]
     address = ":443"
-{% if "home_hosts" in group_names and home_network.proxy_protocol_trusted_ips is not none and getent_passwd.vagrant is none %}
+{% if "home_hosts" in group_names and home_network.proxy_protocol_trusted_ips is not none %}
     [entryPoints.websecure.proxyProtocol]
       trustedIPs = [{% for ip in home_network.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
 {% endif %}
     [entryPoints.websecure.http.tls]
-{% if getent_passwd.vagrant is none %}
       certResolver = "le"
-{% endif %}
 
 [api]
   dashboard = true
@@ -40,7 +38,6 @@
     directory = "/etc/traefik/providers"
     watch = true
 
-{% if getent_passwd.vagrant is none %}
 [certificatesResolvers.le.acme]
   email = "{{ admin_user.email }}"
   storage = "acme.json"
@@ -48,4 +45,3 @@
     provider = "desec"
     delayBeforeCheck = 60
     resolvers = ["1.1.1.1:53", "1.0.0.1:53"]
-{% endif %}

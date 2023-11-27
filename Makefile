@@ -29,19 +29,19 @@ lint: ##  ## Run ansible-lint. ## Example: make lint
 vault: ## [env=<inventory>] ## Edit vault inventory. ## Example: make vault
 	@ansible-vault edit "inventories/$(env).yml" --vault-password-file="vault-pass.sh"
 
-ad-hoc: ## [env=<inventory>] [hosts=<hosts to target>] [module=<module to use>] [args=<module arguments>] ## Run ansible ad-hoc commands. ## Example: make ad-hoc env=vagrant hosts=monitoring,home module=shell args="echo Hello world"
+ad-hoc: ## [env=<inventory>] [hosts=<hosts to target>] [module=<module to use>] [args=<module arguments>] ## Run ansible ad-hoc commands. ## Example: make ad-hoc env=production hosts=monitoring,home module=shell args="echo Hello world"
 	@ansible --inventory-file="inventories/$(env).yml" $(flags) --vault-password-file="vault-pass.sh"
 
-console: ## [env=<inventory>] [hosts=<hosts to target>] ## Open an ansible console. ## Example: make console env=vagrant hosts=all
+console: ## [env=<inventory>] [hosts=<hosts to target>] ## Open an ansible console. ## Example: make console env=production hosts=all
 	@ansible-console --inventory-file="inventories/$(env).yml" $(flags) --vault-password-file="vault-pass.sh"
 
-dry-run: ## [env=<inventory>] [limit=<subset of hosts to target>] [tags=<tags to execute>] [app=<containers roles to execute>] ## Dry-run the playbook. ## Example: make dry-run env=vagrant limit=home,medias tags=containers-enable,containers-start app=traefik,node_exporter
+dry-run: ## [env=<inventory>] [limit=<subset of hosts to target>] [tags=<tags to execute>] [app=<containers roles to execute>] ## Dry-run the playbook. ## Example: make dry-run env=production limit=home,medias tags=containers-enable,containers-start app=traefik,node_exporter
 	@$(env_vars) ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) provision.yml --diff --check --vault-password-file="vault-pass.sh"
 
-provision: ## [env=<inventory>] [limit=<subset of hosts to target>] [tags=<tags to execute>] [app=<containers roles to execute>] ## Provision the hosts. ## Example: make provision env=vagrant limit=home,medias tags=containers-disable,containers-stop app=promtail,systemd_exporter
+provision: ## [env=<inventory>] [limit=<subset of hosts to target>] [tags=<tags to execute>] [app=<containers roles to execute>] ## Provision the hosts. ## Example: make provision env=production limit=home,medias tags=containers-disable,containers-stop app=promtail,systemd_exporter
 	@$(env_vars) ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) provision.yml --vault-password-file="vault-pass.sh"
 
-update: ## [env=<inventory>] [limit=<subset of hosts to target>] ## Update the hosts. ## Example: make update env=vagrant limit=home,monitoring
+update: ## [env=<inventory>] [limit=<subset of hosts to target>] ## Update the hosts. ## Example: make update env=production limit=home,monitoring
 	@ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) --tags="containers-stop,containers-pull,os-upgrade,os-reboot" provision.yml --vault-password-file="vault-pass.sh"
 
 ignition: ## [env=<inventory>] ## Generate ignition provisionining files. ## Example: make ignition env=production

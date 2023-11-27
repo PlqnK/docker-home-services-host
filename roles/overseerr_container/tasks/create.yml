@@ -1,12 +1,5 @@
 ---
-- name: 'Check if provisioning a Vagrant VM'
-  ansible.builtin.getent:
-    database: 'passwd'
-    key: 'vagrant'
-    fail_key: false
-
 - name: 'Manage Overseerr CNAME record'
-  when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
   block:
     - name: 'Get Overseerr CNAME record'

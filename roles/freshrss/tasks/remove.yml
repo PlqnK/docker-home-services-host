@@ -30,12 +30,6 @@
     path: '{{ containers_storage_path }}/data/freshrss'
     state: 'absent'
 
-- name: 'Check if provisioning a Vagrant VM'
-  ansible.builtin.getent:
-    database: 'passwd'
-    key: 'vagrant'
-    fail_key: false
-
 - name: 'Remove FreshRSS CNAME record'
   ansible.builtin.uri:
     url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/freshrss/CNAME/'
@@ -43,5 +37,4 @@
     status_code: [200, 204]
     headers:
       Authorization: 'Token {{ desec_token }}'
-  when: (getent_passwd.vagrant is none)
   delegate_to: 'localhost'
