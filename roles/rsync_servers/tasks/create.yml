@@ -12,7 +12,7 @@
 
 - name: 'Add backup server SSH key to rsync-servers private keys'
   ansible.builtin.copy:
-    content: '{{ rsync_client.private_key }}'
+    content: '{{ rsync_servers.private_key }}'
     dest: '{{ containers_storage_path }}/config/rsync-servers/id_ed25519'
     owner: 'root'
     group: 'root'

@@ -13,7 +13,7 @@
 
 - name: 'Pull rsync-servers image'
   containers.podman.podman_image:
-    name: '{{ containers_images.rsync_client }}:{{ containers_images_tags.rsync_client }}'
+    name: '{{ containers_images.rsync_servers }}:{{ containers_images_tags.rsync_servers }}'
     pull: true
     force: true
     state: 'present'

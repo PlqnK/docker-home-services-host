@@ -30,7 +30,7 @@ all:
         api:
           user: ''
           password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
-      rsync_client:
+      rsync_servers:
         private_key: |
           -----BEGIN OPENSSH PRIVATE KEY-----
           xxx
@@ -340,7 +340,7 @@ all:
           enable: true
         containers_storage_path: '/var/containers'
         volume_mount_path: '/mnt/vol01'
-        backup_server_key: 'ssh-ed25519 xxx' # Public key part of the key generated for hostvars['backups']['rsync_client']['private_key']
+        backup_server_key: 'ssh-ed25519 xxx' # Public key part of the key generated for hostvars['backups']['rsync_servers']['private_key']
         promtail:
           clients:
             basic_auth:
