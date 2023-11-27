@@ -1,5 +1,5 @@
 [Unit]
-Description=Podman auto-prune timer
+Description=Daily pruning of dangling container images
 
 [Timer]
 OnCalendar=daily
