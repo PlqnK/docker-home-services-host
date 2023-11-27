@@ -14,14 +14,14 @@ ExposeHostPort=3100
 Volume={{ containers_storage_path }}/config/loki/loki.yaml:/etc/loki/loki.yaml:Z
 Volume={{ containers_storage_path }}/runtime/loki:/loki:Z
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Label=traefik.enable="true"
-Label=traefik.docker.network="common-internal"
-Label=traefik.http.routers.loki.rule="Host(`loki.{{ domain_name }}`)"
-Label=traefik.http.routers.loki.entrypoints="websecure"
-Label=traefik.http.routers.loki.middlewares="set-security-headers@file, restrict-external-access@file, loki-auth"
-Label=traefik.http.middlewares.loki-auth.basicauth.users="{{ loki.user }}:{{ loki.password_hash }}"
-Label=traefik.http.services.loki.loadbalancer.server.port="3100"
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.loki.rule=Host(`loki.{{ domain_name }}`)"
+Label="traefik.http.routers.loki.entrypoints=websecure"
+Label="traefik.http.routers.loki.middlewares=set-security-headers@file, restrict-external-access@file, loki-auth"
+Label="traefik.http.middlewares.loki-auth.basicauth.users={{ loki.user }}:{{ loki.password_hash }}"
+Label="traefik.http.services.loki.loadbalancer.server.port=3100"
 
 [Service]
 Restart=on-failure

@@ -22,21 +22,21 @@ Secret=immich_postgres_user
 Secret=immich_postgres_password
 Timezone={{ timezone }}
 EnvironmentFile={{ containers_storage_path }}/env/immich-server/immich-server.env
-Environment=TZ="{{ timezone }}"
-Environment=DB_HOSTNAME="immich-postgres"
-Environment=DB_DATABASE_NAME="{{ immich.postgres.database }}"
-Environment=DB_USERNAME_FILE="/run/secrets/immich_postgres_user"
-Environment=DB_PASSWORD_FILE="/run/secrets/immich_postgres_password"
-Environment=REDIS_HOSTNAME="immich-redis"
-Environment=TYPESENSE_HOST="immich-typesense"
-Environment=UPLOAD_LOCATION="/usr/src/app/upload"
-Environment=IMMICH_MACHINE_LEARNING_URL="http://immich-machine-learning:3003"
-Label=traefik.enable="true"
-Label=traefik.docker.network="common-internal"
-Label=traefik.http.routers.immich.rule="Host(`immich.{{ domain_name }}`)"
-Label=traefik.http.routers.immich.entrypoints="websecure"
-Label=traefik.http.routers.immich.middlewares="set-security-headers@file"
-Label=traefik.http.services.immich.loadbalancer.server.port="3001"
+Environment="TZ={{ timezone }}"
+Environment="DB_HOSTNAME=immich-postgres"
+Environment="DB_DATABASE_NAME={{ immich.postgres.database }}"
+Environment="DB_USERNAME_FILE=/run/secrets/immich_postgres_user"
+Environment="DB_PASSWORD_FILE=/run/secrets/immich_postgres_password"
+Environment="REDIS_HOSTNAME=immich-redis"
+Environment="TYPESENSE_HOST=immich-typesense"
+Environment="UPLOAD_LOCATION=/usr/src/app/upload"
+Environment="IMMICH_MACHINE_LEARNING_URL=http://immich-machine-learning:3003"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.immich.rule=Host(`immich.{{ domain_name }}`)"
+Label="traefik.http.routers.immich.entrypoints=websecure"
+Label="traefik.http.routers.immich.middlewares=set-security-headers@file"
+Label="traefik.http.services.immich.loadbalancer.server.port=3001"
 
 [Service]
 Restart=on-failure

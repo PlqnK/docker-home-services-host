@@ -16,17 +16,17 @@ Network=ttrss-server-internal
 ExposeHostPort=80
 Volume={{ containers_storage_path }}/data/ttrss-server:/var/www/html:ro,z
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Environment=RESOLVER="10.89.0.1"
-Environment=APP_WEB_ROOT="/var/www/html/tt-rss"
-Environment=APP_BASE=""
-Environment=APP_UPSTREAM="ttrss-server"
-Label=traefik.enable="true"
-Label=traefik.docker.network="common-internal"
-Label=traefik.http.routers.ttrss.rule="Host(`ttrss.{{ domain_name }}`)"
-Label=traefik.http.routers.ttrss.entrypoints="websecure"
-Label=traefik.http.routers.ttrss.middlewares="set-security-headers@file"
-Label=traefik.http.services.ttrss.loadbalancer.server.port="80"
+Environment="TZ={{ timezone }}"
+Environment="RESOLVER=10.89.0.1"
+Environment="APP_WEB_ROOT=/var/www/html/tt-rss"
+Environment="APP_BASE="
+Environment="APP_UPSTREAM=ttrss-server"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.ttrss.rule=Host(`ttrss.{{ domain_name }}`)"
+Label="traefik.http.routers.ttrss.entrypoints=websecure"
+Label="traefik.http.routers.ttrss.middlewares=set-security-headers@file"
+Label="traefik.http.services.ttrss.loadbalancer.server.port=80"
 
 [Service]
 Restart=on-failure

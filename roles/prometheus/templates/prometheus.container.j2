@@ -18,13 +18,13 @@ Secret=prometheus_prometheus_password
 Secret=prometheus_node_password
 Secret=prometheus_systemd_password
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Label=traefik.enable="true"
-Label=traefik.docker.network="common-internal"
-Label=traefik.http.routers.prometheus.rule="Host(`prometheus.{{ domain_name }}`)"
-Label=traefik.http.routers.prometheus.entrypoints="websecure"
-Label=traefik.http.routers.prometheus.middlewares="set-security-headers@file, restrict-external-access@file"
-Label=traefik.http.services.prometheus.loadbalancer.server.port="9090"
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.prometheus.rule=Host(`prometheus.{{ domain_name }}`)"
+Label="traefik.http.routers.prometheus.entrypoints=websecure"
+Label="traefik.http.routers.prometheus.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.services.prometheus.loadbalancer.server.port=9090"
 
 [Service]
 Restart=on-failure

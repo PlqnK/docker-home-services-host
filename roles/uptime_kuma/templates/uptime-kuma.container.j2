@@ -12,13 +12,13 @@ Network=common-internal
 ExposeHostPort=3001
 Volume={{ containers_storage_path }}/data/uptime-kuma:/app/data:Z
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Label=traefik.enable="true"
-Label=traefik.docker.network="common-internal"
-Label=traefik.http.routers.uptime-kuma.rule="Host(`kuma.{{ domain_name }}`)"
-Label=traefik.http.routers.uptime-kuma.entrypoints="websecure"
-Label=traefik.http.routers.uptime-kuma.middlewares="set-security-headers@file, restrict-external-access@file"
-Label=traefik.http.services.uptime-kuma.loadbalancer.server.port="3001"
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.uptime-kuma.rule=Host(`kuma.{{ domain_name }}`)"
+Label="traefik.http.routers.uptime-kuma.entrypoints=websecure"
+Label="traefik.http.routers.uptime-kuma.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
 
 [Service]
 Restart=on-failure

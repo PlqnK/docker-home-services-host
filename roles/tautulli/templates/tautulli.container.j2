@@ -12,14 +12,14 @@ Network=common-internal
 ExposeHostPort=8181
 Volume={{ containers_storage_path }}/data/tautulli:/config:Z
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Environment=PLEX_CLAIM="{{ plex.claim_token }}"
-Label=traefik.enable="true"
-Label=traefik.docker.network="common-internal"
-Label=traefik.http.routers.tautulli.rule="Host(`tautulli.{{ domain_name }}`)"
-Label=traefik.http.routers.tautulli.entrypoints="websecure"
-Label=traefik.http.routers.tautulli.middlewares="set-security-headers@file, restrict-external-access@file"
-Label=traefik.http.services.tautulli.loadbalancer.server.port="8181"
+Environment="TZ={{ timezone }}"
+Environment="PLEX_CLAIM={{ plex.claim_token }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.tautulli.rule=Host(`tautulli.{{ domain_name }}`)"
+Label="traefik.http.routers.tautulli.entrypoints=websecure"
+Label="traefik.http.routers.tautulli.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.services.tautulli.loadbalancer.server.port=8181"
 
 [Service]
 Restart=on-failure

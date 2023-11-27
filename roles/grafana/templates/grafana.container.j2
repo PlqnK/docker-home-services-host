@@ -13,13 +13,13 @@ ExposeHostPort=3000
 #Volume={{ containers_storage_path }}/config/grafana/grafana.ini:/etc/grafana/grafana.ini:Z
 Volume={{ containers_storage_path }}/data/grafana:/var/lib/grafana:Z
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Label=traefik.enable="true"
-Label=traefik.docker.network="common-internal"
-Label=traefik.http.routers.grafana.rule="Host(`grafana.{{ domain_name }}`)"
-Label=traefik.http.routers.grafana.entrypoints="websecure"
-Label=traefik.http.routers.grafana.middlewares="set-security-headers@file, restrict-external-access@file"
-Label=traefik.http.services.grafana.loadbalancer.server.port="3000"
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.grafana.rule=Host(`grafana.{{ domain_name }}`)"
+Label="traefik.http.routers.grafana.entrypoints=websecure"
+Label="traefik.http.routers.grafana.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.services.grafana.loadbalancer.server.port=3000"
 
 [Service]
 Restart=on-failure

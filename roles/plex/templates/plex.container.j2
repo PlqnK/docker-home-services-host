@@ -28,15 +28,15 @@ Volume={{ nfs_mounts_path }}/medias/movies:/data/movies:slave,ro
 Volume={{ nfs_mounts_path }}/medias/music:/data/music:slave,ro
 Volume={{ nfs_mounts_path }}/medias/series:/data/series:slave,ro
 Timezone={{ timezone }}
-Environment=TZ="{{ timezone }}"
-Environment=PLEX_CLAIM="{{ plex.claim_token }}"
-Label=traefik.enable="true"
-Label=traefik.docker.network="common-internal"
-Label=traefik.http.routers.plex.rule="Host(`plex.{{ domain_name }}`)"
-Label=traefik.http.routers.plex.entrypoints="websecure"
-Label=traefik.http.routers.plex.middlewares="set-security-headers@file"
-Label=traefik.http.services.plex.loadbalancer.server.port="32400"
-Label=traefik.http.services.plex.loadbalancer.server.scheme="https"
+Environment="TZ={{ timezone }}"
+Environment="PLEX_CLAIM={{ plex.claim_token }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.plex.rule=Host(`plex.{{ domain_name }}`)"
+Label="traefik.http.routers.plex.entrypoints=websecure"
+Label="traefik.http.routers.plex.middlewares=set-security-headers@file"
+Label="traefik.http.services.plex.loadbalancer.server.port=32400"
+Label="traefik.http.services.plex.loadbalancer.server.scheme=https"
 
 [Service]
 Restart=on-failure
