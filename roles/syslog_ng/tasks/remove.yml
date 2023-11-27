@@ -1,0 +1,85 @@
+---
+- name: 'Ensure the user really wants to remove the syslog-ng container'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE SYSLOG-NG CONTAINER?\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop syslog-ng container'
+  ansible.builtin.systemd:
+    name: 'syslog-ng.service'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  register: systemd_unit
+  failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
+
+- name: 'Remove syslog-ng container quadlet unit'
+  ansible.builtin.file:
+    path: '/etc/containers/systemd/syslog-ng.service'
+    state: 'absent'
+  notify: 'Reload systemd daemon'
+
+- name: 'Remove syslog-ng network from firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: 'syslog-ng-external'
+      register: 'podman_network'
+      failed_when: (podman_network.failed and not "network not found" in podman_network.msg)
+
+    - name: 'Remove podman networks subnets from firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'disabled'
+      loop: '{{ podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Remove syslog-ng network'
+  containers.podman.podman_network:
+    name: 'syslog-ng-external'
+    state: 'absent'
+
+- name: 'Reject syslog incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: 'disabled'
+  loop:
+    - 'syslog'
+    - 'syslog-tcp'
+    - 'syslog-conn'
+
+- name: 'Remove firewalld services'
+  ansible.builtin.file:
+    path: '/etc/firewalld/services/{{ item }}'
+    state: 'absent'
+  loop:
+    - 'syslog-tcp.xml'
+    - 'syslog-conn.xml'
+  register: 'firewalld_services_remove'
+
+- name: 'Take firewalld services deletion into account' # noqa: no-handler
+  when: (firewalld_services_remove.changed)
+  block:
+    - name: 'Reload firewalld to remove services'
+      ansible.builtin.systemd:
+        name: 'firewalld.service'
+        state: 'reloaded'
+
+    - name: 'Reload podman networks after firewalld reload' # noqa: no-changed-when
+      ansible.builtin.command:
+        cmd: 'podman network reload -a'
+
+- name: 'Remove syslog-ng config bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/config/syslog-ng'
+    state: 'absent'

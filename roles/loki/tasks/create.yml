@@ -1,0 +1,44 @@
+---
+- name: 'Create Loki bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 10001
+    group: 10001
+    mode: '0700'
+    state: 'directory'
+  loop:
+    - 'config/loki'
+    - 'runtime/loki'
+
+- name: 'Create Loki config from template'
+  ansible.builtin.template:
+    src: 'loki.yaml.j2'
+    dest: '{{ containers_storage_path }}/config/loki/loki.yaml'
+    owner: 10001
+    group: 10001
+    mode: '0644'
+
+- name: 'Create Loki quadlet unit from template'
+  ansible.builtin.template:
+    src: 'loki.container.j2'
+    dest: '/etc/containers/systemd/loki.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'quadlet_unit'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Loki container'
+  ansible.builtin.systemd:
+    name: 'loki.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+
+- name: 'Restart Loki service if quadlet unit has changed while service was already started'
+  ansible.builtin.systemd:
+    name: 'loki.service'
+    daemon_reload: true
+    state: 'restarted'
+  when: (quadlet_unit.changed and not systemd_start.changed)

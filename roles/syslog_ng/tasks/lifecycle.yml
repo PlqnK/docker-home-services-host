@@ -1,0 +1,32 @@
+---
+- name: 'Stop syslog-ng container'
+  ansible.builtin.systemd:
+    name: 'syslog-ng.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable syslog-ng container'
+  ansible.builtin.systemd:
+    name: 'syslog-ng.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull syslog-ng image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.syslog_ng }}:{{ containers_images_tags.syslog_ng }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start syslog-ng container'
+  ansible.builtin.systemd:
+    name: 'syslog-ng.service'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable syslog-ng container'
+  ansible.builtin.systemd:
+    name: 'syslog-ng.service'
+    enabled: true
+  tags: ['never', 'containers-enable']

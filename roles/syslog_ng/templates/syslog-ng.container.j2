@@ -1,0 +1,24 @@
+[Unit]
+Description=syslog-ng
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=syslog-ng
+Image={{ containers_images.syslog_ng }}:{{ containers_images_tags.syslog_ng }}
+Network=syslog-ng-external
+Network=common-internal
+PublishPort=514:514/udp
+PublishPort=514:514/tcp
+PublishPort=601:601/tcp
+Volume={{ containers_storage_path }}/config/syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:Z
+Timezone={{ timezone }}
+Environment=TZ="{{ timezone }}"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

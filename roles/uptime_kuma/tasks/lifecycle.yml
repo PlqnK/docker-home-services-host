@@ -1,0 +1,32 @@
+---
+- name: 'Stop Uptime Kuma container'
+  ansible.builtin.systemd:
+    name: 'uptime-kuma.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+
+- name: 'Disable Uptime Kuma container'
+  ansible.builtin.systemd:
+    name: 'uptime-kuma.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Pull Uptime Kuma image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.uptime_kuma }}:{{ containers_images_tags.uptime_kuma }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Start Uptime Kuma container'
+  ansible.builtin.systemd:
+    name: 'uptime-kuma.service'
+    state: 'started'
+  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+
+- name: 'Enable Uptime Kuma container'
+  ansible.builtin.systemd:
+    name: 'uptime-kuma.service'
+    enabled: true
+  tags: ['never', 'containers-enable']

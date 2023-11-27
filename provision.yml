@@ -27,12 +27,12 @@
 - name: 'Monitoring containers'
   hosts: 'monitoring'
   roles:
-    - 'uptime_kuma_container'
-    - 'healthchecks_containers'
-    - 'grafana_container'
-    - 'prometheus_container'
-    - 'loki_container'
-    - 'syslog_ng_container'
+    - 'uptime_kuma'
+    - 'healthchecks'
+    - 'grafana'
+    - 'prometheus'
+    - 'loki'
+    - 'syslog_ng'
 
 - name: 'Home containers'
   hosts: 'home'
