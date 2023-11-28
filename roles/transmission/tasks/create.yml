@@ -24,44 +24,51 @@
   register: container_tun_semodule
   changed_when: false
   # grep returns 1 if the string isn't found and 2 for exceptions so we need to change the task fail condition.
-  failed_when: (container_tun_semodule.rc == 2)
+  failed_when: (container_tun_semodule.rc > 1)
   check_mode: false
 
 - name: 'Configure SELinux to allow the use of TUN in containers'
   when: (container_tun_semodule.rc == 1)
   block:
-    - name: 'Copy the SELinux custom policy on the host'
-      ansible.builtin.copy:
-        src: 'container-tun.te'
-        dest: '/tmp/container-tun.te'
-        owner: 'root'
-        group: 'root'
-        mode: '0644'
-
     - name: 'Compile the SELinux custom policy module'
       ansible.builtin.command:
-        cmd: 'checkmodule -M -m -o /tmp/container-tun.mod /tmp/container-tun.te'
+        cmd: 'checkmodule -M -m -o {{ playbook_dir }}/roles/transmission/files/container-tun.mod {{ playbook_dir }}/roles/transmission/files/container-tun.te'
       args:
-        creates: '/tmp/container-tun.mod'
+        creates: '{{ playbook_dir }}/roles/transmission/files/container-tun.mod'
+      delegate_to: 'localhost'
 
     - name: 'Package the SELinux custom policy module'
       ansible.builtin.command:
-        cmd: 'semodule_package -o /tmp/container-tun.pp -m /tmp/container-tun.mod'
+        cmd: 'semodule_package -o {{ playbook_dir }}/roles/transmission/files/container-tun.pp -m {{ playbook_dir }}/roles/transmission/files/container-tun.mod'
       args:
-        creates: '/tmp/container-tun.pp'
+        creates: '{{ playbook_dir }}/roles/transmission/files/container-tun.pp'
+      delegate_to: 'localhost'
+
+    - name: 'Copy the SELinux custom policy module to the host'
+      ansible.builtin.copy:
+        src: 'container-tun.pp'
+        dest: '/tmp/container-tun.pp'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
 
     - name: 'Install the SELinux custom policy module' # noqa: no-changed-when
       ansible.builtin.command:
         cmd: 'semodule -i /tmp/container-tun.pp'
 
-    - name: 'Cleanup temporary files'
+    - name: 'Cleanup remote temporary file'
       ansible.builtin.file:
-        path: '/tmp/{{ item }}'
+        path: '/tmp/container-tun.pp'
+        state: 'absent'
+
+    - name: 'Cleanup local temporary files'
+      ansible.builtin.file:
+        path: '{{ playbook_dir }}/roles/transmission/files/{{ item }}'
         state: 'absent'
       loop:
-        - 'container-tun.te'
         - 'container-tun.mod'
         - 'container-tun.pp'
+      delegate_to: 'localhost'
 
 - name: 'Create Gluetun network'
   containers.podman.podman_network:

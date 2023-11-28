@@ -3,12 +3,10 @@
   community.general.rpm_ostree_pkg:
     name:
       - 'firewalld'
+      - 'python3-firewall'
       - 'rsync'
       - 'msmtp'
       - 'mailx'
-      - 'checkpolicy'
-      - 'setools-console'
-      - 'python3-firewall'
       - 'google-authenticator'
       - 'cockpit-system'
       - 'cockpit-storaged'
