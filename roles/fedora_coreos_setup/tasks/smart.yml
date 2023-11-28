@@ -1,20 +1,14 @@
 ---
-- name: 'Template SMART test systemd service'
-  ansible.builtin.template:
-    src: 'smart-test@.service.j2'
-    dest: '/etc/systemd/system/smart-test@.service'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  notify: 'Reload systemd daemon'
-
-- name: 'Copy SMART test systemd timer'
+- name: 'Copy SMART test systemd units'
   ansible.builtin.copy:
-    src: 'smart-test@.timer'
-    dest: '/etc/systemd/system/smart-test@.timer'
+    src: '{{ item }}'
+    dest: '/etc/systemd/system/{{ item }}'
     owner: 'root'
     group: 'root'
     mode: '0644'
+  loop:
+    - 'smart-test@.service'
+    - 'smart-test@.timer'
   notify: 'Reload systemd daemon'
 
 - name: 'Reload systemd daemon to load new units'
