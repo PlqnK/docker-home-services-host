@@ -1,16 +1,4 @@
 ---
-- name: 'Stop autorestic timer'
-  ansible.builtin.systemd:
-    name: 'autorestic.timer'
-    state: 'stopped'
-  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
-
-- name: 'Disable autorestic timer'
-  ansible.builtin.systemd:
-    name: 'autorestic.timer'
-    enabled: false
-  tags: ['never', 'containers-disable']
-
 - name: 'Pull autorestic image'
   containers.podman.podman_image:
     name: '{{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }}'
@@ -19,14 +7,37 @@
     state: 'present'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Start autorestic timer'
+- name: 'Update autorestic tag in systemd unit'
+  ansible.builtin.template:
+    src: 'autorestic.service.j2'
+    dest: '/etc/systemd/system/autorestic.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: (container_image_pull.changed)
+  notify: 'Reload systemd daemon'
+  tags: ['never', 'containers-update']
+
+- name: 'Disable autorestic timer'
   ansible.builtin.systemd:
     name: 'autorestic.timer'
-    state: 'started'
-  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Stop autorestic timer'
+  ansible.builtin.systemd:
+    name: 'autorestic.timer'
+    state: 'stopped'
+  tags: ['never', 'containers-stop']
 
 - name: 'Enable autorestic timer'
   ansible.builtin.systemd:
     name: 'autorestic.timer'
     enabled: true
   tags: ['never', 'containers-enable']
+
+- name: 'Start autorestic timer'
+  ansible.builtin.systemd:
+    name: 'autorestic.timer'
+    state: 'started'
+  tags: ['never', 'containers-start']

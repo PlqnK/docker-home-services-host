@@ -1,9 +1,32 @@
 ---
-- name: 'Stop Bazarr container'
+- name: 'Pull Bazarr image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.bazarr }}:{{ containers_images_tags.bazarr }}'
+    pull: true
+    force: true
+    state: 'present'
+  register: 'container_image_pull'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Update Bazarr tag in quadlet unit'
+  ansible.builtin.template:
+    src: 'bazarr.container.j2'
+    dest: '/etc/containers/systemd/bazarr.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: (container_image_pull.changed)
+  register: 'quadlet_unit'
+  tags: ['never', 'containers-update']
+
+- name: 'Restart Bazarr container'
   ansible.builtin.systemd:
     name: 'bazarr.service'
-    state: 'stopped'
-  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+    daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
+    state: 'restarted'
+  when: ("containers-restart" in ansible_run_tags or
+        ("containers-update" in ansible_run_tags and container_image_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
+  tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable Bazarr container'
   ansible.builtin.systemd:
@@ -11,22 +34,20 @@
     enabled: false
   tags: ['never', 'containers-disable']
 
-- name: 'Pull Bazarr image'
-  containers.podman.podman_image:
-    name: '{{ containers_images.bazarr }}:{{ containers_images_tags.bazarr }}'
-    pull: true
-    force: true
-    state: 'present'
-  tags: ['never', 'containers-pull', 'containers-update']
-
-- name: 'Start Bazarr container'
+- name: 'Stop Bazarr container'
   ansible.builtin.systemd:
     name: 'bazarr.service'
-    state: 'started'
-  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+    state: 'stopped'
+  tags: ['never', 'containers-stop']
 
 - name: 'Enable Bazarr container'
   ansible.builtin.systemd:
     name: 'bazarr.service'
     enabled: true
   tags: ['never', 'containers-enable']
+
+- name: 'Start Bazarr container'
+  ansible.builtin.systemd:
+    name: 'bazarr.service'
+    state: 'started'
+  tags: ['never', 'containers-start']

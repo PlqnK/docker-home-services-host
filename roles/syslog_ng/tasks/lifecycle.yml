@@ -1,9 +1,32 @@
 ---
-- name: 'Stop syslog-ng container'
+- name: 'Pull syslog-ng image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.syslog_ng }}:{{ containers_images_tags.syslog_ng }}'
+    pull: true
+    force: true
+    state: 'present'
+  register: 'container_image_pull'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Update syslog-ng tag in quadlet unit'
+  ansible.builtin.template:
+    src: 'syslog-ng.container.j2'
+    dest: '/etc/containers/systemd/syslog-ng.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: (container_image_pull.changed)
+  register: 'quadlet_unit'
+  tags: ['never', 'containers-update']
+
+- name: 'Restart syslog-ng container'
   ansible.builtin.systemd:
     name: 'syslog-ng.service'
-    state: 'stopped'
-  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
+    daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
+    state: 'restarted'
+  when: ("containers-restart" in ansible_run_tags or
+        ("containers-update" in ansible_run_tags and container_image_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
+  tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable syslog-ng container'
   ansible.builtin.systemd:
@@ -11,22 +34,20 @@
     enabled: false
   tags: ['never', 'containers-disable']
 
-- name: 'Pull syslog-ng image'
-  containers.podman.podman_image:
-    name: '{{ containers_images.syslog_ng }}:{{ containers_images_tags.syslog_ng }}'
-    pull: true
-    force: true
-    state: 'present'
-  tags: ['never', 'containers-pull', 'containers-update']
-
-- name: 'Start syslog-ng container'
+- name: 'Stop syslog-ng container'
   ansible.builtin.systemd:
     name: 'syslog-ng.service'
-    state: 'started'
-  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+    state: 'stopped'
+  tags: ['never', 'containers-stop']
 
 - name: 'Enable syslog-ng container'
   ansible.builtin.systemd:
     name: 'syslog-ng.service'
     enabled: true
   tags: ['never', 'containers-enable']
+
+- name: 'Start syslog-ng container'
+  ansible.builtin.systemd:
+    name: 'syslog-ng.service'
+    state: 'started'
+  tags: ['never', 'containers-start']

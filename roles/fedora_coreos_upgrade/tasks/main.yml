@@ -1,12 +1,6 @@
 ---
-- name: 'Upgrade OS and reboot'
+- name: 'Upgrade OS'
+  ansible.posix.rpm_ostree_upgrade:
+  register: 'rpm_ostree_upgrade'
   when: (containers_list is not defined)
-  block:
-    - name: 'Upgrade OS'
-      ansible.posix.rpm_ostree_upgrade:
-      notify: 'Reboot host'
-      tags: ['never', 'os-upgrade']
-
-    - name: 'Reboot host if OS has been upgraded'
-      ansible.builtin.meta: 'flush_handlers'
-      tags: ['never', 'os-reboot']
+  tags: ['never', 'os-upgrade']

@@ -42,7 +42,7 @@ provision: ## [env=<inventory>] [limit=<subset of hosts to target>] [tags=<tags 
 	@$(env_vars) ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) provision.yml --vault-password-file="vault-pass.sh"
 
 update: ## [env=<inventory>] [limit=<subset of hosts to target>] ## Update the hosts. ## Example: make update env=production limit=home,monitoring
-	@ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) --tags="containers-stop,containers-pull,os-upgrade,os-reboot" provision.yml --vault-password-file="vault-pass.sh"
+	@ANSIBLE_DISPLAY_SKIPPED_HOSTS=False ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) --tags="containers-update,os-upgrade" provision.yml --vault-password-file="vault-pass.sh"
 
 ignition: ## [env=<inventory>] ## Generate ignition provisionining files. ## Example: make ignition env=production
 	@ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) ignition.yml --vault-password-file="vault-pass.sh"

@@ -1,16 +1,4 @@
 ---
-- name: 'Stop mbsync timer'
-  ansible.builtin.systemd:
-    name: 'mbsync.timer'
-    state: 'stopped'
-  tags: ['never', 'containers-stop', 'containers-restart', 'containers-update']
-
-- name: 'Disable mbsync timer'
-  ansible.builtin.systemd:
-    name: 'mbsync.timer'
-    enabled: false
-  tags: ['never', 'containers-disable']
-
 - name: 'Pull mbsync image'
   containers.podman.podman_image:
     name: '{{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }}'
@@ -19,14 +7,37 @@
     state: 'present'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Start mbsync timer'
+- name: 'Update mbsync tag in systemd unit'
+  ansible.builtin.template:
+    src: 'mbsync.service.j2'
+    dest: '/etc/systemd/system/mbsync.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: (container_image_pull.changed)
+  notify: 'Reload systemd daemon'
+  tags: ['never', 'containers-update']
+
+- name: 'Disable mbsync timer'
   ansible.builtin.systemd:
     name: 'mbsync.timer'
-    state: 'started'
-  tags: ['never', 'containers-start', 'containers-restart', 'containers-update']
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Stop mbsync timer'
+  ansible.builtin.systemd:
+    name: 'mbsync.timer'
+    state: 'stopped'
+  tags: ['never', 'containers-stop']
 
 - name: 'Enable mbsync timer'
   ansible.builtin.systemd:
     name: 'mbsync.timer'
     enabled: true
   tags: ['never', 'containers-enable']
+
+- name: 'Start mbsync timer'
+  ansible.builtin.systemd:
+    name: 'mbsync.timer'
+    state: 'started'
+  tags: ['never', 'containers-start']

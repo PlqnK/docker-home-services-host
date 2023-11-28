@@ -1,4 +1,10 @@
 ---
+- name: 'Upgrade containers hosts OS'
+  hosts: 'containers_hosts'
+  gather_facts: false
+  roles:
+    - 'fedora_coreos_upgrade'
+
 - name: 'Containers hosts base configuration'
   hosts: 'containers_hosts'
   roles:
@@ -70,7 +76,8 @@
     - 'mylar'
     - 'overseerr'
 
-- name: 'Update containers hosts OS'
+- name: 'Reboot containers hosts OS'
   hosts: 'containers_hosts'
+  gather_facts: false
   roles:
-    - 'fedora_coreos_upgrade'
+    - 'fedora_coreos_reboot'

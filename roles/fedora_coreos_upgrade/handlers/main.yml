@@ -1,3 +1,0 @@
----
-- name: 'Reboot host'
-  ansible.builtin.reboot:

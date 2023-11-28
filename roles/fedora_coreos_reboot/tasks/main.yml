@@ -1,0 +1,5 @@
+---
+- name: 'Reboot host if upgrade is pending'
+  ansible.builtin.reboot:
+  when: (rpm_ostree_upgrade.changed)
+  tags: ['never', 'os-upgrade']
