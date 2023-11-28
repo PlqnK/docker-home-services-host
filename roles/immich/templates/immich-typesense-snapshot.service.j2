@@ -2,9 +2,9 @@
 Description=Podman container-exec-immich-typesense-snapshot.service
 Wants=network-online.target
 After=network-online.target
-Wants=ping-healthchecks-io@{{ immich.typesense.snapshot.healthchecks_uuid }}:start.service
-OnSuccess=ping-healthchecks-io@{{ immich.typesense.snapshot.healthchecks_uuid }}:success.service
-OnFailure=ping-healthchecks-io@{{ immich.typesense.snapshot.healthchecks_uuid }}:failure.service
+Wants=ping-healthchecksio-uuid@{{ immich.typesense.snapshot.healthchecks_uuid }}:start.service
+OnSuccess=ping-healthchecksio-uuid@{{ immich.typesense.snapshot.healthchecks_uuid }}:success.service
+OnFailure=ping-healthchecksio-uuid@{{ immich.typesense.snapshot.healthchecks_uuid }}:failure.service
 
 [Service]
 Restart=no

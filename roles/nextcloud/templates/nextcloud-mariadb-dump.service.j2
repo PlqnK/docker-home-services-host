@@ -2,9 +2,9 @@
 Description=Nextcloud MariaDB dump
 Wants=network-online.target
 After=network-online.target
-Wants=ping-healthchecks-io@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:start.service
-OnSuccess=ping-healthchecks-io@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:success.service
-OnFailure=ping-healthchecks-io@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:failure.service
+Wants=ping-healthchecksio-uuid@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:start.service
+OnSuccess=ping-healthchecksio-uuid@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:success.service
+OnFailure=ping-healthchecksio-uuid@{{ nextcloud.mariadb.dump.healthchecks_uuid }}:failure.service
 
 [Service]
 Restart=no

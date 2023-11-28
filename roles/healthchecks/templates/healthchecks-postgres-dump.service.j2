@@ -2,9 +2,9 @@
 Description=Healthchecks PostreSQL dump
 Wants=network-online.target
 After=network-online.target
-Wants=ping-healthchecks-io@{{ healthchecks.postgres.dump.healthchecks_uuid }}:start.service
-OnSuccess=ping-healthchecks-io@{{ healthchecks.postgres.dump.healthchecks_uuid }}:success.service
-OnFailure=ping-healthchecks-io@{{ healthchecks.postgres.dump.healthchecks_uuid }}:failure.service
+Wants=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uuid }}:start.service
+OnSuccess=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uuid }}:success.service
+OnFailure=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uuid }}:failure.service
 
 [Service]
 Restart=no

@@ -7,7 +7,7 @@
     group: 'root'
     mode: '0644'
   loop:
-    - 'ping-healthchecks@.service'
+    - 'ping-healthchecks-uuid@.service'
     - 'ping-healthchecks-slug@.service'
   notify: 'Reload systemd daemon'
 
@@ -19,8 +19,8 @@
     group: 'root'
     mode: '0644'
   loop:
-    - 'ping-healthchecks-io@.service'
-    - 'ping-healthchecks-io-slug@.service'
+    - 'ping-healthchecksio-uuid@.service'
+    - 'ping-healthchecksio-slug@.service'
   notify: 'Reload systemd daemon'
 
 - name: 'Create Healthchecks systemd overrides directories'
@@ -32,7 +32,7 @@
     state: 'directory'
   loop:
     - 'ping-healthchecks-slug@.service.d'
-    - 'ping-healthchecks-io-slug@.service.d'
+    - 'ping-healthchecksio-slug@.service.d'
 
 - name: 'Create Healthchecks systemd overrides from template'
   ansible.builtin.template:
@@ -44,6 +44,6 @@
   loop:
     - src: 'ping-healthchecks-slug-environment.conf.j2'
       dest_parent_dir: 'ping-healthchecks-slug@.service.d'
-    - src: 'ping-healthchecks-io-slug-environment.conf.j2'
-      dest_parent_dir: 'ping-healthchecks-io-slug@.service.d'
+    - src: 'ping-healthchecksio-slug-environment.conf.j2'
+      dest_parent_dir: 'ping-healthchecksio-slug@.service.d'
   notify: 'Reload systemd daemon'
