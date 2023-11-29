@@ -114,8 +114,9 @@
       data: '{{ nextcloud.postgres.user }}'
     - name: 'nextcloud_postgres_password'
       data: '{{ nextcloud.postgres.password }}'
-    - name: 'nextcloud_redis_password'
-      data: '{{ nextcloud.redis.password }}'
+    # See https://github.com/nextcloud/docker/issues/1402
+    #- name: 'nextcloud_redis_password'
+    #  data: '{{ nextcloud.redis.password }}'
 
 - name: 'Create Nextcloud stack quadlet units from templates'
   ansible.builtin.template:

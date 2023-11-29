@@ -18,7 +18,7 @@ Volume={{ containers_storage_path }}/data/nextcloud-server:/var/www/html:z
 Volume={{ volume_mount_path }}/documents/nextcloud:/var/www/html/data:z
 Secret=nextcloud_postgres_user
 Secret=nextcloud_postgres_password
-Secret=nextcloud_redis_password
+#Secret=nextcloud_redis_password # See https://github.com/nextcloud/docker/issues/1402
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
 Environment="NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ domain_name }}"
@@ -30,7 +30,7 @@ Environment="POSTGRES_DB={{ nextcloud.postgres.database }}"
 Environment="POSTGRES_USER_FILE=/run/secrets/nextcloud_postgres_user"
 Environment="POSTGRES_PASSWORD_FILE=/run/secrets/nextcloud_postgres_password"
 Environment="REDIS_HOST=nextcloud-redis"
-Environment="REDIS_HOST_PASSWORD_FILE=/run/secrets/nextcloud_redis_password"
+#Environment="REDIS_HOST_PASSWORD_FILE=/run/secrets/nextcloud_redis_password" # See https://github.com/nextcloud/docker/issues/1402
 Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.cloud.rule=Host(`cloud.{{ domain_name }}`)"
