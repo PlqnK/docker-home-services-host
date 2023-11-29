@@ -52,7 +52,7 @@
     opt:
       isolate: true
   loop:
-    - 'nextcloud-mariadb-internal'
+    - 'nextcloud-postgres-internal'
     - 'nextcloud-redis-internal'
 
 - name: 'Add Nextcloud stack networks to firewalld trusted zone'
@@ -61,7 +61,7 @@
       containers.podman.podman_network_info:
         name: '{{ item }}'
       loop:
-        - 'nextcloud-mariadb-internal'
+        - 'nextcloud-postgres-internal'
         - 'nextcloud-redis-internal'
       register: 'podman_networks'
 
@@ -82,16 +82,13 @@
     mode: '0700'
     state: 'directory'
   loop:
-    - path: 'config/nextcloud-mariadb'
-      owner: 'root'
-      group: 'root'
-    - path: 'runtime/nextcloud-mariadb'
+    - path: 'runtime/nextcloud-postgres'
       owner: 999
       group: 999
     - path: 'runtime/nextcloud-redis'
       owner: 999
       group: 999
-    - path: 'data/nextcloud-mariadb'
+    - path: 'data/nextcloud-postgres'
       owner: 'root'
       group: 'root'
     - path: 'data/nextcloud-server'
@@ -106,14 +103,6 @@
     mode: '0700'
     state: 'directory'
 
-- name: 'Create MariaDB dump config from template'
-  ansible.builtin.template:
-    src: 'my.cnf.j2'
-    dest: '{{ containers_storage_path }}/config/nextcloud-mariadb/.my.cnf'
-    owner: 'root'
-    group: 'root'
-    mode: '0600'
-
 - name: 'Create Nextcloud stack secrets'
   containers.podman.podman_secret:
     name: '{{ item.name }}'
@@ -121,12 +110,10 @@
     skip_existing: true
     state: 'present'
   loop:
-    - name: 'nextcloud_mariadb_root_password'
-      data: '{{ nextcloud.mariadb.root_password }}'
-    - name: 'nextcloud_mariadb_user'
-      data: '{{ nextcloud.mariadb.user }}'
-    - name: 'nextcloud_mariadb_password'
-      data: '{{ nextcloud.mariadb.password }}'
+    - name: 'nextcloud_postgres_user'
+      data: '{{ nextcloud.postgres.user }}'
+    - name: 'nextcloud_postgres_password'
+      data: '{{ nextcloud.postgres.password }}'
     - name: 'nextcloud_redis_password'
       data: '{{ nextcloud.redis.password }}'
 
@@ -138,7 +125,7 @@
     group: 'root'
     mode: '0644'
   loop:
-    - 'nextcloud-mariadb'
+    - 'nextcloud-postgres'
     - 'nextcloud-redis'
     - 'nextcloud-server'
   register: 'quadlet_units'
@@ -153,7 +140,7 @@
     mode: '0644'
   loop:
     - 'nextcloud-cron'
-    - 'nextcloud-mariadb-dump'
+    - 'nextcloud-postgres-dump'
   notify: 'Reload systemd daemon'
 
 - name: 'Copy Nextcloud tasks systemd timers'
@@ -165,7 +152,7 @@
     mode: '0644'
   loop:
     - 'nextcloud-cron'
-    - 'nextcloud-mariadb-dump'
+    - 'nextcloud-postgres-dump'
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Nextcloud stack'
@@ -176,11 +163,11 @@
     state: 'started'
   register: 'systemd_start'
   loop:
-    - 'nextcloud-mariadb.service'
+    - 'nextcloud-postgres.service'
     - 'nextcloud-redis.service'
     - 'nextcloud-server.service'
     - 'nextcloud-cron.timer'
-    - 'nextcloud-mariadb-dump.timer'
+    - 'nextcloud-postgres-dump.timer'
 
 - name: 'Restart Nextcloud services if quadlet unit has changed while service was already started'
   ansible.builtin.systemd:

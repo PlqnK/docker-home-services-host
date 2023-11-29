@@ -225,8 +225,7 @@ all:
           user: ''
           password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
       nextcloud:
-        mariadb:
-          root_password: ''
+        postgres:
           database: 'nextcloud'
           user: 'nextcloud'
           password: ''

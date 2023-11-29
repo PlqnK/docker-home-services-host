@@ -6,7 +6,7 @@
     force: true
     state: 'present'
   loop:
-    - '{{ containers_images.nextcloud.mariadb }}:{{ containers_images_tags.nextcloud.mariadb }}'
+    - '{{ containers_images.nextcloud.postgres }}:{{ containers_images_tags.nextcloud.postgres }}'
     - '{{ containers_images.nextcloud.redis }}:{{ containers_images_tags.nextcloud.redis }}'
     - '{{ containers_images.nextcloud.server }}:{{ containers_images_tags.nextcloud.server }}'
   register: 'containers_images_pull'
@@ -20,7 +20,7 @@
     group: 'root'
     mode: '0644'
   loop:
-    - 'nextcloud-mariadb'
+    - 'nextcloud-postgres'
     - 'nextcloud-redis'
     - 'nextcloud-server'
   when: (containers_images_pull.changed)
@@ -41,14 +41,14 @@
         - 'nextcloud-cron.timer'
         - 'nextcloud-server.service'
         - 'nextcloud-redis.service'
-        - 'nextcloud-mariadb.service'
+        - 'nextcloud-postgres.service'
 
     - name: 'Start Nextcloud stack'
       ansible.builtin.systemd:
         name: '{{ item }}'
         state: 'started'
       loop:
-        - 'nextcloud-mariadb.service'
+        - 'nextcloud-postgres.service'
         - 'nextcloud-redis.service'
         - 'nextcloud-server.service'
         - 'nextcloud-cron.timer'
@@ -58,11 +58,11 @@
     name: '{{ item }}'
     enabled: false
   loop:
-    - 'nextcloud-mariadb-dump.timer'
+    - 'nextcloud-postgres-dump.timer'
     - 'nextcloud-cron.timer'
     - 'nextcloud-server.service'
     - 'nextcloud-redis.service'
-    - 'nextcloud-mariadb.service'
+    - 'nextcloud-postgres.service'
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Nextcloud stack'
@@ -70,11 +70,11 @@
     name: '{{ item }}'
     state: 'stopped'
   loop:
-    - 'nextcloud-mariadb-dump.timer'
+    - 'nextcloud-postgres-dump.timer'
     - 'nextcloud-cron.timer'
     - 'nextcloud-server.service'
     - 'nextcloud-redis.service'
-    - 'nextcloud-mariadb.service'
+    - 'nextcloud-postgres.service'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Nextcloud stack'
@@ -82,11 +82,11 @@
     name: '{{ item }}'
     enabled: true
   loop:
-    - 'nextcloud-mariadb.service'
+    - 'nextcloud-postgres.service'
     - 'nextcloud-redis.service'
     - 'nextcloud-server.service'
     - 'nextcloud-cron.timer'
-    - 'nextcloud-mariadb-dump.timer'
+    - 'nextcloud-postgres-dump.timer'
   tags: ['never', 'containers-enable']
 
 - name: 'Start Nextcloud stack'
@@ -94,9 +94,9 @@
     name: '{{ item }}'
     state: 'started'
   loop:
-    - 'nextcloud-mariadb.service'
+    - 'nextcloud-postgres.service'
     - 'nextcloud-redis.service'
     - 'nextcloud-server.service'
     - 'nextcloud-cron.timer'
-    - 'nextcloud-mariadb-dump.timer'
+    - 'nextcloud-postgres-dump.timer'
   tags: ['never', 'containers-start']

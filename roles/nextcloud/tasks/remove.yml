@@ -17,11 +17,11 @@
     enabled: false
     state: 'stopped'
   loop:
-    - 'nextcloud-mariadb-dump.timer'
+    - 'nextcloud-postgres-dump.timer'
     - 'nextcloud-cron.timer'
     - 'nextcloud-server.service'
     - 'nextcloud-redis.service'
-    - 'nextcloud-mariadb.service'
+    - 'nextcloud-postgres.service'
   register: systemd_units
   failed_when: (systemd_units.failed and not "Could not find the requested service" in systemd_units.msg)
 
@@ -30,13 +30,13 @@
     path: '{{ item }}'
     state: 'absent'
   loop:
-    - '/etc/systemd/system/nextcloud-mariadb-dump.timer'
-    - '/etc/systemd/system/nextcloud-mariadb-dump.service'
+    - '/etc/systemd/system/nextcloud-postgres-dump.timer'
+    - '/etc/systemd/system/nextcloud-postgres-dump.service'
     - '/etc/systemd/system/nextcloud-cron.timer'
     - '/etc/systemd/system/nextcloud-cron.service'
     - '/etc/containers/systemd/nextcloud-server.container'
     - '/etc/containers/systemd/nextcloud-redis.container'
-    - '/etc/containers/systemd/nextcloud-mariadb.container'
+    - '/etc/containers/systemd/nextcloud-postgres.container'
   notify: 'Reload systemd daemon'
 
 - name: 'Remove Nextcloud stack networks from firewalld trusted zone'
@@ -45,7 +45,7 @@
       containers.podman.podman_network_info:
         name: '{{ item }}'
       loop:
-        - 'nextcloud-mariadb-internal'
+        - 'nextcloud-postgres-internal'
         - 'nextcloud-redis-internal'
       register: 'podman_networks'
       failed_when: (podman_networks.failed and not "network not found" in podman_networks.msg)
@@ -64,7 +64,7 @@
     name: '{{ item }}'
     state: 'absent'
   loop:
-    - 'nextcloud-mariadb-internal'
+    - 'nextcloud-postgres-internal'
     - 'nextcloud-redis-internal'
 
 - name: 'Remove Nextcloud stack secrets'
@@ -72,9 +72,8 @@
     name: '{{ item }}'
     state: 'absent'
   loop:
-    - 'nextcloud_mariadb_root_password'
-    - 'nextcloud_mariadb_user'
-    - 'nextcloud_mariadb_password'
+    - 'nextcloud_postgres_user'
+    - 'nextcloud_postgres_password'
     - 'nextcloud_redis_password'
 
 - name: 'Remove Nextcloud stack bind mounts paths'
@@ -82,10 +81,9 @@
     path: '{{ containers_storage_path }}/{{ item }}'
     state: 'absent'
   loop:
-    - 'config/nextcloud-mariadb'
-    - 'runtime/nextcloud-mariadb'
+    - 'runtime/nextcloud-postgres'
     - 'runtime/nextcloud-redis'
-    - 'data/nextcloud-mariadb'
+    - 'data/nextcloud-postgres'
     - 'data/nextcloud-server'
 
 - name: 'Remove Nextcloud CNAME record'

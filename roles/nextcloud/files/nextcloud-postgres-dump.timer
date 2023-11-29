@@ -1,5 +1,5 @@
 [Unit]
-Description=Daily Nextcloud MariaDB dump
+Description=Daily Nextcloud PostgreSQL dump
 
 [Timer]
 OnCalendar=*-*-* 4:00:00

@@ -1,0 +1,15 @@
+[Unit]
+Description=Nextcloud PostgreSQL dump
+Wants=network-online.target
+After=network-online.target
+Wants=ping-healthchecksio-uuid@{{ nextcloud.postgres.dump.healthchecks_uuid }}:start.service
+OnSuccess=ping-healthchecksio-uuid@{{ nextcloud.postgres.dump.healthchecks_uuid }}:success.service
+OnFailure=ping-healthchecksio-uuid@{{ nextcloud.postgres.dump.healthchecks_uuid }}:failure.service
+
+[Service]
+Restart=no
+ExecStart=/usr/bin/podman container exec nextcloud-postgres pg_dump --clean -U {{ nextcloud.postgres.user }} {{ nextcloud.postgres.database }} -f /opt/dumps/nextcloud.sql
+Type=simple
+
+[Install]
+WantedBy=default.target

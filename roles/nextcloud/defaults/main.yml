@@ -1,11 +1,11 @@
 ---
 containers_images:
   nextcloud:
-    mariadb: 'docker.io/library/mariadb'
+    postgres: 'docker.io/library/postgres'
     redis: 'docker.io/library/redis'
     server: 'docker.io/library/nextcloud'
 containers_images_tags:
   nextcloud:
-    mariadb: 'latest'
+    postgres: 'latest'
     redis: 'latest'
     server: 'latest'
