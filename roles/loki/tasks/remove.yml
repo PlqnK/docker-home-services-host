@@ -21,7 +21,7 @@
 
 - name: 'Remove Loki container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/loki.service'
+    path: '/etc/containers/systemd/loki.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

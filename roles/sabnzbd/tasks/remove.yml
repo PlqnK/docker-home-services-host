@@ -21,7 +21,7 @@
 
 - name: 'Remove SABnzbd container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/sabnzbd.service'
+    path: '/etc/containers/systemd/sabnzbd.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

@@ -21,7 +21,7 @@
 
 - name: 'Remove Mylar container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/mylar.service'
+    path: '/etc/containers/systemd/mylar.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

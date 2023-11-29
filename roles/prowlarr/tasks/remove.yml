@@ -21,7 +21,7 @@
 
 - name: 'Remove Prowlarr container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/prowlarr.service'
+    path: '/etc/containers/systemd/prowlarr.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

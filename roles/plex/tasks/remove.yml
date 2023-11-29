@@ -21,7 +21,7 @@
 
 - name: 'Remove Plex container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/plex.service'
+    path: '/etc/containers/systemd/plex.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

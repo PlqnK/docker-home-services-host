@@ -21,7 +21,7 @@
 
 - name: 'Remove Readarr container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/readarr.service'
+    path: '/etc/containers/systemd/readarr.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

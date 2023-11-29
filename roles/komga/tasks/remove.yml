@@ -21,7 +21,7 @@
 
 - name: 'Remove Komga container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/komga.service'
+    path: '/etc/containers/systemd/komga.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

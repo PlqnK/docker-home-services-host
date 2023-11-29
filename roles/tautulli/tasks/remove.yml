@@ -21,7 +21,7 @@
 
 - name: 'Remove Tautulli container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/tautulli.service'
+    path: '/etc/containers/systemd/tautulli.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

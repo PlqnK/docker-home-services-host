@@ -21,7 +21,7 @@
 
 - name: 'Remove Grafana container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/grafana.service'
+    path: '/etc/containers/systemd/grafana.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

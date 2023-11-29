@@ -21,7 +21,7 @@
 
 - name: 'Remove Radarr container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/radarr.service'
+    path: '/etc/containers/systemd/radarr.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

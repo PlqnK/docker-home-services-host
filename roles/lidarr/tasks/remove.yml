@@ -21,7 +21,7 @@
 
 - name: 'Remove Lidarr container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/lidarr.service'
+    path: '/etc/containers/systemd/lidarr.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

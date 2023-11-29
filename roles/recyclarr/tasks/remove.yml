@@ -21,7 +21,7 @@
 
 - name: 'Remove Recyclarr container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/recyclarr.service'
+    path: '/etc/containers/systemd/recyclarr.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

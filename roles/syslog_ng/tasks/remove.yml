@@ -21,7 +21,7 @@
 
 - name: 'Remove syslog-ng container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/syslog-ng.service'
+    path: '/etc/containers/systemd/syslog-ng.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

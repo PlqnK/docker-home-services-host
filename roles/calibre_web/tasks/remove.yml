@@ -21,7 +21,7 @@
 
 - name: 'Remove Calibre-Web container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/calibre-web.service'
+    path: '/etc/containers/systemd/calibre-web.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

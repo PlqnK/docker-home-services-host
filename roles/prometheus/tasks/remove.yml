@@ -21,7 +21,7 @@
 
 - name: 'Remove Prometheus container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/systemd/system/prometheus.service'
+    path: '/etc/systemd/system/prometheus.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 

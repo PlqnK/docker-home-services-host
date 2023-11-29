@@ -21,7 +21,7 @@
 
 - name: 'Remove Sonarr container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/sonarr.service'
+    path: '/etc/containers/systemd/sonarr.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 
