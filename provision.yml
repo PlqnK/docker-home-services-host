@@ -19,7 +19,7 @@
     - 'sshd_rsync'
     - 'promtail'
     - 'node_exporter'
-    - 'systemd_exporter'
+    #- 'systemd_exporter'
 
 - name: 'Backups containers'
   hosts: 'backups'
