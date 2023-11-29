@@ -260,6 +260,9 @@ all:
           password: ''
           dump:
             healthchecks_uuid: ''
+      it_tools:
+        user: ''
+        password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
     medias:
       ansible_host: 'medias.domain.tld'
       ansible_user: 'core'

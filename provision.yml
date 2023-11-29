@@ -55,6 +55,7 @@
     - 'immich'
     - 'ttrss'
     - 'freshrss'
+    - 'it_tools'
 
 - name: 'Medias containers'
   hosts: 'medias'

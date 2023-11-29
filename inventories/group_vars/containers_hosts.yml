@@ -39,6 +39,7 @@ containers_images_tags:
     server: 'latest'
     nginx: 'latest'
   freshrss: 'latest'
+  it_tools: 'latest'
   plex: 'latest'
   tautulli: 'latest'
   calibre: 'latest'
