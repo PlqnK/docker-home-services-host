@@ -237,6 +237,9 @@ all:
         user: ''
         password: ''
         dictionnaries: 'fr_FR en_US'
+      stirling_pdf:
+        user: ''
+        password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
       immich:
         postgres:
           database: 'immich'

@@ -1,0 +1,5 @@
+---
+containers_images:
+  stirling_pdf: 'ghcr.io/frooodle/s-pdf'
+containers_images_tags:
+  stirling_pdf: 'latest'

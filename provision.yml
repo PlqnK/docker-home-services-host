@@ -50,6 +50,7 @@
   roles:
     - 'nextcloud'
     - 'collabora_online'
+    - 'stirling_pdf'
     - 'memos'
     - 'immich'
     - 'ttrss'
