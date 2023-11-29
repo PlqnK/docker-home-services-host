@@ -1,0 +1,78 @@
+---
+- name: 'Manage Navidrome CNAME record'
+  delegate_to: 'localhost'
+  block:
+    - name: 'Get Navidrome CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/navidrome/CNAME/'
+        method: 'GET'
+        status_code: [200, 404]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+      register: desec_rrsets_get
+
+    - name: 'Create Navidrome CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/'
+        method: 'POST'
+        status_code: [201]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          subname: 'navidrome'
+          type: 'CNAME'
+          ttl: 3600
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_post
+      when: (desec_rrsets_get.status == 404)
+      changed_when: (desec_rrsets_post.status == 201)
+
+    - name: 'Update Navidrome CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/navidrome/CNAME/'
+        method: 'PATCH'
+        status_code: [200]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_patch
+      when: (desec_rrsets_get.status == 200 and desec_rrsets_get.json.records != [ansible_fqdn + "."])
+      changed_when: (desec_rrsets_patch.status == 200)
+
+- name: 'Create Navidrome data bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/data/navidrome'
+    owner: 1000
+    group: 1000
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create Navidrome quadlet unit from template'
+  ansible.builtin.template:
+    src: 'navidrome.container.j2'
+    dest: '/etc/containers/systemd/navidrome.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'quadlet_unit'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Navidrome container'
+  ansible.builtin.systemd:
+    name: 'navidrome.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+
+- name: 'Restart Navidrome service if quadlet unit has changed while service was already started'
+  ansible.builtin.systemd:
+    name: 'navidrome.service'
+    daemon_reload: true
+    state: 'restarted'
+  when: (quadlet_unit.changed and not systemd_start.changed)

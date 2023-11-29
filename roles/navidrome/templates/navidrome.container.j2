@@ -1,0 +1,32 @@
+[Unit]
+Description=Navidrome
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=navidrome
+Image={{ containers_images.navidrome }}:{{ containers_images_tags.navidrome }}
+User=1000
+Group=1000
+Network=web-egress
+Network=common-internal
+ExposeHostPort=4533
+Volume={{ containers_storage_path }}/data/navidrome:/data:Z
+Volume={{ nfs_mounts_path }}/medias/music:/music:slave,ro
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Environment="ND_BASEURL=https://navidrome.{{ domain_name }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.navidrome.rule=Host(`navidrome.{{ domain_name }}`)"
+Label="traefik.http.routers.navidrome.entrypoints=websecure"
+Label="traefik.http.routers.navidrome.middlewares=set-security-headers@file"
+Label="traefik.http.services.navidrome.loadbalancer.server.port=4533"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

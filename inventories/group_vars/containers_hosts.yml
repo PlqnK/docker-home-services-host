@@ -42,6 +42,7 @@ containers_images_tags:
   it_tools: 'latest'
   plex: 'latest'
   tautulli: 'latest'
+  navidrome: 'latest'
   calibre: 'latest'
   calibre_web: 'latest'
   komga: 'latest'

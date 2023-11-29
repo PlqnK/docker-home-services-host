@@ -62,6 +62,7 @@
   roles:
     - 'plex'
     - 'tautulli'
+    - 'navidrome'
     - 'calibre'
     - 'calibre_web'
     - 'komga'
