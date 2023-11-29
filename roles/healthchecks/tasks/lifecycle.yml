@@ -11,6 +11,13 @@
   register: 'containers_images_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
+- name: 'Dump Healthchecks DB'
+  ansible.builtin.systemd:
+    name: 'healthchecks-postgres-dump.service'
+    state: 'started'
+  when: (containers_images_pull.changed)
+  tags: ['never', 'containers-update']
+
 - name: 'Update Healthchecks stack tags in quadlet units'
   ansible.builtin.template:
     src: '{{ item }}.container.j2'

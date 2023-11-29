@@ -14,6 +14,13 @@
   register: 'containers_images_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
+- name: 'Dump Immich DB'
+  ansible.builtin.systemd:
+    name: 'immich-postgres-dump.service'
+    state: 'started'
+  when: (containers_images_pull.changed)
+  tags: ['never', 'containers-update']
+
 - name: 'Update Immich stack tags in quadlet units'
   ansible.builtin.template:
     src: '{{ item }}.container.j2'

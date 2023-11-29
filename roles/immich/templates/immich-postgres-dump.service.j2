@@ -1,5 +1,5 @@
 [Unit]
-Description=Podman container-exec-immich-postgres-dump.service
+Description=Immich PostgreSQL dump
 Wants=network-online.target
 After=network-online.target
 Wants=ping-healthchecksio-uuid@{{ immich.postgres.dump.healthchecks_uuid }}:start.service
@@ -7,9 +7,9 @@ OnSuccess=ping-healthchecksio-uuid@{{ immich.postgres.dump.healthchecks_uuid }}:
 OnFailure=ping-healthchecksio-uuid@{{ immich.postgres.dump.healthchecks_uuid }}:failure.service
 
 [Service]
-Restart=no
 ExecStart=/usr/bin/podman container exec immich-postgres pg_dump --clean -U {{ immich.postgres.user }} {{ immich.postgres.database }} -f /opt/dumps/immich.sql
-Type=simple
+Type=oneshot
+Restart=no
 
 [Install]
 WantedBy=default.target

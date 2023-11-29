@@ -7,9 +7,9 @@ OnSuccess=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uu
 OnFailure=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uuid }}:failure.service
 
 [Service]
-Restart=no
 ExecStart=/usr/bin/podman container exec healthchecks-postgres pg_dump --clean -U {{ healthchecks.postgres.user }} {{ healthchecks.postgres.database }} -f /opt/dumps/healthchecks.sql
-Type=simple
+Type=oneshot
+Restart=no
 
 [Install]
 WantedBy=default.target
