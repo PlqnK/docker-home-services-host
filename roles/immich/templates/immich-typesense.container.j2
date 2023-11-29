@@ -10,7 +10,6 @@ Image={{ containers_images.immich.typesense }}:{{ containers_images_tags.immich.
 Network=immich-typesense-internal
 ExposeHostPort=8108
 Volume={{ containers_storage_path }}/runtime/immich-typesense:/data:Z
-Volume={{ containers_storage_path }}/data/immich-typesense:/opt/snapshot:Z
 Timezone={{ timezone }}
 EnvironmentFile={{ containers_storage_path }}/env/immich-typesense/immich-typesense.env
 Environment="TZ={{ timezone }}"

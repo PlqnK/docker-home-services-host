@@ -74,7 +74,6 @@
     name: '{{ item }}'
     enabled: false
   loop:
-    - 'immich-typesense-snapshot.timer'
     - 'immich-postgres-dump.timer'
     - 'immich-server.service'
     - 'immich-microservices.service'
@@ -89,7 +88,6 @@
     name: '{{ item }}'
     state: 'stopped'
   loop:
-    - 'immich-typesense-snapshot.timer'
     - 'immich-postgres-dump.timer'
     - 'immich-server.service'
     - 'immich-microservices.service'
@@ -111,7 +109,6 @@
     - 'immich-microservices.service'
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'
-    - 'immich-typesense-snapshot.timer'
   tags: ['never', 'containers-enable']
 
 - name: 'Start Immich stack'
@@ -126,5 +123,4 @@
     - 'immich-microservices.service'
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'
-    - 'immich-typesense-snapshot.timer'
   tags: ['never', 'containers-start']

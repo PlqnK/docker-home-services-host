@@ -95,9 +95,6 @@
     - path: 'data/immich-postgres'
       owner: 'root'
       group: 'root'
-    - path: 'data/immich-typesense'
-      owner: 'root'
-      group: 'root'
     - path: 'runtime/immich-postgres'
       owner: 999
       group: 999
@@ -169,45 +166,22 @@
   register: 'quadlet_units'
   notify: 'Reload systemd daemon'
 
-- name: 'Create Immich tasks systemd services from templates'
+- name: 'Create Immich dump systemd service from templates'
   ansible.builtin.template:
-    src: '{{ item }}.j2'
-    dest: '/etc/systemd/system/{{ item }}'
+    src: 'immich-postgres-dump.service.j2'
+    dest: '/etc/systemd/system/immich-postgres-dump.service'
     owner: 'root'
     group: 'root'
     mode: '0644'
-  loop:
-    - 'immich-postgres-dump.service'
-    - 'immich-typesense-snapshot.service'
   notify: 'Reload systemd daemon'
 
-- name: 'Create Typesense snapshot systemd override directory'
-  ansible.builtin.file:
-    path: '/etc/systemd/system/immich-typesense-snapshot.service.d'
-    owner: 'root'
-    group: 'root'
-    mode: '0755'
-    state: 'directory'
-
-- name: 'Create Typesense snapshot systemd override from template'
-  ansible.builtin.template:
-    src: 'environment.conf.j2'
-    dest: '/etc/systemd/system/immich-typesense-snapshot.service.d/environment.conf'
-    owner: 'root'
-    group: 'root'
-    mode: '0400'
-  notify: 'Reload systemd daemon'
-
-- name: 'Copy Immich tasks systemd timers'
+- name: 'Copy Immich dump systemd timer'
   ansible.builtin.copy:
-    src: '{{ item }}'
-    dest: '/etc/systemd/system/{{ item }}'
+    src: 'immich-postgres-dump.timer'
+    dest: '/etc/systemd/system/immich-postgres-dump.timer'
     owner: 'root'
     group: 'root'
     mode: '0644'
-  loop:
-    - 'immich-postgres-dump.timer'
-    - 'immich-typesense-snapshot.timer'
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Immich stack'
@@ -225,7 +199,6 @@
     - 'immich-microservices.service'
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'
-    - 'immich-typesense-snapshot.timer'
 
 - name: 'Restart Immich services if quadlet unit has changed while service was already started'
   ansible.builtin.systemd:

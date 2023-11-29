@@ -17,7 +17,6 @@
     enabled: false
     state: 'stopped'
   loop:
-    - 'immich-typesense-snapshot.timer'
     - 'immich-postgres-dump.timer'
     - 'immich-server.service'
     - 'immich-microservices.service'
@@ -33,9 +32,6 @@
     path: '{{ item }}'
     state: 'absent'
   loop:
-    - '/etc/systemd/system/immich-typesense-snapshot.timer'
-    - '/etc/systemd/system/immich-typesense-snapshot.service'
-    - '/etc/systemd/system/immich-typesense-snapshot.service.d'
     - '/etc/systemd/system/immich-postgres-dump.timer'
     - '/etc/systemd/system/immich-postgres-dump.service'
     - '/etc/containers/systemd/immich-server.container'
@@ -94,7 +90,6 @@
     - 'env/immich-typesense'
     - 'env/immich-server'
     - 'data/immich-postgres'
-    - 'data/immich-typesense'
     - 'runtime/immich-postgres'
     - 'runtime/immich-redis'
     - 'runtime/immich-typesense'
