@@ -26,6 +26,7 @@ containers_images_tags:
     redis: '7'
     server: '27'
   collabora_online: 'latest'
+  memos: '0'
   immich:
     postgres: '15'
     redis: '7'

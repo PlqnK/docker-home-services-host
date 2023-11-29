@@ -50,6 +50,7 @@
   roles:
     - 'nextcloud'
     - 'collabora_online'
+    - 'memos'
     - 'immich'
     - 'ttrss'
     - 'freshrss'

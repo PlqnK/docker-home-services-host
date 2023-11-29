@@ -1,0 +1,5 @@
+---
+containers_images:
+  memos: 'ghcr.io/usememos/memos'
+containers_images_tags:
+  memos: 'latest'
