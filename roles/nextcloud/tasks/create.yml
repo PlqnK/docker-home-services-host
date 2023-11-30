@@ -82,6 +82,10 @@
     mode: '0700'
     state: 'directory'
   loop:
+    # See https://github.com/nextcloud/docker/issues/1402
+    #- path: 'config/nextcloud-redis'
+    #  owner: 999
+    #  group: 999
     - path: 'runtime/nextcloud-postgres'
       owner: 999
       group: 999
@@ -126,6 +130,24 @@
   loop_control:
     label: '{{ item.name }}'
   register: 'podman_secrets'
+
+# See https://github.com/nextcloud/docker/issues/1402
+#- name: 'Create Nextcloud stack configuration files from templates'
+#  ansible.builtin.template:
+#    src: '{{ item.src }}'
+#    dest: '{{ containers_storage_path }}/config/{{ item.dest }}'
+#    owner: '{{ item.owner }}'
+#    group: '{{ item.group }}'
+#    mode: '0400'
+#  loop:
+#    - src: 'redis.conf.j2'
+#      dest: 'nextcloud-redis/redis.conf'
+#      owner: 999
+#      group: 999
+#      services: 'nextcloud-redis.service'
+#  loop_control:
+#    label: '{{ item.dest }}'
+#  register: 'configuration_files'
 
 - name: 'Create Nextcloud stack quadlet units from templates'
   ansible.builtin.template:
@@ -186,6 +208,8 @@
     state: 'restarted'
   vars:
     podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    #configuration_files_map: '{{ configuration_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
     quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
     systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
+  #loop: '{{ (podman_secrets_map + configuration_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'
   loop: '{{ (podman_secrets_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

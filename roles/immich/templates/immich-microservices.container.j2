@@ -19,6 +19,7 @@ ExposeHostPort=3002
 Volume={{ volume_mount_path }}/documents/immich:/usr/src/app/upload:z
 Secret=immich_postgres_user
 Secret=immich_postgres_password
+Secret=immich_redis_password
 Timezone={{ timezone }}
 EnvironmentFile={{ containers_storage_path }}/env/immich-server/immich-server.env
 Environment="TZ={{ timezone }}"
@@ -27,6 +28,7 @@ Environment="DB_DATABASE_NAME={{ immich.postgres.database }}"
 Environment="DB_USERNAME_FILE=/run/secrets/immich_postgres_user"
 Environment="DB_PASSWORD_FILE=/run/secrets/immich_postgres_password"
 Environment="REDIS_HOSTNAME=immich-redis"
+Environment="REDIS_PASSWORD_FILE=/run/secrets/immich_redis_password"
 Environment="TYPESENSE_HOST=immich-typesense"
 Environment="UPLOAD_LOCATION=/usr/src/app/upload"
 Environment="IMMICH_SERVER_URL=http://immich-server:3001"

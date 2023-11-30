@@ -92,6 +92,9 @@
     - path: 'env/immich-server'
       owner: 'root'
       group: 'root'
+    - path: 'config/immich-redis'
+      owner: 999
+      group: 999
     - path: 'data/immich-postgres'
       owner: 'root'
       group: 'root'
@@ -135,6 +138,12 @@
         - 'immich-postgres.service'
         - 'immich-server.service'
         - 'immich-microservices.service'
+    - name: 'immich_redis_password'
+      data: '{{ immich.redis.password }}'
+      services:
+        - 'immich-redis.service'
+        - 'immich-server.service'
+        - 'immich-microservices.service'
   loop_control:
     label: '{{ item.name }}'
   register: 'podman_secrets'
@@ -152,7 +161,6 @@
       dest: 'immich-typesense/immich-typesense.env'
       services: 'immich-typesense.service'
     - content: |
-        REDIS_PASSWORD={{ immich.redis.password }}
         TYPESENSE_API_KEY={{ immich.typesense.api_key }}
       dest: 'immich-server/immich-server.env'
       services:
@@ -161,6 +169,23 @@
   loop_control:
     label: '{{ item.dest }}'
   register: 'environment_files'
+
+- name: 'Create Immich stack configuration files from templates'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ containers_storage_path }}/config/{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '0400'
+  loop:
+    - src: 'redis.conf.j2'
+      dest: 'immich-redis/redis.conf'
+      owner: 999
+      group: 999
+      services: 'immich-redis.service'
+  loop_control:
+    label: '{{ item.dest }}'
+  register: 'configuration_files'
 
 - name: 'Create Immich stack quadlet units from templates'
   ansible.builtin.template:
@@ -213,7 +238,7 @@
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'
 
-- name: 'Restart Immich services if podman secret, environment file or quadlet unit has changed while service was already started'
+- name: 'Restart Immich services if podman secret, environment file, configuration file or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: '{{ item }}'
     daemon_reload: true
@@ -221,6 +246,7 @@
   vars:
     podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
     environment_files_map: '{{ environment_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    configuration_files_map: '{{ configuration_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
     quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
     systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
-  loop: '{{ (podman_secrets_map + environment_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'
+  loop: '{{ (podman_secrets_map + environment_files_map + configuration_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

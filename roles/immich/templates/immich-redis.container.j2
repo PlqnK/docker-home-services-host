@@ -7,9 +7,10 @@ After=network-online.target
 [Container]
 ContainerName=immich-redis
 Image={{ containers_images.immich.redis }}:{{ containers_images_tags.immich.redis }}
-Exec=--requirepass {{ immich.redis.password }}
+Exec=redis-server /usr/local/etc/redis/redis.conf
 Network=immich-redis-internal
 ExposeHostPort=6379
+Volume={{ containers_storage_path }}/config/immich-redis/redis.conf:/usr/local/etc/redis/redis.conf:Z
 Volume={{ containers_storage_path }}/runtime/immich-redis:/data:Z
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
