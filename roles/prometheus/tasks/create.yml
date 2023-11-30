@@ -20,6 +20,7 @@
   loop:
     - 'prometheus.yml'
     - 'web.yml'
+  register: 'configuration_files'
 
 - name: 'Create Prometheus secrets'
   containers.podman.podman_secret:
@@ -34,6 +35,7 @@
       data: '{{ prometheus.scrape_configs.node.basic_auth.password }}'
     - name: 'prometheus_systemd_password'
       data: '{{ prometheus.scrape_configs.systemd.basic_auth.password }}'
+  register: 'podman_secrets'
 
 - name: 'Create Prometheus quadlet unit from template'
   ansible.builtin.template:
@@ -53,9 +55,9 @@
     state: 'started'
   register: 'systemd_start'
 
-- name: 'Restart Prometheus service if quadlet unit has changed while service was already started'
+- name: 'Restart Prometheus service if podman secret, configuration file or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: 'prometheus.service'
     daemon_reload: true
     state: 'restarted'
-  when: (quadlet_unit.changed and not systemd_start.changed)
+  when: ((podman_secrets.changed or configuration_files.changed or quadlet_unit.changed) and not systemd_start.changed)

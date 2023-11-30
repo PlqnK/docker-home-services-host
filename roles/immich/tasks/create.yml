@@ -125,29 +125,42 @@
   loop:
     - name: 'immich_postgres_user'
       data: '{{ immich.postgres.user }}'
+      services:
+        - 'immich-postgres.service'
+        - 'immich-server.service'
+        - 'immich-microservices.service'
     - name: 'immich_postgres_password'
       data: '{{ immich.postgres.password }}'
+      services:
+        - 'immich-postgres.service'
+        - 'immich-server.service'
+        - 'immich-microservices.service'
+  loop_control:
+    label: '{{ item.name }}'
+  register: 'podman_secrets'
 
-- name: 'Create Typesense environment file'
+- name: 'Create Immich stack environment files'
   ansible.builtin.copy:
-    content: |
-      TYPESENSE_API_KEY={{ immich.typesense.api_key }}
-    dest: '{{ containers_storage_path }}/env/immich-typesense/immich-typesense.env'
+    content: '{{ item.content }}'
+    dest: '{{ containers_storage_path }}/env/{{ item.dest }}'
     owner: 'root'
     group: 'root'
     mode: '0400'
-  register: 'typesense_environment_file'
-
-- name: 'Create Server environment file'
-  ansible.builtin.copy:
-    content: |
-      REDIS_PASSWORD={{ immich.redis.password }}
-      TYPESENSE_API_KEY={{ immich.typesense.api_key }}
-    dest: '{{ containers_storage_path }}/env/immich-server/immich-server.env'
-    owner: 'root'
-    group: 'root'
-    mode: '0400'
-  register: 'server_environment_file'
+  loop:
+    - content: |
+        TYPESENSE_API_KEY={{ immich.typesense.api_key }}
+      dest: 'immich-typesense/immich-typesense.env'
+      services: 'immich-typesense.service'
+    - content: |
+        REDIS_PASSWORD={{ immich.redis.password }}
+        TYPESENSE_API_KEY={{ immich.typesense.api_key }}
+      dest: 'immich-server/immich-server.env'
+      services:
+        - 'immich-server.service'
+        - 'immich-microservices.service'
+  loop_control:
+    label: '{{ item.dest }}'
+  register: 'environment_files'
 
 - name: 'Create Immich stack quadlet units from templates'
   ansible.builtin.template:
@@ -200,12 +213,14 @@
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'
 
-- name: 'Restart Immich services if quadlet unit has changed while service was already started'
+- name: 'Restart Immich services if podman secret, environment file or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'
   vars:
-    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | product([".service"]) | map("join") }}'
+    podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    environment_files_map: '{{ environment_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
     systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
-  loop: '{{ quadlet_units_map | difference(systemd_start_map) }}'
+  loop: '{{ (podman_secrets_map + environment_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

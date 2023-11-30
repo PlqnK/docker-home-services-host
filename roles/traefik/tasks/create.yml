@@ -75,6 +75,7 @@
   loop:
     - src: 'traefik.toml.j2'
       dest: '{{ containers_storage_path }}/config/traefik/traefik.toml'
+      services: 'traefik.service'
     - src: 'common.toml.j2'
       dest: '{{ containers_storage_path }}/config/traefik/providers/common.toml'
     - src: 'cockpit.toml.j2'
@@ -82,6 +83,9 @@
     - src: 'home-assistant.toml.j2'
       dest: '{{ containers_storage_path }}/config/traefik/providers/home-assistant.toml'
       host: 'home'
+  loop_control:
+    label: '{{ item.dest }}'
+  register: 'configuration_files'
   when: (item.host is not defined or (item.host is defined and inventory_hostname == item.host))
 
 - name: 'Create Traefik certificates storage file'
@@ -94,10 +98,17 @@
 
 - name: 'Create Traefik stack secret'
   containers.podman.podman_secret:
-    name: 'traefik_desec_token'
-    data: '{{ desec_token }}'
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
     skip_existing: true
     state: 'present'
+  loop:
+    - name: 'traefik_desec_token'
+      data: '{{ desec_token }}'
+      services: 'traefik.service'
+  loop_control:
+    label: '{{ item.name }}'
+  register: 'podman_secrets'
 
 - name: 'Create Traefik stack quadlet units from templates'
   ansible.builtin.template:
@@ -123,12 +134,14 @@
     - 'cetusguard.service'
     - 'traefik.service'
 
-- name: 'Restart Traefik services if quadlet unit has changed while service was already started'
+- name: 'Restart Traefik services if podman secret, configuration file or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'
   vars:
-    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | product([".service"]) | map("join") }}'
+    podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    configuration_files_map: '{{ configuration_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
     systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
-  loop: '{{ quadlet_units_map | difference(systemd_start_map) }}'
+  loop: '{{ (podman_secrets_map + configuration_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

@@ -66,23 +66,38 @@
   loop:
     - name: 'healthchecks_postgres_user'
       data: '{{ healthchecks.postgres.user }}'
+      services:
+        - 'healthchecks-postgres.service'
+        - 'healthchecks-server.service'
     - name: 'healthchecks_postgres_password'
       data: '{{ healthchecks.postgres.password }}'
+      services:
+        - 'healthchecks-postgres.service'
+        - 'healthchecks-server.service'
+  loop_control:
+    label: '{{ item.name }}'
+  register: 'podman_secrets'
 
 - name: 'Create Server environment file'
   ansible.builtin.copy:
-    content: |
-      SECRET_KEY={{ healthchecks.server.secret_key }}
-      DB_USER={{ healthchecks.postgres.user }}
-      DB_PASSWORD={{ healthchecks.postgres.password }}
-      EMAIL_HOST_USER={{ healthchecks.server.email.user }}
-      EMAIL_HOST_PASSWORD={{ healthchecks.server.email.password }}
-      PUSHOVER_API_TOKEN={{ healthchecks.server.pushover.api_token }}
-    dest: '{{ containers_storage_path }}/env/healthchecks-server/healthchecks-server.env'
+    content: '{{ item.content }}'
+    dest: '{{ containers_storage_path }}/env/{{ item.dest }}'
     owner: 'root'
     group: 'root'
     mode: '0400'
-  register: 'healthchecks_environment_file'
+  loop:
+    - content: |
+        SECRET_KEY={{ healthchecks.server.secret_key }}
+        DB_USER={{ healthchecks.postgres.user }}
+        DB_PASSWORD={{ healthchecks.postgres.password }}
+        EMAIL_HOST_USER={{ healthchecks.server.email.user }}
+        EMAIL_HOST_PASSWORD={{ healthchecks.server.email.password }}
+        PUSHOVER_API_TOKEN={{ healthchecks.server.pushover.api_token }}
+      dest: 'healthchecks-server/healthchecks-server.env'
+      services: 'healthchecks-server.service'
+  loop_control:
+    label: '{{ item.dest }}'
+  register: 'environment_files'
 
 - name: 'Create Healthchecks stack quadlet units from templates'
   ansible.builtin.template:
@@ -127,12 +142,14 @@
     - 'healthchecks-server.service'
     - 'healthchecks-postgres-dump.timer'
 
-- name: 'Restart Healthchecks services if quadlet unit has changed while service was already started'
+- name: 'Restart Healthchecks services if podman secret, environment file or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'
   vars:
-    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | product([".service"]) | map("join") }}'
+    podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    environment_files_map: '{{ environment_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
     systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
-  loop: '{{ quadlet_units_map | difference(systemd_start_map) }}'
+  loop: '{{ (podman_secrets_map + environment_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

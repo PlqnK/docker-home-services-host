@@ -17,6 +17,7 @@
     owner: 10001
     group: 10001
     mode: '0644'
+  register: 'configuration_file'
 
 - name: 'Create Loki quadlet unit from template'
   ansible.builtin.template:
@@ -36,9 +37,9 @@
     state: 'started'
   register: 'systemd_start'
 
-- name: 'Restart Loki service if quadlet unit has changed while service was already started'
+- name: 'Restart Loki service if configuration file or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: 'loki.service'
     daemon_reload: true
     state: 'restarted'
-  when: (quadlet_unit.changed and not systemd_start.changed)
+  when: ((configuration_file.changed or quadlet_unit.changed) and not systemd_start.changed)

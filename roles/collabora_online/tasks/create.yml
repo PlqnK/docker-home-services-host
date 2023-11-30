@@ -61,7 +61,7 @@
     owner: 'root'
     group: 'root'
     mode: '0400'
-  register: 'collabora_online_environment_file'
+  register: 'environment_file'
 
 - name: 'Create Collabora Online quadlet unit from template'
   ansible.builtin.template:
@@ -81,9 +81,9 @@
     state: 'started'
   register: 'systemd_start'
 
-- name: 'Restart Collabora Online service if quadlet unit has changed while service was already started'
+- name: 'Restart Collabora Online service if environment file or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: 'collabora-online.service'
     daemon_reload: true
     state: 'restarted'
-  when: (quadlet_unit.changed and not systemd_start.changed)
+  when: ((environment_file.changed or quadlet_unit.changed) and not systemd_start.changed)

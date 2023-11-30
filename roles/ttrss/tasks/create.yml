@@ -108,19 +108,38 @@
   loop:
     - name: 'ttrss_postgres_user'
       data: '{{ ttrss.postgres.user }}'
+      services:
+        - 'ttrss-postgres.service'
+        - 'ttrss-server.service'
+        - 'ttrss-updater.service'
     - name: 'ttrss_postgres_password'
       data: '{{ ttrss.postgres.password }}'
+      services:
+        - 'ttrss-postgres.service'
+        - 'ttrss-server.service'
+        - 'ttrss-updater.service'
+  loop_control:
+    label: '{{ item.name }}'
+  register: 'podman_secrets'
 
-- name: 'Create App environment file'
+- name: 'Create Server environment file'
   ansible.builtin.copy:
-    content: |
-      TTRSS_DB_USER={{ ttrss.postgres.user }}
-      TTRSS_DB_PASS={{ ttrss.postgres.password }}
-    dest: '{{ containers_storage_path }}/env/ttrss-server/ttrss-server.env'
+    content: '{{ item.content }}'
+    dest: '{{ containers_storage_path }}/env/{{ item.dest }}'
     owner: 'root'
     group: 'root'
     mode: '0400'
-  register: 'ttrss_environment_file'
+  loop:
+    - content: |
+        TTRSS_DB_USER={{ ttrss.postgres.user }}
+        TTRSS_DB_PASS={{ ttrss.postgres.password }}
+      dest: '{{ containers_storage_path }}/env/ttrss-server/ttrss-server.env'
+      services:
+        - 'ttrss-server.service'
+        - 'ttrss-updater.service'
+  loop_control:
+    label: '{{ item.dest }}'
+  register: 'environment_files'
 
 - name: 'Create Tiny Tiny RSS stack quadlet units from templates'
   ansible.builtin.template:
@@ -169,12 +188,14 @@
     - 'ttrss-nginx.service'
     - 'ttrss-postgres-dump.timer'
 
-- name: 'Restart Tiny Tiny RSS services if quadlet unit has changed while service was already started'
+- name: 'Restart Tiny Tiny RSS services if podman secret, environment file or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'
   vars:
-    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | product([".service"]) | map("join") }}'
+    podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    environment_files_map: '{{ environment_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
     systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
-  loop: '{{ quadlet_units_map | difference(systemd_start_map) }}'
+  loop: '{{ (podman_secrets_map + environment_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

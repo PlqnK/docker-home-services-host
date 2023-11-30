@@ -112,11 +112,20 @@
   loop:
     - name: 'nextcloud_postgres_user'
       data: '{{ nextcloud.postgres.user }}'
+      services:
+        - 'nextcloud-postgres.service'
+        - 'nextcloud-server.service'
     - name: 'nextcloud_postgres_password'
       data: '{{ nextcloud.postgres.password }}'
+      services:
+        - 'nextcloud-postgres.service'
+        - 'nextcloud-server.service'
     # See https://github.com/nextcloud/docker/issues/1402
     #- name: 'nextcloud_redis_password'
     #  data: '{{ nextcloud.redis.password }}'
+  loop_control:
+    label: '{{ item.name }}'
+  register: 'podman_secrets'
 
 - name: 'Create Nextcloud stack quadlet units from templates'
   ansible.builtin.template:
@@ -170,12 +179,13 @@
     - 'nextcloud-cron.timer'
     - 'nextcloud-postgres-dump.timer'
 
-- name: 'Restart Nextcloud services if quadlet unit has changed while service was already started'
+- name: 'Restart Nextcloud services if podman secret or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'
   vars:
-    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | product([".service"]) | map("join") }}'
+    podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
     systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
-  loop: '{{ quadlet_units_map | difference(systemd_start_map) }}'
+  loop: '{{ (podman_secrets_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

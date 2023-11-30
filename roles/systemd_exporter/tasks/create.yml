@@ -77,6 +77,7 @@
     owner: 65534
     group: 65534
     mode: '0644'
+  register: 'configuration_file'
 
 - name: 'Create systemd_exporter quadlet unit from template'
   ansible.builtin.template:
@@ -96,9 +97,9 @@
     state: 'started'
   register: 'systemd_start'
 
-- name: 'Restart systemd_exporter service if quadlet unit has changed while service was already started'
+- name: 'Restart systemd_exporter service if configuration file or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: 'systemd-exporter.service'
     daemon_reload: true
     state: 'restarted'
-  when: (quadlet_unit.changed and not systemd_start.changed)
+  when: ((configuration_file.changed or quadlet_unit.changed) and not systemd_start.changed)
