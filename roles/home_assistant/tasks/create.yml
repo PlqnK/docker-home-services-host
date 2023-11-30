@@ -94,3 +94,4 @@
           {% for subnet in podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten %}
               - {{ subnet }}
           {% endfor %}
+      notify: 'Restart home-assistant service'
