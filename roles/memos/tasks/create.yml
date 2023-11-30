@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Memos CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Memos CNAME record'
       ansible.builtin.uri:

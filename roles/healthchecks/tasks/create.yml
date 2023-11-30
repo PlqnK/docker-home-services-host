@@ -56,6 +56,7 @@
       dest: 'logo.png'
     - url: 'https://raw.githubusercontent.com/healthchecks/healthchecks/b3395f1314b9a5f2a5a5653b7ce256326a33a7a6/static/img/apple-touch-180.png'
       dest: 'apple-touch-180.png'
+  check_mode: false
 
 - name: 'Create Healthchecks stack secrets'
   containers.podman.podman_secret:

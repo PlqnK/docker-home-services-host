@@ -1,6 +1,7 @@
 ---
 - name: 'Manage IT Tools CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get IT Tools CNAME record'
       ansible.builtin.uri:

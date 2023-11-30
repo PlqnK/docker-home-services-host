@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Plex CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Plex CNAME record'
       ansible.builtin.uri:

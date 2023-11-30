@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Overseerr CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Overseerr CNAME record'
       ansible.builtin.uri:

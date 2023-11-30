@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Stirling PDF CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Stirling PDF CNAME record'
       ansible.builtin.uri:

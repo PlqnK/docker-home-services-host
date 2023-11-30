@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Home Assistant CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Home Assistant CNAME record'
       ansible.builtin.uri:

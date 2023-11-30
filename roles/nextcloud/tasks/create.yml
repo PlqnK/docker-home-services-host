@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Nextcloud CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Nextcloud CNAME record'
       ansible.builtin.uri:

@@ -1,6 +1,7 @@
 ---
 - name: 'Manage FreshRSS CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get FreshRSS CNAME record'
       ansible.builtin.uri:

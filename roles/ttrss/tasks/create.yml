@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Tiny Tiny RSS CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Tiny Tiny RSS CNAME record'
       ansible.builtin.uri:
@@ -133,7 +134,7 @@
     - content: |
         TTRSS_DB_USER={{ ttrss.postgres.user }}
         TTRSS_DB_PASS={{ ttrss.postgres.password }}
-      dest: '{{ containers_storage_path }}/env/ttrss-server/ttrss-server.env'
+      dest: 'ttrss-server/ttrss-server.env'
       services:
         - 'ttrss-server.service'
         - 'ttrss-updater.service'

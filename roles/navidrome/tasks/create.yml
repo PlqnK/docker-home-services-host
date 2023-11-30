@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Navidrome CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Navidrome CNAME record'
       ansible.builtin.uri:

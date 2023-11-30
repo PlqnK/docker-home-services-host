@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Komga CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Komga CNAME record'
       ansible.builtin.uri:

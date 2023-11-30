@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Calibre-Web CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Calibre-Web CNAME record'
       ansible.builtin.uri:

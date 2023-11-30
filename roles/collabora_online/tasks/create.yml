@@ -1,6 +1,7 @@
 ---
 - name: 'Manage Collabora Online CNAME record'
   delegate_to: 'localhost'
+  check_mode: false
   block:
     - name: 'Get Collabora Online CNAME record'
       ansible.builtin.uri:
