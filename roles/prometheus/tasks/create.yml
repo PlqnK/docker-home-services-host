@@ -10,18 +10,6 @@
     - 'config/prometheus'
     - 'runtime/prometheus'
 
-- name: 'Create Prometheus configs from templates'
-  ansible.builtin.template:
-    src: '{{ item }}.j2'
-    dest: '{{ containers_storage_path }}/config/prometheus/{{ item }}'
-    owner: 65534
-    group: 65534
-    mode: '0644'
-  loop:
-    - 'prometheus.yml'
-    - 'web.yml'
-  register: 'configuration_files'
-
 - name: 'Create Prometheus secrets'
   containers.podman.podman_secret:
     name: '{{ item.name }}'
@@ -36,6 +24,18 @@
     - name: 'prometheus_systemd_password'
       data: '{{ prometheus.scrape_configs.systemd.basic_auth.password }}'
   register: 'podman_secrets'
+
+- name: 'Create Prometheus configs from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.j2'
+    dest: '{{ containers_storage_path }}/config/prometheus/{{ item }}'
+    owner: 65534
+    group: 65534
+    mode: '0644'
+  loop:
+    - 'prometheus.yml'
+    - 'web.yml'
+  register: 'configuration_files'
 
 - name: 'Create Prometheus quadlet unit from template'
   ansible.builtin.template:

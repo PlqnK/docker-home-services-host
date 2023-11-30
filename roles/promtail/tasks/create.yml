@@ -10,6 +10,14 @@
     - 'config/promtail'
     - 'runtime/promtail'
 
+- name: 'Create Promtail secret'
+  containers.podman.podman_secret:
+    name: 'promtail_loki_password'
+    data: '{{ promtail.clients.basic_auth.password }}'
+    skip_existing: true
+    state: 'present'
+  register: 'podman_secret'
+
 - name: 'Create Promtail config from template'
   ansible.builtin.template:
     src: 'promtail.yaml.j2'
@@ -18,14 +26,6 @@
     group: 'root'
     mode: '0644'
   register: 'configuration_file'
-
-- name: 'Create Promtail secret'
-  containers.podman.podman_secret:
-    name: 'promtail_loki_password'
-    data: '{{ promtail.clients.basic_auth.password }}'
-    skip_existing: true
-    state: 'present'
-  register: 'podman_secret'
 
 - name: 'Create Promtail quadlet unit from template'
   ansible.builtin.template:

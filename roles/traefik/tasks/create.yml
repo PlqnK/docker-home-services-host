@@ -65,6 +65,20 @@
     - 'config/traefik/providers'
     - 'data/traefik'
 
+- name: 'Create Traefik stack secret'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'traefik_desec_token'
+      data: '{{ desec_token }}'
+      services: 'traefik.service'
+  loop_control:
+    label: '{{ item.name }}'
+  register: 'podman_secrets'
+
 - name: 'Create Traefik common configs from templates'
   ansible.builtin.template:
     src: '{{ item.src }}'
@@ -95,20 +109,6 @@
     modification_time: 'preserve'
     access_time: 'preserve'
     mode: '0600'
-
-- name: 'Create Traefik stack secret'
-  containers.podman.podman_secret:
-    name: '{{ item.name }}'
-    data: '{{ item.data }}'
-    skip_existing: true
-    state: 'present'
-  loop:
-    - name: 'traefik_desec_token'
-      data: '{{ desec_token }}'
-      services: 'traefik.service'
-  loop_control:
-    label: '{{ item.name }}'
-  register: 'podman_secrets'
 
 - name: 'Create Traefik stack quadlet units from templates'
   ansible.builtin.template:
