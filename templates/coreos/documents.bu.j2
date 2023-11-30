@@ -34,6 +34,13 @@ storage:
       contents:
         inline: |
           [zram0]
+          compression-algorithm = zstd
+    - path: /etc/sysctl.d/99-zram.conf
+      mode: 0644
+      contents:
+        inline: |
+          vm.swappiness = 180
+          vm.page-cluster = 0
     - path: /etc/containers/storage.conf
       mode: 0644
       contents:
