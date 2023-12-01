@@ -1,5 +1,10 @@
 ---
-- name: 'Stop Tiny Tiny RSS stack except PostgreSQL'
+- name: 'Start Tiny Tiny RSS PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'ttrss-postgres.service'
+    state: 'started'
+
+- name: 'Stop remaining Tiny Tiny RSS stack'
   ansible.builtin.systemd:
     name: '{{ item }}'
     state: 'stopped'
@@ -21,9 +26,11 @@
 - name: 'Create {{ containers_storage_path }} btrfs snapshot'
   community.general.btrfs_subvolume:
     name: '.snapshot'
-    filesystem_label: '{{ containers_storage_path | dirname }}'
-    snapshot_source: '{{ containers_storage_path }}'
+    filesystem_device: '{{ ansible_mounts | community.general.json_query(query) | first }}'
+    snapshot_source: '/'
     snapshot_conflict: 'clobber'
+  vars:
+    query: "[?mount=='{{ containers_storage_path }}'].device"
 
 - name: 'Remove PostgreSQL runtime directory'
   ansible.builtin.file:
@@ -51,6 +58,13 @@
     name: 'ttrss-postgres.service'
     daemon_reload: true
     state: 'started'
+
+- name: 'Wait for PostgeSQL to initialize'
+  ansible.builtin.command:
+    cmd: 'podman exec ttrss-postgres pg_isready'
+  retries: 10
+  delay: 5
+  changed_when: false
 
 - name: 'Restore Tiny Tiny RSS database'
   ansible.builtin.command:
