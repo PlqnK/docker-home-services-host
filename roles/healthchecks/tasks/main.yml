@@ -8,6 +8,10 @@
     - name: 'Lifecycle'
       ansible.builtin.import_tasks: 'lifecycle.yml'
 
+    - name: 'DB upgrade'
+      ansible.builtin.import_tasks: 'db-upgrade.yml'
+      tags: ['never', 'containers-db-upgrade']
+
     - name: 'Remove'
       ansible.builtin.import_tasks: 'remove.yml'
       tags: ['never', 'containers-remove']

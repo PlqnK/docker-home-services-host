@@ -1,0 +1,73 @@
+---
+- name: 'Stop Immich stack except PostgreSQL'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'immich-postgres-dump.timer'
+    - 'immich-server.service'
+    - 'immich-microservices.service'
+    - 'immich-machine-learning.service'
+    - 'immich-typesense.service'
+    - 'immich-redis.service'
+
+- name: 'Dump Immich database'
+  ansible.builtin.command:
+    cmd: 'podman exec immich-postgres pg_dump -U {{ immich.postgres.user }} -d {{ immich.postgres.database }} --clean --if-exists -f /opt/dumps/immich.sql'
+
+- name: 'Stop PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'immich-postgres.service'
+    state: 'stopped'
+
+- name: 'Create {{ containers_storage_path }} btrfs snapshot'
+  community.general.btrfs_subvolume:
+    name: '.snapshot'
+    filesystem_label: '{{ containers_storage_path | dirname }}'
+    snapshot_source: '{{ containers_storage_path }}'
+    snapshot_conflict: 'clobber'
+
+- name: 'Remove PostgreSQL runtime directory'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/runtime/immich-postgres'
+    state: 'absent'
+
+- name: 'Recreate PostgreSQL runtime directory'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/runtime/immich-postgres'
+    owner: 999
+    group: 999
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Update PostgreSQL tag in quadlet unit'
+  ansible.builtin.template:
+    src: 'immich-postgres.container.j2'
+    dest: '/etc/containers/systemd/immich-postgres.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Start PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'immich-postgres.service'
+    daemon_reload: true
+    state: 'started'
+
+- name: 'Restore Immich database'
+  ansible.builtin.command:
+    cmd: 'podman exec immich-postgres psql -U {{ immich.postgres.user }} -d {{ immich.postgres.database }} -f /opt/dumps/immich.sql'
+
+- name: 'Enable and start Immich stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+    state: 'started'
+  loop:
+    - 'immich-postgres.service'
+    - 'immich-redis.service'
+    - 'immich-typesense.service'
+    - 'immich-machine-learning.service'
+    - 'immich-microservices.service'
+    - 'immich-server.service'
+    - 'immich-postgres-dump.timer'

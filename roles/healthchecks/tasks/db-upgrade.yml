@@ -1,0 +1,65 @@
+---
+- name: 'Stop Healthchecks stack except PostgreSQL'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'healthchecks-postgres-dump.timer'
+    - 'healthchecks-server.service'
+
+- name: 'Dump Healthchecks database'
+  ansible.builtin.command:
+    cmd: 'podman exec healthchecks-postgres pg_dump -U {{ healthchecks.postgres.user }} -d {{ healthchecks.postgres.database }} --clean --if-exists -f /opt/dumps/healthchecks.sql'
+
+- name: 'Stop PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'healthchecks-postgres.service'
+    state: 'stopped'
+
+- name: 'Create {{ containers_storage_path }} btrfs snapshot'
+  community.general.btrfs_subvolume:
+    name: '.snapshot'
+    filesystem_label: '{{ containers_storage_path | dirname }}'
+    snapshot_source: '{{ containers_storage_path }}'
+    snapshot_conflict: 'clobber'
+
+- name: 'Remove PostgreSQL runtime directory'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/runtime/healthchecks-postgres'
+    state: 'absent'
+
+- name: 'Recreate PostgreSQL runtime directory'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/runtime/healthchecks-postgres'
+    owner: 999
+    group: 999
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Update PostgreSQL tag in quadlet unit'
+  ansible.builtin.template:
+    src: 'healthchecks-postgres.container.j2'
+    dest: '/etc/containers/systemd/healthchecks-postgres.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Start PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'healthchecks-postgres.service'
+    daemon_reload: true
+    state: 'started'
+
+- name: 'Restore Healthchecks database'
+  ansible.builtin.command:
+    cmd: 'podman exec healthchecks-postgres psql -U {{ healthchecks.postgres.user }} -d {{ healthchecks.postgres.database }} -f /opt/dumps/healthchecks.sql'
+
+- name: 'Enable and start Healthchecks stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+    state: 'started'
+  loop:
+    - 'healthchecks-postgres.service'
+    - 'healthchecks-server.service'
+    - 'healthchecks-postgres-dump.timer'
