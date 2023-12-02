@@ -33,8 +33,8 @@
       ansible.builtin.import_tasks: 'automount.yml'
       when: (storage_server is defined)
 
-    - name: 'Configure email'
-      ansible.builtin.import_tasks: 'email.yml'
+    - name: 'Configure smtp'
+      ansible.builtin.import_tasks: 'smtp.yml'
 
     - name: 'Configure smart'
       ansible.builtin.import_tasks: 'smart.yml'
