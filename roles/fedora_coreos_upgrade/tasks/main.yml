@@ -1,4 +1,25 @@
 ---
+- name: 'Create {{ containers_storage_path }} btrfs snapshot'
+  community.general.btrfs_subvolume:
+    name: '.snapshot'
+    filesystem_device: '{{ ansible_mounts | community.general.json_query(query) | first }}'
+    snapshot_source: '/'
+    snapshot_conflict: 'clobber'
+  vars:
+    query: "[?mount=='{{ containers_storage_path }}'].device"
+  tags: ['never', 'os-upgrade', 'containers-update']
+
+- name: 'Create {{ volume_mount_path }} btrfs snapshot'
+  community.general.btrfs_subvolume:
+    name: '.snapshot'
+    filesystem_device: '{{ ansible_mounts | community.general.json_query(query) | first }}'
+    snapshot_source: '/'
+    snapshot_conflict: 'clobber'
+  vars:
+    query: "[?mount=='{{ volume_mount_path }}'].device"
+  when: ("cloud_hosts" in group_names)
+  tags: ['never', 'os-upgrade', 'containers-update']
+
 - name: 'Upgrade OS'
   ansible.posix.rpm_ostree_upgrade:
   register: 'rpm_ostree_upgrade'
