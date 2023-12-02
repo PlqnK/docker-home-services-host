@@ -1,15 +1,20 @@
 ---
-- name: 'Upgrade containers hosts OS'
-  hosts: 'containers_hosts'
-  gather_facts: false
+- name: 'Hypervisors base configuration'
+  hosts: 'hypervisors'
   roles:
-    - 'fedora_coreos_upgrade'
+    - 'proxmox_ve_setup'
 
 - name: 'Containers hosts base configuration'
   hosts: 'containers_hosts'
   roles:
     - 'fedora_coreos_setup'
     - 'podman_setup'
+
+- name: 'Upgrade containers hosts OS'
+  hosts: 'containers_hosts'
+  gather_facts: false
+  roles:
+    - 'fedora_coreos_upgrade'
 
 - name: 'Common containers'
   hosts: 'containers_hosts'

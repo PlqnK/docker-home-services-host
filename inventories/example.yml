@@ -379,11 +379,12 @@ all:
       proxy_protocol_trusted_ips:
         - '192.168.0.1'
         - 'fe80:ba0:bab:0::1'
-    healthchecks_ping_key: '' # https://healthchecks.domain.tld/projects/PROJECT_UUID/settings/ > API Access > Ping key
-    healthchecksio_ping_key: '' # https://healthchecks.io/projects/PROJECT_UUID/settings/ > API Access > Ping key
+    ntp_server: ''
     smtp_relay:
       name: ''
       host: ''
       from_domain: ''
       user: ''
       password: ''
+    healthchecks_ping_key: '' # https://healthchecks.domain.tld/projects/PROJECT_UUID/settings/ > API Access > Ping key
+    healthchecksio_ping_key: '' # https://healthchecks.io/projects/PROJECT_UUID/settings/ > API Access > Ping key
