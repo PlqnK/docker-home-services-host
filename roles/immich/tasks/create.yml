@@ -55,7 +55,6 @@
   loop:
     - 'immich-postgres-internal'
     - 'immich-redis-internal'
-    - 'immich-typesense-internal'
     - 'immich-server-internal'
 
 - name: 'Add Immich stack networks to firewalld trusted zone'
@@ -66,7 +65,6 @@
       loop:
         - 'immich-postgres-internal'
         - 'immich-redis-internal'
-        - 'immich-typesense-internal'
         - 'immich-server-internal'
       register: 'podman_networks'
 
@@ -87,12 +85,6 @@
     mode: '0700'
     state: 'directory'
   loop:
-    - path: 'env/immich-typesense'
-      owner: 'root'
-      group: 'root'
-    - path: 'env/immich-server'
-      owner: 'root'
-      group: 'root'
     - path: 'config/immich-redis'
       owner: 999
       group: 999
@@ -105,9 +97,6 @@
     - path: 'runtime/immich-redis'
       owner: 999
       group: 999
-    - path: 'runtime/immich-typesense'
-      owner: 'root'
-      group: 'root'
     - path: 'runtime/immich-machine-learning'
       owner: 'root'
       group: 'root'
@@ -149,28 +138,6 @@
     label: '{{ item.name }}'
   register: 'podman_secrets'
 
-- name: 'Create Immich stack environment files'
-  ansible.builtin.copy:
-    content: '{{ item.content }}'
-    dest: '{{ containers_storage_path }}/env/{{ item.dest }}'
-    owner: 'root'
-    group: 'root'
-    mode: '0400'
-  loop:
-    - content: |
-        TYPESENSE_API_KEY={{ immich.typesense.api_key }}
-      dest: 'immich-typesense/immich-typesense.env'
-      services: 'immich-typesense.service'
-    - content: |
-        TYPESENSE_API_KEY={{ immich.typesense.api_key }}
-      dest: 'immich-server/immich-server.env'
-      services:
-        - 'immich-server.service'
-        - 'immich-microservices.service'
-  loop_control:
-    label: '{{ item.dest }}'
-  register: 'environment_files'
-
 - name: 'Create Immich stack configuration files from templates'
   ansible.builtin.template:
     src: '{{ item.src }}'
@@ -198,7 +165,6 @@
   loop:
     - 'immich-postgres'
     - 'immich-redis'
-    - 'immich-typesense'
     - 'immich-machine-learning'
     - 'immich-microservices'
     - 'immich-server'
@@ -233,21 +199,19 @@
   loop:
     - 'immich-postgres.service'
     - 'immich-redis.service'
-    - 'immich-typesense.service'
     - 'immich-machine-learning.service'
     - 'immich-microservices.service'
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'
 
-- name: 'Restart Immich services if podman secret, environment file, configuration file or quadlet unit has changed while service was already started'
+- name: 'Restart Immich services if podman secret, configuration file or quadlet unit has changed while service was already started'
   ansible.builtin.systemd:
     name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'
   vars:
     podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
-    environment_files_map: '{{ environment_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
     configuration_files_map: '{{ configuration_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
     quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
     systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
-  loop: '{{ (podman_secrets_map + environment_files_map + configuration_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'
+  loop: '{{ (podman_secrets_map + configuration_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

@@ -3,8 +3,8 @@ Description=Immich Microservices
 Documentation=man:podman-systemd.unit(5)
 Wants=network-online.target
 After=network-online.target
-After=immich-postgres.service immich-redis.service immich-typesense.service immich-machine-learning.service
-Requires=immich-postgres.service immich-redis.service immich-typesense.service immich-machine-learning.service
+After=immich-postgres.service immich-redis.service immich-machine-learning.service
+Requires=immich-postgres.service immich-redis.service immich-machine-learning.service
 
 [Container]
 ContainerName=immich-server
@@ -13,7 +13,6 @@ Exec=start.sh immich
 Network=web-egress
 Network=common-internal
 Network=immich-server-internal
-Network=immich-typesense-internal
 Network=immich-redis-internal
 Network=immich-postgres-internal
 ExposeHostPort=3001
@@ -22,7 +21,6 @@ Secret=immich_postgres_user
 Secret=immich_postgres_password
 Secret=immich_redis_password
 Timezone={{ timezone }}
-EnvironmentFile={{ containers_storage_path }}/env/immich-server/immich-server.env
 Environment="TZ={{ timezone }}"
 Environment="DB_HOSTNAME=immich-postgres"
 Environment="DB_DATABASE_NAME={{ immich.postgres.database }}"
@@ -30,7 +28,6 @@ Environment="DB_USERNAME_FILE=/run/secrets/immich_postgres_user"
 Environment="DB_PASSWORD_FILE=/run/secrets/immich_postgres_password"
 Environment="REDIS_HOSTNAME=immich-redis"
 Environment="REDIS_PASSWORD_FILE=/run/secrets/immich_redis_password"
-Environment="TYPESENSE_HOST=immich-typesense"
 Environment="UPLOAD_LOCATION=/usr/src/app/upload"
 Environment="IMMICH_MACHINE_LEARNING_URL=http://immich-machine-learning:3003"
 Label="traefik.enable=true"

@@ -21,7 +21,6 @@
     - 'immich-server.service'
     - 'immich-microservices.service'
     - 'immich-machine-learning.service'
-    - 'immich-typesense.service'
     - 'immich-redis.service'
     - 'immich-postgres.service'
   register: systemd_units
@@ -37,7 +36,6 @@
     - '/etc/containers/systemd/immich-server.container'
     - '/etc/containers/systemd/immich-microservices.container'
     - '/etc/containers/systemd/immich-machine-learning.container'
-    - '/etc/containers/systemd/immich-typesense.container'
     - '/etc/containers/systemd/immich-redis.container'
     - '/etc/containers/systemd/immich-postgres.container'
   notify: 'Reload systemd daemon'
@@ -50,7 +48,6 @@
       loop:
         - 'immich-postgres-internal'
         - 'immich-redis-internal'
-        - 'immich-typesense-internal'
         - 'immich-server-internal'
       register: 'podman_networks'
       failed_when: (podman_networks.failed and not "network not found" in podman_networks.msg)
@@ -71,7 +68,6 @@
   loop:
     - 'immich-postgres-internal'
     - 'immich-redis-internal'
-    - 'immich-typesense-internal'
     - 'immich-server-internal'
 
 - name: 'Remove Immich stack secrets'
@@ -87,12 +83,10 @@
     path: '{{ containers_storage_path }}/{{ item }}'
     state: 'absent'
   loop:
-    - 'env/immich-typesense'
     - 'env/immich-server'
     - 'data/immich-postgres'
     - 'runtime/immich-postgres'
     - 'runtime/immich-redis'
-    - 'runtime/immich-typesense'
     - 'runtime/immich-machine-learning'
 
 - name: 'Remove Immich CNAME record'

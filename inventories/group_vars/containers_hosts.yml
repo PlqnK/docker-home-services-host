@@ -29,9 +29,8 @@ containers_images_tags:
   stirling_pdf: 'latest-ultra-lite'
   memos: '0'
   immich:
-    postgres: '15'
+    postgres: 'pg15-v0.1.13'
     redis: '7'
-    typesense: '0.25.1'
     machine_learning: 'release'
     server: 'release'
   ttrss:

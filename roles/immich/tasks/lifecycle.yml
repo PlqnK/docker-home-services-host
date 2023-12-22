@@ -8,7 +8,6 @@
   loop:
     - '{{ containers_images.immich.postgres }}:{{ containers_images_tags.immich.postgres }}'
     - '{{ containers_images.immich.redis }}:{{ containers_images_tags.immich.redis }}'
-    - '{{ containers_images.immich.typesense }}:{{ containers_images_tags.immich.typesense }}'
     - '{{ containers_images.immich.machine_learning }}:{{ containers_images_tags.immich.machine_learning }}'
     - '{{ containers_images.immich.server }}:{{ containers_images_tags.immich.server }}'
   register: 'containers_images_pull'
@@ -31,7 +30,6 @@
   loop:
     - 'immich-postgres'
     - 'immich-redis'
-    - 'immich-typesense'
     - 'immich-machine-learning'
     - 'immich-microservices'
     - 'immich-server'
@@ -53,7 +51,6 @@
         - 'immich-server.service'
         - 'immich-microservices.service'
         - 'immich-machine-learning.service'
-        - 'immich-typesense.service'
         - 'immich-redis.service'
         - 'immich-postgres.service'
 
@@ -64,7 +61,6 @@
       loop:
         - 'immich-postgres.service'
         - 'immich-redis.service'
-        - 'immich-typesense.service'
         - 'immich-machine-learning.service'
         - 'immich-microservices.service'
         - 'immich-server.service'
@@ -78,7 +74,6 @@
     - 'immich-server.service'
     - 'immich-microservices.service'
     - 'immich-machine-learning.service'
-    - 'immich-typesense.service'
     - 'immich-redis.service'
     - 'immich-postgres.service'
   tags: ['never', 'containers-disable']
@@ -92,7 +87,6 @@
     - 'immich-server.service'
     - 'immich-microservices.service'
     - 'immich-machine-learning.service'
-    - 'immich-typesense.service'
     - 'immich-redis.service'
     - 'immich-postgres.service'
   tags: ['never', 'containers-stop']
@@ -104,7 +98,6 @@
   loop:
     - 'immich-postgres.service'
     - 'immich-redis.service'
-    - 'immich-typesense.service'
     - 'immich-machine-learning.service'
     - 'immich-microservices.service'
     - 'immich-server.service'
@@ -118,7 +111,6 @@
   loop:
     - 'immich-postgres.service'
     - 'immich-redis.service'
-    - 'immich-typesense.service'
     - 'immich-machine-learning.service'
     - 'immich-microservices.service'
     - 'immich-server.service'
