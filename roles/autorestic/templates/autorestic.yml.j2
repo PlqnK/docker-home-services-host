@@ -6,12 +6,12 @@ extras:
     B2_ACCOUNT_KEY: '{{ autorestic.b2.account_key }}'
 
 global:
-  forget: &forget
+  forget:
     keep-daily: 28
     keep-weekly: 8
     keep-monthly: 6
     keep-yearly: 1
-  backup: &backup
+  backup:
     exclude-if-present:
       - '.nobackup'
 
@@ -21,8 +21,6 @@ locations:
     to: 'b2_documents'
     forget: 'prune'
     options:
-      forget:
-        <<: *forget
       backup:
         exclude:
           - '{{ nfs_mounts_path }}/backups/documents/immich/encoded-video'
@@ -35,7 +33,6 @@ locations:
           - '{{ nfs_mounts_path }}/backups/documents/nextcloud/*/uploads'
           - '*.log'
           - '*.log.[0123456789]'
-        <<: *backup
     hooks:
       before:
         - 'wget -T 10 -O- -q https://healthchecks.{{ domain_name }}/ping/{{ autorestic.documents.healthchecks_uuid }}/start'
@@ -47,11 +44,6 @@ locations:
     from: '{{ nfs_mounts_path }}/backups/groupware'
     to: 'b2_groupware'
     forget: 'prune'
-    options:
-      forget:
-        <<: *forget
-      backup:
-        <<: *backup
     hooks:
       before:
         - 'wget -T 10 -O- -q https://healthchecks.{{ domain_name }}/ping/{{ autorestic.groupware.healthchecks_uuid }}/start'
@@ -67,11 +59,6 @@ locations:
       - '{{ nfs_mounts_path }}/medias/comics'
     to: 'b2_medias'
     forget: 'prune'
-    options:
-      forget:
-        <<: *forget
-      backup:
-        <<: *backup
     hooks:
       before:
         - 'wget -T 10 -O- -q https://healthchecks.{{ domain_name }}/ping/{{ autorestic.medias.healthchecks_uuid }}/start'
@@ -83,11 +70,6 @@ locations:
     from: '{{ nfs_mounts_path }}/backups/servers'
     to: 'b2_servers'
     forget: 'prune'
-    options:
-      forget:
-        <<: *forget
-      backup:
-        <<: *backup
     hooks:
       before:
         - 'wget -T 10 -O- -q https://healthchecks.{{ domain_name }}/ping/{{ autorestic.servers.healthchecks_uuid }}/start'
