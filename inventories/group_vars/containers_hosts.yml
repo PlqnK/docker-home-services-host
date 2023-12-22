@@ -12,7 +12,7 @@ containers_images_tags:
   uptime_kuma: '1'
   healthchecks:
     postgres: '15'
-    server: 'v3.0.1'
+    server: 'v3.1'
   prometheus: 'latest'
   loki: 'latest'
   syslog_ng: 'latest'
@@ -24,12 +24,12 @@ containers_images_tags:
   nextcloud:
     postgres: '15'
     redis: '7'
-    server: '27'
+    server: '28'
   collabora_online: 'latest'
   stirling_pdf: 'latest-ultra-lite'
   memos: '0'
   immich:
-    postgres: 'pg15-v0.1.13'
+    postgres: 'pg15-v0.1.11'
     redis: '7'
     machine_learning: 'release'
     server: 'release'
