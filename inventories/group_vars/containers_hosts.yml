@@ -27,7 +27,6 @@ containers_images_tags:
     server: '28'
   collabora_online: 'latest'
   stirling_pdf: 'latest-ultra-lite'
-  memos: '0.19'
   immich:
     postgres: 'pg15-v0.1.11'
     redis: '7'
