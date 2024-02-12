@@ -1,7 +1,7 @@
 ---
 - name: 'Start Healthchecks PostgreSQL'
   ansible.builtin.systemd:
-    name: 'ttrss-postgres.service'
+    name: 'healthchecks-postgres.service'
     state: 'started'
 
 - name: 'Stop remaining Healthchecks stack'
@@ -59,7 +59,7 @@
 
 - name: 'Wait for PostgeSQL to initialize'
   ansible.builtin.command:
-    cmd: 'podman exec ttrss-postgres pg_isready'
+    cmd: 'podman exec healthchecks-postgres pg_isready'
   retries: 10
   delay: 5
   changed_when: false
