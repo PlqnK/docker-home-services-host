@@ -13,5 +13,5 @@
       tags: ['never', 'containers-db-upgrade']
 
     - name: 'Remove'
-      ansible.builtin.import_tasks: 'remove.yml'
+      ansible.builtin.include_tasks: 'remove.yml'
       tags: ['never', 'containers-remove']
