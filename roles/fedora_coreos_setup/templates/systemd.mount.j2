@@ -1,12 +1,13 @@
 [Unit]
 Description={{ storage_server.name }} {{ item }} nfs share
-After=network-online.target
-Wants=network-online.target
+After=nss-lookup.target
+Wants=nss-lookup.target
 
 [Mount]
 What={{ storage_server.fqdn }}:{{ storage_server.exports_base_path }}/{{ item }}
 Where={{ nfs_mounts_path }}/{{ item }}
 Type=nfs
+TimeoutSec=30
 
 [Install]
 WantedBy=multi-user.target
