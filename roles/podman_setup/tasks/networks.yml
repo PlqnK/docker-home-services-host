@@ -1,4 +1,10 @@
 ---
+- name: 'Enable and start Netavark firewalld reload service'
+  ansible.builtin.systemd_service:
+    name: 'netavark-firewalld-reload.service'
+    enabled: true
+    state: 'started'
+
 - name: 'Create common podman networks'
   containers.podman.podman_network:
     name: '{{ item.name }}'
