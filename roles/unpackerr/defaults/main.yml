@@ -1,5 +1,5 @@
 ---
 containers_images:
-  unpackerr: 'docker.io/golift/unpackerr'
+  unpackerr: 'ghcr.io/unpackerr/unpackerr'
 containers_images_tags:
   unpackerr: 'latest'

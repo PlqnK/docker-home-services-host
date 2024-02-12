@@ -49,7 +49,7 @@ containers_images_tags:
   transmission: 'latest'
   sabnzbd: 'latest'
   flaresolverr: 'latest'
-  unpackerr: 'latest'
+  unpackerr: '0'
   recyclarr: '6'
   prowlarr: 'latest'
   radarr: 'latest'
