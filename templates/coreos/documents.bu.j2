@@ -7,17 +7,17 @@ storage:
       partitions:
         - number: 4
           label: root
-          size_mib: 24576
+          size_mib: 16384
           resize: true
-        - label: containers
+        - label: var-lib-containers
           size_mib: 0
   filesystems:
     - device: /dev/disk/by-partlabel/root
       wipe_filesystem: true
       format: btrfs
       label: root
-    - path: /var/containers
-      device: /dev/disk/by-partlabel/containers
+    - path: /var/lib/containers
+      device: /dev/disk/by-partlabel/var-lib-containers
       format: btrfs
       with_mount_unit: true
   files:
@@ -127,6 +127,21 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+    - name: var-containers.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Requires=systemd-fsck@dev-disk-by\x2dpartlabel-var\x2dcontainers.service
+        After=systemd-fsck@dev-disk-by\x2dpartlabel-var\x2dcontainers.service
+
+        [Mount]
+        Where=/var/containers
+        What=/dev/disk/by-partlabel/var-containers
+        Type=btrfs
+        Options=compress=zstd
+
+        [Install]
+        RequiredBy=local-fs.target
     - name: var-mnt-vol01.mount
       enabled: true
       contents: |
