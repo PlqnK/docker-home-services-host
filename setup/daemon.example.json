@@ -1,6 +1,0 @@
-{
-  "experimental" : true,
-  "ipv6": true,
-  "ip6tables": true,
-  "fixed-cidr-v6": "fd00:dead:beef::/64"
-}

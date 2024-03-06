@@ -1,0 +1,11 @@
+[Unit]
+Description=Podman auto-prune service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/podman image prune -f
+
+[Install]
+WantedBy=default.target

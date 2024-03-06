@@ -1,0 +1,11 @@
+---
+containers_images:
+  ttrss:
+    postgres: 'docker.io/library/postgres'
+    server: 'docker.io/cthulhoo/ttrss-fpm-pgsql-static'
+    nginx: 'docker.io/cthulhoo/ttrss-web-nginx'
+containers_images_tags:
+  ttrss:
+    postgres: 'latest'
+    server: 'latest'
+    nginx: 'latest'

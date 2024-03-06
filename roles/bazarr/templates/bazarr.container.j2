@@ -1,0 +1,30 @@
+[Unit]
+Description=Bazarr
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=bazarr
+Image={{ containers_images.bazarr }}:{{ containers_images_tags.bazarr }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=6767
+Volume={{ containers_storage_path }}/data/bazarr:/config:Z
+Volume={{ nfs_mounts_path }}/medias/movies:/movies:slave
+Volume={{ nfs_mounts_path }}/medias/series:/tv:slave
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.bazarr.rule=Host(`bazarr.{{ domain_name }}`)"
+Label="traefik.http.routers.bazarr.entrypoints=websecure"
+Label="traefik.http.routers.bazarr.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.services.bazarr.loadbalancer.server.port=6767"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

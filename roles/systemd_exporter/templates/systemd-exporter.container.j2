@@ -1,0 +1,26 @@
+[Unit]
+Description=systemd_exporter
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=systemd-exporter
+Image={{ containers_images.systemd_exporter }}:{{ containers_images_tags.systemd_exporter }}
+Exec=--path.procfs=/host/proc --web.config.file=/etc/systemd-exporter/web.yml
+Network=systemd-exporter-external
+PublishPort=9558:9558
+Volume={{ containers_storage_path }}/config/systemd-exporter/web.yml:/etc/systemd-exporter/web.yml:Z
+Volume=/proc:/host/proc:ro,rslave
+Volume=/sys/fs/cgroup:/sys/fs/cgroup:ro,rslave
+Volume=/run/systemd:/run/systemd:ro,rslave
+Volume=/var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

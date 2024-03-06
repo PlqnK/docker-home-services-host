@@ -1,0 +1,156 @@
+---
+- name: 'Create Healthchecks stack network'
+  containers.podman.podman_network:
+    name: 'healthchecks-postgres-internal'
+    internal: true
+    ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
+
+- name: 'Add Healthchecks stack networks to firewalld trusted zone'
+  block:
+    - name: 'Get podman network info'
+      containers.podman.podman_network_info:
+        name: 'healthchecks-postgres-internal'
+      register: 'podman_network'
+
+    - name: 'Add podman network subnet to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Create Healthchecks stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '0700'
+    state: 'directory'
+  loop:
+    - path: '{{ containers_storage_path }}/env/healthchecks-server'
+      owner: 'root'
+      group: 'root'
+    - path: '{{ containers_storage_path }}/config/healthchecks-server'
+      owner: 'root'
+      group: 'root'
+    - path: '{{ containers_storage_path }}/data/healthchecks-postgres'
+      owner: 'root'
+      group: 'root'
+    - path: '{{ containers_storage_path }}/runtime/healthchecks-postgres'
+      owner: 999
+      group: 999
+
+- name: 'Download Healthchecks assets'
+  ansible.builtin.get_url:
+    url: '{{ item.url }}'
+    dest: '{{ containers_storage_path }}/config/healthchecks-server/{{ item.dest }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - url: 'https://raw.githubusercontent.com/healthchecks/healthchecks/0c363f5c01bdd998a36c7b8e7d2cdbcb6922406c/static/img/logo.png'
+      dest: 'logo.png'
+    - url: 'https://raw.githubusercontent.com/healthchecks/healthchecks/b3395f1314b9a5f2a5a5653b7ce256326a33a7a6/static/img/apple-touch-180.png'
+      dest: 'apple-touch-180.png'
+  check_mode: false
+
+- name: 'Create Healthchecks stack secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'healthchecks_postgres_user'
+      data: '{{ healthchecks.postgres.user }}'
+      services:
+        - 'healthchecks-postgres.service'
+        - 'healthchecks-server.service'
+    - name: 'healthchecks_postgres_password'
+      data: '{{ healthchecks.postgres.password }}'
+      services:
+        - 'healthchecks-postgres.service'
+        - 'healthchecks-server.service'
+  loop_control:
+    label: '{{ item.name }}'
+  register: 'podman_secrets'
+
+- name: 'Create Server environment file'
+  ansible.builtin.copy:
+    content: '{{ item.content }}'
+    dest: '{{ containers_storage_path }}/env/{{ item.dest }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0400'
+  loop:
+    - content: |
+        SECRET_KEY={{ healthchecks.server.secret_key }}
+        DB_USER={{ healthchecks.postgres.user }}
+        DB_PASSWORD={{ healthchecks.postgres.password }}
+        EMAIL_HOST_USER={{ healthchecks.server.email.user }}
+        EMAIL_HOST_PASSWORD={{ healthchecks.server.email.password }}
+        PUSHOVER_API_TOKEN={{ healthchecks.server.pushover.api_token }}
+      dest: 'healthchecks-server/healthchecks-server.env'
+      services: 'healthchecks-server.service'
+  loop_control:
+    label: '{{ item.dest }}'
+  register: 'environment_files'
+
+- name: 'Create Healthchecks stack quadlet units from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.container.j2'
+    dest: '/etc/containers/systemd/{{ item }}.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'healthchecks-postgres'
+    - 'healthchecks-server'
+  register: 'quadlet_units'
+  notify: 'Reload systemd daemon'
+
+- name: 'Create PostgreSQL dump systemd service from template'
+  ansible.builtin.template:
+    src: 'healthchecks-postgres-dump.service.j2'
+    dest: '/etc/systemd/system/healthchecks-postgres-dump.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy PostgreSQL dump systemd timer'
+  ansible.builtin.copy:
+    src: 'healthchecks-postgres-dump.timer'
+    dest: '/etc/systemd/system/healthchecks-postgres-dump.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Healthchecks stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+  loop:
+    - 'healthchecks-postgres.service'
+    - 'healthchecks-server.service'
+    - 'healthchecks-postgres-dump.timer'
+
+- name: 'Restart Healthchecks services if podman secret, environment file or quadlet unit has changed while service was already started'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    state: 'restarted'
+  vars:
+    podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    environment_files_map: '{{ environment_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
+    systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
+  loop: '{{ (podman_secrets_map + environment_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

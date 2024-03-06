@@ -1,0 +1,5 @@
+---
+containers_images:
+  loki: 'docker.io/grafana/loki'
+containers_images_tags:
+  loki: 'latest'

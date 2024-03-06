@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>syslog-conn</short>
+  <description>Reliable Syslog Service, extends the functionality of the syslog protocol to provide reliable delivery of event messages.</description>
+  <port protocol="tcp" port="601"/>
+</service>

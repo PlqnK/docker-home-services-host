@@ -1,0 +1,5 @@
+---
+containers_images:
+  flaresolverr: 'ghcr.io/flaresolverr/flaresolverr'
+containers_images_tags:
+  flaresolverr: 'latest'

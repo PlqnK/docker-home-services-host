@@ -1,0 +1,36 @@
+---
+- name: 'Ensure the user really wants to remove the Calibre container'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE CALIBRE CONTAINER?\nTHIS ACTION WILL DELETE ALL CALIBRE APP DATA AND IS IRREVERSIBLE!\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop Calibre container'
+  ansible.builtin.systemd:
+    name: 'calibre.service'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  register: systemd_unit
+  failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
+
+- name: 'Remove Calibre container quadlet unit'
+  ansible.builtin.file:
+    path: '/etc/containers/systemd/calibre.container'
+    state: 'absent'
+  notify: 'Reload systemd daemon'
+
+- name: 'Remove Calibre secret'
+  containers.podman.podman_secret:
+    name: 'calibre_password'
+    state: 'absent'
+
+- name: 'Remove Calibre data bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/data/calibre'
+    state: 'absent'

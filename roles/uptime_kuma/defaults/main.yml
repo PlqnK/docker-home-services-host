@@ -1,0 +1,5 @@
+---
+containers_images:
+  uptime_kuma: 'docker.io/louislam/uptime-kuma'
+containers_images_tags:
+  uptime_kuma: 'latest'

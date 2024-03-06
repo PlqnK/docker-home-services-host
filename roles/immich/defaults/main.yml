@@ -1,0 +1,13 @@
+---
+containers_images:
+  immich:
+    postgres: 'docker.io/tensorchord/pgvecto-rs'
+    redis: 'docker.io/library/redis'
+    machine_learning: 'ghcr.io/immich-app/immich-machine-learning'
+    server: 'ghcr.io/immich-app/immich-server'
+containers_images_tags:
+  immich:
+    postgres: 'latest'
+    redis: 'latest'
+    machine_learning: 'latest'
+    server: 'latest'

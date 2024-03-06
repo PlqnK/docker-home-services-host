@@ -1,0 +1,20 @@
+---
+- name: 'Ignition'
+  hosts: 'localhost'
+  connection: 'local'
+  tasks:
+    - name: 'Template butane config files'
+      ansible.builtin.template:
+        src: 'templates/coreos/{{ item }}.bu.j2'
+        dest: 'files/coreos/{{ item }}.bu'
+      loop: '{{ groups["containers_hosts"] }}'
+
+    - name: 'Generate ignition files from butane configs'
+      ansible.builtin.command:
+        cmd: 'butane --pretty --strict files/coreos/{{ item }}.bu --output files/coreos/{{ item }}.ign'
+      loop: '{{ groups["containers_hosts"] }}'
+
+    - name: 'Serve the file on http://{{ ansible_fqdn }}:8000'
+      ansible.builtin.command:
+        cmd: 'python3 -m http.server'
+        chdir: 'files/coreos'

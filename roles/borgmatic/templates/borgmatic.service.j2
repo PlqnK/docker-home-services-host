@@ -1,0 +1,40 @@
+[Unit]
+Description=Borgmatic
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=no
+TimeoutStopSec=70
+ExecStart=/usr/bin/podman container run \
+	--rm \
+	--detach \
+	--replace \
+	--name borgmatic \
+	--entrypoint "borgmatic" \
+	--hostname {{ ansible_hostname }} \
+	--network web-egress \
+	--volume {{ containers_storage_path }}/config/borgmatic/borgmatic.d:/etc/borgmatic.d:Z \
+	--volume {{ containers_storage_path }}/config/borgmatic/.ssh:/root/.ssh:Z \
+	--volume {{ containers_storage_path }}/data/borgmatic:/root/.config/borg:Z \
+	--volume {{ containers_storage_path }}/runtime/borgmatic/borgmatic:/root/.borgmatic:Z \
+	--volume {{ containers_storage_path }}/runtime/borgmatic/cache:/root/.cache/borg:Z \
+	--volume {{ nfs_mounts_path }}/backups/documents:{{ nfs_mounts_path }}/backups/documents:slave,ro \
+	--volume {{ nfs_mounts_path }}/backups/groupware:{{ nfs_mounts_path }}/backups/groupware:slave,ro \
+	--volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave,ro \
+	--volume {{ nfs_mounts_path }}/medias/audiodrama:{{ nfs_mounts_path }}/medias/audiodrama:slave,ro \
+	--volume {{ nfs_mounts_path }}/medias/audiobooks:{{ nfs_mounts_path }}/medias/audiobooks:slave,ro \
+	--volume {{ nfs_mounts_path }}/medias/books:{{ nfs_mounts_path }}/medias/books:slave,ro \
+	--volume {{ nfs_mounts_path }}/medias/comics:{{ nfs_mounts_path }}/medias/comics:slave,ro \
+	--secret borgmatic_documents_encryption_passphrase \
+	--secret borgmatic_groupware_encryption_passphrase \
+	--secret borgmatic_medias_encryption_passphrase \
+	--secret borgmatic_servers_encryption_passphrase \
+	--tz={{ timezone }} \
+	--env TZ={{ timezone }} {{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }} --stats -v 1
+Type=forking
+
+[Install]
+WantedBy=default.target

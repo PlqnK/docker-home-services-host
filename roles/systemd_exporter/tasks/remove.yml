@@ -1,0 +1,87 @@
+---
+- name: 'Ensure the user really wants to remove the systemd_exporter container'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE SYSTEMD_EXPORTER CONTAINER?\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop systemd_exporter container'
+  ansible.builtin.systemd:
+    name: 'systemd-exporter.service'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  register: systemd_unit
+  failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
+
+- name: 'Remove systemd_exporter container quadlet unit'
+  ansible.builtin.file:
+    path: '/etc/containers/systemd/systemd-exporter.container'
+    state: 'absent'
+  notify: 'Reload systemd daemon'
+
+- name: 'Remove systemd_exporter network from firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: 'systemd-exporter-external'
+      register: 'podman_network'
+      failed_when: (podman_network.failed and not "network not found" in podman_network.msg)
+
+    - name: 'Remove podman networks subnets from firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'disabled'
+      loop: '{{ podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Remove systemd_exporter network'
+  containers.podman.podman_network:
+    name: 'systemd-exporter-external'
+    state: 'absent'
+
+- name: 'Reject systemd_exporter incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: 'prometheus-systemd-exporter'
+    permanent: true
+    immediate: true
+    state: 'disabled'
+  when: ("home_hosts" in group_names)
+
+- name: 'Reject systemd_exporter incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    service: 'prometheus-systemd-exporter'
+    permanent: true
+    immediate: true
+    state: 'disabled'
+  when: ("cloud_hosts" in group_names)
+
+- name: 'Remove systemd_exporter firewalld service'
+  ansible.builtin.file:
+    path: '/etc/firewalld/services/prometheus-systemd-exporter.xml'
+    state: 'absent'
+  register: 'firewalld_service_remove'
+
+- name: 'Take firewalld service deletion into account' # noqa: no-handler
+  when: (firewalld_service_remove.changed)
+  block:
+    - name: 'Reload firewalld to remove service'
+      ansible.builtin.systemd:
+        name: 'firewalld.service'
+        state: 'reloaded'
+
+    - name: 'Reload podman networks after firewalld reload' # noqa: no-changed-when
+      ansible.builtin.command:
+        cmd: 'podman network reload -a'
+
+- name: 'Remove systemd_exporter config bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/config/systemd-exporter'
+    state: 'absent'

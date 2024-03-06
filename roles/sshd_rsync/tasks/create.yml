@@ -1,0 +1,107 @@
+---
+- name: 'Create ssh-alt firewalld service'
+  ansible.builtin.copy:
+    src: 'ssh-alt.xml'
+    dest: '/etc/firewalld/services/ssh-alt.xml'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'firewalld_service_copy'
+
+- name: 'Take new firewalld service into account' # noqa: no-handler
+  when: (firewalld_service_copy.changed)
+  block:
+    - name: 'Reload firewalld to load new service'
+      ansible.builtin.systemd:
+        name: 'firewalld.service'
+        state: 'reloaded'
+
+    - name: 'Reload podman networks after firewalld reload' # noqa: no-changed-when
+      ansible.builtin.command:
+        cmd: 'podman network reload -a'
+
+- name: 'Accept SSH on port 2222 incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: 'ssh-alt'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  when: ("home_hosts" in group_names)
+
+- name: 'Accept SSH on port 2222 incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: 'ssh-alt'
+    permanent: true
+    immediate: true
+    state: 'enabled'
+  when: ("cloud_hosts" in group_names)
+
+- name: 'Create sshd-rsync network'
+  containers.podman.podman_network:
+    name: 'sshd-rsync-external'
+    internal: false
+    ipv6: '{{ containers_ipv6.enable }}'
+    # See https://github.com/containers/netavark/issues/709
+    #opt:
+    #  isolate: true
+
+- name: 'Add sshd-rsync network to firewalld trusted zone'
+  block:
+    - name: 'Get podman network info'
+      containers.podman.podman_network_info:
+        name: 'sshd-rsync-external'
+      register: 'podman_network'
+
+    - name: 'Add podman network subnet to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_network | community.general.json_query("networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Create sshd-rsync bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+  loop:
+    - 'config/sshd-rsync'
+    - 'runtime/sshd-rsync'
+
+- name: 'Add backup server SSH key to sshd-rsync authorized_keys'
+  ansible.builtin.copy:
+    content: '{{ backup_server_key }}'
+    dest: '{{ containers_storage_path }}/config/sshd-rsync/authorized_keys'
+    owner: 'root'
+    group: 'root'
+    mode: '0600'
+
+- name: 'Create sshd-rsync quadlet unit from template'
+  ansible.builtin.template:
+    src: 'sshd-rsync.container.j2'
+    dest: '/etc/containers/systemd/sshd-rsync.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'quadlet_unit'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start sshd-rsync container'
+  ansible.builtin.systemd:
+    name: 'sshd-rsync.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+
+- name: 'Restart sshd-rsync service if quadlet unit has changed while service was already started'
+  ansible.builtin.systemd:
+    name: 'sshd-rsync.service'
+    daemon_reload: true
+    state: 'restarted'
+  when: (quadlet_unit.changed and not systemd_start.changed)

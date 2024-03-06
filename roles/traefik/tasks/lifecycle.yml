@@ -1,0 +1,84 @@
+---
+- name: 'Pull Traefik stack images'
+  containers.podman.podman_image:
+    name: '{{ item }}'
+    pull: true
+    force: true
+    state: 'present'
+  loop:
+    - '{{ containers_images.cetusguard }}:{{ containers_images_tags.cetusguard }}'
+    - '{{ containers_images.traefik }}:{{ containers_images_tags.traefik }}'
+  register: 'containers_images_pull'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Update Traefik stack tags in quadlet units'
+  ansible.builtin.template:
+    src: '{{ item }}.container.j2'
+    dest: '/etc/containers/systemd/{{ item }}.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'cetusguard'
+    - 'traefik'
+  when: (containers_images_pull.changed)
+  register: 'quadlet_units'
+  tags: ['never', 'containers-update']
+
+- name: 'Restart Traefik stack'
+  tags: ['never', 'containers-restart', 'containers-update']
+  when: ("containers-restart" in ansible_run_tags or
+        ("containers-update" in ansible_run_tags and containers_images_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
+  block:
+    - name: 'Stop Traefik stack'
+      ansible.builtin.systemd:
+        name: '{{ item }}'
+        daemon_reload: '{{ ("true" | bool) if (quadlet_units is defined and quadlet_units.changed) else ("false" | bool) }}'
+        state: 'stopped'
+      loop:
+        - 'traefik.service'
+        - 'cetusguard.service'
+
+    - name: 'Start Traefik stack'
+      ansible.builtin.systemd:
+        name: '{{ item }}'
+        state: 'started'
+      loop:
+        - 'cetusguard.service'
+        - 'traefik.service'
+
+- name: 'Disable Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: false
+  loop:
+    - 'traefik.service'
+    - 'cetusguard.service'
+  tags: ['never', 'containers-disable']
+
+- name: 'Stop Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'traefik.service'
+    - 'cetusguard.service'
+  tags: ['never', 'containers-stop']
+
+- name: 'Enable Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - 'cetusguard.service'
+    - 'traefik.service'
+  tags: ['never', 'containers-enable']
+
+- name: 'Start Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'started'
+  loop:
+    - 'cetusguard.service'
+    - 'traefik.service'
+  tags: ['never', 'containers-start']

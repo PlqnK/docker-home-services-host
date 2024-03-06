@@ -1,0 +1,5 @@
+---
+containers_images:
+  sabnzbd: 'lscr.io/linuxserver/sabnzbd'
+containers_images_tags:
+  sabnzbd: 'latest'

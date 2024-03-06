@@ -1,0 +1,29 @@
+[Unit]
+Description=Stirling PDF
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=stirling-pdf
+Image={{ containers_images.stirling_pdf }}:{{ containers_images_tags.stirling_pdf }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=8080
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Environment="DOCKER_ENABLE_SECURITY=false"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.stirling-pdf.rule=Host(`pdf.{{ domain_name }}`)"
+Label="traefik.http.routers.stirling-pdf.entrypoints=websecure"
+Label="traefik.http.routers.stirling-pdf.middlewares=set-security-headers@file, stirling-pdf-auth"
+Label="traefik.http.middlewares.stirling-pdf-auth.basicauth.users={{ stirling_pdf.user }}:{{ stirling_pdf.password_hash }}"
+Label="traefik.http.services.stirling-pdf.loadbalancer.server.port=8080"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

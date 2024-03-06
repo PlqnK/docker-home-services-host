@@ -1,0 +1,31 @@
+[Unit]
+Description=FreshRSS
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=freshrss
+Image={{ containers_images.freshrss }}:{{ containers_images_tags.freshrss }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=80
+Volume={{ containers_storage_path }}/data/freshrss/data:/var/www/FreshRSS/data:Z
+Volume={{ containers_storage_path }}/data/freshrss/extensions:/var/www/FreshRSS/extensions:Z
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Environment="CRON_MIN=1,31"
+Environment="SERVER_DNS=freshrss.{{ domain_name }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.freshrss.rule=Host(`freshrss.{{ domain_name }}`)"
+Label="traefik.http.routers.freshrss.entrypoints=websecure"
+Label="traefik.http.routers.freshrss.middlewares=set-security-headers@file"
+Label="traefik.http.services.freshrss.loadbalancer.server.port=80"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

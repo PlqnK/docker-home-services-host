@@ -1,0 +1,40 @@
+---
+- name: 'Ensure the user really wants to remove the Navidrome container'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE NAVIDROME CONTAINER?\nTHIS ACTION WILL DELETE ALL NAVIDROME APP DATA AND IS IRREVERSIBLE!\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop Navidrome container'
+  ansible.builtin.systemd:
+    name: 'navidrome.service'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  register: systemd_unit
+  failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
+
+- name: 'Remove Navidrome container quadlet unit'
+  ansible.builtin.file:
+    path: '/etc/containers/systemd/navidrome.container'
+    state: 'absent'
+  notify: 'Reload systemd daemon'
+
+- name: 'Remove Navidrome data bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/data/navidrome'
+    state: 'absent'
+
+- name: 'Remove Navidrome CNAME record'
+  ansible.builtin.uri:
+    url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/navidrome/CNAME/'
+    method: 'DELETE'
+    status_code: [200, 204]
+    headers:
+      Authorization: 'Token {{ desec_token }}'
+  delegate_to: 'localhost'

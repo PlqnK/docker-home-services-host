@@ -1,0 +1,5 @@
+---
+containers_images:
+  prometheus: 'quay.io/prometheus/prometheus'
+containers_images_tags:
+  prometheus: 'latest'

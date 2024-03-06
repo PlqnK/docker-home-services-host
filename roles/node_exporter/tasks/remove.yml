@@ -1,0 +1,48 @@
+---
+- name: 'Ensure the user really wants to remove the node_exporter container'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE NODE_EXPORTER CONTAINER?\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop node_exporter container'
+  ansible.builtin.systemd:
+    name: 'node-exporter.service'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  register: systemd_unit
+  failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
+
+- name: 'Remove node_exporter container quadlet unit'
+  ansible.builtin.file:
+    path: '/etc/containers/systemd/node-exporter.container'
+    state: 'absent'
+  notify: 'Reload systemd daemon'
+
+- name: 'Reject node_exporter incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: 'prometheus-node-exporter'
+    permanent: true
+    immediate: true
+    state: 'disabled'
+  when: ("home_hosts" in group_names)
+
+- name: 'Reject node_exporter incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: 'prometheus-node-exporter'
+    permanent: true
+    immediate: true
+    state: 'disabled'
+  when: ("cloud_hosts" in group_names)
+
+- name: 'Remove node_exporter config bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/config/node-exporter'
+    state: 'absent'

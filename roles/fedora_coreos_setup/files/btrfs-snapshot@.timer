@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily Btrfs snapshot of %f
+
+[Timer]
+OnCalendar=*-*-* 4:59:00
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

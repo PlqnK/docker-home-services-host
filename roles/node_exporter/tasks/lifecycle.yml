@@ -1,0 +1,53 @@
+---
+- name: 'Pull node_exporter image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.node_exporter }}:{{ containers_images_tags.node_exporter }}'
+    pull: true
+    force: true
+    state: 'present'
+  register: 'container_image_pull'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Create node_exporter quadlet unit from template'
+  ansible.builtin.template:
+    src: 'node-exporter.container.j2'
+    dest: '/etc/containers/systemd/node-exporter.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: (container_image_pull.changed)
+  register: 'quadlet_unit'
+  tags: ['never', 'containers-update']
+
+- name: 'Restart node_exporter container'
+  ansible.builtin.systemd:
+    name: 'node-exporter.service'
+    daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
+    state: 'restarted'
+  when: ("containers-restart" in ansible_run_tags or
+        ("containers-update" in ansible_run_tags and container_image_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
+  tags: ['never', 'containers-restart', 'containers-update']
+
+- name: 'Disable node_exporter container'
+  ansible.builtin.systemd:
+    name: 'node-exporter.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Stop node_exporter container'
+  ansible.builtin.systemd:
+    name: 'node-exporter.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop']
+
+- name: 'Enable node_exporter container'
+  ansible.builtin.systemd:
+    name: 'node-exporter.service'
+    enabled: true
+  tags: ['never', 'containers-enable']
+
+- name: 'Start node_exporter container'
+  ansible.builtin.systemd:
+    name: 'node-exporter.service'
+    state: 'started'
+  tags: ['never', 'containers-start']
