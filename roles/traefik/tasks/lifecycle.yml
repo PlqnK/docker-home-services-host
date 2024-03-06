@@ -33,7 +33,7 @@
     - name: 'Stop Traefik stack'
       ansible.builtin.systemd:
         name: '{{ item }}'
-        daemon_reload: '{{ ("true" | bool) if quadlet_units.changed else ("false" | bool) }}'
+        daemon_reload: '{{ ("true" | bool) if (quadlet_units is defined and quadlet_units.changed) else ("false" | bool) }}'
         state: 'stopped'
       loop:
         - 'traefik.service'
