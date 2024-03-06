@@ -28,7 +28,7 @@ containers_images_tags:
   collabora_online: 'latest'
   stirling_pdf: 'latest-ultra-lite'
   immich:
-    postgres: 'pg15-v0.1.11'
+    postgres: 'pg15-v0.2.0'
     redis: '7'
     machine_learning: 'release'
     server: 'release'
