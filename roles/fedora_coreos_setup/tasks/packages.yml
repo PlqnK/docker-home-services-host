@@ -20,6 +20,7 @@
 - name: 'Install bare metal hosts specific packages'
   community.general.rpm_ostree_pkg:
     name:
+      - 'fwupd-efi'
       - 'smartmontools'
     state: 'present'
   when: (ansible_virtualization_role == "host")
