@@ -13,7 +13,12 @@ Network=traefik-external
 Network=common-internal
 Network=cetusguard-internal
 PublishPort=80:80
+{% if "cloud_hosts" in group_names %}
+PublishPort=443:443/tcp
+PublishPort=443:443/udp
+{% else %}
 PublishPort=443:443
+{% endif %}
 Volume={{ containers_storage_path }}/config/traefik/traefik.toml:/etc/traefik/traefik.toml:Z
 Volume={{ containers_storage_path }}/config/traefik/providers:/etc/traefik/providers:Z
 Volume={{ containers_storage_path }}/data/traefik/acme.json:/acme.json:Z

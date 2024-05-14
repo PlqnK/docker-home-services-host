@@ -8,7 +8,7 @@ containers_images_tags:
   borgmatic: '1.8'
   autorestic: '1.8'
   cetusguard: 'v1'
-  traefik: '2.11'
+  traefik: '3.0'
   uptime_kuma: '1'
   healthchecks:
     postgres: '15'

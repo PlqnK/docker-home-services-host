@@ -32,17 +32,22 @@
         state: 'enabled'
       loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
 
-- name: 'Accept HTTP and HTTPS incomming connections in default firewalld zone'
+- name: 'Accept HTTP and HTTPS (+ HTTP/3 on cloud hosts) incomming connections in default firewalld zone'
   ansible.posix.firewalld:
-    service: '{{ item }}'
+    service: '{{ item.service }}'
     permanent: true
     immediate: true
     state: 'enabled'
+  when: (item.hosts == "all" or item.hosts in group_names)
   loop:
-    - 'http'
-    - 'https'
+    - service: 'http'
+      hosts: 'all'
+    - service: 'https'
+      hosts: 'all'
+    - service: 'http3'
+      hosts: 'cloud_hosts'
 
-- name: 'Accept HTTP and HTTPS incomming connections in VPN firewalld zone'
+- name: 'Accept HTTP, HTTPS and HTTP/3 incomming connections in VPN firewalld zone'
   ansible.posix.firewalld:
     service: '{{ item }}'
     zone: 'vpn'
@@ -52,6 +57,7 @@
   loop:
     - 'http'
     - 'https'
+    - 'http3'
   when: ("cloud_hosts" in group_names)
 
 - name: 'Create Traefik stack bind mounts paths'

@@ -17,6 +17,9 @@
 {% endif %}
   [entryPoints.websecure]
     address = ":443"
+{% if "cloud_hosts" in group_names %}
+    [entryPoints.websecure.http3]
+{% endif %}
 {% if "home_hosts" in group_names and home_network.proxy_protocol_trusted_ips is not none %}
     [entryPoints.websecure.proxyProtocol]
       trustedIPs = [{% for ip in home_network.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]

@@ -59,17 +59,22 @@
     - 'cetusguard-internal'
     - 'traefik-external'
 
-- name: 'Reject HTTP and HTTPS incomming connections in default firewalld zone'
+- name: 'Reject HTTP and HTTPS (+ HTTP/3 on cloud hosts) incomming connections in default firewalld zone'
   ansible.posix.firewalld:
-    service: '{{ item }}'
+    service: '{{ item.service }}'
     permanent: true
     immediate: true
     state: 'disabled'
+  when: (item.hosts == "all" or item.hosts in group_names)
   loop:
-    - 'http'
-    - 'https'
+    - service: 'http'
+      hosts: 'all'
+    - service: 'https'
+      hosts: 'all'
+    - service: 'http3'
+      hosts: 'cloud_hosts'
 
-- name: 'Reject HTTP and HTTPS incomming connections in VPN firewalld zone'
+- name: 'Reject HTTP, HTTPS and HTTP/3 incomming connections in VPN firewalld zone'
   ansible.posix.firewalld:
     zone: 'vpn'
     service: '{{ item }}'
@@ -79,6 +84,7 @@
   loop:
     - 'http'
     - 'https'
+    - 'http3'
   when: ("cloud_hosts" in group_names)
 
 - name: 'Remove Traefik stack secret'
