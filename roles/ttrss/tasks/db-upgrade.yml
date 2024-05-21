@@ -15,8 +15,9 @@
     - 'ttrss-server.service'
 
 - name: 'Dump Tiny Tiny RSS database'
-  ansible.builtin.command:
-    cmd: 'podman exec ttrss-postgres pg_dump -U {{ ttrss.postgres.user }} -d {{ ttrss.postgres.database }} --clean --if-exists -f /opt/dumps/ttrss.sql'
+  containers.podman.podman_container_exec:
+    name: 'ttrss-postgres'
+    command: 'pg_dump -U {{ ttrss.postgres.user }} -d {{ ttrss.postgres.database }} --clean --if-exists -f /opt/dumps/ttrss.sql'
 
 - name: 'Stop PostgreSQL'
   ansible.builtin.systemd:
@@ -60,15 +61,17 @@
     state: 'started'
 
 - name: 'Wait for PostgeSQL to initialize'
-  ansible.builtin.command:
-    cmd: 'podman exec ttrss-postgres pg_isready'
+  containers.podman.podman_container_exec:
+    name: 'ttrss-postgres'
+    command: 'pg_isready'
   retries: 10
   delay: 5
   changed_when: false
 
 - name: 'Restore Tiny Tiny RSS database'
-  ansible.builtin.command:
-    cmd: 'podman exec ttrss-postgres psql -U {{ ttrss.postgres.user }} -d {{ ttrss.postgres.database }} -f /opt/dumps/ttrss.sql'
+  containers.podman.podman_container_exec:
+    name: 'ttrss-postgres'
+    command: 'psql -U {{ ttrss.postgres.user }} -d {{ ttrss.postgres.database }} -f /opt/dumps/ttrss.sql'
 
 - name: 'Enable and start Tiny Tiny RSS stack'
   ansible.builtin.systemd:

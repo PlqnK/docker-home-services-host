@@ -16,8 +16,9 @@
     - 'immich-redis.service'
 
 - name: 'Dump Immich database'
-  ansible.builtin.command:
-    cmd: 'podman exec immich-postgres pg_dump -U {{ immich.postgres.user }} -d {{ immich.postgres.database }} --clean --if-exists -f /opt/dumps/immich.sql'
+  containers.podman.podman_container_exec:
+    name: 'immich-postgres'
+    command: 'pg_dump -U {{ immich.postgres.user }} -d {{ immich.postgres.database }} --clean --if-exists -f /opt/dumps/immich.sql'
 
 - name: 'Stop PostgreSQL'
   ansible.builtin.systemd:
@@ -61,15 +62,17 @@
     state: 'started'
 
 - name: 'Wait for PostgeSQL to initialize'
-  ansible.builtin.command:
-    cmd: 'podman exec immich-postgres pg_isready'
+  containers.podman.podman_container_exec:
+    name: 'immich-postgres'
+    command: 'pg_isready'
   retries: 10
   delay: 5
   changed_when: false
 
 - name: 'Restore Immich database'
-  ansible.builtin.command:
-    cmd: 'podman exec immich-postgres psql -U {{ immich.postgres.user }} -d {{ immich.postgres.database }} -f /opt/dumps/immich.sql'
+  containers.podman.podman_container_exec:
+    name: 'immich-postgres'
+    command: 'psql -U {{ immich.postgres.user }} -d {{ immich.postgres.database }} -f /opt/dumps/immich.sql'
 
 - name: 'Enable and start Immich stack'
   ansible.builtin.systemd:

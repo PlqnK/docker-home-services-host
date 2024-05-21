@@ -15,8 +15,9 @@
     - 'nextcloud-redis.service'
 
 - name: 'Dump Nextcloud database'
-  ansible.builtin.command:
-    cmd: 'podman exec nextcloud-postgres pg_dump -U {{ nextcloud.postgres.user }} -d {{ nextcloud.postgres.database }} --clean --if-exists -f /opt/dumps/nextcloud.sql'
+  containers.podman.podman_container_exec:
+    name: 'nextcloud-postgres'
+    command: 'pg_dump -U {{ nextcloud.postgres.user }} -d {{ nextcloud.postgres.database }} --clean --if-exists -f /opt/dumps/nextcloud.sql'
 
 - name: 'Stop PostgreSQL'
   ansible.builtin.systemd:
@@ -60,15 +61,17 @@
     state: 'started'
 
 - name: 'Wait for PostgeSQL to initialize'
-  ansible.builtin.command:
-    cmd: 'podman exec nextcloud-postgres pg_isready'
+  containers.podman.podman_container_exec:
+    name: 'nextcloud-postgres'
+    command: 'pg_isready'
   retries: 10
   delay: 5
   changed_when: false
 
 - name: 'Restore Nextcloud database'
-  ansible.builtin.command:
-    cmd: 'podman exec nextcloud-postgres psql -U {{ nextcloud.postgres.user }} -d {{ nextcloud.postgres.database }} -f /opt/dumps/nextcloud.sql'
+  containers.podman.podman_container_exec:
+    name: 'nextcloud-postgres'
+    command: 'psql -U {{ nextcloud.postgres.user }} -d {{ nextcloud.postgres.database }} -f /opt/dumps/nextcloud.sql'
 
 - name: 'Enable and start Nextcloud stack'
   ansible.builtin.systemd:

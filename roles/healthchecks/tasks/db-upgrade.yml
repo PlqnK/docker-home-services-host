@@ -13,8 +13,9 @@
     - 'healthchecks-server.service'
 
 - name: 'Dump Healthchecks database'
-  ansible.builtin.command:
-    cmd: 'podman exec healthchecks-postgres pg_dump -U {{ healthchecks.postgres.user }} -d {{ healthchecks.postgres.database }} --clean --if-exists -f /opt/dumps/healthchecks.sql'
+  containers.podman.podman_container_exec:
+    name: 'healthchecks-postgres'
+    command: 'pg_dump -U {{ healthchecks.postgres.user }} -d {{ healthchecks.postgres.database }} --clean --if-exists -f /opt/dumps/healthchecks.sql'
 
 - name: 'Stop PostgreSQL'
   ansible.builtin.systemd:
@@ -58,15 +59,17 @@
     state: 'started'
 
 - name: 'Wait for PostgeSQL to initialize'
-  ansible.builtin.command:
-    cmd: 'podman exec healthchecks-postgres pg_isready'
+  containers.podman.podman_container_exec:
+    name: 'healthchecks-postgres'
+    command: 'pg_isready'
   retries: 10
   delay: 5
   changed_when: false
 
 - name: 'Restore Healthchecks database'
-  ansible.builtin.command:
-    cmd: 'podman exec healthchecks-postgres psql -U {{ healthchecks.postgres.user }} -d {{ healthchecks.postgres.database }} -f /opt/dumps/healthchecks.sql'
+  containers.podman.podman_container_exec:
+    name: 'healthchecks-postgres'
+    command: 'psql -U {{ healthchecks.postgres.user }} -d {{ healthchecks.postgres.database }} -f /opt/dumps/healthchecks.sql'
 
 - name: 'Enable and start Healthchecks stack'
   ansible.builtin.systemd:
