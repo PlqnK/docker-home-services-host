@@ -318,6 +318,9 @@ all:
         radarr_api_key: '' # https://radarr.domain.tld/settings/general > Security > API Key
         lidarr_api_key: '' # https://lidarr.domain.tld/settings/general > Security > API Key
         readarr_api_key: '' # https://readarr.domain.tld/settings/general > Security > API Key
+      maintainerr:
+        user: ''
+        password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
   children:
     home_hosts:
       hosts:

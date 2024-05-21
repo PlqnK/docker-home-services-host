@@ -83,6 +83,7 @@
     - 'readarr'
     - 'mylar'
     - 'overseerr'
+    - 'maintainerr'
 
 - name: 'Reboot containers hosts OS'
   hosts: 'containers_hosts'

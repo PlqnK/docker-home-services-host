@@ -58,3 +58,4 @@ containers_images_tags:
   readarr: 'develop'
   mylar: 'latest'
   overseerr: 'latest'
+  maintainerr: 'latest'
