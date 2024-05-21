@@ -11,10 +11,10 @@
   register: 'containers_images_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update Transmission pod tags in systemd units'
+- name: 'Update Transmission pod tags in quadlet units'
   ansible.builtin.template:
-    src: '{{ item }}.service.j2'
-    dest: '/etc/systemd/system/{{ item }}.service'
+    src: '{{ item }}.container.j2'
+    dest: '/etc/containers/systemd/{{ item }}.container'
     owner: 'root'
     group: 'root'
     mode: '0644'
@@ -22,13 +22,13 @@
     - 'gluetun'
     - 'transmission'
   when: (containers_images_pull.changed)
-  register: 'systemd_units'
+  register: 'quadlet_units'
   tags: ['never', 'containers-update']
 
 - name: 'Restart Transmission pod'
   ansible.builtin.systemd:
-    name: 'transmission-gluetun.service'
-    daemon_reload: '{{ ("true" | bool) if systemd_units.changed else ("false" | bool) }}'
+    name: 'transmission-gluetun-pod.service'
+    daemon_reload: '{{ ("true" | bool) if quadlet_units.changed else ("false" | bool) }}'
     state: 'restarted'
   when: ("containers-restart" in ansible_run_tags or
         ("containers-update" in ansible_run_tags and containers_images_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
@@ -36,24 +36,24 @@
 
 - name: 'Disable Transmission pod'
   ansible.builtin.systemd:
-    name: 'transmission-gluetun.service'
+    name: 'transmission-gluetun-pod.service'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Transmission pod'
   ansible.builtin.systemd:
-    name: 'transmission-gluetun.service'
+    name: 'transmission-gluetun-pod.service'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Transmission pod'
   ansible.builtin.systemd:
-    name: 'transmission-gluetun.service'
+    name: 'transmission-gluetun-pod.service'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start Transmission pod'
   ansible.builtin.systemd:
-    name: 'transmission-gluetun.service'
+    name: 'transmission-gluetun-pod.service'
     state: 'started'
   tags: ['never', 'containers-start']

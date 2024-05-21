@@ -12,21 +12,21 @@
 
 - name: 'Disable and stop Transmission pod'
   ansible.builtin.systemd:
-    name: 'transmission-gluetun.service'
+    name: 'transmission-gluetun-pod.service'
     daemon_reload: true
     enabled: false
     state: 'stopped'
   register: systemd_unit
   failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
 
-- name: 'Remove Transmission pod systemd units'
+- name: 'Remove Transmission pod quadlet units'
   ansible.builtin.file:
-    path: '/etc/systemd/system/{{ item }}'
+    path: '/etc/containers/systemd/{{ item }}'
     state: 'absent'
   loop:
-    - 'transmission-gluetun.service'
-    - 'transmission.service'
-    - 'gluetun.service'
+    - 'transmission-gluetun.pod'
+    - 'transmission.container'
+    - 'gluetun.container'
   notify: 'Reload systemd daemon'
 
 - name: 'Remove Gluetun network from firewalld trusted zone'

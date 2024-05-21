@@ -135,23 +135,23 @@
     mode: '0400'
   register: 'gluetun_environment_file'
 
-- name: 'Create Transmission pod systemd units from templates'
+- name: 'Create Transmission pod quadlet units from templates'
   ansible.builtin.template:
-    src: '{{ item }}.service.j2'
-    dest: '/etc/systemd/system/{{ item }}.service'
+    src: '{{ item }}.j2'
+    dest: '/etc/containers/systemd/{{ item }}'
     owner: 'root'
     group: 'root'
     mode: '0644'
   loop:
-    - 'transmission-gluetun'
-    - 'gluetun'
-    - 'transmission'
-  register: 'systemd_units'
+    - 'transmission-gluetun.pod'
+    - 'gluetun.container'
+    - 'transmission.container'
+  register: 'quadlet_units'
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Transmission pod'
   ansible.builtin.systemd:
-    name: 'transmission-gluetun.service'
+    name: 'transmission-gluetun-pod.service'
     daemon_reload: true
     enabled: true
     state: 'started'
@@ -159,7 +159,7 @@
 
 - name: 'Restart Transmission pod if any systemd unit has changed while pod was already started'
   ansible.builtin.systemd:
-    name: 'transmission-gluetun.service'
+    name: 'transmission-gluetun-pod.service'
     daemon_reload: true
     state: 'restarted'
-  when: (systemd_units.changed and not systemd_start.changed)
+  when: (quadlet_units.changed and not systemd_start.changed)
