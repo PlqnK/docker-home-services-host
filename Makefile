@@ -21,7 +21,7 @@ ifneq ("$(app)", "")
 	flags := $(flags) --extra-vars="containers_list=$(app)"
 endif
 
-.PHONY: lint vault ad-hoc console dry-run provision update help
+.PHONY: lint vault ad-hoc console dry-run provision update db-upgrade ignition help
 
 lint: ##  ## Run ansible-lint. ## Example: make lint
 	@ansible-lint
