@@ -7,18 +7,28 @@ storage:
       partitions:
         - number: 4
           label: root
-          size_mib: 24576
+          size_mib: 16384
           resize: true
-        - label: containers
+        - label: var-lib-containers
+          size_mib: 24576
+        - label: var-containers
           size_mib: 0
   filesystems:
     - device: /dev/disk/by-partlabel/root
       wipe_filesystem: true
       format: btrfs
       label: root
-    - path: /var/containers
-      device: /dev/disk/by-partlabel/containers
+    - path: /var/lib/containers
+      device: /dev/disk/by-partlabel/var-lib-containers
       format: btrfs
+      label: var-lib-containers
+      with_mount_unit: true
+    - path: /var/containers
+      device: /dev/disk/by-partlabel/var-containers
+      format: btrfs
+      label: var-containers
+      mount_options:
+        - compress=zstd
       with_mount_unit: true
   files:
     - path: /etc/hostname
