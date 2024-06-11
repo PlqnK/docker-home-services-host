@@ -19,6 +19,7 @@ storage:
     - path: /var/lib/containers
       device: /dev/disk/by-partlabel/var-lib-containers
       format: btrfs
+      label: var-lib-containers
       with_mount_unit: true
   files:
     - path: /etc/hostname
