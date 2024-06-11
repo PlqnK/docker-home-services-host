@@ -14,6 +14,11 @@ Volume={{ containers_storage_path }}/config/immich-redis/redis.conf:/usr/local/e
 Volume={{ containers_storage_path }}/runtime/immich-redis:/data:Z
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
+HealthCmd="redis-cli ping"
+HealthInterval=10s
+HealthTimeout=3s
+HealthRetries=3
+Notify=healthy
 
 [Service]
 Restart=on-failure

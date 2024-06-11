@@ -14,6 +14,11 @@ Volume={{ containers_storage_path }}/runtime/immich-machine-learning:/cache:Z
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
 Environment="IMMICH_SERVER_URL=http://immich-server:3001"
+HealthCmd="python3 healthcheck.py"
+HealthInterval=10s
+HealthTimeout=3s
+HealthRetries=3
+Notify=healthy
 
 [Service]
 Restart=on-failure

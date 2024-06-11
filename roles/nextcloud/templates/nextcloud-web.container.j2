@@ -3,8 +3,8 @@ Description=Nextcloud Web
 Documentation=man:podman-systemd.unit(5)
 Wants=network-online.target
 After=network-online.target
-After=nextcloud-postgres.service nextcloud-redis.service
-Requires=nextcloud-postgres.service nextcloud-redis.service
+After=nextcloud-server.service
+Requires=nextcloud-server.service
 
 [Container]
 ContainerName=nextcloud-web
