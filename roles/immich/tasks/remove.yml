@@ -19,7 +19,6 @@
   loop:
     - 'immich-postgres-dump.timer'
     - 'immich-server.service'
-    - 'immich-microservices.service'
     - 'immich-machine-learning.service'
     - 'immich-redis.service'
     - 'immich-postgres.service'
@@ -34,7 +33,6 @@
     - '/etc/systemd/system/immich-postgres-dump.timer'
     - '/etc/systemd/system/immich-postgres-dump.service'
     - '/etc/containers/systemd/immich-server.container'
-    - '/etc/containers/systemd/immich-microservices.container'
     - '/etc/containers/systemd/immich-machine-learning.container'
     - '/etc/containers/systemd/immich-redis.container'
     - '/etc/containers/systemd/immich-postgres.container'

@@ -31,7 +31,6 @@
     - 'immich-postgres'
     - 'immich-redis'
     - 'immich-machine-learning'
-    - 'immich-microservices'
     - 'immich-server'
   when: (containers_images_pull.changed)
   register: 'quadlet_units'
@@ -49,7 +48,6 @@
         state: 'stopped'
       loop:
         - 'immich-server.service'
-        - 'immich-microservices.service'
         - 'immich-machine-learning.service'
         - 'immich-redis.service'
         - 'immich-postgres.service'
@@ -62,7 +60,6 @@
         - 'immich-postgres.service'
         - 'immich-redis.service'
         - 'immich-machine-learning.service'
-        - 'immich-microservices.service'
         - 'immich-server.service'
 
 - name: 'Disable Immich stack'
@@ -72,7 +69,6 @@
   loop:
     - 'immich-postgres-dump.timer'
     - 'immich-server.service'
-    - 'immich-microservices.service'
     - 'immich-machine-learning.service'
     - 'immich-redis.service'
     - 'immich-postgres.service'
@@ -85,7 +81,6 @@
   loop:
     - 'immich-postgres-dump.timer'
     - 'immich-server.service'
-    - 'immich-microservices.service'
     - 'immich-machine-learning.service'
     - 'immich-redis.service'
     - 'immich-postgres.service'
@@ -99,7 +94,6 @@
     - 'immich-postgres.service'
     - 'immich-redis.service'
     - 'immich-machine-learning.service'
-    - 'immich-microservices.service'
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'
   tags: ['never', 'containers-enable']
@@ -112,7 +106,6 @@
     - 'immich-postgres.service'
     - 'immich-redis.service'
     - 'immich-machine-learning.service'
-    - 'immich-microservices.service'
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'
   tags: ['never', 'containers-start']

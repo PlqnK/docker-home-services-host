@@ -121,19 +121,16 @@
       services:
         - 'immich-postgres.service'
         - 'immich-server.service'
-        - 'immich-microservices.service'
     - name: 'immich_postgres_password'
       data: '{{ immich.postgres.password }}'
       services:
         - 'immich-postgres.service'
         - 'immich-server.service'
-        - 'immich-microservices.service'
     - name: 'immich_redis_password'
       data: '{{ immich.redis.password }}'
       services:
         - 'immich-redis.service'
         - 'immich-server.service'
-        - 'immich-microservices.service'
   loop_control:
     label: '{{ item.name }}'
   register: 'podman_secrets'
@@ -166,7 +163,6 @@
     - 'immich-postgres'
     - 'immich-redis'
     - 'immich-machine-learning'
-    - 'immich-microservices'
     - 'immich-server'
   register: 'quadlet_units'
   notify: 'Reload systemd daemon'
@@ -200,7 +196,6 @@
     - 'immich-postgres.service'
     - 'immich-redis.service'
     - 'immich-machine-learning.service'
-    - 'immich-microservices.service'
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'
 
