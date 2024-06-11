@@ -80,32 +80,41 @@
     path: '{{ containers_storage_path }}/{{ item.path }}'
     owner: '{{ item.owner }}'
     group: '{{ item.group }}'
-    mode: '0700'
+    mode: '{{ item.group }}'
     state: 'directory'
   loop:
     # See https://github.com/nextcloud/docker/issues/1402
     #- path: 'config/nextcloud-redis'
     #  owner: 999
     #  group: 999
+    #  mode: '0700'
+    - path: 'config/nextcloud-web'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
     - path: 'runtime/nextcloud-postgres'
       owner: 999
       group: 999
+      mode: '0700'
     - path: 'runtime/nextcloud-redis'
       owner: 999
       group: 999
+      mode: '0700'
     - path: 'data/nextcloud-postgres'
       owner: 'root'
       group: 'root'
+      mode: '0700'
     - path: 'data/nextcloud-server'
       owner: 33
       group: 33
+      mode: '0755'
 
 - name: 'Create Nextcloud documents storage path'
   ansible.builtin.file:
     path: '{{ volume_mount_path }}/documents/nextcloud'
     owner: 33
     group: 33
-    mode: '0700'
+    mode: '0755'
     state: 'directory'
 
 - name: 'Create Nextcloud stack secrets'
@@ -128,27 +137,37 @@
     # See https://github.com/nextcloud/docker/issues/1402
     #- name: 'nextcloud_redis_password'
     #  data: '{{ nextcloud.redis.password }}'
+    #  services:
+    #    - 'nextcloud-redis.service'
+    #    - 'nextcloud-server.service'
   loop_control:
     label: '{{ item.name }}'
   register: 'podman_secrets'
 
-# See https://github.com/nextcloud/docker/issues/1402
-#- name: 'Create Nextcloud stack configuration files from templates'
-#  ansible.builtin.template:
-#    src: '{{ item.src }}'
-#    dest: '{{ containers_storage_path }}/config/{{ item.dest }}'
-#    owner: '{{ item.owner }}'
-#    group: '{{ item.group }}'
-#    mode: '0400'
-#  loop:
-#    - src: 'redis.conf.j2'
-#      dest: 'nextcloud-redis/redis.conf'
-#      owner: 999
-#      group: 999
-#      services: 'nextcloud-redis.service'
-#  loop_control:
-#    label: '{{ item.dest }}'
-#  register: 'configuration_files'
+- name: 'Create Nextcloud stack configuration files from templates'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ containers_storage_path }}/config/{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+  loop:
+    # See https://github.com/nextcloud/docker/issues/1402
+    #- src: 'redis.conf.j2'
+    #  dest: 'nextcloud-redis/redis.conf'
+    #  owner: 999
+    #  group: 999
+    #  mode: '0400'
+    #  services: 'nextcloud-redis.service'
+    - src: 'nginx.conf.j2'
+      dest: 'nextcloud-web/nginx.conf'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+      services: 'nextcloud-web.service'
+  loop_control:
+    label: '{{ item.dest }}'
+  register: 'configuration_files'
 
 - name: 'Create Nextcloud stack quadlet units from templates'
   ansible.builtin.template:
@@ -161,6 +180,7 @@
     - 'nextcloud-postgres'
     - 'nextcloud-redis'
     - 'nextcloud-server'
+    - 'nextcloud-web'
   register: 'quadlet_units'
   notify: 'Reload systemd daemon'
 
@@ -199,6 +219,7 @@
     - 'nextcloud-postgres.service'
     - 'nextcloud-redis.service'
     - 'nextcloud-server.service'
+    - 'nextcloud-web.service'
     - 'nextcloud-cron.timer'
     - 'nextcloud-postgres-dump.timer'
 
@@ -209,8 +230,7 @@
     state: 'restarted'
   vars:
     podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
-    #configuration_files_map: '{{ configuration_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    configuration_files_map: '{{ configuration_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
     quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
     systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
-  #loop: '{{ (podman_secrets_map + configuration_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'
-  loop: '{{ (podman_secrets_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'
+  loop: '{{ (podman_secrets_map + configuration_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

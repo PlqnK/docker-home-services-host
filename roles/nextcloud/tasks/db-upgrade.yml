@@ -11,6 +11,7 @@
   loop:
     - 'nextcloud-postgres-dump.timer'
     - 'nextcloud-cron.timer'
+    - 'nextcloud-web.service'
     - 'nextcloud-server.service'
     - 'nextcloud-redis.service'
 
@@ -82,5 +83,6 @@
     - 'nextcloud-postgres.service'
     - 'nextcloud-redis.service'
     - 'nextcloud-server.service'
+    - 'nextcloud-web.service'
     - 'nextcloud-cron.timer'
     - 'nextcloud-postgres-dump.timer'

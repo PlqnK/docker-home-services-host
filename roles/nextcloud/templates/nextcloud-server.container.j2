@@ -13,7 +13,7 @@ Network=web-egress
 Network=common-internal
 Network=nextcloud-postgres-internal
 Network=nextcloud-redis-internal
-ExposeHostPort=80
+ExposeHostPort=9000
 Volume={{ containers_storage_path }}/data/nextcloud-server:/var/www/html:z
 Volume={{ volume_mount_path }}/documents/nextcloud:/var/www/html/data:z
 Secret=nextcloud_postgres_user
@@ -22,24 +22,12 @@ Secret=nextcloud_postgres_password
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
 Environment="NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ domain_name }}"
-Environment="NEXTCLOUD_INIT_HTACCESS=true"
-Environment="APACHE_DISABLE_REWRITE_IP=1"
-Environment="TRUSTED_PROXIES=10.89.0.0/16 fd00::/8"
 Environment="POSTGRES_HOST=nextcloud-postgres"
 Environment="POSTGRES_DB={{ nextcloud.postgres.database }}"
 Environment="POSTGRES_USER_FILE=/run/secrets/nextcloud_postgres_user"
 Environment="POSTGRES_PASSWORD_FILE=/run/secrets/nextcloud_postgres_password"
 Environment="REDIS_HOST=nextcloud-redis"
 #Environment="REDIS_HOST_PASSWORD_FILE=/run/secrets/nextcloud_redis_password" # See https://github.com/nextcloud/docker/issues/1402
-Label="traefik.enable=true"
-Label="traefik.docker.network=common-internal"
-Label="traefik.http.routers.cloud.rule=Host(`cloud.{{ domain_name }}`)"
-Label="traefik.http.routers.cloud.entrypoints=websecure"
-Label="traefik.http.routers.cloud.middlewares=set-security-headers@file, nextcloud-dav-redirect"
-Label="traefik.http.services.cloud.loadbalancer.server.port=80"
-Label="traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.permanent=true"
-Label="traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.regex=https://(.*)/.well-known/(card|cal)dav"
-Label="traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.replacement=https://$${1}/remote.php/dav/"
 
 [Service]
 Restart=on-failure

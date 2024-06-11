@@ -4,8 +4,10 @@ containers_images:
     postgres: 'docker.io/library/postgres'
     redis: 'docker.io/library/redis'
     server: 'docker.io/library/nextcloud'
+    web: 'docker.io/library/nginx'
 containers_images_tags:
   nextcloud:
     postgres: 'latest'
     redis: 'latest'
-    server: 'latest'
+    server: 'fpm'
+    web: 'latest'

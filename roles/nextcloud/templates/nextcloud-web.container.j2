@@ -1,0 +1,35 @@
+[Unit]
+Description=Nextcloud Web
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+After=nextcloud-postgres.service nextcloud-redis.service
+Requires=nextcloud-postgres.service nextcloud-redis.service
+
+[Container]
+ContainerName=nextcloud-web
+Image={{ containers_images.nextcloud.web }}:{{ containers_images_tags.nextcloud.web }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=80
+Volume={{ containers_storage_path }}/config/nextcloud-web/nginx.conf:/etc/nginx/nginx.conf:Z
+Volume={{ containers_storage_path }}/data/nextcloud-server:/var/www/html:z
+Volume={{ volume_mount_path }}/documents/nextcloud:/var/www/html/data:z
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.cloud.rule=Host(`cloud.{{ domain_name }}`)"
+Label="traefik.http.routers.cloud.entrypoints=websecure"
+Label="traefik.http.routers.cloud.middlewares=set-security-headers@file, nextcloud-dav-redirect"
+Label="traefik.http.services.cloud.loadbalancer.server.port=80"
+Label="traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.permanent=true"
+Label="traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.regex=https://(.*)/.well-known/(card|cal)dav"
+Label="traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.replacement=https://$${1}/remote.php/dav/"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target
