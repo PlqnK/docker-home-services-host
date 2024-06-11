@@ -80,7 +80,7 @@
     path: '{{ containers_storage_path }}/{{ item.path }}'
     owner: '{{ item.owner }}'
     group: '{{ item.group }}'
-    mode: '{{ item.group }}'
+    mode: '{{ item.mode }}'
     state: 'directory'
   loop:
     # See https://github.com/nextcloud/docker/issues/1402
@@ -114,7 +114,7 @@
     path: '{{ volume_mount_path }}/documents/nextcloud'
     owner: 33
     group: 33
-    mode: '0755'
+    mode: '0750'
     state: 'directory'
 
 - name: 'Create Nextcloud stack secrets'
