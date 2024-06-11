@@ -19,7 +19,7 @@
   loop:
     - 'nextcloud-postgres-dump.timer'
     - 'nextcloud-cron.timer'
-    - 'nextcloud-web.service'
+    - 'nextcloud-nginx.service'
     - 'nextcloud-server.service'
     - 'nextcloud-redis.service'
     - 'nextcloud-postgres.service'
@@ -35,7 +35,7 @@
     - '/etc/systemd/system/nextcloud-postgres-dump.service'
     - '/etc/systemd/system/nextcloud-cron.timer'
     - '/etc/systemd/system/nextcloud-cron.service'
-    - '/etc/containers/systemd/nextcloud-web.container'
+    - '/etc/containers/systemd/nextcloud-nginx.container'
     - '/etc/containers/systemd/nextcloud-server.container'
     - '/etc/containers/systemd/nextcloud-redis.container'
     - '/etc/containers/systemd/nextcloud-postgres.container'
@@ -84,7 +84,7 @@
     state: 'absent'
   loop:
     - 'config/nextcloud-redis'
-    - 'config/nextcloud-web'
+    - 'config/nextcloud-nginx'
     - 'runtime/nextcloud-postgres'
     - 'runtime/nextcloud-redis'
     - 'data/nextcloud-postgres'

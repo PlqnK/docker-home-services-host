@@ -9,7 +9,7 @@
     - '{{ containers_images.nextcloud.postgres }}:{{ containers_images_tags.nextcloud.postgres }}'
     - '{{ containers_images.nextcloud.redis }}:{{ containers_images_tags.nextcloud.redis }}'
     - '{{ containers_images.nextcloud.server }}:{{ containers_images_tags.nextcloud.server }}'
-    - '{{ containers_images.nextcloud.web }}:{{ containers_images_tags.nextcloud.web }}'
+    - '{{ containers_images.nextcloud.nginx }}:{{ containers_images_tags.nextcloud.nginx }}'
   register: 'containers_images_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
@@ -31,7 +31,7 @@
     - 'nextcloud-postgres'
     - 'nextcloud-redis'
     - 'nextcloud-server'
-    - 'nextcloud-web'
+    - 'nextcloud-nginx'
   when: (containers_images_pull.changed)
   register: 'quadlet_units'
   tags: ['never', 'containers-update']
@@ -48,7 +48,7 @@
         state: 'stopped'
       loop:
         - 'nextcloud-cron.timer'
-        - 'nextcloud-web.service'
+        - 'nextcloud-nginx.service'
         - 'nextcloud-server.service'
         - 'nextcloud-redis.service'
         - 'nextcloud-postgres.service'
@@ -61,7 +61,7 @@
         - 'nextcloud-postgres.service'
         - 'nextcloud-redis.service'
         - 'nextcloud-server.service'
-        - 'nextcloud-web.service'
+        - 'nextcloud-nginx.service'
         - 'nextcloud-cron.timer'
 
 - name: 'Disable Nextcloud stack'
@@ -71,7 +71,7 @@
   loop:
     - 'nextcloud-postgres-dump.timer'
     - 'nextcloud-cron.timer'
-    - 'nextcloud-web.service'
+    - 'nextcloud-nginx.service'
     - 'nextcloud-server.service'
     - 'nextcloud-redis.service'
     - 'nextcloud-postgres.service'
@@ -84,7 +84,7 @@
   loop:
     - 'nextcloud-postgres-dump.timer'
     - 'nextcloud-cron.timer'
-    - 'nextcloud-web.service'
+    - 'nextcloud-nginx.service'
     - 'nextcloud-server.service'
     - 'nextcloud-redis.service'
     - 'nextcloud-postgres.service'
@@ -98,7 +98,7 @@
     - 'nextcloud-postgres.service'
     - 'nextcloud-redis.service'
     - 'nextcloud-server.service'
-    - 'nextcloud-web.service'
+    - 'nextcloud-nginx.service'
     - 'nextcloud-cron.timer'
     - 'nextcloud-postgres-dump.timer'
   tags: ['never', 'containers-enable']
@@ -111,7 +111,7 @@
     - 'nextcloud-postgres.service'
     - 'nextcloud-redis.service'
     - 'nextcloud-server.service'
-    - 'nextcloud-web.service'
+    - 'nextcloud-nginx.service'
     - 'nextcloud-cron.timer'
     - 'nextcloud-postgres-dump.timer'
   tags: ['never', 'containers-start']

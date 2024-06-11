@@ -1,5 +1,5 @@
 [Unit]
-Description=Nextcloud Web
+Description=Nextcloud NGINX
 Documentation=man:podman-systemd.unit(5)
 Wants=network-online.target
 After=network-online.target
@@ -7,12 +7,12 @@ After=nextcloud-server.service
 Requires=nextcloud-server.service
 
 [Container]
-ContainerName=nextcloud-web
-Image={{ containers_images.nextcloud.web }}:{{ containers_images_tags.nextcloud.web }}
+ContainerName=nextcloud-nginx
+Image={{ containers_images.nextcloud.nginx }}:{{ containers_images_tags.nextcloud.nginx }}
 Network=web-egress
 Network=common-internal
 ExposeHostPort=80
-Volume={{ containers_storage_path }}/config/nextcloud-web/nginx.conf:/etc/nginx/nginx.conf:Z
+Volume={{ containers_storage_path }}/config/nextcloud-nginx/nginx.conf:/etc/nginx/nginx.conf:Z
 Volume={{ containers_storage_path }}/data/nextcloud-server:/var/www/html:z
 Volume={{ volume_mount_path }}/documents/nextcloud:/var/www/html/data:z
 Timezone={{ timezone }}
