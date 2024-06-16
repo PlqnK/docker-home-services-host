@@ -9,7 +9,6 @@ Requires=immich-postgres.service immich-redis.service immich-machine-learning.se
 [Container]
 ContainerName=immich-server
 Image={{ containers_images.immich.server }}:{{ containers_images_tags.immich.server }}
-Exec=start.sh immich
 Network=web-egress
 Network=common-internal
 Network=immich-server-internal
