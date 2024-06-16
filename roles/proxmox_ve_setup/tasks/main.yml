@@ -14,10 +14,10 @@
     - name: 'Configure NTP'
       ansible.builtin.import_tasks: 'ntp.yml'
 
-    - name: 'Configure smtp'
+    - name: 'Configure SMTP'
       ansible.builtin.import_tasks: 'smtp.yml'
 
-    - name: 'Configure smart'
+    - name: 'Configure SMART'
       ansible.builtin.import_tasks: 'smart.yml'
 
     - name: 'Configure NUT'

@@ -9,7 +9,7 @@
     - name: 'Configure filesystem'
       ansible.builtin.import_tasks: 'filesystem.yml'
 
-    - name: 'Configure pam'
+    - name: 'Configure PAM'
       ansible.builtin.import_tasks: 'pam.yml'
 
     - name: 'Configure bootupd'
@@ -33,13 +33,13 @@
       ansible.builtin.import_tasks: 'automount.yml'
       when: (storage_server is defined)
 
-    - name: 'Configure smtp'
+    - name: 'Configure SMTP'
       ansible.builtin.import_tasks: 'smtp.yml'
 
-    - name: 'Configure smart'
+    - name: 'Configure SMART'
       ansible.builtin.import_tasks: 'smart.yml'
       when: (ansible_virtualization_role == "host")
 
-    - name: 'Configure nut'
+    - name: 'Configure NUT'
       ansible.builtin.import_tasks: 'nut.yml'
       when: (ansible_virtualization_role == "host")
