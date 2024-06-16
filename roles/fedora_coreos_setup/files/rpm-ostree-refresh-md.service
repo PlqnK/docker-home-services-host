@@ -1,0 +1,9 @@
+[Unit]
+Description=rpm-ostree repository metadata refresh
+
+[Service]
+ExecStart=/usr/bin/rpm-ostree refresh-md
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

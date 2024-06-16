@@ -43,5 +43,26 @@
   when: ("cloud_hosts" in group_names)
   notify: 'Reboot host'
 
+- name: 'Copy rpm-ostree refresh-md systemd units'
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: '/etc/systemd/system/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'rpm-ostree-refresh-md.service'
+    - 'rpm-ostree-refresh-md.timer'
+  notify: 'Reload systemd daemon'
+
+- name: 'Reload systemd daemon to load new units'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Enable and start rpm-ostree refresh-md timer'
+  ansible.builtin.systemd:
+    name: 'rpm-ostree-refresh-md.timer'
+    enabled: true
+    state: 'started'
+
 - name: 'Reboot host if packages have been installed'
   ansible.builtin.meta: 'flush_handlers'
