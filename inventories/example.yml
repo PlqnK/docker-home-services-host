@@ -385,5 +385,10 @@ all:
       from_domain: ''
       user: ''
       password: ''
+    ups:
+      name: ''
+      server: ''
+      user: ''
+      password: ''
     healthchecks_ping_key: '' # https://healthchecks.domain.tld/projects/PROJECT_UUID/settings/ > API Access > Ping key
     healthchecksio_ping_key: '' # https://healthchecks.io/projects/PROJECT_UUID/settings/ > API Access > Ping key

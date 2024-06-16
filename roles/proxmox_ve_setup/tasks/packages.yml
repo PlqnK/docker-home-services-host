@@ -18,6 +18,7 @@
   ansible.builtin.apt:
     name:
       - 'fwupd'
+      - 'nut-client'
       - 'libsasl2-modules'
       - 'postfix-pcre'
     update_cache: true

@@ -19,3 +19,6 @@
 
     - name: 'Configure smart'
       ansible.builtin.import_tasks: 'smart.yml'
+
+    - name: 'Configure NUT'
+      ansible.builtin.import_tasks: 'nut.yml'

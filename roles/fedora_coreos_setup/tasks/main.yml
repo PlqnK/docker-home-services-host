@@ -39,3 +39,7 @@
     - name: 'Configure smart'
       ansible.builtin.import_tasks: 'smart.yml'
       when: (ansible_virtualization_role == "host")
+
+    - name: 'Configure nut'
+      ansible.builtin.import_tasks: 'nut.yml'
+      when: (ansible_virtualization_role == "host")

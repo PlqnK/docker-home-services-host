@@ -22,6 +22,7 @@
     name:
       - 'fwupd-efi'
       - 'smartmontools'
+      - 'nut-client'
     state: 'present'
   when: (ansible_virtualization_role == "host")
   notify: 'Reboot host'

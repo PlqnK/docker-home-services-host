@@ -20,3 +20,8 @@
   ansible.builtin.systemd:
     name: 'fail2ban.service'
     state: 'reloaded'
+
+- name: 'Reload nut-monitor service'
+  ansible.builtin.systemd:
+    name: 'nut-monitor.service'
+    state: 'reloaded'

@@ -13,6 +13,11 @@
     name: 'postfix.service'
     state: 'restarted'
 
+- name: 'Reload nut-monitor service'
+  ansible.builtin.systemd:
+    name: 'nut-monitor.service'
+    state: 'reloaded'
+
 - name: 'Postmap sasl_passwd'
   ansible.builtin.command:
     cmd: 'postmap /etc/postfix/sasl_passwd'
