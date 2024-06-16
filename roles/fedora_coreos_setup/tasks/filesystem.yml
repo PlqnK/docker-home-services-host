@@ -36,7 +36,7 @@
     - instance: '-'
       hosts: 'all'
     - instance: 'var-lib-containers'
-      hosts: 'cloud_hosts'
+      hosts: 'all'
     - instance: 'var-containers'
       hosts: 'all'
     - instance: 'var-mnt-vol01'
