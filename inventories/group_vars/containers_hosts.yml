@@ -50,7 +50,7 @@ containers_images_tags:
   sabnzbd: 'latest'
   flaresolverr: 'latest'
   unpackerr: '0'
-  recyclarr: '6'
+  recyclarr: '7'
   prowlarr: 'latest'
   radarr: 'latest'
   sonarr: 'latest'
