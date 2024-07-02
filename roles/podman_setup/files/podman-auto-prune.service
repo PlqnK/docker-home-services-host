@@ -6,6 +6,7 @@ After=network-online.target
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/podman image prune -f
+ExecStart=/usr/bin/bash /usr/local/bin/podman-prune-old-tags.sh
 
 [Install]
 WantedBy=default.target

@@ -1,4 +1,12 @@
 ---
+- name: 'Copy podman-prune-old-tags script to /usr/local/bin'
+  ansible.builtin.copy:
+    src: 'podman-prune-old-tags.sh'
+    dest: '/usr/local/bin/podman-prune-old-tags.sh'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
 - name: 'Copy podman auto-prune systemd units'
   ansible.builtin.copy:
     src: '{{ item }}'
