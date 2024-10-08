@@ -11,6 +11,7 @@
       - 'cockpit-system'
       - 'cockpit-storaged'
       - 'cockpit-networkmanager'
+      - 'cockpit-files'
       - 'cockpit-ostree'
       - 'cockpit-podman'
       - 'cockpit-selinux'
