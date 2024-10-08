@@ -21,11 +21,8 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.cloud.rule=Host(`cloud.{{ domain_name }}`)"
 Label="traefik.http.routers.cloud.entrypoints=websecure"
-Label="traefik.http.routers.cloud.middlewares=set-security-headers@file, nextcloud-dav-redirect"
+Label="traefik.http.routers.cloud.middlewares=set-security-headers@file"
 Label="traefik.http.services.cloud.loadbalancer.server.port=80"
-Label="traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.permanent=true"
-Label="traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.regex=https://(.*)/.well-known/(card|cal)dav"
-Label="traefik.http.middlewares.nextcloud-dav-redirect.redirectRegex.replacement=https://$${1}/remote.php/dav/"
 
 [Service]
 Restart=on-failure
