@@ -11,7 +11,7 @@ containers_images_tags:
   traefik: '3.1'
   uptime_kuma: '1'
   healthchecks:
-    postgres: '15'
+    postgres: '16'
     server: 'v3.4'
   prometheus: 'latest'
   loki: 'latest'
@@ -22,19 +22,19 @@ containers_images_tags:
   promtail: 'latest'
   home_assistant: 'stable'
   nextcloud:
-    postgres: '15'
+    postgres: '16'
     redis: '7'
     server: '29-fpm'
     nginx: '1'
   collabora_online: 'latest'
   stirling_pdf: 'latest-ultra-lite'
   immich:
-    postgres: 'pg15-v0.2.0'
+    postgres: 'pg16-v0.3.0'
     redis: '7'
     machine_learning: 'release'
     server: 'release'
   ttrss:
-    postgres: '15'
+    postgres: '16'
     server: 'latest'
     nginx: 'latest'
   freshrss: 'latest'
