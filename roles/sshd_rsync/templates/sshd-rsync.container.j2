@@ -16,7 +16,7 @@ Volume={{ containers_storage_path }}/config/sshd-rsync/authorized_keys:/root/.ss
 Volume={{ containers_storage_path }}/runtime/sshd-rsync:/etc/ssh/keys:Z
 Volume={{ containers_storage_path }}:{{ containers_storage_path }}:ro,rslave
 {% if "cloud_hosts" in group_names %}
-Volume={{ volume_mount_path }}:{{ volume_mount_path }}:ro,rslave
+Volume={{ storage_server_shares_mounts_path }}:{{ storage_server_shares_mounts_path }}:ro,rslave
 {% endif %}
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"

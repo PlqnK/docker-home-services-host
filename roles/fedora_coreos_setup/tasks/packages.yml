@@ -33,7 +33,15 @@
     name:
       - 'nfs-utils-coreos'
     state: 'present'
-  when: (storage_server is defined)
+  when: (storage_server is defined and storage_server.type == "nfs")
+  notify: 'Reboot host'
+
+- name: 'Install cifs clients hosts specific packages'
+  community.general.rpm_ostree_pkg:
+    name:
+      - 'cifs-utils'
+    state: 'present'
+  when: (storage_server is defined and storage_server.type == "cifs")
   notify: 'Reboot host'
 
 - name: 'Install cloud hosts specific packages'

@@ -19,8 +19,8 @@ ExecStart=/usr/bin/podman container run \
 	--volume {{ containers_storage_path }}/config/vdirsyncer/vdirsyncer.sh:/app/vdirsyncer.sh:Z \
 	--volume {{ containers_storage_path }}/config/vdirsyncer/config:/vdirsyncer/config:Z \
 	--volume {{ containers_storage_path }}/runtime/vdirsyncer:/vdirsyncer/status:Z \
-	--volume {{ nfs_mounts_path }}/backups/groupware/contacts:/contacts:slave \
-	--volume {{ nfs_mounts_path }}/backups/groupware/calendars:/calendars:slave \
+	--volume {{ storage_server_shares_mounts_path }}/backups/groupware/contacts:/contacts:slave \
+	--volume {{ storage_server_shares_mounts_path }}/backups/groupware/calendars:/calendars:slave \
 	--secret vdirsyncer_carddav_password \
 	--secret vdirsyncer_caldav_password \
 	--tz={{ timezone }} \

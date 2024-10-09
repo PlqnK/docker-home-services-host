@@ -1,8 +1,8 @@
 source_directories:
-  - '{{ nfs_mounts_path }}/medias/audiodrama'
-  - '{{ nfs_mounts_path }}/medias/audiobooks'
-  - '{{ nfs_mounts_path }}/medias/books'
-  - '{{ nfs_mounts_path }}/medias/comics'
+  - '{{ storage_server_shares_mounts_path }}/medias/audiodrama'
+  - '{{ storage_server_shares_mounts_path }}/medias/audiobooks'
+  - '{{ storage_server_shares_mounts_path }}/medias/books'
+  - '{{ storage_server_shares_mounts_path }}/medias/comics'
 repositories:
   - path: '{{ borgmatic.medias.repository }}'
     label: 'borgbase-medias'

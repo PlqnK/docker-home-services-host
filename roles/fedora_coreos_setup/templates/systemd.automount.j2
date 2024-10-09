@@ -1,8 +1,8 @@
 [Unit]
-Description={{ storage_server.name }} {{ item }} nfs share
+Description={{ storage_server.name }} {{ item.name }} {{ storage_server.type }} share
 
 [Automount]
-Where={{ nfs_mounts_path }}/{{ item }}
+Where={{ storage_server_shares_mounts_path }}/{{ item.name }}
 
 [Install]
 WantedBy=multi-user.target

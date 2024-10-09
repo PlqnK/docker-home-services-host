@@ -9,7 +9,7 @@
 
 - name: 'Create mbsync email store path'
   ansible.builtin.file:
-    path: '{{ nfs_mounts_path }}/backups/groupware/emails/{{ mbsync.imap.name }}'
+    path: '{{ storage_server_shares_mounts_path }}/backups/groupware/emails/{{ mbsync.imap.name }}'
     owner: 'root'
     group: 'root'
     mode: '0700'

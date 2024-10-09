@@ -11,8 +11,8 @@ Network=web-egress
 Network=common-internal
 ExposeHostPort=8090
 Volume={{ containers_storage_path }}/data/mylar:/config:Z
-Volume={{ nfs_mounts_path }}/downloads:/downloads:slave
-Volume={{ nfs_mounts_path }}/medias/comics:/comics:slave
+Volume={{ storage_server_shares_mounts_path }}/downloads:/downloads:slave
+Volume={{ storage_server_shares_mounts_path }}/medias/comics:/comics:slave
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
 Label="traefik.enable=true"

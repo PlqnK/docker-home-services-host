@@ -28,28 +28,18 @@
 
 - name: 'Enable and start Btrfs scrub timers'
   ansible.builtin.systemd:
-    name: 'btrfs-scrub@{{ item.instance }}.timer'
+    name: 'btrfs-scrub@{{ item }}.timer'
     enabled: true
     state: 'started'
-  when: (item.hosts == "all" or item.hosts in group_names)
   loop:
-    - instance: '-'
-      hosts: 'all'
-    - instance: 'var-lib-containers'
-      hosts: 'all'
-    - instance: 'var-containers'
-      hosts: 'all'
-    - instance: 'var-mnt-vol01'
-      hosts: 'cloud_hosts'
+    - '-'
+    - 'var-lib-containers'
+    - 'var-containers'
 
 - name: 'Enable and start Btrfs snapshot timers'
   ansible.builtin.systemd:
-    name: 'btrfs-snapshot@{{ item.instance }}.timer'
+    name: 'btrfs-snapshot@{{ item }}.timer'
     enabled: true
     state: 'started'
-  when: (item.hosts == "all" or item.hosts in group_names)
   loop:
-    - instance: 'var-containers'
-      hosts: 'all'
-    - instance: 'var-mnt-vol01'
-      hosts: 'cloud_hosts'
+    - 'var-containers'

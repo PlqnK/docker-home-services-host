@@ -17,20 +17,20 @@ global:
 
 locations:
   documents:
-    from: '{{ nfs_mounts_path }}/backups/documents'
+    from: '{{ storage_server_shares_mounts_path }}/backups/documents'
     to: 'b2_documents'
     forget: 'prune'
     options:
       backup:
         exclude:
-          - '{{ nfs_mounts_path }}/backups/documents/immich/encoded-video'
-          - '{{ nfs_mounts_path }}/backups/documents/immich/thumbs'
-          - '{{ nfs_mounts_path }}/backups/documents/nextcloud/files_external'
-          - '{{ nfs_mounts_path }}/backups/documents/nextcloud/appdata_*/preview'
-          - '{{ nfs_mounts_path }}/backups/documents/nextcloud/*/cache'
-          - '{{ nfs_mounts_path }}/backups/documents/nextcloud/*/files_trashbin'
-          - '{{ nfs_mounts_path }}/backups/documents/nextcloud/*/files_versions'
-          - '{{ nfs_mounts_path }}/backups/documents/nextcloud/*/uploads'
+          - '{{ storage_server_shares_mounts_path }}/backups/documents/immich/encoded-video'
+          - '{{ storage_server_shares_mounts_path }}/backups/documents/immich/thumbs'
+          - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/files_external'
+          - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/appdata_*/preview'
+          - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/*/cache'
+          - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/*/files_trashbin'
+          - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/*/files_versions'
+          - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/*/uploads'
           - '*.log'
           - '*.log.[0123456789]'
     hooks:
@@ -41,7 +41,7 @@ locations:
       success:
         - 'curl -m 10 --retry 5 https://healthchecks.{{ domain_name }}/ping/{{ autorestic.documents.healthchecks_uuid }}'
   groupware:
-    from: '{{ nfs_mounts_path }}/backups/groupware'
+    from: '{{ storage_server_shares_mounts_path }}/backups/groupware'
     to: 'b2_groupware'
     forget: 'prune'
     hooks:
@@ -53,10 +53,10 @@ locations:
         - 'curl -m 10 --retry 5 https://healthchecks.{{ domain_name }}/ping/{{ autorestic.groupware.healthchecks_uuid }}'
   medias:
     from:
-      - '{{ nfs_mounts_path }}/medias/audiodrama'
-      - '{{ nfs_mounts_path }}/medias/audiobooks'
-      - '{{ nfs_mounts_path }}/medias/books'
-      - '{{ nfs_mounts_path }}/medias/comics'
+      - '{{ storage_server_shares_mounts_path }}/medias/audiodrama'
+      - '{{ storage_server_shares_mounts_path }}/medias/audiobooks'
+      - '{{ storage_server_shares_mounts_path }}/medias/books'
+      - '{{ storage_server_shares_mounts_path }}/medias/comics'
     to: 'b2_medias'
     forget: 'prune'
     hooks:
@@ -67,7 +67,7 @@ locations:
       success:
         - 'curl -m 10 --retry 5 https://healthchecks.{{ domain_name }}/ping/{{ autorestic.medias.healthchecks_uuid }}'
   servers:
-    from: '{{ nfs_mounts_path }}/backups/servers'
+    from: '{{ storage_server_shares_mounts_path }}/backups/servers'
     to: 'b2_servers'
     forget: 'prune'
     hooks:

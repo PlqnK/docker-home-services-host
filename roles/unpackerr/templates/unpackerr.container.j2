@@ -8,7 +8,7 @@ After=network-online.target
 ContainerName=unpackerr
 Image={{ containers_images.unpackerr }}:{{ containers_images_tags.unpackerr }}
 Network=common-internal
-Volume={{ nfs_mounts_path }}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
+Volume={{ storage_server_shares_mounts_path }}/downloads/bittorrent/downloads:/downloads/bittorrent/downloads:slave
 Timezone={{ timezone }}
 EnvironmentFile={{ containers_storage_path }}/env/unpackerr/unpackerr.env
 Environment="TZ={{ timezone }}"

@@ -11,8 +11,8 @@ Network=web-egress
 Network=common-internal
 ExposeHostPort=8787
 Volume={{ containers_storage_path }}/data/readarr:/config:Z
-Volume={{ nfs_mounts_path }}/downloads:/downloads:slave
-Volume={{ nfs_mounts_path }}/medias/books:/books:slave
+Volume={{ storage_server_shares_mounts_path }}/downloads:/downloads:slave
+Volume={{ storage_server_shares_mounts_path }}/medias/books:/books:slave
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
 Label="traefik.enable=true"

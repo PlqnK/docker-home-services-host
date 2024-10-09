@@ -143,21 +143,6 @@ systemd:
 
         [Install]
         RequiredBy=local-fs.target
-    - name: var-mnt-vol01.mount
-      enabled: true
-      contents: |
-        [Unit]
-        Requires=systemd-fsck@dev-disk-by\x2dpartlabel-vol01.service
-        After=systemd-fsck@dev-disk-by\x2dpartlabel-vol01.service
-
-        [Mount]
-        Where=/var/mnt/vol01
-        What=/dev/disk/by-partlabel/vol01
-        Type=btrfs
-        Options=compress=zstd
-
-        [Install]
-        RequiredBy=local-fs.target
 passwd:
   users:
     - name: core

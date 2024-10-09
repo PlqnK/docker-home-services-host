@@ -14,7 +14,7 @@ Network=common-internal
 ExposeHostPort=80
 Volume={{ containers_storage_path }}/config/nextcloud-nginx/nginx.conf:/etc/nginx/nginx.conf:Z
 Volume={{ containers_storage_path }}/data/nextcloud-server:/var/www/html:z
-Volume={{ volume_mount_path }}/documents/nextcloud:/var/www/html/data:z
+Volume={{ storage_server_shares_mounts_path }}/nextcloud:/var/www/html/data:slave
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
 Label="traefik.enable=true"

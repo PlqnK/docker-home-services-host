@@ -103,7 +103,7 @@
 
 - name: 'Create Immich pictures storage path'
   ansible.builtin.file:
-    path: '{{ volume_mount_path }}/documents/immich'
+    path: '{{ storage_server_shares_mounts_path }}/immich'
     owner: 'root'
     group: 'root'
     mode: '0700'

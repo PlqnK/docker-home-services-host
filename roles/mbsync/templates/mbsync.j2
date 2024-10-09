@@ -14,6 +14,6 @@ podman run \
 --tz={{ timezone }} \
 --env TZ={{ timezone }} \
 --volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
---volume {{ nfs_mounts_path }}/backups/groupware/emails:/mail:slave \
+--volume {{ storage_server_shares_mounts_path }}/backups/groupware/emails:/mail:slave \
 --secret=mbsync_imap_password \
 {{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }} -c /config/mbsync.rc $@

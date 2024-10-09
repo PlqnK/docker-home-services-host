@@ -17,15 +17,16 @@ all:
       storage_server:
         name: 'nas'
         fqdn: 'nas.domain.tld'
-        exports_base_path: '/mnt/nas'
-      nfs_exports:
-        - 'backups/documents'
-        - 'backups/groupware'
-        - 'backups/servers'
-        - 'medias/audiobooks'
-        - 'medias/audiodrama'
-        - 'medias/books'
-        - 'medias/comics'
+        type: 'nfs'
+        shares_base_path: '/mnt/nas'
+      storage_server_shares:
+        - name: 'backups/documents'
+        - name: 'backups/groupware'
+        - name: 'backups/servers'
+        - name: 'medias/audiobooks'
+        - name: 'medias/audiodrama'
+        - name: 'medias/books'
+        - name: 'medias/comics'
       traefik:
         api:
           user: ''
@@ -220,6 +221,20 @@ all:
           allowed_ips:
             - '10.0.0.0/8'
             - 'fc00::/8'
+      storage_server:
+        name: 'box'
+        fqdn: 'box.domain.tld'
+        type: 'cifs'
+        shares_base_path: 'share'
+        username: ''
+        password: ''
+      storage_server_shares:
+        - name: 'immich'
+          uid: 'root'
+          gid: 'root'
+        - name: 'nextcloud'
+          uid: '33'
+          gid: '33'
       traefik:
         api:
           user: ''
@@ -275,17 +290,18 @@ all:
       storage_server:
         name: 'nas'
         fqdn: 'nas.domain.tld'
-        exports_base_path: '/mnt/nas'
-      nfs_exports:
-        - 'downloads/bittorrent'
-        - 'downloads/usenet'
-        - 'medias/audiobooks'
-        - 'medias/audiodrama'
-        - 'medias/books'
-        - 'medias/comics'
-        - 'medias/movies'
-        - 'medias/music'
-        - 'medias/series'
+        type: 'nfs'
+        shares_base_path: '/mnt/nas'
+      storage_server_shares:
+        - name: 'downloads/bittorrent'
+        - name: 'downloads/usenet'
+        - name: 'medias/audiobooks'
+        - name: 'medias/audiodrama'
+        - name: 'medias/books'
+        - name: 'medias/comics'
+        - name: 'medias/movies'
+        - name: 'medias/music'
+        - name: 'medias/series'
       traefik:
         api:
           user: ''
@@ -343,7 +359,6 @@ all:
         containers_ipv6:
           enable: true
         containers_storage_path: '/var/containers'
-        volume_mount_path: '/var/mnt/vol01'
         backup_server_key: 'ssh-ed25519 xxx' # Public key part of the key generated for hostvars['backups']['rsync_servers']['private_key']
         promtail:
           clients:
@@ -361,7 +376,12 @@ all:
         backups:
         medias:
       vars:
-        nfs_mounts_path: '/var/mnt/{{ storage_server.name }}'
+        storage_server_shares_mounts_path: '/var/mnt/{{ storage_server.name }}'
+    cifs_clients:
+      hosts:
+        documents:
+      vars:
+        storage_server_shares_mounts_path: '/var/mnt/{{ storage_server.name }}'
   vars:
     timezone: 'Europe/Paris'
     domain_name: 'domain.tld'

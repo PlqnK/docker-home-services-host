@@ -111,7 +111,7 @@
 
 - name: 'Create Nextcloud documents storage path'
   ansible.builtin.file:
-    path: '{{ volume_mount_path }}/documents/nextcloud'
+    path: '{{ storage_server_shares_mounts_path }}/nextcloud'
     owner: 33
     group: 33
     mode: '0750'

@@ -18,7 +18,7 @@ ExecStart=/usr/bin/podman container run \
 	--network web-egress \
 	--volume {{ containers_storage_path }}/config/mbsync/mbsync.sh:/app/mbsync.sh:Z \
 	--volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
-	--volume {{ nfs_mounts_path }}/backups/groupware/emails:/mail:slave \
+	--volume {{ storage_server_shares_mounts_path }}/backups/groupware/emails:/mail:slave \
 	--secret mbsync_imap_password \
 	--tz={{ timezone }} \
 	--env TZ={{ timezone }} \

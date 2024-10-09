@@ -23,13 +23,13 @@ podman run \
 --volume {{ containers_storage_path }}/runtime/borgmatic/cache:/root/.cache/borg:Z \
 --volume {{ containers_storage_path }}/runtime/borgmatic/mount:/mount:Z \
 --volume {{ containers_storage_path }}/runtime/borgmatic/restore:/restore:Z \
---volume {{ nfs_mounts_path }}/backups/documents:{{ nfs_mounts_path }}/backups/documents:slave \
---volume {{ nfs_mounts_path }}/backups/groupware:{{ nfs_mounts_path }}/backups/groupware:slave \
---volume {{ nfs_mounts_path }}/backups/servers:{{ nfs_mounts_path }}/backups/servers:slave \
---volume {{ nfs_mounts_path }}/medias/audiodrama:{{ nfs_mounts_path }}/medias/audiodrama:slave \
---volume {{ nfs_mounts_path }}/medias/audiobooks:{{ nfs_mounts_path }}/medias/audiobooks:slave \
---volume {{ nfs_mounts_path }}/medias/books:{{ nfs_mounts_path }}/medias/books:slave \
---volume {{ nfs_mounts_path }}/medias/comics:{{ nfs_mounts_path }}/medias/comics:slave \
+--volume {{ storage_server_shares_mounts_path }}/backups/documents:{{ storage_server_shares_mounts_path }}/backups/documents:slave \
+--volume {{ storage_server_shares_mounts_path }}/backups/groupware:{{ storage_server_shares_mounts_path }}/backups/groupware:slave \
+--volume {{ storage_server_shares_mounts_path }}/backups/servers:{{ storage_server_shares_mounts_path }}/backups/servers:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/audiodrama:{{ storage_server_shares_mounts_path }}/medias/audiodrama:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/audiobooks:{{ storage_server_shares_mounts_path }}/medias/audiobooks:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/books:{{ storage_server_shares_mounts_path }}/medias/books:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/comics:{{ storage_server_shares_mounts_path }}/medias/comics:slave \
 --secret=borgmatic_documents_encryption_passphrase \
 --secret=borgmatic_groupware_encryption_passphrase \
 --secret=borgmatic_medias_encryption_passphrase \
