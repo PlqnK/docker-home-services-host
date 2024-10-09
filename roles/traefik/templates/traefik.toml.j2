@@ -20,6 +20,12 @@
 {% if "cloud_hosts" in group_names %}
     [entryPoints.websecure.http3]
 {% endif %}
+{% if inventory_hostname == "documents" %}{# Required for Immich, see https://immich.app/docs/administration/reverse-proxy/#traefik-proxy-example-config #}
+    [entryPoints.websecure.transport.respondingTimeouts]
+      readTimeout = "600s"
+      idleTimeout = "600s"
+      writeTimeout = "600s"
+{% endif %}
 {% if "home_hosts" in group_names and home_network.proxy_protocol_trusted_ips is not none %}
     [entryPoints.websecure.proxyProtocol]
       trustedIPs = [{% for ip in home_network.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
