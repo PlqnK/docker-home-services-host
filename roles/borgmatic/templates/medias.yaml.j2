@@ -1,0 +1,29 @@
+source_directories:
+  - '{{ storage_server_shares_mounts_path }}/medias/audiodrama'
+  - '{{ storage_server_shares_mounts_path }}/medias/audiobooks'
+  - '{{ storage_server_shares_mounts_path }}/medias/books'
+  - '{{ storage_server_shares_mounts_path }}/medias/comics'
+repositories:
+  - path: '{{ borgmatic.medias.repository }}'
+    label: 'borgbase-medias'
+exclude_if_present:
+  - '.nobackup'
+
+encryption_passcommand: "cat /run/secrets/borgmatic_medias_encryption_passphrase"
+compression: 'auto,zstd'
+retries: 5
+retry_wait: 5
+
+keep_daily: 28
+keep_weekly: 4
+keep_monthly: 6
+keep_yearly: 1
+
+checks:
+  - name: 'repository'
+    frequency: '2 weeks'
+  - name: 'archives'
+    frequency: '4 weeks'
+
+healthchecks:
+  ping_url: 'https://healthchecks.{{ domain_name }}/ping/{{ borgmatic.medias.healthchecks_uuid }}'

@@ -1,0 +1,212 @@
+---
+- name: 'Manage Immich CNAME record'
+  delegate_to: 'localhost'
+  check_mode: false
+  block:
+    - name: 'Get Immich CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/immich/CNAME/'
+        method: 'GET'
+        status_code: [200, 404]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+      register: desec_rrsets_get
+
+    - name: 'Create Immich CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/'
+        method: 'POST'
+        status_code: [201]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          subname: 'immich'
+          type: 'CNAME'
+          ttl: 3600
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_post
+      when: (desec_rrsets_get.status == 404)
+      changed_when: (desec_rrsets_post.status == 201)
+
+    - name: 'Update Immich CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/immich/CNAME/'
+        method: 'PATCH'
+        status_code: [200]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_patch
+      when: (desec_rrsets_get.status == 200 and desec_rrsets_get.json.records != [ansible_fqdn + "."])
+      changed_when: (desec_rrsets_patch.status == 200)
+
+- name: 'Create Immich stack networks'
+  containers.podman.podman_network:
+    name: '{{ item }}'
+    internal: true
+    ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
+  loop:
+    - 'immich-postgres-internal'
+    - 'immich-redis-internal'
+    - 'immich-server-internal'
+
+- name: 'Add Immich stack networks to firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'immich-postgres-internal'
+        - 'immich-redis-internal'
+        - 'immich-server-internal'
+      register: 'podman_networks'
+
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Create Immich stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '0700'
+    state: 'directory'
+  loop:
+    - path: 'config/immich-redis'
+      owner: 999
+      group: 999
+    - path: 'data/immich-postgres'
+      owner: 'root'
+      group: 'root'
+    - path: 'runtime/immich-postgres'
+      owner: 999
+      group: 999
+    - path: 'runtime/immich-redis'
+      owner: 999
+      group: 999
+    - path: 'runtime/immich-machine-learning'
+      owner: 'root'
+      group: 'root'
+
+- name: 'Create Immich pictures storage path'
+  ansible.builtin.file:
+    path: '{{ storage_server_shares_mounts_path }}/immich'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create Immich stack secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'immich_postgres_user'
+      data: '{{ immich.postgres.user }}'
+      services:
+        - 'immich-postgres.service'
+        - 'immich-server.service'
+    - name: 'immich_postgres_password'
+      data: '{{ immich.postgres.password }}'
+      services:
+        - 'immich-postgres.service'
+        - 'immich-server.service'
+    - name: 'immich_redis_password'
+      data: '{{ immich.redis.password }}'
+      services:
+        - 'immich-redis.service'
+        - 'immich-server.service'
+  loop_control:
+    label: '{{ item.name }}'
+  register: 'podman_secrets'
+
+- name: 'Create Immich stack configuration files from templates'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ containers_storage_path }}/config/{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '0400'
+  loop:
+    - src: 'redis.conf.j2'
+      dest: 'immich-redis/redis.conf'
+      owner: 999
+      group: 999
+      services: 'immich-redis.service'
+  loop_control:
+    label: '{{ item.dest }}'
+  register: 'configuration_files'
+
+- name: 'Create Immich stack quadlet units from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.container.j2'
+    dest: '/etc/containers/systemd/{{ item }}.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'immich-postgres'
+    - 'immich-redis'
+    - 'immich-machine-learning'
+    - 'immich-server'
+  register: 'quadlet_units'
+  notify: 'Reload systemd daemon'
+
+- name: 'Create Immich dump systemd service from templates'
+  ansible.builtin.template:
+    src: 'immich-postgres-dump.service.j2'
+    dest: '/etc/systemd/system/immich-postgres-dump.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy Immich dump systemd timer'
+  ansible.builtin.copy:
+    src: 'immich-postgres-dump.timer'
+    dest: '/etc/systemd/system/immich-postgres-dump.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Immich stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+  loop:
+    - 'immich-postgres.service'
+    - 'immich-redis.service'
+    - 'immich-machine-learning.service'
+    - 'immich-server.service'
+    - 'immich-postgres-dump.timer'
+
+- name: 'Restart Immich services if podman secret, configuration file or quadlet unit has changed while service was already started'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    state: 'restarted'
+  vars:
+    podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    configuration_files_map: '{{ configuration_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
+    systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
+  loop: '{{ (podman_secrets_map + configuration_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

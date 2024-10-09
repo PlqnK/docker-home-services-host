@@ -1,0 +1,32 @@
+[Unit]
+Description=Tiny Tiny RSS PostgreSQL
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=ttrss-postgres
+Image={{ containers_images.ttrss.postgres }}:{{ containers_images_tags.ttrss.postgres }}
+Network=ttrss-postgres-internal
+ExposeHostPort=5432
+Volume={{ containers_storage_path }}/runtime/ttrss-postgres:/var/lib/postgresql/data:Z
+Volume={{ containers_storage_path }}/data/ttrss-postgres:/opt/dumps:Z
+Secret=ttrss_postgres_user
+Secret=ttrss_postgres_password
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Environment="POSTGRES_DB={{ ttrss.postgres.database }}"
+Environment="POSTGRES_USER_FILE=/run/secrets/ttrss_postgres_user"
+Environment="POSTGRES_PASSWORD_FILE=/run/secrets/ttrss_postgres_password"
+HealthCmd="pg_isready -d {{ ttrss.postgres.database }} -U {{ ttrss.postgres.user }}"
+HealthInterval=10s
+HealthTimeout=3s
+HealthRetries=3
+Notify=healthy
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

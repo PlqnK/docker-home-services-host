@@ -1,0 +1,5 @@
+---
+containers_images:
+  home_assistant: 'ghcr.io/home-assistant/home-assistant'
+containers_images_tags:
+  home_assistant: 'latest'

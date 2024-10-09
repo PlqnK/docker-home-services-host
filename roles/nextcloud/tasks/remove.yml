@@ -1,0 +1,100 @@
+---
+- name: 'Ensure the user really wants to remove the Nextcloud stack'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE NEXTCLOUD STACK?\nTHIS ACTION WILL DELETE ALL NEXTCLOUD APP DATA AND IS IRREVERSIBLE!\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop Nextcloud stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  loop:
+    - 'nextcloud-postgres-dump.timer'
+    - 'nextcloud-cron.timer'
+    - 'nextcloud-nginx.service'
+    - 'nextcloud-server.service'
+    - 'nextcloud-redis.service'
+    - 'nextcloud-postgres.service'
+  register: systemd_units
+  failed_when: (systemd_units.failed and not "Could not find the requested service" in systemd_units.msg)
+
+- name: 'Remove Nextcloud stack systemd/quadlet units'
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: 'absent'
+  loop:
+    - '/etc/systemd/system/nextcloud-postgres-dump.timer'
+    - '/etc/systemd/system/nextcloud-postgres-dump.service'
+    - '/etc/systemd/system/nextcloud-cron.timer'
+    - '/etc/systemd/system/nextcloud-cron.service'
+    - '/etc/containers/systemd/nextcloud-nginx.container'
+    - '/etc/containers/systemd/nextcloud-server.container'
+    - '/etc/containers/systemd/nextcloud-redis.container'
+    - '/etc/containers/systemd/nextcloud-postgres.container'
+  notify: 'Reload systemd daemon'
+
+- name: 'Remove Nextcloud stack networks from firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'nextcloud-postgres-internal'
+        - 'nextcloud-redis-internal'
+      register: 'podman_networks'
+      failed_when: (podman_networks.failed and not "network not found" in podman_networks.msg)
+
+    - name: 'Remove podman networks subnets from firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'disabled'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Remove Nextcloud stack networks'
+  containers.podman.podman_network:
+    name: '{{ item }}'
+    state: 'absent'
+  loop:
+    - 'nextcloud-postgres-internal'
+    - 'nextcloud-redis-internal'
+
+- name: 'Remove Nextcloud stack secrets'
+  containers.podman.podman_secret:
+    name: '{{ item }}'
+    state: 'absent'
+  loop:
+    - 'nextcloud_postgres_user'
+    - 'nextcloud_postgres_password'
+    - 'nextcloud_redis_password'
+
+- name: 'Remove Nextcloud stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item }}'
+    state: 'absent'
+  loop:
+    - 'config/nextcloud-redis'
+    - 'config/nextcloud-nginx'
+    - 'runtime/nextcloud-postgres'
+    - 'runtime/nextcloud-redis'
+    - 'data/nextcloud-postgres'
+    - 'data/nextcloud-server'
+
+- name: 'Remove Nextcloud CNAME record'
+  ansible.builtin.uri:
+    url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/cloud/CNAME/'
+    method: 'DELETE'
+    status_code: [200, 204]
+    headers:
+      Authorization: 'Token {{ desec_token }}'
+  delegate_to: 'localhost'

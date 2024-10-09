@@ -1,0 +1,72 @@
+---
+- name: 'Create mbsync bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/config/mbsync'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create mbsync email store path'
+  ansible.builtin.file:
+    path: '{{ storage_server_shares_mounts_path }}/backups/groupware/emails/{{ mbsync.imap.name }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create mbsync config from template'
+  ansible.builtin.template:
+    src: 'mbsync.rc.j2'
+    dest: '{{ containers_storage_path }}/config/mbsync/mbsync.rc'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Copy mbsync sync script'
+  ansible.builtin.copy:
+    src: 'mbsync.sh'
+    dest: '{{ containers_storage_path }}/config/mbsync/mbsync.sh'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Create mbsync secret'
+  containers.podman.podman_secret:
+    name: 'mbsync_imap_password'
+    data: '{{ mbsync.imap.password }}'
+    skip_existing: true
+    state: 'present'
+
+- name: 'Create mbsync systemd service from template'
+  ansible.builtin.template:
+    src: 'mbsync.service.j2'
+    dest: '/etc/systemd/system/mbsync.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy mbsync systemd timer'
+  ansible.builtin.copy:
+    src: 'mbsync.timer'
+    dest: '/etc/systemd/system/mbsync.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Add mbsync command script to /usr/local/bin'
+  ansible.builtin.template:
+    src: 'mbsync.j2'
+    dest: '/usr/local/bin/mbsync'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Enable and start mbsync timer'
+  ansible.builtin.systemd:
+    name: 'mbsync.timer'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

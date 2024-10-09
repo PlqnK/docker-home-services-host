@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily Immich PostgreSQL dump
+
+[Timer]
+OnCalendar=*-*-* 4:00:00
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,22 @@
+[Unit]
+Description=Flaresolverr
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=flaresolverr
+Image={{ containers_images.flaresolverr }}:{{ containers_images_tags.flaresolverr }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=8191
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Environment="CAPTCHA_SOLVER=none"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

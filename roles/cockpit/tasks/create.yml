@@ -1,0 +1,42 @@
+---
+- name: 'Create Cockpit config directory'
+  ansible.builtin.file:
+    path: '/etc/cockpit'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: 'directory'
+
+- name: 'Create Cockpit config file from template'
+  ansible.builtin.template:
+    src: 'cockpit.conf.j2'
+    dest: '/etc/cockpit/cockpit.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'configuration_file'
+
+- name: 'Create Cockpit quadlet unit from template'
+  ansible.builtin.template:
+    src: 'cockpit.container.j2'
+    dest: '/etc/containers/systemd/cockpit.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'quadlet_unit'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Cockpit container'
+  ansible.builtin.systemd:
+    name: 'cockpit.service'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+
+- name: 'Restart Cockpit service if configuration file or quadlet unit has changed while service was already started'
+  ansible.builtin.systemd:
+    name: 'cockpit.service'
+    daemon_reload: true
+    state: 'restarted'
+  when: ((configuration_file.changed or quadlet_unit.changed) and not systemd_start.changed)

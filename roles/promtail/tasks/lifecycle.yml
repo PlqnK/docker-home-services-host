@@ -1,0 +1,53 @@
+---
+- name: 'Pull Promtail image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.promtail }}:{{ containers_images_tags.promtail }}'
+    pull: true
+    force: true
+    state: 'present'
+  register: 'container_image_pull'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Update Promtail tag in quadlet unit'
+  ansible.builtin.template:
+    src: 'promtail.container.j2'
+    dest: '/etc/containers/systemd/promtail.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: (container_image_pull.changed)
+  register: 'quadlet_unit'
+  tags: ['never', 'containers-update']
+
+- name: 'Restart Promtail container'
+  ansible.builtin.systemd:
+    name: 'promtail.service'
+    daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
+    state: 'restarted'
+  when: ("containers-restart" in ansible_run_tags or
+        ("containers-update" in ansible_run_tags and container_image_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
+  tags: ['never', 'containers-restart', 'containers-update']
+
+- name: 'Disable Promtail container'
+  ansible.builtin.systemd:
+    name: 'promtail.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Stop Promtail container'
+  ansible.builtin.systemd:
+    name: 'promtail.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop']
+
+- name: 'Enable Promtail container'
+  ansible.builtin.systemd:
+    name: 'promtail.service'
+    enabled: true
+  tags: ['never', 'containers-enable']
+
+- name: 'Start Promtail container'
+  ansible.builtin.systemd:
+    name: 'promtail.service'
+    state: 'started'
+  tags: ['never', 'containers-start']

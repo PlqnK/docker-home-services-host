@@ -1,0 +1,78 @@
+---
+- name: 'Install common packages'
+  community.general.rpm_ostree_pkg:
+    name:
+      - 'firewalld'
+      - 'python3-firewall'
+      - 'rsync'
+      - 'msmtp'
+      - 'mailx'
+      - 'google-authenticator'
+      - 'cockpit-system'
+      - 'cockpit-storaged'
+      - 'cockpit-networkmanager'
+      - 'cockpit-files'
+      - 'cockpit-ostree'
+      - 'cockpit-podman'
+      - 'cockpit-selinux'
+    state: 'present'
+  notify: 'Reboot host'
+
+- name: 'Install bare metal hosts specific packages'
+  community.general.rpm_ostree_pkg:
+    name:
+      - 'fwupd-efi'
+      - 'smartmontools'
+      - 'nut-client'
+    state: 'present'
+  when: (ansible_virtualization_role == "host")
+  notify: 'Reboot host'
+
+- name: 'Install nfs clients hosts specific packages'
+  community.general.rpm_ostree_pkg:
+    name:
+      - 'nfs-utils-coreos'
+    state: 'present'
+  when: (storage_server is defined and storage_server.type == "nfs")
+  notify: 'Reboot host'
+
+- name: 'Install cifs clients hosts specific packages'
+  community.general.rpm_ostree_pkg:
+    name:
+      - 'cifs-utils'
+    state: 'present'
+  when: (storage_server is defined and storage_server.type == "cifs")
+  notify: 'Reboot host'
+
+- name: 'Install cloud hosts specific packages'
+  community.general.rpm_ostree_pkg:
+    name:
+      - 'fail2ban'
+      - 'wireguard-tools'
+    state: 'present'
+  when: ("cloud_hosts" in group_names)
+  notify: 'Reboot host'
+
+- name: 'Copy rpm-ostree refresh-md systemd units'
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: '/etc/systemd/system/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'rpm-ostree-refresh-md.service'
+    - 'rpm-ostree-refresh-md.timer'
+  notify: 'Reload systemd daemon'
+
+- name: 'Reload systemd daemon to load new units'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Enable and start rpm-ostree refresh-md timer'
+  ansible.builtin.systemd:
+    name: 'rpm-ostree-refresh-md.timer'
+    enabled: true
+    state: 'started'
+
+- name: 'Reboot host if packages have been installed'
+  ansible.builtin.meta: 'flush_handlers'

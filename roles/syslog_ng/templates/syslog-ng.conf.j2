@@ -1,0 +1,31 @@
+@version: 4.8
+
+options {
+	keep-hostname(yes);
+	normalize-hostnames(yes);
+	use-fqdn(yes);
+};
+
+source s_internal {
+	# Using host-override() otherwise it will grab the container hostname which is the container ID, which changes
+	# everytime the container is restarted.
+	internal(host-override("{{ ansible_fqdn }}"));
+};
+
+source s_network {
+	# Not using default-network-drivers() here because it doesn't listen on IPv6 by default and it can't be configured
+	# to do so.
+	network(transport("udp") port(514){% if containers_ipv6.enable %} ip-protocol(6){% endif %});
+	network(transport("tcp") port(514){% if containers_ipv6.enable %} ip-protocol(6){% endif %});
+	syslog(transport("tcp") port(601){% if containers_ipv6.enable %} ip-protocol(6){% endif %});
+};
+
+destination d_promtail {
+	syslog("promtail" transport("tcp") port(1601));
+};
+
+log {
+	source(s_internal);
+	source(s_network);
+	destination(d_promtail);
+};

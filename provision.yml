@@ -1,0 +1,92 @@
+---
+- name: 'Hypervisors base configuration'
+  hosts: 'hypervisors'
+  roles:
+    - 'proxmox_ve_setup'
+
+- name: 'Containers hosts base configuration'
+  hosts: 'containers_hosts'
+  roles:
+    - 'fedora_coreos_setup'
+    - 'podman_setup'
+
+- name: 'Upgrade containers hosts OS'
+  hosts: 'containers_hosts'
+  gather_facts: false
+  roles:
+    - 'fedora_coreos_upgrade'
+
+- name: 'Common containers'
+  hosts: 'containers_hosts'
+  roles:
+    - 'traefik'
+    - 'cockpit'
+    - 'sshd_rsync'
+    - 'promtail'
+    - 'node_exporter'
+    #- 'systemd_exporter'
+
+- name: 'Backups containers'
+  hosts: 'backups'
+  roles:
+    - 'rsync_servers'
+    - 'mbsync'
+    - 'vdirsyncer'
+    - 'borgmatic'
+    - 'autorestic'
+
+- name: 'Monitoring containers'
+  hosts: 'monitoring'
+  roles:
+    - 'uptime_kuma'
+    - 'healthchecks'
+    - 'grafana'
+    - 'prometheus'
+    - 'loki'
+    - 'syslog_ng'
+
+- name: 'Home containers'
+  hosts: 'home'
+  roles:
+    - 'home_assistant'
+
+- name: 'Documents containers'
+  hosts: 'documents'
+  roles:
+    - 'nextcloud'
+    - 'collabora_online'
+    - 'stirling_pdf'
+    - 'immich'
+    - 'ttrss'
+    - 'freshrss'
+    - 'it_tools'
+
+- name: 'Medias containers'
+  hosts: 'medias'
+  roles:
+    - 'plex'
+    - 'tautulli'
+    - 'navidrome'
+    - 'calibre'
+    - 'calibre_web'
+    - 'komga'
+    - 'transmission'
+    - 'sabnzbd'
+    - 'flaresolverr'
+    - 'unpackerr'
+    - 'recyclarr'
+    - 'prowlarr'
+    - 'radarr'
+    - 'sonarr'
+    - 'bazarr'
+    - 'lidarr'
+    - 'readarr'
+    - 'mylar'
+    - 'overseerr'
+    - 'maintainerr'
+
+- name: 'Reboot containers hosts OS'
+  hosts: 'containers_hosts'
+  gather_facts: false
+  roles:
+    - 'fedora_coreos_reboot'

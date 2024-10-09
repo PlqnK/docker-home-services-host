@@ -1,0 +1,53 @@
+---
+- name: 'Pull Uptime Kuma image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.uptime_kuma }}:{{ containers_images_tags.uptime_kuma }}'
+    pull: true
+    force: true
+    state: 'present'
+  register: 'container_image_pull'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Update Uptime Kuma tag in quadlet unit'
+  ansible.builtin.template:
+    src: 'uptime-kuma.container.j2'
+    dest: '/etc/containers/systemd/uptime-kuma.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: (container_image_pull.changed)
+  register: 'quadlet_unit'
+  tags: ['never', 'containers-update']
+
+- name: 'Restart Uptime Kuma container'
+  ansible.builtin.systemd:
+    name: 'uptime-kuma.service'
+    daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
+    state: 'restarted'
+  when: ("containers-restart" in ansible_run_tags or
+        ("containers-update" in ansible_run_tags and container_image_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
+  tags: ['never', 'containers-restart', 'containers-update']
+
+- name: 'Disable Uptime Kuma container'
+  ansible.builtin.systemd:
+    name: 'uptime-kuma.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Stop Uptime Kuma container'
+  ansible.builtin.systemd:
+    name: 'uptime-kuma.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop']
+
+- name: 'Enable Uptime Kuma container'
+  ansible.builtin.systemd:
+    name: 'uptime-kuma.service'
+    enabled: true
+  tags: ['never', 'containers-enable']
+
+- name: 'Start Uptime Kuma container'
+  ansible.builtin.systemd:
+    name: 'uptime-kuma.service'
+    state: 'started'
+  tags: ['never', 'containers-start']

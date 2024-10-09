@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+if [[ ${EUID} -ne 0 ]]; then
+  echo "Must be executed as root." 1>&2
+  exit 1
+fi
+
+podman run \
+--rm \
+--interactive \
+--entrypoint borgmatic \
+--hostname {{ ansible_hostname }} \
+--network web-egress \
+--tz={{ timezone }} \
+--env TZ={{ timezone }} \
+--volume {{ containers_storage_path }}/config/borgmatic/borgmatic.d:/etc/borgmatic.d:Z \
+--volume {{ containers_storage_path }}/config/borgmatic/.ssh:/root/.ssh:Z \
+--volume {{ containers_storage_path }}/data/borgmatic:/root/.config/borg:Z \
+--volume {{ containers_storage_path }}/runtime/borgmatic/borgmatic:/root/.borgmatic:Z \
+--volume {{ containers_storage_path }}/runtime/borgmatic/cache:/root/.cache/borg:Z \
+--volume {{ storage_server_shares_mounts_path }}/backups/documents:{{ storage_server_shares_mounts_path }}/backups/documents:slave \
+--volume {{ storage_server_shares_mounts_path }}/backups/groupware:{{ storage_server_shares_mounts_path }}/backups/groupware:slave \
+--volume {{ storage_server_shares_mounts_path }}/backups/servers:{{ storage_server_shares_mounts_path }}/backups/servers:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/audiodrama:{{ storage_server_shares_mounts_path }}/medias/audiodrama:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/audiobooks:{{ storage_server_shares_mounts_path }}/medias/audiobooks:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/books:{{ storage_server_shares_mounts_path }}/medias/books:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/comics:{{ storage_server_shares_mounts_path }}/medias/comics:slave \
+--secret=borgmatic_documents_encryption_passphrase \
+--secret=borgmatic_groupware_encryption_passphrase \
+--secret=borgmatic_medias_encryption_passphrase \
+--secret=borgmatic_servers_encryption_passphrase \
+{{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }} $@

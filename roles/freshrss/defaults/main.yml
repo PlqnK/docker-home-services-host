@@ -1,0 +1,5 @@
+---
+containers_images:
+  freshrss: 'docker.io/freshrss/freshrss'
+containers_images_tags:
+  freshrss: 'latest'

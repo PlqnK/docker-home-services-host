@@ -1,0 +1,37 @@
+source_directories:
+  - '{{ storage_server_shares_mounts_path }}/backups/documents'
+repositories:
+  - path: '{{ borgmatic.documents.repository }}'
+    label: 'borgbase-documents'
+exclude_patterns:
+  - '{{ storage_server_shares_mounts_path }}/backups/documents/immich/encoded-video'
+  - '{{ storage_server_shares_mounts_path }}/backups/documents/immich/thumbs'
+  - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/files_external'
+  - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/appdata_*/preview'
+  - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/*/cache'
+  - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/*/files_trashbin'
+  - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/*/files_versions'
+  - '{{ storage_server_shares_mounts_path }}/backups/documents/nextcloud/*/uploads'
+  - '*.log'
+  - '*.log.[0123456789]'
+exclude_if_present:
+  - '.nobackup'
+
+encryption_passcommand: "cat /run/secrets/borgmatic_documents_encryption_passphrase"
+compression: 'auto,zstd'
+retries: 5
+retry_wait: 5
+
+keep_daily: 28
+keep_weekly: 4
+keep_monthly: 6
+keep_yearly: 1
+
+checks:
+  - name: 'repository'
+    frequency: '2 weeks'
+  - name: 'archives'
+    frequency: '4 weeks'
+
+healthchecks:
+  ping_url: 'https://healthchecks.{{ domain_name }}/ping/{{ borgmatic.documents.healthchecks_uuid }}'

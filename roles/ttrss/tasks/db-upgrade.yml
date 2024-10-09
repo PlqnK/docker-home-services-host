@@ -1,0 +1,86 @@
+---
+- name: 'Start Tiny Tiny RSS PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'ttrss-postgres.service'
+    state: 'started'
+
+- name: 'Stop remaining Tiny Tiny RSS stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'ttrss-postgres-dump.timer'
+    - 'ttrss-nginx.service'
+    - 'ttrss-updater.service'
+    - 'ttrss-server.service'
+
+- name: 'Dump Tiny Tiny RSS database'
+  containers.podman.podman_container_exec:
+    name: 'ttrss-postgres'
+    command: 'pg_dump -U {{ ttrss.postgres.user }} -d {{ ttrss.postgres.database }} --clean --if-exists -f /opt/dumps/ttrss.sql'
+
+- name: 'Stop PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'ttrss-postgres.service'
+    state: 'stopped'
+
+- name: 'Create {{ containers_storage_path }} btrfs snapshot'
+  community.general.btrfs_subvolume:
+    name: '.snapshot'
+    filesystem_device: '{{ ansible_mounts | community.general.json_query(query) | first }}'
+    snapshot_source: '/'
+    snapshot_conflict: 'clobber'
+  vars:
+    query: "[?mount=='{{ containers_storage_path }}'].device"
+
+- name: 'Remove PostgreSQL runtime directory'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/runtime/ttrss-postgres'
+    state: 'absent'
+
+- name: 'Recreate PostgreSQL runtime directory'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/runtime/ttrss-postgres'
+    owner: 999
+    group: 999
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Update PostgreSQL tag in quadlet unit'
+  ansible.builtin.template:
+    src: 'ttrss-postgres.container.j2'
+    dest: '/etc/containers/systemd/ttrss-postgres.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Start PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'ttrss-postgres.service'
+    daemon_reload: true
+    state: 'started'
+
+- name: 'Wait for PostgeSQL to initialize'
+  containers.podman.podman_container_exec:
+    name: 'ttrss-postgres'
+    command: 'pg_isready'
+  retries: 10
+  delay: 5
+  changed_when: false
+
+- name: 'Restore Tiny Tiny RSS database'
+  containers.podman.podman_container_exec:
+    name: 'ttrss-postgres'
+    command: 'psql -U {{ ttrss.postgres.user }} -d {{ ttrss.postgres.database }} -f /opt/dumps/ttrss.sql'
+
+- name: 'Enable and start Tiny Tiny RSS stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+    state: 'started'
+  loop:
+    - 'ttrss-postgres.service'
+    - 'ttrss-server.service'
+    - 'ttrss-updater.service'
+    - 'ttrss-nginx.service'
+    - 'ttrss-postgres-dump.timer'

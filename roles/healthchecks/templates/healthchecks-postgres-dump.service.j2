@@ -1,0 +1,15 @@
+[Unit]
+Description=Healthchecks PostreSQL dump
+Wants=network-online.target
+After=network-online.target
+Wants=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uuid }}:start.service
+OnSuccess=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uuid }}:success.service
+OnFailure=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uuid }}:failure.service
+
+[Service]
+ExecStart=/usr/bin/podman container exec healthchecks-postgres pg_dump --clean -U {{ healthchecks.postgres.user }} {{ healthchecks.postgres.database }} -f /opt/dumps/healthchecks.sql
+Type=oneshot
+Restart=no
+
+[Install]
+WantedBy=default.target

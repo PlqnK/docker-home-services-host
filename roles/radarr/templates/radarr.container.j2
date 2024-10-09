@@ -1,0 +1,30 @@
+[Unit]
+Description=Radarr
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=radarr
+Image={{ containers_images.radarr }}:{{ containers_images_tags.radarr }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=7878
+Volume={{ containers_storage_path }}/data/radarr:/config:Z
+Volume={{ storage_server_shares_mounts_path }}/downloads:/downloads:slave
+Volume={{ storage_server_shares_mounts_path }}/medias/movies:/movies:slave
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.radarr.rule=Host(`radarr.{{ domain_name }}`)"
+Label="traefik.http.routers.radarr.entrypoints=websecure"
+Label="traefik.http.routers.radarr.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.services.radarr.loadbalancer.server.port=7878"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

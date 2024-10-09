@@ -1,0 +1,15 @@
+[Unit]
+Description=Tiny Tiny RSS PostgreSQL dump
+Wants=network-online.target
+After=network-online.target
+Wants=ping-healthchecksio-uuid@{{ ttrss.postgres.dump.healthchecks_uuid }}:start.service
+OnSuccess=ping-healthchecksio-uuid@{{ ttrss.postgres.dump.healthchecks_uuid }}:success.service
+OnFailure=ping-healthchecksio-uuid@{{ ttrss.postgres.dump.healthchecks_uuid }}:failure.service
+
+[Service]
+ExecStart=/usr/bin/podman container exec ttrss-postgres pg_dump --clean -U {{ ttrss.postgres.user }} {{ ttrss.postgres.database }} -f /opt/dumps/ttrss.sql
+Type=oneshot
+Restart=no
+
+[Install]
+WantedBy=default.target

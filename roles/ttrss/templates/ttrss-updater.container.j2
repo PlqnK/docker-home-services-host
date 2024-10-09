@@ -1,0 +1,30 @@
+[Unit]
+Description=Tiny Tiny RSS Updater
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+After=ttrss-server.service
+Requires=ttrss-server.service
+
+[Container]
+ContainerName=ttrss-updater
+Image={{ containers_images.ttrss.server }}:{{ containers_images_tags.ttrss.server }}
+Exec=/opt/tt-rss/updater.sh
+Network=web-egress
+Network=ttrss-server-internal
+Network=ttrss-postgres-internal
+Volume={{ containers_storage_path }}/data/ttrss-server:/var/www/html:z
+Timezone={{ timezone }}
+EnvironmentFile={{ containers_storage_path }}/env/ttrss-server/ttrss-server.env
+Environment="TZ={{ timezone }}"
+Environment="TTRSS_DB_TYPE=pgsql"
+Environment="TTRSS_DB_HOST=ttrss-postgres"
+Environment="TTRSS_DB_NAME={{ ttrss.postgres.database }}"
+Environment="TTRSS_SELF_URL_PATH=https://ttrss.{{ domain_name }}"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

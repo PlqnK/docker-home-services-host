@@ -1,0 +1,38 @@
+---
+- name: 'Enable and start Netavark firewalld reload service'
+  ansible.builtin.systemd_service:
+    name: 'netavark-firewalld-reload.service'
+    enabled: true
+    state: 'started'
+
+- name: 'Create common podman networks'
+  containers.podman.podman_network:
+    name: '{{ item.name }}'
+    internal: '{{ item.internal }}'
+    ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
+  loop:
+    - name: 'web-egress'
+      internal: false
+    - name: 'common-internal'
+      internal: true
+
+- name: 'Add containers networks to firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'web-egress'
+        - 'common-internal'
+      register: 'podman_networks'
+
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'

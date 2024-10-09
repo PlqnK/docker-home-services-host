@@ -1,0 +1,53 @@
+---
+- name: 'Pull Home Assistant image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.home_assistant }}:{{ containers_images_tags.home_assistant }}'
+    pull: true
+    force: true
+    state: 'present'
+  register: 'container_image_pull'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Update Home Assistant tag in quadlet unit'
+  ansible.builtin.template:
+    src: 'home-assistant.container.j2'
+    dest: '/etc/containers/systemd/home-assistant.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: (container_image_pull.changed)
+  register: 'quadlet_unit'
+  tags: ['never', 'containers-update']
+
+- name: 'Restart Home Assistant container'
+  ansible.builtin.systemd:
+    name: 'home-assistant.service'
+    daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
+    state: 'restarted'
+  when: ("containers-restart" in ansible_run_tags or
+        ("containers-update" in ansible_run_tags and container_image_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
+  tags: ['never', 'containers-restart', 'containers-update']
+
+- name: 'Disable Home Assistant container'
+  ansible.builtin.systemd:
+    name: 'home-assistant.service'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Stop Home Assistant container'
+  ansible.builtin.systemd:
+    name: 'home-assistant.service'
+    state: 'stopped'
+  tags: ['never', 'containers-stop']
+
+- name: 'Enable Home Assistant container'
+  ansible.builtin.systemd:
+    name: 'home-assistant.service'
+    enabled: true
+  tags: ['never', 'containers-enable']
+
+- name: 'Start Home Assistant container'
+  ansible.builtin.systemd:
+    name: 'home-assistant.service'
+    state: 'started'
+  tags: ['never', 'containers-start']

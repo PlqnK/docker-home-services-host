@@ -1,0 +1,101 @@
+---
+- name: 'Ensure the user really wants to remove the Traefik stack'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE TRAEFIK STACK?\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop Traefik stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  loop:
+    - 'traefik.service'
+    - 'cetusguard.service'
+  register: systemd_units
+  failed_when: (systemd_units.failed and not "Could not find the requested service" in systemd_units.msg)
+
+- name: 'Remove Traefik stack quadlet units'
+  ansible.builtin.file:
+    path: '/etc/containers/systems/{{ item }}'
+    state: 'absent'
+  loop:
+    - 'traefik.container'
+    - 'cetusguard.container'
+  notify: 'Reload systemd daemon'
+
+- name: 'Remove Traefik stack networks from firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'cetusguard-internal'
+        - 'traefik-external'
+      register: 'podman_networks'
+      failed_when: (podman_networks.failed and not "network not found" in podman_networks.msg)
+
+    - name: 'Remove podman networks subnets from firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'disabled'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Remove Traefik stack networks'
+  containers.podman.podman_network:
+    name: '{{ item }}'
+    state: 'absent'
+  loop:
+    - 'cetusguard-internal'
+    - 'traefik-external'
+
+- name: 'Reject HTTP and HTTPS (+ HTTP/3 on cloud hosts) incomming connections in default firewalld zone'
+  ansible.posix.firewalld:
+    service: '{{ item.service }}'
+    permanent: true
+    immediate: true
+    state: 'disabled'
+  when: (item.hosts == "all" or item.hosts in group_names)
+  loop:
+    - service: 'http'
+      hosts: 'all'
+    - service: 'https'
+      hosts: 'all'
+    - service: 'http3'
+      hosts: 'cloud_hosts'
+
+- name: 'Reject HTTP, HTTPS and HTTP/3 incomming connections in VPN firewalld zone'
+  ansible.posix.firewalld:
+    zone: 'vpn'
+    service: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: 'disabled'
+  loop:
+    - 'http'
+    - 'https'
+    - 'http3'
+  when: ("cloud_hosts" in group_names)
+
+- name: 'Remove Traefik stack secret'
+  containers.podman.podman_secret:
+    name: 'traefik_desec_token'
+    state: 'absent'
+
+- name: 'Remove Traefik bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item }}'
+    state: 'absent'
+  loop:
+    - 'config/traefik'
+    - 'data/traefik'

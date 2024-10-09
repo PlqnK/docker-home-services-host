@@ -1,0 +1,40 @@
+---
+- name: 'Ensure the user really wants to remove the Collabora Online container'
+  ansible.builtin.pause:
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE COLLABORA-ONLINE CONTAINER?\nAnswer yes in capital letters to confirm"
+    echo: true
+  register: remove_prompt
+
+- name: "Stop execution if user didn't answer 'YES'"
+  ansible.builtin.fail:
+    msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
+  when: (remove_prompt.user_input != "YES")
+
+- name: 'Disable and stop Collabora Online container'
+  ansible.builtin.systemd:
+    name: 'collabora-online.service'
+    daemon_reload: true
+    enabled: false
+    state: 'stopped'
+  register: systemd_unit
+  failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
+
+- name: 'Remove Collabora Online quadlet unit'
+  ansible.builtin.file:
+    path: '/etc/containers/systemd/collabora-online.container'
+    state: 'absent'
+  notify: 'Reload systemd daemon'
+
+- name: 'Remove Collabora Online env bind mount path'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/env/collabora-online'
+    state: 'absent'
+
+- name: 'Remove Collabora Online CNAME record'
+  ansible.builtin.uri:
+    url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/office/CNAME/'
+    method: 'DELETE'
+    status_code: [200, 204]
+    headers:
+      Authorization: 'Token {{ desec_token }}'
+  delegate_to: 'localhost'

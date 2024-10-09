@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>prometheus-systemd-exporter</short>
+  <description>The systemd-exporter agent for Prometheus monitoring system.</description>
+  <port protocol="tcp" port="9558"/>
+</service>

@@ -1,0 +1,16 @@
+---
+- name: 'Create {{ containers_storage_path }} btrfs snapshot'
+  community.general.btrfs_subvolume:
+    name: '.snapshot'
+    filesystem_device: '{{ ansible_mounts | community.general.json_query(query) | first }}'
+    snapshot_source: '/'
+    snapshot_conflict: 'clobber'
+  vars:
+    query: "[?mount=='{{ containers_storage_path }}'].device"
+  tags: ['never', 'os-upgrade', 'containers-update']
+
+- name: 'Upgrade OS'
+  ansible.posix.rpm_ostree_upgrade:
+  register: 'rpm_ostree_upgrade'
+  when: (containers_list is not defined)
+  tags: ['never', 'os-upgrade']

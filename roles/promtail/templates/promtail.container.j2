@@ -1,0 +1,31 @@
+[Unit]
+Description=Promtail
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=promtail
+Image={{ containers_images.promtail }}:{{ containers_images_tags.promtail }}
+Exec=-config.file=/etc/promtail/promtail.yaml
+SecurityLabelDisable=true
+Network=web-egress
+{% if inventory_hostname == "monitoring" %}
+Network=common-internal
+ExposeHostPort=1601
+{% endif %}
+Volume={{ containers_storage_path }}/config/promtail/promtail.yaml:/etc/promtail/promtail.yaml:Z
+Volume={{ containers_storage_path }}/runtime/promtail:/promtail:Z
+Volume=/var/log/journal:/var/log/journal:ro
+Volume=/run/log/journal:/run/log/journal:ro
+Volume=/etc/machine-id:/etc/machine-id:ro
+Secret=promtail_loki_password
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

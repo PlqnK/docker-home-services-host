@@ -1,0 +1,29 @@
+[Unit]
+Description=Calibre-Web
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=calibre-web
+Image={{ containers_images.calibre_web }}:{{ containers_images_tags.calibre_web }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=8083
+Volume={{ containers_storage_path }}/data/calibre-web:/config:Z
+Volume={{ storage_server_shares_mounts_path }}/medias/books:/books:slave
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.calibre-web.rule=Host(`calibre-web.{{ domain_name }}`)"
+Label="traefik.http.routers.calibre-web.entrypoints=websecure"
+Label="traefik.http.routers.calibre-web.middlewares=set-security-headers@file"
+Label="traefik.http.services.calibre-web.loadbalancer.server.port=8083"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

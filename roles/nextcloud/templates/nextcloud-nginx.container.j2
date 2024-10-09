@@ -1,0 +1,32 @@
+[Unit]
+Description=Nextcloud NGINX
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+After=nextcloud-server.service
+Requires=nextcloud-server.service
+
+[Container]
+ContainerName=nextcloud-nginx
+Image={{ containers_images.nextcloud.nginx }}:{{ containers_images_tags.nextcloud.nginx }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=80
+Volume={{ containers_storage_path }}/config/nextcloud-nginx/nginx.conf:/etc/nginx/nginx.conf:Z
+Volume={{ containers_storage_path }}/data/nextcloud-server:/var/www/html:z
+Volume={{ storage_server_shares_mounts_path }}/nextcloud:/var/www/html/data:slave
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.cloud.rule=Host(`cloud.{{ domain_name }}`)"
+Label="traefik.http.routers.cloud.entrypoints=websecure"
+Label="traefik.http.routers.cloud.middlewares=set-security-headers@file"
+Label="traefik.http.services.cloud.loadbalancer.server.port=80"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

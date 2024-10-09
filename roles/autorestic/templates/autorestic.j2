@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+if [[ ${EUID} -ne 0 ]]; then
+  echo "Must be executed as root." 1>&2
+  exit 1
+fi
+
+podman run \
+--rm \
+--interactive \
+--entrypoint autorestic \
+--cap-add SYS_ADMIN \
+--device /dev/fuse \
+--hostname {{ ansible_hostname }} \
+--network web-egress \
+--tz={{ timezone }} \
+--env TZ={{ timezone }} \
+--volume {{ containers_storage_path }}/runtime/autorestic/lock:/config:Z \
+--volume {{ containers_storage_path }}/config/autorestic/autorestic.yml:/config/autorestic.yml:Z \
+--volume {{ containers_storage_path }}/runtime/autorestic/mount:/mount:Z \
+--volume {{ containers_storage_path }}/runtime/autorestic/restore:/restore:Z \
+--volume {{ storage_server_shares_mounts_path }}/backups/documents:{{ storage_server_shares_mounts_path }}/backups/documents:slave \
+--volume {{ storage_server_shares_mounts_path }}/backups/groupware:{{ storage_server_shares_mounts_path }}/backups/groupware:slave \
+--volume {{ storage_server_shares_mounts_path }}/backups/servers:{{ storage_server_shares_mounts_path }}/backups/servers:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/audiodrama:{{ storage_server_shares_mounts_path }}/medias/audiodrama:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/audiobooks:{{ storage_server_shares_mounts_path }}/medias/audiobooks:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/books:{{ storage_server_shares_mounts_path }}/medias/books:slave \
+--volume {{ storage_server_shares_mounts_path }}/medias/comics:{{ storage_server_shares_mounts_path }}/medias/comics:slave \
+{{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }} -c /config/autorestic.yml $@

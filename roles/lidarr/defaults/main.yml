@@ -1,0 +1,5 @@
+---
+containers_images:
+  lidarr: 'lscr.io/linuxserver/lidarr'
+containers_images_tags:
+  lidarr: 'latest'

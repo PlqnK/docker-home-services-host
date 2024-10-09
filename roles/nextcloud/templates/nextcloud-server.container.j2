@@ -1,0 +1,42 @@
+[Unit]
+Description=Nextcloud Server
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+After=nextcloud-postgres.service nextcloud-redis.service
+Requires=nextcloud-postgres.service nextcloud-redis.service
+
+[Container]
+ContainerName=nextcloud-server
+Image={{ containers_images.nextcloud.server }}:{{ containers_images_tags.nextcloud.server }}
+Network=web-egress
+Network=common-internal
+Network=nextcloud-postgres-internal
+Network=nextcloud-redis-internal
+ExposeHostPort=9000
+Volume={{ containers_storage_path }}/data/nextcloud-server:/var/www/html:z
+Volume={{ storage_server_shares_mounts_path }}/nextcloud:/var/www/html/data:slave
+Secret=nextcloud_postgres_user
+Secret=nextcloud_postgres_password
+#Secret=nextcloud_redis_password # See https://github.com/nextcloud/docker/issues/1402
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Environment="NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ domain_name }}"
+Environment="POSTGRES_HOST=nextcloud-postgres"
+Environment="POSTGRES_DB={{ nextcloud.postgres.database }}"
+Environment="POSTGRES_USER_FILE=/run/secrets/nextcloud_postgres_user"
+Environment="POSTGRES_PASSWORD_FILE=/run/secrets/nextcloud_postgres_password"
+Environment="REDIS_HOST=nextcloud-redis"
+#Environment="REDIS_HOST_PASSWORD_FILE=/run/secrets/nextcloud_redis_password" # See https://github.com/nextcloud/docker/issues/1402
+HealthCmd="bash -c 'exec 5<>/dev/tcp/127.0.0.1/9000'"
+HealthInterval=10s
+HealthTimeout=3s
+HealthRetries=3
+Notify=healthy
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,17 @@
+---
+- name: 'Configure and manage Healthchecks stack'
+  when: (containers_list is not defined or (containers_list is defined and 'healthchecks' in containers_list))
+  block:
+    - name: 'Create'
+      ansible.builtin.include_tasks: 'create.yml'
+
+    - name: 'Lifecycle'
+      ansible.builtin.import_tasks: 'lifecycle.yml'
+
+    - name: 'DB upgrade'
+      ansible.builtin.import_tasks: 'db-upgrade.yml'
+      tags: ['never', 'containers-db-upgrade']
+
+    - name: 'Remove'
+      ansible.builtin.include_tasks: 'remove.yml'
+      tags: ['never', 'containers-remove']

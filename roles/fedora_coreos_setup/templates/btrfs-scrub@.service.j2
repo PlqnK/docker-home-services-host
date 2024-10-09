@@ -1,0 +1,19 @@
+[Unit]
+Description=Btrfs scrub on %f
+ConditionPathIsMountPoint=%f
+RequiresMountsFor=%f
+{% if "cloud_hosts" in group_names %}
+Wants=ping-healthchecksio-slug@%l-btrfs-scrub-%i:start.service
+OnSuccess=ping-healthchecksio-slug@%l-btrfs-scrub-%i:success.service
+OnFailure=ping-healthchecksio-slug@%l-btrfs-scrub-%i:failure.service
+{% else %}
+Wants=ping-healthchecks-slug@%l-btrfs-scrub-%i:start.service
+OnSuccess=ping-healthchecks-slug@%l-btrfs-scrub-%i:success.service
+OnFailure=ping-healthchecks-slug@%l-btrfs-scrub-%i:failure.service
+{% endif %}
+
+[Service]
+Nice=19
+IOSchedulingClass=idle
+KillSignal=SIGINT
+ExecStart=/usr/sbin/btrfs scrub start -B %f

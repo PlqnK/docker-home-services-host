@@ -1,0 +1,39 @@
+---
+- name: 'Create samba credentials file'
+  ansible.builtin.template:
+    src: 'smbcredentials.j2'
+    dest: '/etc/smbcredentials'
+    owner: 'root'
+    group: 'root'
+    mode: '0600'
+  when: (storage_server.type == "cifs")
+
+- name: 'Create systemd mount units'
+  ansible.builtin.template:
+    src: 'systemd.mount.j2'
+    dest: '/etc/systemd/system/{{ storage_server_shares_mounts_path | systemd_escape(path=True) }}-{{ item.name | systemd_escape(path=True) }}.mount'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop: '{{ storage_server_shares }}'
+  notify: 'Reload systemd daemon'
+
+- name: 'Create systemd automount units'
+  ansible.builtin.template:
+    src: 'systemd.automount.j2'
+    dest: '/etc/systemd/system/{{ storage_server_shares_mounts_path | systemd_escape(path=True) }}-{{ item.name | systemd_escape(path=True) }}.automount'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop: '{{ storage_server_shares }}'
+  notify: 'Reload systemd daemon'
+
+- name: 'Flush handlers'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Enable and start systemd automount units'
+  ansible.builtin.systemd:
+    name: '{{ storage_server_shares_mounts_path | systemd_escape(path=True) }}-{{ item.name | systemd_escape(path=True) }}.automount'
+    enabled: true
+    state: 'started'
+  loop: '{{ storage_server_shares }}'

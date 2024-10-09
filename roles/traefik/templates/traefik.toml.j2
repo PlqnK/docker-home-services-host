@@ -1,0 +1,56 @@
+[global]
+  checkNewVersion = false
+  sendAnonymousUsage = false
+
+[serversTransport]
+  insecureSkipVerify = true
+
+[log]
+  level = "INFO"
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+{% if "home_hosts" in group_names and home_network.proxy_protocol_trusted_ips is not none %}
+    [entryPoints.web.proxyProtocol]
+      trustedIPs = [{% for ip in home_network.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
+{% endif %}
+  [entryPoints.websecure]
+    address = ":443"
+{% if "cloud_hosts" in group_names %}
+    [entryPoints.websecure.http3]
+{% endif %}
+{% if inventory_hostname == "documents" %}{# Required for Immich, see https://immich.app/docs/administration/reverse-proxy/#traefik-proxy-example-config #}
+    [entryPoints.websecure.transport.respondingTimeouts]
+      readTimeout = "600s"
+      idleTimeout = "600s"
+      writeTimeout = "600s"
+{% endif %}
+{% if "home_hosts" in group_names and home_network.proxy_protocol_trusted_ips is not none %}
+    [entryPoints.websecure.proxyProtocol]
+      trustedIPs = [{% for ip in home_network.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
+{% endif %}
+    [entryPoints.websecure.http.tls]
+      certResolver = "le"
+
+[api]
+  dashboard = true
+
+[ping]
+  manualRouting = true
+
+[providers]
+  [providers.docker]
+    endpoint = "tcp://cetusguard:2375"
+    exposedByDefault = false
+  [providers.file]
+    directory = "/etc/traefik/providers"
+    watch = true
+
+[certificatesResolvers.le.acme]
+  email = "{{ admin_user.email }}"
+  storage = "acme.json"
+  [certificatesResolvers.le.acme.dnsChallenge]
+    provider = "desec"
+    delayBeforeCheck = 60
+    resolvers = ["1.1.1.1:53", "1.0.0.1:53"]

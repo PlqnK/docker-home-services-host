@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+if [[ ${EUID} -ne 0 ]]; then
+  echo "Must be executed as root." 1>&2
+  exit 1
+fi
+
+podman run \
+--rm \
+--interactive \
+--entrypoint rsync \
+--hostname {{ ansible_hostname }} \
+--network web-egress \
+--tz={{ timezone }} \
+--env TZ={{ timezone }} \
+--env HEALTHCHECKS_UUID={{ rsync_servers.healthchecks_uuid }} \
+--env BACKUP_HOSTS="{% for host in groups['containers_hosts'] %}{{ hostvars[host].ansible_host }}{{ " " if not loop.last else "" }}{% endfor %}" \
+--env REMOTE_PATH={{ containers_storage_path }}/data \
+--env LOCAL_PATH={{ storage_server_shares_mounts_path }}/backups/servers \
+--volume {{ containers_storage_path }}/config/rsync-servers/backup-servers.sh:/app/backup-servers.sh:ro,Z \
+--volume {{ containers_storage_path }}/config/rsync-servers/id_ed25519:/root/id_ed25519:ro,Z \
+--volume {{ containers_storage_path }}/runtime/rsync-servers:/root/.ssh:Z \
+--volume {{ storage_server_shares_mounts_path }}/backups/servers:{{ storage_server_shares_mounts_path }}/backups/servers:slave \
+{{ containers_images.rsync_servers }}:{{ containers_images_tags.rsync_servers }} -e "ssh -i /root/id_ed25519 -p 2222" $@

@@ -1,0 +1,31 @@
+---
+- name: 'Reload systemd daemon'
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: 'Restart chrony service'
+  ansible.builtin.systemd:
+    name: 'chrony.service'
+    state: 'restarted'
+
+- name: 'Restart postfix service'
+  ansible.builtin.systemd:
+    name: 'postfix.service'
+    state: 'restarted'
+
+- name: 'Reload nut-monitor service'
+  ansible.builtin.systemd:
+    name: 'nut-monitor.service'
+    state: 'reloaded'
+
+- name: 'Postmap sasl_passwd'
+  ansible.builtin.command:
+    cmd: 'postmap /etc/postfix/sasl_passwd'
+
+- name: 'Postmap smtp_header_checks'
+  ansible.builtin.command:
+    cmd: 'postmap /etc/postfix/smtp_header_checks'
+
+- name: 'Postmap canonical'
+  ansible.builtin.command:
+    cmd: 'postmap /etc/postfix/canonical'

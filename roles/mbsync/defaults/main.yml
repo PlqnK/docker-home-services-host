@@ -1,0 +1,5 @@
+---
+containers_images:
+  mbsync: 'ghcr.io/jakewharton/mbsync'
+containers_images_tags:
+  mbsync: 'latest'

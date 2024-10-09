@@ -1,0 +1,30 @@
+[Unit]
+Description=sshd rsync
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=sshd-rsync
+Image={{ containers_images.sshd_rsync }}:{{ containers_images_tags.sshd_rsync }}
+# This container needs access to other containers data labeled using the "Z" exclusive SELinux context mount option.
+# Instead of changing every other containers mounts options, we disable SELinux labelling on this container mounts.
+SecurityLabelDisable=true
+Network=sshd-rsync-external
+PublishPort=2222:22
+Volume={{ containers_storage_path }}/config/sshd-rsync/authorized_keys:/root/.ssh/authorized_keys:ro,Z
+Volume={{ containers_storage_path }}/runtime/sshd-rsync:/etc/ssh/keys:Z
+Volume={{ containers_storage_path }}:{{ containers_storage_path }}:ro,rslave
+{% if "cloud_hosts" in group_names %}
+Volume={{ storage_server_shares_mounts_path }}:{{ storage_server_shares_mounts_path }}:ro,rslave
+{% endif %}
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Environment="SSH_ENABLE_ROOT=true"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

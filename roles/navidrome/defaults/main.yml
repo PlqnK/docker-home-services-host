@@ -1,0 +1,5 @@
+---
+containers_images:
+  navidrome: 'ghcr.io/navidrome/navidrome'
+containers_images_tags:
+  navidrome: 'latest'

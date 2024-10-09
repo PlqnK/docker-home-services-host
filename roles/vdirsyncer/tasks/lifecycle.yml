@@ -1,0 +1,43 @@
+---
+- name: 'Pull vdirsyncer image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }}'
+    pull: true
+    force: true
+    state: 'present'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Update vdirsyncer tag in systemd unit'
+  ansible.builtin.template:
+    src: 'vdirsyncer.service.j2'
+    dest: '/etc/systemd/system/vdirsyncer.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: (container_image_pull.changed)
+  notify: 'Reload systemd daemon'
+  tags: ['never', 'containers-update']
+
+- name: 'Disable vdirsyncer timer'
+  ansible.builtin.systemd:
+    name: 'vdirsyncer.timer'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Stop vdirsyncer timer'
+  ansible.builtin.systemd:
+    name: 'vdirsyncer.timer'
+    state: 'stopped'
+  tags: ['never', 'containers-stop']
+
+- name: 'Enable vdirsyncer timer'
+  ansible.builtin.systemd:
+    name: 'vdirsyncer.timer'
+    enabled: true
+  tags: ['never', 'containers-enable']
+
+- name: 'Start vdirsyncer timer'
+  ansible.builtin.systemd:
+    name: 'vdirsyncer.timer'
+    state: 'started'
+  tags: ['never', 'containers-start']

@@ -5,11 +5,11 @@
 .Trash-*
 .nfs*
 .vscode/
+.vagrant/
 
-# Project specific
-.env
-client.ovpn
-docker-host-mount-points.txt
-docker-host-setup.conf
-traefik.toml
-daemon.json
+# Python
+__pycache__
+
+# Specific
+files/coreos/*.bu
+files/coreos/*.ign

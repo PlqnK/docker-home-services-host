@@ -1,0 +1,30 @@
+[Unit]
+Description=Komga
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=komga
+Image={{ containers_images.komga }}:{{ containers_images_tags.komga }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=25600
+Volume={{ containers_storage_path }}/data/komga:/config:Z
+Volume={{ containers_storage_path }}/runtime/komga:/tmp:Z
+Volume={{ storage_server_shares_mounts_path }}/medias/comics:/books:slave
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.komga.rule=Host(`komga.{{ domain_name }}`)"
+Label="traefik.http.routers.komga.entrypoints=websecure"
+Label="traefik.http.routers.komga.middlewares=set-security-headers@file"
+Label="traefik.http.services.komga.loadbalancer.server.port=25600"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

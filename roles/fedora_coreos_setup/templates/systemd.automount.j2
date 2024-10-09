@@ -1,0 +1,8 @@
+[Unit]
+Description={{ storage_server.name }} {{ item.name }} {{ storage_server.type }} share
+
+[Automount]
+Where={{ storage_server_shares_mounts_path }}/{{ item.name }}
+
+[Install]
+WantedBy=multi-user.target

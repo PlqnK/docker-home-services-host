@@ -1,0 +1,30 @@
+[Unit]
+Description=mbsync
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=no
+TimeoutStopSec=70
+ExecStart=/usr/bin/podman container run \
+	--rm \
+	--detach \
+	--replace \
+	--name mbsync \
+	--entrypoint /app/mbsync.sh \
+	--hostname {{ ansible_hostname }} \
+	--network web-egress \
+	--volume {{ containers_storage_path }}/config/mbsync/mbsync.sh:/app/mbsync.sh:Z \
+	--volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
+	--volume {{ storage_server_shares_mounts_path }}/backups/groupware/emails:/mail:slave \
+	--secret mbsync_imap_password \
+	--tz={{ timezone }} \
+	--env TZ={{ timezone }} \
+	--env HEALTHCHECKS_URL=healthchecks.{{ domain_name }}/ping \
+	--env HEALTHCHECKS_UUID={{ mbsync.healthchecks_uuid }} {{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }}
+Type=forking
+
+[Install]
+WantedBy=default.target

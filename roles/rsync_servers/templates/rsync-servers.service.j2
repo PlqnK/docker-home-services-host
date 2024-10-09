@@ -1,0 +1,37 @@
+[Unit]
+Description=Rsync servers
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=no
+TimeoutStopSec=70
+ExecStart=/usr/bin/podman container run \
+	--rm \
+	--detach \
+	--replace \
+	--name rsync-servers \
+	--entrypoint /app/backup-servers.sh \
+	--hostname {{ ansible_hostname }} \
+	--network web-egress \
+	--volume {{ containers_storage_path }}/config/rsync-servers/backup-servers.sh:/app/backup-servers.sh:ro,Z \
+	--volume {{ containers_storage_path }}/config/rsync-servers/id_ed25519:/root/id_ed25519:ro,Z \
+	--volume {{ containers_storage_path }}/runtime/rsync-servers:/root/.ssh:Z \
+	--volume {{ storage_server_shares_mounts_path }}/backups/servers:{{ storage_server_shares_mounts_path }}/backups/servers:slave \
+	--volume {{ storage_server_shares_mounts_path }}/backups/documents:{{ storage_server_shares_mounts_path }}/backups/documents:slave \
+	--tz={{ timezone }} \
+	--env TZ={{ timezone }} \
+	--env HEALTHCHECKS_URL=healthchecks.{{ domain_name }}/ping \
+	--env HEALTHCHECKS_UUID={{ rsync_servers.healthchecks_uuid }} \
+	--env CONTAINERS_HOSTS="{% for host in groups['containers_hosts'] %}{{ hostvars[host].ansible_host }}{{ " " if not loop.last else "" }}{% endfor %}" \
+	--env DOCUMENTS_HOST="{{ hostvars['documents'].ansible_host }}" \
+	--env CONTAINERS_HOSTS_REMOTE_PATH={{ containers_storage_path }}/.snapshot/data \
+	--env DOCUMENTS_HOST_REMOTE_PATH={{ hostvars['documents'].storage_server_shares_mounts_path }} \
+	--env CONTAINERS_HOSTS_LOCAL_PATH={{ storage_server_shares_mounts_path }}/backups/servers \
+	--env DOCUMENTS_HOST_LOCAL_PATH={{ storage_server_shares_mounts_path }}/backups/documents {{ containers_images.rsync_servers }}:{{ containers_images_tags.rsync_servers }}
+Type=forking
+
+[Install]
+WantedBy=default.target

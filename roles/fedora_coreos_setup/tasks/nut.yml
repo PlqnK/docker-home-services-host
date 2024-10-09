@@ -1,0 +1,24 @@
+---
+- name: 'Copy nut configuration'
+  ansible.builtin.copy:
+    src: 'nut.conf'
+    dest: '/etc/ups/nut.conf'
+    owner: 'root'
+    group: 'nut'
+    mode: '0640'
+  notify: 'Reload nut-monitor service'
+
+- name: 'Template upsmon configuration'
+  ansible.builtin.template:
+    src: 'upsmon.conf.j2'
+    dest: '/etc/ups/upsmon.conf'
+    owner: 'root'
+    group: 'nut'
+    mode: '0640'
+  notify: 'Reload nut-monitor service'
+
+- name: 'Enable and start nut-monitor'
+  ansible.builtin.systemd:
+    name: 'nut-monitor.service'
+    enabled: true
+    state: 'started'

@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily vdirsyncer CardDAV/CalDAV synchronisation
+
+[Timer]
+OnCalendar=*-*-* 5:00:00
+
+[Install]
+WantedBy=timers.target

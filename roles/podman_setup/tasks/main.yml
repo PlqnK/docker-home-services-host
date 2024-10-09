@@ -1,0 +1,16 @@
+---
+- name: 'Configure podman'
+  when: (containers_list is not defined)
+  tags: ['podman-setup']
+  block:
+    - name: 'Configure socket'
+      ansible.builtin.import_tasks: 'socket.yml'
+
+    - name: 'Create containers networks'
+      ansible.builtin.import_tasks: 'networks.yml'
+
+    - name: 'Configure storage'
+      ansible.builtin.import_tasks: 'storage.yml'
+
+    - name: 'Configure image pruning'
+      ansible.builtin.import_tasks: 'prune.yml'

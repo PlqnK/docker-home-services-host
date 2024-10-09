@@ -1,0 +1,13 @@
+---
+containers_images:
+  nextcloud:
+    postgres: 'docker.io/library/postgres'
+    redis: 'docker.io/library/redis'
+    server: 'docker.io/library/nextcloud'
+    nginx: 'docker.io/library/nginx'
+containers_images_tags:
+  nextcloud:
+    postgres: 'latest'
+    redis: 'latest'
+    server: 'fpm'
+    nginx: 'latest'

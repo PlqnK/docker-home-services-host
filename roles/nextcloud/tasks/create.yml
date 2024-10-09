@@ -1,0 +1,236 @@
+---
+- name: 'Manage Nextcloud CNAME record'
+  delegate_to: 'localhost'
+  check_mode: false
+  block:
+    - name: 'Get Nextcloud CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/cloud/CNAME/'
+        method: 'GET'
+        status_code: [200, 404]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+      register: desec_rrsets_get
+
+    - name: 'Create Nextcloud CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/'
+        method: 'POST'
+        status_code: [201]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          subname: 'cloud'
+          type: 'CNAME'
+          ttl: 3600
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_post
+      when: (desec_rrsets_get.status == 404)
+      changed_when: (desec_rrsets_post.status == 201)
+
+    - name: 'Update Nextcloud CNAME record'
+      ansible.builtin.uri:
+        url: 'https://desec.io/api/v1/domains/{{ domain_name }}/rrsets/cloud/CNAME/'
+        method: 'PATCH'
+        status_code: [200]
+        headers:
+          Authorization: 'Token {{ desec_token }}'
+        body_format: 'json'
+        body:
+          records:
+            - '{{ ansible_fqdn }}.'
+      register: desec_rrsets_patch
+      when: (desec_rrsets_get.status == 200 and desec_rrsets_get.json.records != [ansible_fqdn + "."])
+      changed_when: (desec_rrsets_patch.status == 200)
+
+- name: 'Create Nextcloud stack networks'
+  containers.podman.podman_network:
+    name: '{{ item }}'
+    internal: true
+    ipv6: '{{ containers_ipv6.enable }}'
+    opt:
+      isolate: true
+  loop:
+    - 'nextcloud-postgres-internal'
+    - 'nextcloud-redis-internal'
+
+- name: 'Add Nextcloud stack networks to firewalld trusted zone'
+  block:
+    - name: 'Get podman networks info'
+      containers.podman.podman_network_info:
+        name: '{{ item }}'
+      loop:
+        - 'nextcloud-postgres-internal'
+        - 'nextcloud-redis-internal'
+      register: 'podman_networks'
+
+    - name: 'Add podman networks subnets to firewalld trusted zone'
+      ansible.posix.firewalld:
+        source: '{{ item }}'
+        zone: 'trusted'
+        permanent: true
+        immediate: true
+        state: 'enabled'
+      loop: '{{ podman_networks.results | community.general.json_query("[*].networks[*].subnets[*].subnet") | ansible.builtin.flatten }}'
+
+- name: 'Create Nextcloud stack bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    state: 'directory'
+  loop:
+    # See https://github.com/nextcloud/docker/issues/1402
+    #- path: 'config/nextcloud-redis'
+    #  owner: 999
+    #  group: 999
+    #  mode: '0700'
+    - path: 'config/nextcloud-nginx'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: 'runtime/nextcloud-postgres'
+      owner: 999
+      group: 999
+      mode: '0700'
+    - path: 'runtime/nextcloud-redis'
+      owner: 999
+      group: 999
+      mode: '0700'
+    - path: 'data/nextcloud-postgres'
+      owner: 'root'
+      group: 'root'
+      mode: '0700'
+    - path: 'data/nextcloud-server'
+      owner: 33
+      group: 33
+      mode: '0755'
+
+- name: 'Create Nextcloud documents storage path'
+  ansible.builtin.file:
+    path: '{{ storage_server_shares_mounts_path }}/nextcloud'
+    owner: 33
+    group: 33
+    mode: '0750'
+    state: 'directory'
+
+- name: 'Create Nextcloud stack secrets'
+  containers.podman.podman_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data }}'
+    skip_existing: true
+    state: 'present'
+  loop:
+    - name: 'nextcloud_postgres_user'
+      data: '{{ nextcloud.postgres.user }}'
+      services:
+        - 'nextcloud-postgres.service'
+        - 'nextcloud-server.service'
+    - name: 'nextcloud_postgres_password'
+      data: '{{ nextcloud.postgres.password }}'
+      services:
+        - 'nextcloud-postgres.service'
+        - 'nextcloud-server.service'
+    # See https://github.com/nextcloud/docker/issues/1402
+    #- name: 'nextcloud_redis_password'
+    #  data: '{{ nextcloud.redis.password }}'
+    #  services:
+    #    - 'nextcloud-redis.service'
+    #    - 'nextcloud-server.service'
+  loop_control:
+    label: '{{ item.name }}'
+  register: 'podman_secrets'
+
+- name: 'Create Nextcloud stack configuration files from templates'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ containers_storage_path }}/config/{{ item.dest }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+  loop:
+    # See https://github.com/nextcloud/docker/issues/1402
+    #- src: 'redis.conf.j2'
+    #  dest: 'nextcloud-redis/redis.conf'
+    #  owner: 999
+    #  group: 999
+    #  mode: '0400'
+    #  services: 'nextcloud-redis.service'
+    - src: 'nginx.conf.j2'
+      dest: 'nextcloud-nginx/nginx.conf'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+      services: 'nextcloud-nginx.service'
+  loop_control:
+    label: '{{ item.dest }}'
+  register: 'configuration_files'
+
+- name: 'Create Nextcloud stack quadlet units from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.container.j2'
+    dest: '/etc/containers/systemd/{{ item }}.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'nextcloud-postgres'
+    - 'nextcloud-redis'
+    - 'nextcloud-server'
+    - 'nextcloud-nginx'
+  register: 'quadlet_units'
+  notify: 'Reload systemd daemon'
+
+- name: 'Create Nextcloud tasks systemd services from templates'
+  ansible.builtin.template:
+    src: '{{ item }}.service.j2'
+    dest: '/etc/systemd/system/{{ item }}.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'nextcloud-cron'
+    - 'nextcloud-postgres-dump'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy Nextcloud tasks systemd timers'
+  ansible.builtin.copy:
+    src: '{{ item }}.timer'
+    dest: '/etc/systemd/system/{{ item }}.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'nextcloud-cron'
+    - 'nextcloud-postgres-dump'
+  notify: 'Reload systemd daemon'
+
+- name: 'Enable and start Nextcloud stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    enabled: true
+    state: 'started'
+  register: 'systemd_start'
+  loop:
+    - 'nextcloud-postgres.service'
+    - 'nextcloud-redis.service'
+    - 'nextcloud-server.service'
+    - 'nextcloud-nginx.service'
+    - 'nextcloud-cron.timer'
+    - 'nextcloud-postgres-dump.timer'
+
+- name: 'Restart Nextcloud services if podman secret or quadlet unit has changed while service was already started'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    daemon_reload: true
+    state: 'restarted'
+  vars:
+    podman_secrets_map: '{{ podman_secrets.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    configuration_files_map: '{{ configuration_files.results | selectattr("changed", "true") | map(attribute="item.services") | select("defined") | ansible.builtin.flatten }}'
+    quadlet_units_map: '{{ quadlet_units.results | selectattr("changed", "true") | map(attribute="item") | ansible.builtin.product([".service"]) | map("join") }}'
+    systemd_start_map: '{{ systemd_start.results | selectattr("changed", "true") | map(attribute="name") }}'
+  loop: '{{ (podman_secrets_map + configuration_files_map + quadlet_units_map) | unique | difference(systemd_start_map) }}'

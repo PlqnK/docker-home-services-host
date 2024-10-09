@@ -1,0 +1,54 @@
+---
+- name: 'Create autorestic bind mounts paths'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    state: 'directory'
+  loop:
+    - 'config/autorestic'
+    - 'runtime/autorestic/lock'
+    - 'runtime/autorestic/mount'
+    - 'runtime/autorestic/restore'
+
+- name: 'Create autorestic config from template'
+  ansible.builtin.template:
+    src: 'autorestic.yml.j2'
+    dest: '{{ containers_storage_path }}/config/autorestic/autorestic.yml'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Create autorestic systemd service from template'
+  ansible.builtin.template:
+    src: 'autorestic.service.j2'
+    dest: '/etc/systemd/system/autorestic.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy autorestic systemd timer'
+  ansible.builtin.copy:
+    src: 'autorestic.timer'
+    dest: '/etc/systemd/system/autorestic.timer'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Add autorestic script to /usr/local/bin'
+  ansible.builtin.template:
+    src: 'autorestic.j2'
+    dest: '/usr/local/bin/autorestic'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Enable and start autorestic timer'
+  ansible.builtin.systemd:
+    name: 'autorestic.timer'
+    daemon_reload: true
+    enabled: true
+    state: 'started'

@@ -1,0 +1,5 @@
+---
+containers_images:
+  unpackerr: 'ghcr.io/unpackerr/unpackerr'
+containers_images_tags:
+  unpackerr: 'latest'

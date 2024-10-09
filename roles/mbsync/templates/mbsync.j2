@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+if [[ ${EUID} -ne 0 ]]; then
+  echo "Must be executed as root." 1>&2
+  exit 1
+fi
+
+podman run \
+--rm \
+--interactive \
+--entrypoint mbsync \
+--hostname {{ ansible_hostname }} \
+--network web-egress \
+--tz={{ timezone }} \
+--env TZ={{ timezone }} \
+--volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
+--volume {{ storage_server_shares_mounts_path }}/backups/groupware/emails:/mail:slave \
+--secret=mbsync_imap_password \
+{{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }} -c /config/mbsync.rc $@

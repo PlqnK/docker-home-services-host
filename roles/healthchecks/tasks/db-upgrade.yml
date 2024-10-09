@@ -1,0 +1,82 @@
+---
+- name: 'Start Healthchecks PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'healthchecks-postgres.service'
+    state: 'started'
+
+- name: 'Stop remaining Healthchecks stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'healthchecks-postgres-dump.timer'
+    - 'healthchecks-server.service'
+
+- name: 'Dump Healthchecks database'
+  containers.podman.podman_container_exec:
+    name: 'healthchecks-postgres'
+    command: 'pg_dump -U {{ healthchecks.postgres.user }} -d {{ healthchecks.postgres.database }} --clean --if-exists -f /opt/dumps/healthchecks.sql'
+
+- name: 'Stop PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'healthchecks-postgres.service'
+    state: 'stopped'
+
+- name: 'Create {{ containers_storage_path }} btrfs snapshot'
+  community.general.btrfs_subvolume:
+    name: '.snapshot'
+    filesystem_device: '{{ ansible_mounts | community.general.json_query(query) | first }}'
+    snapshot_source: '/'
+    snapshot_conflict: 'clobber'
+  vars:
+    query: "[?mount=='{{ containers_storage_path }}'].device"
+
+- name: 'Remove PostgreSQL runtime directory'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/runtime/healthchecks-postgres'
+    state: 'absent'
+
+- name: 'Recreate PostgreSQL runtime directory'
+  ansible.builtin.file:
+    path: '{{ containers_storage_path }}/runtime/healthchecks-postgres'
+    owner: 999
+    group: 999
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Update PostgreSQL tag in quadlet unit'
+  ansible.builtin.template:
+    src: 'healthchecks-postgres.container.j2'
+    dest: '/etc/containers/systemd/healthchecks-postgres.container'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Start PostgreSQL'
+  ansible.builtin.systemd:
+    name: 'healthchecks-postgres.service'
+    daemon_reload: true
+    state: 'started'
+
+- name: 'Wait for PostgeSQL to initialize'
+  containers.podman.podman_container_exec:
+    name: 'healthchecks-postgres'
+    command: 'pg_isready'
+  retries: 10
+  delay: 5
+  changed_when: false
+
+- name: 'Restore Healthchecks database'
+  containers.podman.podman_container_exec:
+    name: 'healthchecks-postgres'
+    command: 'psql -U {{ healthchecks.postgres.user }} -d {{ healthchecks.postgres.database }} -f /opt/dumps/healthchecks.sql'
+
+- name: 'Enable and start Healthchecks stack'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+    state: 'started'
+  loop:
+    - 'healthchecks-postgres.service'
+    - 'healthchecks-server.service'
+    - 'healthchecks-postgres-dump.timer'

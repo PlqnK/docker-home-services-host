@@ -1,0 +1,29 @@
+---
+- name: 'Copy podman-prune-old-tags script to /usr/local/bin'
+  ansible.builtin.copy:
+    src: 'podman-prune-old-tags.sh'
+    dest: '/usr/local/bin/podman-prune-old-tags.sh'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Copy podman auto-prune systemd units'
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: '/etc/systemd/system/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'podman-auto-prune.service'
+    - 'podman-auto-prune.timer'
+  notify: 'Reload systemd daemon'
+
+- name: 'Reload systemd daemon to load new units'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Enable and start podman auto-prune timer'
+  ansible.builtin.systemd:
+    name: 'podman-auto-prune.timer'
+    enabled: true
+    state: 'started'

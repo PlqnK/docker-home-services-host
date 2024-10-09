@@ -1,0 +1,43 @@
+[Unit]
+Description=Calibre
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=calibre
+Image={{ containers_images.calibre }}:{{ containers_images_tags.calibre }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=8080
+ExposeHostPort=8181
+AddDevice=/dev/dri/card1:/dev/dri/card1
+AddDevice=/dev/dri/renderD128:/dev/dri/renderD128
+Volume={{ containers_storage_path }}/data/calibre:/config:Z
+Volume={{ storage_server_shares_mounts_path }}/medias/books:/books:slave
+Secret=calibre_password
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Environment="CUSTOM_USER={{ calibre.user }}"
+Environment="FILE__PASSWORD=/run/secrets/calibre_password"
+Environment="TITLE=Calibre"
+Environment="DRINODE=/dev/dri/renderD128"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.calibre.rule=Host(`calibre.{{ domain_name }}`)"
+Label="traefik.http.routers.calibre.entrypoints=websecure"
+Label="traefik.http.routers.calibre.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.routers.calibre.service=calibre"
+Label="traefik.http.services.calibre.loadbalancer.server.port=8080"
+Label="traefik.http.routers.calibre-cs.rule=Host(`calibre-cs.{{ domain_name }}`)"
+Label="traefik.http.routers.calibre-cs.entrypoints=websecure"
+Label="traefik.http.routers.calibre-cs.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.routers.calibre-cs.service=calibre-cs"
+Label="traefik.http.services.calibre-cs.loadbalancer.server.port=8081"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

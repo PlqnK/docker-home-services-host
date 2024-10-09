@@ -1,0 +1,30 @@
+[Unit]
+Description=Mylar 3
+Documentation=man:podman-systemd.unit(5)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=mylar
+Image={{ containers_images.mylar }}:{{ containers_images_tags.mylar }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=8090
+Volume={{ containers_storage_path }}/data/mylar:/config:Z
+Volume={{ storage_server_shares_mounts_path }}/downloads:/downloads:slave
+Volume={{ storage_server_shares_mounts_path }}/medias/comics:/comics:slave
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.mylar.rule=Host(`mylar.{{ domain_name }}`)"
+Label="traefik.http.routers.mylar.entrypoints=websecure"
+Label="traefik.http.routers.mylar.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.services.mylar.loadbalancer.server.port=8090"
+
+[Service]
+Restart=on-failure
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target
