@@ -1,5 +1,5 @@
 ---
 containers_images:
-  stirling_pdf: 'ghcr.io/frooodle/s-pdf'
+  stirling_pdf: 'ghcr.io/stirling-tools/s-pdf'
 containers_images_tags:
   stirling_pdf: 'latest'
