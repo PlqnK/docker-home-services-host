@@ -14,7 +14,7 @@ Network=common-internal
 Network=immich-server-internal
 Network=immich-redis-internal
 Network=immich-postgres-internal
-ExposeHostPort=3001
+ExposeHostPort=2283
 Volume={{ storage_server_shares_mounts_path }}/immich:/usr/src/app/upload:slave
 Secret=immich_postgres_user
 Secret=immich_postgres_password
@@ -34,7 +34,7 @@ Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.immich.rule=Host(`immich.{{ domain_name }}`)"
 Label="traefik.http.routers.immich.entrypoints=websecure"
 Label="traefik.http.routers.immich.middlewares=set-security-headers@file"
-Label="traefik.http.services.immich.loadbalancer.server.port=3001"
+Label="traefik.http.services.immich.loadbalancer.server.port=2283"
 
 [Service]
 Restart=on-failure
