@@ -9,6 +9,9 @@
     - name: 'Configure filesystem'
       ansible.builtin.import_tasks: 'filesystem.yml'
 
+    - name: 'Configure hosts'
+      ansible.builtin.import_tasks: 'hosts.yml'
+
     - name: 'Configure PAM'
       ansible.builtin.import_tasks: 'pam.yml'
 
