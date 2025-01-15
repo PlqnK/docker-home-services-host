@@ -8,11 +8,11 @@ containers_images_tags:
   borgmatic: '1.9'
   autorestic: '1.8'
   cetusguard: 'v1'
-  traefik: '3.2'
+  traefik: '3.3'
   uptime_kuma: '1'
   healthchecks:
     postgres: '16'
-    server: 'v3.7'
+    server: 'v3.9'
   prometheus: 'latest'
   loki: 'latest'
   syslog_ng: 'latest'
