@@ -18,6 +18,9 @@
     - name: 'Configure bootupd'
       ansible.builtin.import_tasks: 'bootupd.yml'
 
+    - name: 'Configure zincati'
+      ansible.builtin.import_tasks: 'zincati.yml'
+
     - name: 'Configure firewalld'
       ansible.builtin.import_tasks: 'firewalld.yml'
 

@@ -1,0 +1,11 @@
+[Unit]
+Description=Podman auto-pull service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash /usr/local/bin/podman-pull-images.sh
+
+[Install]
+WantedBy=default.target
