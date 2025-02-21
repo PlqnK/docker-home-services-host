@@ -1,7 +1,7 @@
 ---
 containers_images:
   healthchecks:
-    postgres: 'docker.io/library/postgres'
+    postgres: 'public.ecr.aws/docker/library/postgres'
     server: 'docker.io/healthchecks/healthchecks'
 containers_images_tags:
   healthchecks:

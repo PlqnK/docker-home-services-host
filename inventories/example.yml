@@ -359,6 +359,10 @@ all:
         containers_ipv6:
           enable: true
         containers_storage_path: '/var/containers'
+        containers_registries:
+          - registry: 'docker.io'
+            username: ''
+            password: ''
         backup_server_key: 'ssh-ed25519 xxx' # Public key part of the key generated for hostvars['backups']['rsync_servers']['private_key']
         promtail:
           clients:
