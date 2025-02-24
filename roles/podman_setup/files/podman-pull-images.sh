@@ -9,6 +9,6 @@ fi
 
 echo "Pulling new images"
 
-for image in $(grep -h -r "Image=" /etc/containers/systemd/ | awk -F= '{print $2}' | uniq); do
+for image in $(grep -s -h -r "Image=" /etc/containers/systemd/ /etc/systemd/system/ | awk -F= '{print $2}' | uniq); do
   podman image pull "${image}"
 done
