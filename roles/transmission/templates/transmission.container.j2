@@ -24,7 +24,7 @@ Label="traefik.http.routers.transmission.rule=Host(`transmission.{{ domain_name 
 Label="traefik.http.routers.transmission.entrypoints=websecure"
 Label="traefik.http.routers.transmission.middlewares=set-security-headers@file, restrict-external-access@file"
 Label="traefik.http.services.transmission.loadbalancer.server.port=9091"
-AutoUpdate=registry
+AutoUpdate=local
 
 [Service]
 Restart=on-failure

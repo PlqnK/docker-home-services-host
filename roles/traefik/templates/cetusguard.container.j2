@@ -23,7 +23,7 @@ GET %%API_PREFIX_CONTAINERS%%/json\n\
 ! Inspect a container\n\
 GET %%API_PREFIX_CONTAINERS%%/%%CONTAINER_ID_OR_NAME%%/json"
 Environment="CETUSGUARD_LOG_LEVEL=6"
-AutoUpdate=registry
+AutoUpdate=local
 
 [Service]
 Restart=on-failure

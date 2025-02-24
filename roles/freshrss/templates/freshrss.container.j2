@@ -22,7 +22,7 @@ Label="traefik.http.routers.freshrss.rule=Host(`freshrss.{{ domain_name }}`)"
 Label="traefik.http.routers.freshrss.entrypoints=websecure"
 Label="traefik.http.routers.freshrss.middlewares=set-security-headers@file"
 Label="traefik.http.services.freshrss.loadbalancer.server.port=80"
-AutoUpdate=registry
+AutoUpdate=local
 
 [Service]
 Restart=on-failure

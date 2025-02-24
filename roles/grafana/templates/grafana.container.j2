@@ -20,7 +20,7 @@ Label="traefik.http.routers.grafana.rule=Host(`grafana.{{ domain_name }}`)"
 Label="traefik.http.routers.grafana.entrypoints=websecure"
 Label="traefik.http.routers.grafana.middlewares=set-security-headers@file, restrict-external-access@file"
 Label="traefik.http.services.grafana.loadbalancer.server.port=3000"
-AutoUpdate=registry
+AutoUpdate=local
 
 [Service]
 Restart=on-failure

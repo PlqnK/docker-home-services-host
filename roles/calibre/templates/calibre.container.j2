@@ -34,7 +34,7 @@ Label="traefik.http.routers.calibre-cs.entrypoints=websecure"
 Label="traefik.http.routers.calibre-cs.middlewares=set-security-headers@file, restrict-external-access@file"
 Label="traefik.http.routers.calibre-cs.service=calibre-cs"
 Label="traefik.http.services.calibre-cs.loadbalancer.server.port=8081"
-AutoUpdate=registry
+AutoUpdate=local
 
 [Service]
 Restart=on-failure

@@ -13,7 +13,7 @@ Volume={{ containers_storage_path }}/runtime/recyclarr:/config:Z
 Volume={{ containers_storage_path }}/config/recyclarr/recyclarr.yml:/config/recyclarr.yml:Z
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
-AutoUpdate=registry
+AutoUpdate=local
 
 [Service]
 Restart=on-failure

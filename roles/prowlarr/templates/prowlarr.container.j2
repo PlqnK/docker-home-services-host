@@ -19,7 +19,7 @@ Label="traefik.http.routers.prowlarr.rule=Host(`prowlarr.{{ domain_name }}`)"
 Label="traefik.http.routers.prowlarr.entrypoints=websecure"
 Label="traefik.http.routers.prowlarr.middlewares=set-security-headers@file, restrict-external-access@file"
 Label="traefik.http.services.prowlarr.loadbalancer.server.port=9696"
-AutoUpdate=registry
+AutoUpdate=local
 
 [Service]
 Restart=on-failure
