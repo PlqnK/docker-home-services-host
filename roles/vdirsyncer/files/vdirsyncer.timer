@@ -2,7 +2,7 @@
 Description=Daily vdirsyncer CardDAV/CalDAV synchronisation
 
 [Timer]
-OnCalendar=*-*-* 5:00:00
+OnCalendar=*-*-* 3:30:00
 
 [Install]
 WantedBy=timers.target

@@ -10,6 +10,7 @@ OnFailure=ping-healthchecksio-uuid@{{ nextcloud.postgres.dump.healthchecks_uuid 
 ExecStart=/usr/bin/podman container exec nextcloud-postgres pg_dump --clean -U {{ nextcloud.postgres.user }} {{ nextcloud.postgres.database }} -f /opt/dumps/nextcloud.sql
 Type=oneshot
 Restart=no
+TimeoutStartSec=1800
 
 [Install]
 WantedBy=default.target

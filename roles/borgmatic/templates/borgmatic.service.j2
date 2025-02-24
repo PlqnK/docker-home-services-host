@@ -2,6 +2,7 @@
 Description=Borgmatic
 Wants=network-online.target
 After=network-online.target
+After=mbsync.service vdirsyncer.service rsync-servers.service
 RequiresMountsFor=%t/containers
 
 [X-Container]
@@ -10,6 +11,7 @@ Image={{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }}
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
 Restart=no
+RuntimeMaxSec=3600
 TimeoutStopSec=70
 ExecStart=/usr/bin/podman container run \
 	--rm \

@@ -10,6 +10,7 @@ Image={{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }}
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
 Restart=no
+TimeoutStartSec=900
 TimeoutStopSec=70
 ExecStart=/usr/bin/podman container run \
 	--rm \
@@ -30,7 +31,7 @@ ExecStart=/usr/bin/podman container run \
 	--env TZ={{ timezone }} \
 	--env HEALTHCHECKS_URL=healthchecks.{{ domain_name }}/ping \
 	--env HEALTHCHECKS_UUID={{ vdirsyncer.healthchecks_uuid }} {{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }}
-Type=forking
+Type=oneshot
 
 [Install]
 WantedBy=default.target

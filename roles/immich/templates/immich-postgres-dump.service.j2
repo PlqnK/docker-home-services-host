@@ -10,6 +10,7 @@ OnFailure=ping-healthchecksio-uuid@{{ immich.postgres.dump.healthchecks_uuid }}:
 ExecStart=/usr/bin/podman container exec immich-postgres pg_dump --clean -U {{ immich.postgres.user }} {{ immich.postgres.database }} -f /opt/dumps/immich.sql
 Type=oneshot
 Restart=no
+TimeoutStartSec=1800
 
 [Install]
 WantedBy=default.target

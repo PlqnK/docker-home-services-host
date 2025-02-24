@@ -10,6 +10,7 @@ OnFailure=ping-healthchecksio-uuid@{{ ttrss.postgres.dump.healthchecks_uuid }}:f
 ExecStart=/usr/bin/podman container exec ttrss-postgres pg_dump --clean -U {{ ttrss.postgres.user }} {{ ttrss.postgres.database }} -f /opt/dumps/ttrss.sql
 Type=oneshot
 Restart=no
+TimeoutStartSec=1800
 
 [Install]
 WantedBy=default.target
