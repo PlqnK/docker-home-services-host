@@ -22,6 +22,7 @@ Label="traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.{{ domain_name }}`)"
 Label="traefik.http.routers.sabnzbd.entrypoints=websecure"
 Label="traefik.http.routers.sabnzbd.middlewares=set-security-headers@file, restrict-external-access@file"
 Label="traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

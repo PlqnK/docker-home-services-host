@@ -20,6 +20,7 @@ Label="traefik.http.routers.tautulli.rule=Host(`tautulli.{{ domain_name }}`)"
 Label="traefik.http.routers.tautulli.entrypoints=websecure"
 Label="traefik.http.routers.tautulli.middlewares=set-security-headers@file, restrict-external-access@file"
 Label="traefik.http.services.tautulli.loadbalancer.server.port=8181"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

@@ -23,6 +23,7 @@ Label="traefik.http.routers.office.entrypoints=websecure"
 Label="traefik.http.routers.office.middlewares=set-security-headers@file"
 Label="traefik.http.services.office.loadbalancer.server.port=9980"
 Label="traefik.http.services.office.loadbalancer.server.scheme=https"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

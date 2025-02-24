@@ -23,6 +23,7 @@ Label="traefik.http.routers.navidrome.rule=Host(`navidrome.{{ domain_name }}`)"
 Label="traefik.http.routers.navidrome.entrypoints=websecure"
 Label="traefik.http.routers.navidrome.middlewares=set-security-headers@file"
 Label="traefik.http.services.navidrome.loadbalancer.server.port=4533"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

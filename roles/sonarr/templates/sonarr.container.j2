@@ -21,6 +21,7 @@ Label="traefik.http.routers.sonarr.rule=Host(`sonarr.{{ domain_name }}`)"
 Label="traefik.http.routers.sonarr.entrypoints=websecure"
 Label="traefik.http.routers.sonarr.middlewares=set-security-headers@file, restrict-external-access@file"
 Label="traefik.http.services.sonarr.loadbalancer.server.port=8989"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

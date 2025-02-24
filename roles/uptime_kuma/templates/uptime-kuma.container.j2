@@ -19,6 +19,7 @@ Label="traefik.http.routers.uptime-kuma.rule=Host(`kuma.{{ domain_name }}`)"
 Label="traefik.http.routers.uptime-kuma.entrypoints=websecure"
 Label="traefik.http.routers.uptime-kuma.middlewares=set-security-headers@file, restrict-external-access@file"
 Label="traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

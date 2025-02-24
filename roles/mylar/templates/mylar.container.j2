@@ -21,6 +21,7 @@ Label="traefik.http.routers.mylar.rule=Host(`mylar.{{ domain_name }}`)"
 Label="traefik.http.routers.mylar.entrypoints=websecure"
 Label="traefik.http.routers.mylar.middlewares=set-security-headers@file, restrict-external-access@file"
 Label="traefik.http.services.mylar.loadbalancer.server.port=8090"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

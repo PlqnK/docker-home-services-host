@@ -22,6 +22,7 @@ Volume=/etc/machine-id:/etc/machine-id:ro
 Secret=promtail_loki_password
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

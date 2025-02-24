@@ -37,6 +37,7 @@ Label="traefik.http.routers.traefik-ping.rule=Host(`traefik.{{ ansible_fqdn }}`)
 Label="traefik.http.routers.traefik-ping.entrypoints=websecure"
 Label="traefik.http.routers.traefik-ping.service=ping@internal"
 Label="traefik.http.routers.traefik-ping.middlewares=set-security-headers@file, restrict-external-access@file"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

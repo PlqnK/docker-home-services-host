@@ -22,6 +22,7 @@ Label="traefik.http.routers.loki.entrypoints=websecure"
 Label="traefik.http.routers.loki.middlewares=set-security-headers@file, restrict-external-access@file, loki-auth"
 Label="traefik.http.middlewares.loki-auth.basicauth.users={{ loki.user }}:{{ loki.password_hash }}"
 Label="traefik.http.services.loki.loadbalancer.server.port=3100"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

@@ -25,6 +25,7 @@ Environment="WIREGUARD_ADDRESSES={{ gluetun.wireguard.addresses }}"
 Environment="FIREWALL_VPN_INPUT_PORTS={{ gluetun.firewall.vpn_input_ports }}"
 Environment="DOT=off"
 Environment="DNS_ADDRESS={{ gluetun.dns.addresses }}"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

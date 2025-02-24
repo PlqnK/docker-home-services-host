@@ -14,6 +14,7 @@ Volume={{ containers_storage_path }}/config/node-exporter/web.yml:/etc/node-expo
 Volume=/:/host:ro,rslave
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

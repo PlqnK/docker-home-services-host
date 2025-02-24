@@ -21,6 +21,7 @@ Environment="TTRSS_DB_TYPE=pgsql"
 Environment="TTRSS_DB_HOST=ttrss-postgres"
 Environment="TTRSS_DB_NAME={{ ttrss.postgres.database }}"
 Environment="TTRSS_SELF_URL_PATH=https://ttrss.{{ domain_name }}"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

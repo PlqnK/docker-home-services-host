@@ -20,6 +20,7 @@ Label="traefik.http.routers.stirling-pdf.entrypoints=websecure"
 Label="traefik.http.routers.stirling-pdf.middlewares=set-security-headers@file, stirling-pdf-auth"
 Label="traefik.http.middlewares.stirling-pdf-auth.basicauth.users={{ stirling_pdf.user }}:{{ stirling_pdf.password_hash }}"
 Label="traefik.http.services.stirling-pdf.loadbalancer.server.port=8080"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

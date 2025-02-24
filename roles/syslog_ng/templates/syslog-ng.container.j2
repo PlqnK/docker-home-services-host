@@ -15,6 +15,7 @@ PublishPort=601:601/tcp
 Volume={{ containers_storage_path }}/config/syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:Z
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

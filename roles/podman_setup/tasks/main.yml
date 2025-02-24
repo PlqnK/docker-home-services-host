@@ -18,5 +18,8 @@
     - name: 'Configure image pulling'
       ansible.builtin.import_tasks: 'pull.yml'
 
+    - name: 'Configure auto updates'
+      ansible.builtin.import_tasks: 'update.yml'
+
     - name: 'Configure image pruning'
       ansible.builtin.import_tasks: 'prune.yml'

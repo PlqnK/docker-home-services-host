@@ -20,6 +20,7 @@ Label="traefik.http.routers.maintainerr.entrypoints=websecure"
 Label="traefik.http.routers.maintainerr.middlewares=set-security-headers@file, restrict-external-access@file, maintainerr-auth"
 Label="traefik.http.middlewares.maintainerr-auth.basicauth.users={{ maintainerr.user }}:{{ maintainerr.password_hash }}"
 Label="traefik.http.services.maintainerr.loadbalancer.server.port=6246"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

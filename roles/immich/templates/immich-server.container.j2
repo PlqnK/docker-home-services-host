@@ -35,6 +35,7 @@ Label="traefik.http.routers.immich.rule=Host(`immich.{{ domain_name }}`)"
 Label="traefik.http.routers.immich.entrypoints=websecure"
 Label="traefik.http.routers.immich.middlewares=set-security-headers@file"
 Label="traefik.http.services.immich.loadbalancer.server.port=2283"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

@@ -17,6 +17,7 @@ Volume=/run/systemd:/run/systemd:ro,rslave
 Volume=/var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

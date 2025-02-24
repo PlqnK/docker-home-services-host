@@ -20,6 +20,7 @@ Label="traefik.http.routers.calibre-web.rule=Host(`calibre-web.{{ domain_name }}
 Label="traefik.http.routers.calibre-web.entrypoints=websecure"
 Label="traefik.http.routers.calibre-web.middlewares=set-security-headers@file"
 Label="traefik.http.services.calibre-web.loadbalancer.server.port=8083"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

@@ -21,6 +21,7 @@ Volume={{ storage_server_shares_mounts_path }}:{{ storage_server_shares_mounts_p
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
 Environment="SSH_ENABLE_ROOT=true"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure

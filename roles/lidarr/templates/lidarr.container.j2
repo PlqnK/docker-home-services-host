@@ -21,6 +21,7 @@ Label="traefik.http.routers.lidarr.rule=Host(`lidarr.{{ domain_name }}`)"
 Label="traefik.http.routers.lidarr.entrypoints=websecure"
 Label="traefik.http.routers.lidarr.middlewares=set-security-headers@file, restrict-external-access@file"
 Label="traefik.http.services.lidarr.loadbalancer.server.port=8686"
+AutoUpdate=registry
 
 [Service]
 Restart=on-failure
