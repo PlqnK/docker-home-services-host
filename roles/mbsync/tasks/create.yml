@@ -65,7 +65,7 @@
     mode: '0755'
 
 - name: 'Enable and start mbsync timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'mbsync.timer'
     daemon_reload: true
     enabled: true

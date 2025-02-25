@@ -49,7 +49,7 @@
   when: (item.fstype == "btrfs" and "ro" in item.options and not "bind" in item.options)
 
 - name: 'Enable and start Btrfs /var/containers snapshot timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'btrfs-snapshot@var-containers.timer'
     enabled: true
     state: 'started'

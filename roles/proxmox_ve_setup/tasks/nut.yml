@@ -18,7 +18,7 @@
   notify: 'Reload nut-monitor service'
 
 - name: 'Enable and start nut-monitor'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'nut-monitor.service'
     enabled: true
     state: 'started'

@@ -8,7 +8,7 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update Maintainerr tag in quadlet unit'
+- name: 'Update Maintainerr tag in quadlet unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'maintainerr.container.j2'
     dest: '/etc/containers/systemd/maintainerr.container'
@@ -20,7 +20,7 @@
   tags: ['never', 'containers-update']
 
 - name: 'Restart Maintainerr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'maintainerr.service'
     daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
     state: 'restarted'
@@ -29,25 +29,25 @@
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable Maintainerr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'maintainerr.service'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Maintainerr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'maintainerr.service'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Maintainerr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'maintainerr.service'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start Maintainerr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'maintainerr.service'
     state: 'started'
   tags: ['never', 'containers-start']

@@ -1,5 +1,5 @@
 ---
-- name: 'Create {{ containers_storage_path }} btrfs snapshot'
+- name: 'Create btrfs snapshot of {{ containers_storage_path }}'
   community.general.btrfs_subvolume:
     name: '.snapshot'
     filesystem_device: '{{ ansible_mounts | community.general.json_query(query) | first }}'

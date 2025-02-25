@@ -8,7 +8,7 @@
     mode: '0600'
 
 - name: 'Enable and start wireguard tunnel'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'wg-quick@wg0.service'
     enabled: true
     state: 'started'
@@ -44,7 +44,7 @@
   register: firewalld_info_zone_vpn
   changed_when: false
 
-- name: 'Enable firewalld VPN zone forwarding'
+- name: 'Enable firewalld VPN zone forwarding' # noqa: no-changed-when
   ansible.builtin.command:
     cmd: 'firewall-cmd --permanent --zone=vpn --add-forward'
   vars:

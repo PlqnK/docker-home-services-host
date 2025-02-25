@@ -9,7 +9,7 @@
   notify: 'Reload fail2ban service'
 
 - name: 'Enable and start fail2ban'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'fail2ban.service'
     enabled: true
     state: 'started'

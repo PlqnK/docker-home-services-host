@@ -11,7 +11,7 @@
   when: (remove_prompt.user_input != "YES")
 
 - name: 'Disable and stop sshd-rsync container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'sshd-rsync.service'
     daemon_reload: true
     enabled: false
@@ -74,7 +74,7 @@
   when: (firewalld_service_remove.changed)
   block:
     - name: 'Reload firewalld to remove service'
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: 'firewalld.service'
         state: 'reloaded'
 

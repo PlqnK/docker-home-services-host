@@ -32,7 +32,7 @@
   ansible.builtin.meta: 'flush_handlers'
 
 - name: 'Enable and start systemd automount units'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ storage_server_shares_mounts_path | systemd_escape(path=True) }}-{{ item.name | systemd_escape(path=True) }}.automount'
     enabled: true
     state: 'started'

@@ -13,14 +13,14 @@
   register: 'containers_images_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Dump Immich DB'
-  ansible.builtin.systemd:
+- name: 'Dump Immich DB' # noqa: no-handler
+  ansible.builtin.systemd_service:
     name: 'immich-postgres-dump.service'
     state: 'started'
   when: (containers_images_pull.changed)
   tags: ['never', 'containers-update']
 
-- name: 'Update Immich stack tags in quadlet units'
+- name: 'Update Immich stack tags in quadlet units' # noqa: no-handler
   ansible.builtin.template:
     src: '{{ item }}.container.j2'
     dest: '/etc/containers/systemd/{{ item }}.container'
@@ -42,7 +42,7 @@
         ("containers-update" in ansible_run_tags and containers_images_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
   block:
     - name: 'Stop Immich stack'
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: '{{ item }}'
         daemon_reload: '{{ ("true" | bool) if (quadlet_units is defined and quadlet_units.changed) else ("false" | bool) }}'
         state: 'stopped'
@@ -53,7 +53,7 @@
         - 'immich-postgres.service'
 
     - name: 'Start Immich stack'
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: '{{ item }}'
         state: 'started'
       loop:
@@ -63,7 +63,7 @@
         - 'immich-server.service'
 
 - name: 'Disable Immich stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     enabled: false
   loop:
@@ -75,7 +75,7 @@
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Immich stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     state: 'stopped'
   loop:
@@ -87,7 +87,7 @@
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Immich stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     enabled: true
   loop:
@@ -99,7 +99,7 @@
   tags: ['never', 'containers-enable']
 
 - name: 'Start Immich stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     state: 'started'
   loop:

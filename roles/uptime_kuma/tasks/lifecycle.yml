@@ -8,7 +8,7 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update Uptime Kuma tag in quadlet unit'
+- name: 'Update Uptime Kuma tag in quadlet unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'uptime-kuma.container.j2'
     dest: '/etc/containers/systemd/uptime-kuma.container'
@@ -20,7 +20,7 @@
   tags: ['never', 'containers-update']
 
 - name: 'Restart Uptime Kuma container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'uptime-kuma.service'
     daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
     state: 'restarted'
@@ -29,25 +29,25 @@
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable Uptime Kuma container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'uptime-kuma.service'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Uptime Kuma container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'uptime-kuma.service'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Uptime Kuma container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'uptime-kuma.service'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start Uptime Kuma container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'uptime-kuma.service'
     state: 'started'
   tags: ['never', 'containers-start']

@@ -11,7 +11,7 @@
   register: 'containers_images_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update Traefik stack tags in quadlet units'
+- name: 'Update Traefik stack tags in quadlet units' # noqa: no-handler
   ansible.builtin.template:
     src: '{{ item }}.container.j2'
     dest: '/etc/containers/systemd/{{ item }}.container'
@@ -31,7 +31,7 @@
         ("containers-update" in ansible_run_tags and containers_images_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
   block:
     - name: 'Stop Traefik stack'
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: '{{ item }}'
         daemon_reload: '{{ ("true" | bool) if (quadlet_units is defined and quadlet_units.changed) else ("false" | bool) }}'
         state: 'stopped'
@@ -40,7 +40,7 @@
         - 'cetusguard.service'
 
     - name: 'Start Traefik stack'
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: '{{ item }}'
         state: 'started'
       loop:
@@ -48,7 +48,7 @@
         - 'traefik.service'
 
 - name: 'Disable Traefik stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     enabled: false
   loop:
@@ -57,7 +57,7 @@
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Traefik stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     state: 'stopped'
   loop:
@@ -66,7 +66,7 @@
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Traefik stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     enabled: true
   loop:
@@ -75,7 +75,7 @@
   tags: ['never', 'containers-enable']
 
 - name: 'Start Traefik stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     state: 'started'
   loop:

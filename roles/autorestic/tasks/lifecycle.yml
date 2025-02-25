@@ -5,9 +5,10 @@
     pull: true
     force: true
     state: 'present'
+  register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update autorestic tag in systemd unit'
+- name: 'Update autorestic tag in systemd unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'autorestic.service.j2'
     dest: '/etc/systemd/system/autorestic.service'
@@ -19,25 +20,25 @@
   tags: ['never', 'containers-update']
 
 - name: 'Disable autorestic timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'autorestic.timer'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop autorestic timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'autorestic.timer'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable autorestic timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'autorestic.timer'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start autorestic timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'autorestic.timer'
     state: 'started'
   tags: ['never', 'containers-start']

@@ -7,6 +7,9 @@
 .vscode/
 .vagrant/
 
+# Ansible
+.ansible/
+
 # Python
 __pycache__
 

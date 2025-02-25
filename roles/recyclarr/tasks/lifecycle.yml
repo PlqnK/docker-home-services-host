@@ -8,7 +8,7 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update Recyclarr tag in quadlet unit'
+- name: 'Update Recyclarr tag in quadlet unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'recyclarr.container.j2'
     dest: '/etc/containers/systemd/recyclarr.container'
@@ -20,7 +20,7 @@
   tags: ['never', 'containers-update']
 
 - name: 'Restart Recyclarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'recyclarr.service'
     daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
     state: 'restarted'
@@ -29,25 +29,25 @@
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable Recyclarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'recyclarr.service'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Recyclarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'recyclarr.service'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Recyclarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'recyclarr.service'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start Recyclarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'recyclarr.service'
     state: 'started'
   tags: ['never', 'containers-start']

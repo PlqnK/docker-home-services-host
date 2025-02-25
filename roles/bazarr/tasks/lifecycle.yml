@@ -8,7 +8,7 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update Bazarr tag in quadlet unit'
+- name: 'Update Bazarr tag in quadlet unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'bazarr.container.j2'
     dest: '/etc/containers/systemd/bazarr.container'
@@ -20,7 +20,7 @@
   tags: ['never', 'containers-update']
 
 - name: 'Restart Bazarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'bazarr.service'
     daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
     state: 'restarted'
@@ -29,25 +29,25 @@
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable Bazarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'bazarr.service'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Bazarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'bazarr.service'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Bazarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'bazarr.service'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start Bazarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'bazarr.service'
     state: 'started'
   tags: ['never', 'containers-start']

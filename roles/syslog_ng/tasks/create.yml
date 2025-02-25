@@ -15,7 +15,7 @@
   when: (firewalld_service_copy.changed)
   block:
     - name: 'Reload firewalld to load new service'
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: 'firewalld.service'
         state: 'reloaded'
 
@@ -40,8 +40,8 @@
     internal: false
     ipv6: '{{ containers_ipv6.enable }}'
     # See https://github.com/containers/netavark/issues/709
-    #opt:
-    #  isolate: true
+    # opt:
+    #   isolate: true
 
 - name: 'Add syslog-ng network to firewalld trusted zone'
   block:
@@ -87,7 +87,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start syslog-ng container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'syslog-ng.service'
     daemon_reload: true
     enabled: true
@@ -95,7 +95,7 @@
   register: 'systemd_start'
 
 - name: 'Restart syslog-ng service if configuration file or quadlet unit has changed while service was already started'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'syslog-ng.service'
     daemon_reload: true
     state: 'restarted'

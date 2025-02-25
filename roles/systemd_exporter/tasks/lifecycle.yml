@@ -8,7 +8,7 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update systemd_exporter tag in quadlet unit'
+- name: 'Update systemd_exporter tag in quadlet unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'systemd-exporter.container.j2'
     dest: '/etc/containers/systemd/systemd-exporter.container'
@@ -20,7 +20,7 @@
   tags: ['never', 'containers-update']
 
 - name: 'Restart systemd_exporter container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'systemd-exporter.service'
     daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
     state: 'restarted'
@@ -29,25 +29,25 @@
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable systemd_exporter container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'systemd-exporter.service'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop systemd_exporter container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'systemd-exporter.service'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable systemd_exporter container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'systemd-exporter.service'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start systemd_exporter container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'systemd-exporter.service'
     state: 'started'
   tags: ['never', 'containers-start']

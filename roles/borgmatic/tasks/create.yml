@@ -97,7 +97,7 @@
     - 'borgmatic-shell'
 
 - name: 'Enable and start borgmatic timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'borgmatic.timer'
     daemon_reload: true
     enabled: true

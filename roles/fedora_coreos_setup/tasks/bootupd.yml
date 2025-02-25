@@ -9,7 +9,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start bootupd auto-update'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'bootupd-auto-update.service'
     enabled: true
     state: 'started'

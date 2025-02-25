@@ -130,7 +130,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Traefik stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     daemon_reload: true
     enabled: true
@@ -141,7 +141,7 @@
     - 'traefik.service'
 
 - name: 'Restart Traefik services if podman secret, configuration file or quadlet unit has changed while service was already started'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'

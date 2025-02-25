@@ -8,7 +8,7 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update Tautulli tag in quadlet unit'
+- name: 'Update Tautulli tag in quadlet unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'tautulli.container.j2'
     dest: '/etc/containers/systemd/tautulli.container'
@@ -20,7 +20,7 @@
   tags: ['never', 'containers-update']
 
 - name: 'Restart Tautulli container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'tautulli.service'
     daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
     state: 'restarted'
@@ -29,25 +29,25 @@
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable Tautulli container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'tautulli.service'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Tautulli container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'tautulli.service'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Tautulli container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'tautulli.service'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start Tautulli container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'tautulli.service'
     state: 'started'
   tags: ['never', 'containers-start']

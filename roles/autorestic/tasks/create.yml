@@ -47,7 +47,7 @@
     mode: '0755'
 
 - name: 'Enable and start autorestic timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'autorestic.timer'
     daemon_reload: true
     enabled: true

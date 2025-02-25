@@ -18,7 +18,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Radarr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'radarr.service'
     daemon_reload: true
     enabled: true
@@ -26,9 +26,8 @@
   register: 'systemd_start'
 
 - name: 'Restart Radarr service if quadlet unit has changed while service was already started'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'radarr.service'
     daemon_reload: true
     state: 'restarted'
   when: (quadlet_unit.changed and not systemd_start.changed)
-

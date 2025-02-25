@@ -132,7 +132,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Healthchecks stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     daemon_reload: true
     enabled: true
@@ -144,7 +144,7 @@
     - 'healthchecks-postgres-dump.timer'
 
 - name: 'Restart Healthchecks services if podman secret, environment file or quadlet unit has changed while service was already started'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'

@@ -186,7 +186,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Immich stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     daemon_reload: true
     enabled: true
@@ -200,7 +200,7 @@
     - 'immich-postgres-dump.timer'
 
 - name: 'Restart Immich services if podman secret, configuration file or quadlet unit has changed while service was already started'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'

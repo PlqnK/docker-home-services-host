@@ -1,11 +1,11 @@
 ---
 - name: 'Start Nextcloud PostgreSQL'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'nextcloud-postgres.service'
     state: 'started'
 
 - name: 'Stop remaining Nextcloud stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     state: 'stopped'
   loop:
@@ -21,11 +21,11 @@
     command: 'pg_dump -U {{ nextcloud.postgres.user }} -d {{ nextcloud.postgres.database }} --clean --if-exists -f /opt/dumps/nextcloud.sql'
 
 - name: 'Stop PostgreSQL'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'nextcloud-postgres.service'
     state: 'stopped'
 
-- name: 'Create {{ containers_storage_path }} btrfs snapshot'
+- name: 'Create btrfs snapshot of {{ containers_storage_path }}'
   community.general.btrfs_subvolume:
     name: '.snapshot'
     filesystem_device: '{{ ansible_mounts | community.general.json_query(query) | first }}'
@@ -56,7 +56,7 @@
     mode: '0644'
 
 - name: 'Start PostgreSQL'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'nextcloud-postgres.service'
     daemon_reload: true
     state: 'started'
@@ -75,7 +75,7 @@
     command: 'psql -U {{ nextcloud.postgres.user }} -d {{ nextcloud.postgres.database }} -f /opt/dumps/nextcloud.sql'
 
 - name: 'Enable and start Nextcloud stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     enabled: true
     state: 'started'

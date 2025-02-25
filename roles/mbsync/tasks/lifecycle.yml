@@ -5,9 +5,10 @@
     pull: true
     force: true
     state: 'present'
+  register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update mbsync tag in systemd unit'
+- name: 'Update mbsync tag in systemd unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'mbsync.service.j2'
     dest: '/etc/systemd/system/mbsync.service'
@@ -19,25 +20,25 @@
   tags: ['never', 'containers-update']
 
 - name: 'Disable mbsync timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'mbsync.timer'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop mbsync timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'mbsync.timer'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable mbsync timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'mbsync.timer'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start mbsync timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'mbsync.timer'
     state: 'started'
   tags: ['never', 'containers-start']

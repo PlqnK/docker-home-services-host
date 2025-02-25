@@ -11,7 +11,7 @@
   when: (remove_prompt.user_input != "YES")
 
 - name: 'Disable and stop Transmission pod'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'transmission-gluetun-pod.service'
     daemon_reload: true
     enabled: false
@@ -53,7 +53,7 @@
 
 - name: 'Check if SELinux is configured to allow the use of TUN in containers'
   ansible.builtin.shell:
-    cmd: 'semodule -l | grep container-tun'
+    cmd: 'set -o pipefail && semodule -l | grep container-tun'
   register: container_tun_semodule
   changed_when: false
   # grep returns 1 if the string isn't found and 2 for exceptions so we need to change the task fail condition.

@@ -8,7 +8,7 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update Komga tag in quadlet unit'
+- name: 'Update Komga tag in quadlet unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'komga.container.j2'
     dest: '/etc/containers/systemd/komga.container'
@@ -20,7 +20,7 @@
   tags: ['never', 'containers-update']
 
 - name: 'Restart Komga container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'komga.service'
     daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
     state: 'restarted'
@@ -29,25 +29,25 @@
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable Komga container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'komga.service'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Komga container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'komga.service'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Komga container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'komga.service'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start Komga container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'komga.service'
     state: 'started'
   tags: ['never', 'containers-start']

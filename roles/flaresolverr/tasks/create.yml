@@ -10,7 +10,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Flaresolverr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'flaresolverr.service'
     daemon_reload: true
     enabled: true
@@ -18,7 +18,7 @@
   register: 'systemd_start'
 
 - name: 'Restart Flaresolverr service if quadlet unit has changed while service was already started'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'flaresolverr.service'
     daemon_reload: true
     state: 'restarted'

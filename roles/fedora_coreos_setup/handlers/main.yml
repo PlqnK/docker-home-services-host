@@ -3,25 +3,25 @@
   ansible.builtin.reboot:
 
 - name: 'Restart sshd service'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'sshd.service'
     state: 'restarted'
 
 - name: 'Reload systemd daemon'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     daemon_reload: true
 
 - name: 'Reload firewalld service'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'firewalld.service'
     state: 'reloaded'
 
 - name: 'Reload fail2ban service'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'fail2ban.service'
     state: 'reloaded'
 
 - name: 'Reload nut-monitor service'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'nut-monitor.service'
     state: 'reloaded'

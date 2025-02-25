@@ -176,7 +176,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Tiny Tiny RSS stack'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     daemon_reload: true
     enabled: true
@@ -190,7 +190,7 @@
     - 'ttrss-postgres-dump.timer'
 
 - name: 'Restart Tiny Tiny RSS services if podman secret, environment file or quadlet unit has changed while service was already started'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: '{{ item }}'
     daemon_reload: true
     state: 'restarted'

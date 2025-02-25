@@ -64,7 +64,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Overseerr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'overseerr.service'
     daemon_reload: true
     enabled: true
@@ -72,7 +72,7 @@
   register: 'systemd_start'
 
 - name: 'Restart Overseerr service if quadlet unit has changed while service was already started'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'overseerr.service'
     daemon_reload: true
     state: 'restarted'

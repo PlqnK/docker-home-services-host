@@ -8,7 +8,7 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update Navidrome tag in quadlet unit'
+- name: 'Update Navidrome tag in quadlet unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'navidrome.container.j2'
     dest: '/etc/containers/systemd/navidrome.container'
@@ -20,7 +20,7 @@
   tags: ['never', 'containers-update']
 
 - name: 'Restart Navidrome container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'navidrome.service'
     daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
     state: 'restarted'
@@ -29,25 +29,25 @@
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable Navidrome container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'navidrome.service'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop Navidrome container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'navidrome.service'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable Navidrome container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'navidrome.service'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start Navidrome container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'navidrome.service'
     state: 'started'
   tags: ['never', 'containers-start']

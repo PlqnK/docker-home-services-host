@@ -8,7 +8,7 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update IT Tools tag in quadlet unit'
+- name: 'Update IT Tools tag in quadlet unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'it-tools.container.j2'
     dest: '/etc/containers/systemd/it-tools.container'
@@ -20,7 +20,7 @@
   tags: ['never', 'containers-update']
 
 - name: 'Restart IT Tools container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'it-tools.service'
     daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
     state: 'restarted'
@@ -29,25 +29,25 @@
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable IT Tools container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'it-tools.service'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop IT Tools container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'it-tools.service'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable IT Tools container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'it-tools.service'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start IT Tools container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'it-tools.service'
     state: 'started'
   tags: ['never', 'containers-start']

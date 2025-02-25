@@ -75,7 +75,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Collabora Online container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'collabora-online.service'
     daemon_reload: true
     enabled: true
@@ -83,7 +83,7 @@
   register: 'systemd_start'
 
 - name: 'Restart Collabora Online service if environment file or quadlet unit has changed while service was already started'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'collabora-online.service'
     daemon_reload: true
     state: 'restarted'

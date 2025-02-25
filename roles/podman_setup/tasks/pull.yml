@@ -23,7 +23,7 @@
   ansible.builtin.meta: 'flush_handlers'
 
 - name: 'Enable and start podman auto-pull timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'podman-auto-pull.timer'
     enabled: true
     state: 'started'

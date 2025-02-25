@@ -31,7 +31,7 @@
   notify: 'Reload systemd daemon'
 
 - name: 'Enable and start Unpackerr container'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'unpackerr.service'
     daemon_reload: true
     enabled: true
@@ -39,7 +39,7 @@
   register: 'systemd_start'
 
 - name: 'Restart Unpackerr service if environment file or quadlet unit has changed while service was already started'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'unpackerr.service'
     daemon_reload: true
     state: 'restarted'

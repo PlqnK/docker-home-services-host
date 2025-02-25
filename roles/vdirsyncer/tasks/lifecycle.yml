@@ -5,9 +5,10 @@
     pull: true
     force: true
     state: 'present'
+  register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update vdirsyncer tag in systemd unit'
+- name: 'Update vdirsyncer tag in systemd unit' # noqa: no-handler
   ansible.builtin.template:
     src: 'vdirsyncer.service.j2'
     dest: '/etc/systemd/system/vdirsyncer.service'
@@ -19,25 +20,25 @@
   tags: ['never', 'containers-update']
 
 - name: 'Disable vdirsyncer timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'vdirsyncer.timer'
     enabled: false
   tags: ['never', 'containers-disable']
 
 - name: 'Stop vdirsyncer timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'vdirsyncer.timer'
     state: 'stopped'
   tags: ['never', 'containers-stop']
 
 - name: 'Enable vdirsyncer timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'vdirsyncer.timer'
     enabled: true
   tags: ['never', 'containers-enable']
 
 - name: 'Start vdirsyncer timer'
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: 'vdirsyncer.timer'
     state: 'started'
   tags: ['never', 'containers-start']

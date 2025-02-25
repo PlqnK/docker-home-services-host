@@ -1,4 +1,5 @@
 ---
 collections:
-  - name: containers.podman
-    version: '1.16.2'
+  - name: 'ansible.posix'
+  - name: 'community.general'
+  - name: 'containers.podman'
