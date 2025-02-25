@@ -4,6 +4,15 @@ Wants=network-online.target
 After=network-online.target
 After=mbsync.service vdirsyncer.service rsync-servers.service
 RequiresMountsFor=%t/containers
+RequiresMountsFor={{ containers_storage_path }}/runtime/autorestic/lock
+RequiresMountsFor={{ containers_storage_path }}/config/autorestic/autorestic.yml
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/documents
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/groupware
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/servers
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/audiodrama
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/audiobooks
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/books
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/comics
 
 [X-Container]
 Image={{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }}

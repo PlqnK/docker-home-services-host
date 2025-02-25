@@ -4,6 +4,18 @@ Wants=network-online.target
 After=network-online.target
 After=mbsync.service vdirsyncer.service rsync-servers.service
 RequiresMountsFor=%t/containers
+RequiresMountsFor={{ containers_storage_path }}/config/borgmatic/borgmatic.d
+RequiresMountsFor={{ containers_storage_path }}/config/borgmatic/.ssh
+RequiresMountsFor={{ containers_storage_path }}/data/borgmatic
+RequiresMountsFor={{ containers_storage_path }}/runtime/borgmatic/borgmatic
+RequiresMountsFor={{ containers_storage_path }}/runtime/borgmatic/cache
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/documents
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/groupware
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/servers
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/audiodrama
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/audiobooks
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/books
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/comics
 
 [X-Container]
 Image={{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }}

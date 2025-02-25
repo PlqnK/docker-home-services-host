@@ -3,6 +3,11 @@ Description=Rsync servers
 Wants=network-online.target
 After=network-online.target
 RequiresMountsFor=%t/containers
+RequiresMountsFor={{ containers_storage_path }}/config/rsync-servers/backup-servers.sh
+RequiresMountsFor={{ containers_storage_path }}/config/rsync-servers/id_ed25519
+RequiresMountsFor={{ containers_storage_path }}/runtime/rsync-servers
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/servers
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/documents
 
 [X-Container]
 Image={{ containers_images.rsync_servers }}:{{ containers_images_tags.rsync_servers }}
