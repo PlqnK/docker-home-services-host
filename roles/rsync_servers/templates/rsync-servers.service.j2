@@ -36,7 +36,6 @@ ExecStart=/usr/bin/podman container run \
 	--env DOCUMENTS_HOST_REMOTE_PATH={{ hostvars['documents'].storage_server_shares_mounts_path }} \
 	--env CONTAINERS_HOSTS_LOCAL_PATH={{ storage_server_shares_mounts_path }}/backups/servers \
 	--env DOCUMENTS_HOST_LOCAL_PATH={{ storage_server_shares_mounts_path }}/backups/documents {{ containers_images.rsync_servers }}:{{ containers_images_tags.rsync_servers }}
-ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
 ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
 
 [Install]

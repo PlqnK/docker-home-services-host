@@ -29,7 +29,6 @@ ExecStart=/usr/bin/podman container run \
 	--env TZ={{ timezone }} \
 	--env HEALTHCHECKS_URL=healthchecks.{{ domain_name }}/ping \
 	--env HEALTHCHECKS_UUID={{ mbsync.healthchecks_uuid }} {{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }}
-ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
 ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
 
 [Install]
