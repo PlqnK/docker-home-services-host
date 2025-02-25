@@ -13,7 +13,7 @@ podman run \
 --device /dev/fuse \
 --hostname {{ ansible_hostname }} \
 --network web-egress \
---tz={{ timezone }} \
+--tz {{ timezone }} \
 --env TZ={{ timezone }} \
 --volume {{ containers_storage_path }}/runtime/autorestic/lock:/config:Z \
 --volume {{ containers_storage_path }}/config/autorestic/autorestic.yml:/config/autorestic.yml:Z \

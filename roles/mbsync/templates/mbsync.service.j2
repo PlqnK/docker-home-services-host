@@ -3,6 +3,9 @@ Description=mbsync
 Wants=network-online.target
 After=network-online.target
 RequiresMountsFor=%t/containers
+RequiresMountsFor={{ containers_storage_path }}/config/mbsync/mbsync.sh
+RequiresMountsFor={{ containers_storage_path }}/config/mbsync/mbsync.rc
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/groupware/emails
 
 [X-Container]
 Image={{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }}
@@ -25,7 +28,7 @@ ExecStart=/usr/bin/podman container run \
 	--volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
 	--volume {{ storage_server_shares_mounts_path }}/backups/groupware/emails:/mail:slave \
 	--secret mbsync_imap_password \
-	--tz={{ timezone }} \
+	--tz {{ timezone }} \
 	--env TZ={{ timezone }} \
 	--env HEALTHCHECKS_URL=healthchecks.{{ domain_name }}/ping \
 	--env HEALTHCHECKS_UUID={{ mbsync.healthchecks_uuid }} {{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }}

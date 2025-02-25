@@ -21,6 +21,7 @@ Image={{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }}
 Environment=PODMAN_SYSTEMD_UNIT=%n
 Type=forking
 RuntimeMaxSec=3600
+TimeoutStartSec=300
 TimeoutStopSec=70
 Restart=no
 ExecStart=/usr/bin/podman container run \
@@ -41,7 +42,7 @@ ExecStart=/usr/bin/podman container run \
 	--volume {{ storage_server_shares_mounts_path }}/medias/audiobooks:{{ storage_server_shares_mounts_path }}/medias/audiobooks:slave,ro \
 	--volume {{ storage_server_shares_mounts_path }}/medias/books:{{ storage_server_shares_mounts_path }}/medias/books:slave,ro \
 	--volume {{ storage_server_shares_mounts_path }}/medias/comics:{{ storage_server_shares_mounts_path }}/medias/comics:slave,ro \
-	--tz={{ timezone }} \
+	--tz {{ timezone }} \
 	--env TZ={{ timezone }} {{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }} -c /config/autorestic.yml --ci backup -a
 ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
 ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid

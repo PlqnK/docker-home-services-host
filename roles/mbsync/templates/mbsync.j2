@@ -11,7 +11,7 @@ podman run \
 --entrypoint mbsync \
 --hostname {{ ansible_hostname }} \
 --network web-egress \
---tz={{ timezone }} \
+--tz {{ timezone }} \
 --env TZ={{ timezone }} \
 --volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
 --volume {{ storage_server_shares_mounts_path }}/backups/groupware/emails:/mail:slave \

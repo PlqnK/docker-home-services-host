@@ -1,8 +1,6 @@
 [Unit]
 Description=Tiny Tiny RSS NGINX
 Documentation=man:podman-systemd.unit(5)
-Wants=network-online.target
-After=network-online.target
 After=ttrss-server.service
 Requires=ttrss-server.service
 
@@ -14,7 +12,7 @@ Network=web-egress
 Network=common-internal
 Network=ttrss-server-internal
 ExposeHostPort=80
-Volume={{ containers_storage_path }}/data/ttrss-server:/var/www/html:ro,z
+Volume={{ containers_storage_path }}/data/ttrss-server:/var/www/html:z,ro
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
 Environment="RESOLVER=10.89.0.1"
@@ -31,6 +29,7 @@ AutoUpdate=local
 
 [Service]
 Restart=on-failure
+TimeoutStartSec=300
 TimeoutStopSec=70
 
 [Install]

@@ -1,8 +1,6 @@
 [Unit]
 Description=Prometheus
 Documentation=man:podman-systemd.unit(5)
-Wants=network-online.target
-After=network-online.target
 
 [Container]
 ContainerName=prometheus
@@ -11,8 +9,8 @@ Exec=--config.file=/etc/prometheus/prometheus.yml --web.config.file=/etc/prometh
 Network=web-egress
 Network=common-internal
 ExposeHostPort=9090
-Volume={{ containers_storage_path }}/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z
-Volume={{ containers_storage_path }}/config/prometheus/web.yml:/etc/prometheus/web.yml:Z
+Volume={{ containers_storage_path }}/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z,ro
+Volume={{ containers_storage_path }}/config/prometheus/web.yml:/etc/prometheus/web.yml:Z,ro
 Volume={{ containers_storage_path }}/runtime/prometheus:/prometheus:Z
 Secret=prometheus_prometheus_password
 Secret=prometheus_node_password
@@ -29,6 +27,7 @@ AutoUpdate=local
 
 [Service]
 Restart=on-failure
+TimeoutStartSec=300
 TimeoutStopSec=70
 
 [Install]

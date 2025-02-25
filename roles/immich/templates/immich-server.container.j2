@@ -1,8 +1,6 @@
 [Unit]
 Description=Immich Server
 Documentation=man:podman-systemd.unit(5)
-Wants=network-online.target
-After=network-online.target
 After=immich-postgres.service immich-redis.service immich-machine-learning.service
 Requires=immich-postgres.service immich-redis.service immich-machine-learning.service
 
@@ -39,6 +37,7 @@ AutoUpdate=local
 
 [Service]
 Restart=on-failure
+TimeoutStartSec=300
 TimeoutStopSec=70
 
 [Install]

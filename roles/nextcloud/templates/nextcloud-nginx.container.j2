@@ -1,8 +1,6 @@
 [Unit]
 Description=Nextcloud NGINX
 Documentation=man:podman-systemd.unit(5)
-Wants=network-online.target
-After=network-online.target
 After=nextcloud-server.service
 Requires=nextcloud-server.service
 
@@ -12,7 +10,7 @@ Image={{ containers_images.nextcloud.nginx }}:{{ containers_images_tags.nextclou
 Network=web-egress
 Network=common-internal
 ExposeHostPort=80
-Volume={{ containers_storage_path }}/config/nextcloud-nginx/nginx.conf:/etc/nginx/nginx.conf:Z
+Volume={{ containers_storage_path }}/config/nextcloud-nginx/nginx.conf:/etc/nginx/nginx.conf:Z,ro
 Volume={{ containers_storage_path }}/data/nextcloud-server:/var/www/html:z
 Volume={{ storage_server_shares_mounts_path }}/nextcloud:/var/www/html/data:slave
 Timezone={{ timezone }}
@@ -27,6 +25,7 @@ AutoUpdate=local
 
 [Service]
 Restart=on-failure
+TimeoutStartSec=300
 TimeoutStopSec=70
 
 [Install]

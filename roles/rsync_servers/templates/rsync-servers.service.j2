@@ -26,12 +26,12 @@ ExecStart=/usr/bin/podman container run \
 	--entrypoint /app/backup-servers.sh \
 	--hostname {{ ansible_hostname }} \
 	--network web-egress \
-	--volume {{ containers_storage_path }}/config/rsync-servers/backup-servers.sh:/app/backup-servers.sh:ro,Z \
-	--volume {{ containers_storage_path }}/config/rsync-servers/id_ed25519:/root/id_ed25519:ro,Z \
+	--volume {{ containers_storage_path }}/config/rsync-servers/backup-servers.sh:/app/backup-servers.sh:Z,ro \
+	--volume {{ containers_storage_path }}/config/rsync-servers/id_ed25519:/root/id_ed25519:Z,ro \
 	--volume {{ containers_storage_path }}/runtime/rsync-servers:/root/.ssh:Z \
 	--volume {{ storage_server_shares_mounts_path }}/backups/servers:{{ storage_server_shares_mounts_path }}/backups/servers:slave \
 	--volume {{ storage_server_shares_mounts_path }}/backups/documents:{{ storage_server_shares_mounts_path }}/backups/documents:slave \
-	--tz={{ timezone }} \
+	--tz {{ timezone }} \
 	--env TZ={{ timezone }} \
 	--env HEALTHCHECKS_URL=healthchecks.{{ domain_name }}/ping \
 	--env HEALTHCHECKS_UUID={{ rsync_servers.healthchecks_uuid }} \

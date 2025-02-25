@@ -1,7 +1,5 @@
 [Unit]
 Description=Healthchecks PostreSQL dump
-Wants=network-online.target
-After=network-online.target
 Wants=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uuid }}:start.service
 OnSuccess=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uuid }}:success.service
 OnFailure=ping-healthchecksio-uuid@{{ healthchecks.postgres.dump.healthchecks_uuid }}:failure.service

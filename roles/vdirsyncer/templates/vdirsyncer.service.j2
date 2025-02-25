@@ -33,7 +33,7 @@ ExecStart=/usr/bin/podman container run \
 	--volume {{ storage_server_shares_mounts_path }}/backups/groupware/calendars:/calendars:slave \
 	--secret vdirsyncer_carddav_password \
 	--secret vdirsyncer_caldav_password \
-	--tz={{ timezone }} \
+	--tz {{ timezone }} \
 	--env TZ={{ timezone }} \
 	--env HEALTHCHECKS_URL=healthchecks.{{ domain_name }}/ping \
 	--env HEALTHCHECKS_UUID={{ vdirsyncer.healthchecks_uuid }} {{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }}

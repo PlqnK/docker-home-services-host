@@ -1,8 +1,6 @@
 [Unit]
 Description=Healthchecks Server
 Documentation=man:podman-systemd.unit(5)
-Wants=network-online.target
-After=network-online.target
 After=healthchecks-postgres.service
 Requires=healthchecks-postgres.service
 
@@ -13,8 +11,8 @@ Network=web-egress
 Network=common-internal
 Network=healthchecks-postgres-internal
 ExposeHostPort=8000
-Volume={{ containers_storage_path }}/config/healthchecks-server/logo.png:/opt/healthchecks/static-collected/img/logo.png:Z
-Volume={{ containers_storage_path }}/config/healthchecks-server/apple-touch-180.png:/opt/healthchecks/static-collected/img/apple-touch-180.png:Z
+Volume={{ containers_storage_path }}/config/healthchecks-server/logo.png:/opt/healthchecks/static-collected/img/logo.png:Z,ro
+Volume={{ containers_storage_path }}/config/healthchecks-server/apple-touch-180.png:/opt/healthchecks/static-collected/img/apple-touch-180.png:Z,ro
 Timezone={{ timezone }}
 EnvironmentFile={{ containers_storage_path }}/env/healthchecks-server/healthchecks-server.env
 Environment="TZ={{ timezone }}"
@@ -49,6 +47,7 @@ AutoUpdate=local
 
 [Service]
 Restart=on-failure
+TimeoutStartSec=300
 TimeoutStopSec=70
 
 [Install]

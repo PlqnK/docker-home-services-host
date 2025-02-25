@@ -1,8 +1,6 @@
 [Unit]
 Description=node_exporter
 Documentation=man:podman-systemd.unit(5)
-Wants=network-online.target
-After=network-online.target
 
 [Container]
 ContainerName=node-exporter
@@ -10,14 +8,15 @@ Image={{ containers_images.node_exporter }}:{{ containers_images_tags.node_expor
 Exec=--path.rootfs=/host --web.config.file=/etc/node-exporter/web.yml
 PodmanArgs=--pid=host
 Network=host
-Volume={{ containers_storage_path }}/config/node-exporter/web.yml:/etc/node-exporter/web.yml:Z
-Volume=/:/host:ro,rslave
+Volume={{ containers_storage_path }}/config/node-exporter/web.yml:/etc/node-exporter/web.yml:Z,ro
+Volume=/:/host:rslave,ro
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
 AutoUpdate=local
 
 [Service]
 Restart=on-failure
+TimeoutStartSec=300
 TimeoutStopSec=70
 
 [Install]

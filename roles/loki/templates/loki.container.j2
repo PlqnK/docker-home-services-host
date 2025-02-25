@@ -1,8 +1,6 @@
 [Unit]
 Description=Loki
 Documentation=man:podman-systemd.unit(5)
-Wants=network-online.target
-After=network-online.target
 
 [Container]
 ContainerName=loki
@@ -11,7 +9,7 @@ Exec=-config.file=/etc/loki/loki.yaml
 Network=web-egress
 Network=common-internal
 ExposeHostPort=3100
-Volume={{ containers_storage_path }}/config/loki/loki.yaml:/etc/loki/loki.yaml:Z
+Volume={{ containers_storage_path }}/config/loki/loki.yaml:/etc/loki/loki.yaml:Z,ro
 Volume={{ containers_storage_path }}/runtime/loki:/loki:Z
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
@@ -26,6 +24,7 @@ AutoUpdate=local
 
 [Service]
 Restart=on-failure
+TimeoutStartSec=300
 TimeoutStopSec=70
 
 [Install]

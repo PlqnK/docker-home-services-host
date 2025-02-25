@@ -24,6 +24,7 @@ Image={{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }}
 Environment=PODMAN_SYSTEMD_UNIT=%n
 Type=forking
 RuntimeMaxSec=3600
+TimeoutStartSec=300
 TimeoutStopSec=70
 Restart=no
 ExecStart=/usr/bin/podman container run \
@@ -51,7 +52,7 @@ ExecStart=/usr/bin/podman container run \
 	--secret borgmatic_groupware_encryption_passphrase \
 	--secret borgmatic_medias_encryption_passphrase \
 	--secret borgmatic_servers_encryption_passphrase \
-	--tz={{ timezone }} \
+	--tz {{ timezone }} \
 	--env TZ={{ timezone }} {{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }} --stats -v 1
 ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
 ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid

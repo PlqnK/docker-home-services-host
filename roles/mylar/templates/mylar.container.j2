@@ -1,8 +1,6 @@
 [Unit]
 Description=Mylar 3
 Documentation=man:podman-systemd.unit(5)
-Wants=network-online.target
-After=network-online.target
 
 [Container]
 ContainerName=mylar
@@ -25,6 +23,7 @@ AutoUpdate=local
 
 [Service]
 Restart=on-failure
+TimeoutStartSec=300
 TimeoutStopSec=70
 
 [Install]

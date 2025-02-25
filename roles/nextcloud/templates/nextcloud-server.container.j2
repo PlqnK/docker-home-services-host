@@ -1,8 +1,6 @@
 [Unit]
 Description=Nextcloud Server
 Documentation=man:podman-systemd.unit(5)
-Wants=network-online.target
-After=network-online.target
 After=nextcloud-postgres.service nextcloud-redis.service
 Requires=nextcloud-postgres.service nextcloud-redis.service
 
@@ -37,6 +35,7 @@ AutoUpdate=local
 
 [Service]
 Restart=on-failure
+TimeoutStartSec=300
 TimeoutStopSec=70
 
 [Install]

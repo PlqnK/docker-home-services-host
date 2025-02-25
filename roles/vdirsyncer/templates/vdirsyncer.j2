@@ -11,7 +11,7 @@ podman run \
 --entrypoint vdirsyncer \
 --hostname {{ ansible_hostname }} \
 --network web-egress \
---tz={{ timezone }} \
+--tz {{ timezone }} \
 --env TZ={{ timezone }} \
 --volume {{ containers_storage_path }}/config/vdirsyncer/config:/vdirsyncer/config:Z \
 --volume {{ containers_storage_path }}/runtime/vdirsyncer:/vdirsyncer/status:Z \
