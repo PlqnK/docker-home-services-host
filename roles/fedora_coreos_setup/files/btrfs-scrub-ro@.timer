@@ -4,6 +4,7 @@ Description=Monthly Btrfs read-only scrub on %f
 [Timer]
 OnCalendar=monthly
 AccuracySec=1d
+RandomizedDelaySec=1d
 Persistent=true
 
 [Install]
