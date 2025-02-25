@@ -1,0 +1,7 @@
+---
+- name: 'Configure systemd-wide environment variables'
+  ansible.builtin.blockinfile:
+    path: '/etc/environment'
+    block: |
+      EDITOR=vi
+      PAGER=less
