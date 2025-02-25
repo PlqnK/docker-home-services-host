@@ -9,14 +9,15 @@ Image={{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }}
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
+Type=oneshot
+TimeoutSec=900
 Restart=no
-TimeoutStartSec=900
-TimeoutStopSec=70
 ExecStart=/usr/bin/podman container run \
 	--rm \
 	--detach \
 	--replace \
 	--name vdirsyncer \
+	--cidfile=%t/%N.cid \
 	--entrypoint /app/vdirsyncer.sh \
 	--hostname {{ ansible_hostname }} \
 	--network web-egress \
@@ -31,7 +32,8 @@ ExecStart=/usr/bin/podman container run \
 	--env TZ={{ timezone }} \
 	--env HEALTHCHECKS_URL=healthchecks.{{ domain_name }}/ping \
 	--env HEALTHCHECKS_UUID={{ vdirsyncer.healthchecks_uuid }} {{ containers_images.vdirsyncer }}:{{ containers_images_tags.vdirsyncer }}
-Type=oneshot
+ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
+ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
 
 [Install]
 WantedBy=default.target

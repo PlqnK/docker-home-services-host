@@ -10,14 +10,16 @@ Image={{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }}
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-Restart=no
+Type=forking
 RuntimeMaxSec=3600
 TimeoutStopSec=70
+Restart=no
 ExecStart=/usr/bin/podman container run \
 	--rm \
 	--detach \
 	--replace \
 	--name borgmatic \
+	--cidfile=%t/%N.cid \
 	--entrypoint "borgmatic" \
 	--hostname {{ ansible_hostname }} \
 	--network web-egress \
@@ -39,7 +41,8 @@ ExecStart=/usr/bin/podman container run \
 	--secret borgmatic_servers_encryption_passphrase \
 	--tz={{ timezone }} \
 	--env TZ={{ timezone }} {{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }} --stats -v 1
-Type=forking
+ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
+ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
 
 [Install]
 WantedBy=default.target

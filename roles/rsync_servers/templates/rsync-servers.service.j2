@@ -9,14 +9,15 @@ Image={{ containers_images.rsync_servers }}:{{ containers_images_tags.rsync_serv
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
+Type=oneshot
+TimeoutSec=3600
 Restart=no
-TimeoutStartSec=3600
-TimeoutStopSec=70
 ExecStart=/usr/bin/podman container run \
 	--rm \
 	--detach \
 	--replace \
 	--name rsync-servers \
+	--cidfile=%t/%N.cid \
 	--entrypoint /app/backup-servers.sh \
 	--hostname {{ ansible_hostname }} \
 	--network web-egress \
@@ -35,7 +36,8 @@ ExecStart=/usr/bin/podman container run \
 	--env DOCUMENTS_HOST_REMOTE_PATH={{ hostvars['documents'].storage_server_shares_mounts_path }} \
 	--env CONTAINERS_HOSTS_LOCAL_PATH={{ storage_server_shares_mounts_path }}/backups/servers \
 	--env DOCUMENTS_HOST_LOCAL_PATH={{ storage_server_shares_mounts_path }}/backups/documents {{ containers_images.rsync_servers }}:{{ containers_images_tags.rsync_servers }}
-Type=oneshot
+ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
+ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
 
 [Install]
 WantedBy=default.target
