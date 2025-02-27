@@ -19,8 +19,12 @@ keep_yearly: 1
 checks:
   - name: 'repository'
     frequency: '2 weeks'
+    only_run_on:
+      - 'weekend'
   - name: 'archives'
-    frequency: '4 weeks'
+    frequency: '1 month'
+    only_run_on:
+      - 'weekend'
 
 healthchecks:
   ping_url: 'https://healthchecks.{{ domain_name }}/ping/{{ borgmatic.groupware.healthchecks_uuid }}'

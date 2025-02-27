@@ -23,7 +23,7 @@ Image={{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }}
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
 Type=forking
-RuntimeMaxSec=3600
+RuntimeMaxSec=14400
 TimeoutStartSec=300
 TimeoutStopSec=70
 Restart=no
@@ -39,8 +39,8 @@ ExecStart=/usr/bin/podman container run \
 	--volume {{ containers_storage_path }}/config/borgmatic/borgmatic.d:/etc/borgmatic.d:Z \
 	--volume {{ containers_storage_path }}/config/borgmatic/.ssh:/root/.ssh:Z \
 	--volume {{ containers_storage_path }}/data/borgmatic:/root/.config/borg:Z \
-	--volume {{ containers_storage_path }}/runtime/borgmatic/borgmatic:/root/.borgmatic:Z \
 	--volume {{ containers_storage_path }}/runtime/borgmatic/cache:/root/.cache/borg:Z \
+	--volume {{ containers_storage_path }}/runtime/borgmatic/state:/root/.local/state/borgmatic:Z \
 	--volume {{ storage_server_shares_mounts_path }}/backups/documents:{{ storage_server_shares_mounts_path }}/backups/documents:slave,ro \
 	--volume {{ storage_server_shares_mounts_path }}/backups/groupware:{{ storage_server_shares_mounts_path }}/backups/groupware:slave,ro \
 	--volume {{ storage_server_shares_mounts_path }}/backups/servers:{{ storage_server_shares_mounts_path }}/backups/servers:slave,ro \
