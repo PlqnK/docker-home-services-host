@@ -17,7 +17,7 @@ exclude_patterns:
 exclude_if_present:
   - '.nobackup'
 
-encryption_passcommand: "cat /run/secrets/borgmatic_documents_encryption_passphrase"
+encryption_passphrase: "{credential container borgmatic_documents_encryption_passphrase}"
 compression: 'auto,zstd'
 retries: 5
 retry_wait: 5
