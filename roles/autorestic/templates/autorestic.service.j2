@@ -20,7 +20,7 @@ Image={{ containers_images.autorestic }}:{{ containers_images_tags.autorestic }}
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
 Type=forking
-RuntimeMaxSec=3600
+RuntimeMaxSec=14400
 TimeoutStartSec=300
 TimeoutStopSec=70
 Restart=no
