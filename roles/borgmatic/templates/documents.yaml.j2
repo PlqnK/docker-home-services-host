@@ -3,6 +3,7 @@ source_directories:
 repositories:
   - path: '{{ borgmatic.documents.repository }}'
     label: 'borgbase-documents'
+    encryption: 'repokey-blake2'
 exclude_patterns:
   - '{{ storage_server_shares_mounts_path }}/backups/documents/immich/encoded-video'
   - '{{ storage_server_shares_mounts_path }}/backups/documents/immich/thumbs'
@@ -19,6 +20,7 @@ exclude_if_present:
 
 encryption_passphrase: "{credential container borgmatic_documents_encryption_passphrase}"
 compression: 'auto,zstd'
+recompress: 'if-different'
 retries: 5
 retry_wait: 5
 

@@ -3,11 +3,13 @@ source_directories:
 repositories:
   - path: '{{ borgmatic.groupware.repository }}'
     label: 'borgbase-groupware'
+    encryption: 'repokey-blake2'
 exclude_if_present:
   - '.nobackup'
 
 encryption_passphrase: "{credential container borgmatic_groupware_encryption_passphrase}"
 compression: 'auto,zstd'
+recompress: 'if-different'
 retries: 5
 retry_wait: 5
 

@@ -6,11 +6,13 @@ source_directories:
 repositories:
   - path: '{{ borgmatic.medias.repository }}'
     label: 'borgbase-medias'
+    encryption: 'repokey-blake2'
 exclude_if_present:
   - '.nobackup'
 
 encryption_passphrase: "{credential container borgmatic_medias_encryption_passphrase}"
 compression: 'auto,zstd'
+recompress: 'if-different'
 retries: 5
 retry_wait: 5
 
