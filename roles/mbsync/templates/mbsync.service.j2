@@ -4,7 +4,7 @@ Wants=network-online.target
 After=network-online.target
 RequiresMountsFor=%t/containers
 RequiresMountsFor={{ containers_storage_path }}/config/mbsync/mbsync.sh
-RequiresMountsFor={{ containers_storage_path }}/config/mbsync/mbsync.rc
+RequiresMountsFor={{ containers_storage_path }}/config/mbsync/mbsyncrc
 RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/groupware/emails
 
 [X-Container]
@@ -25,7 +25,7 @@ ExecStart=/usr/bin/podman container run \
 	--hostname {{ ansible_hostname }} \
 	--network web-egress \
 	--volume {{ containers_storage_path }}/config/mbsync/mbsync.sh:/app/mbsync.sh:Z \
-	--volume {{ containers_storage_path }}/config/mbsync/mbsync.rc:/config/mbsync.rc:Z \
+	--volume {{ containers_storage_path }}/config/mbsync/mbsyncrc:/mbsyncrc:Z \
 	--volume {{ storage_server_shares_mounts_path }}/backups/groupware/emails:/mail:slave \
 	--secret mbsync_imap_password \
 	--tz {{ timezone }} \

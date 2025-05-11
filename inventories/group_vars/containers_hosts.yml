@@ -3,7 +3,7 @@ containers_images_tags:
   cockpit: 'latest'
   sshd_rsync: 'latest'
   rsync_servers: 'latest'
-  mbsync: '1'
+  mbsync: '1.5.0'
   vdirsyncer: 'latest'
   borgmatic: '2.0'
   autorestic: '1.8'

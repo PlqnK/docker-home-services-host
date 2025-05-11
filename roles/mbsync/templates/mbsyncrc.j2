@@ -2,7 +2,7 @@ IMAPAccount {{ mbsync.imap.name }}
 Host {{ mbsync.imap.host }}
 User {{ mbsync.imap.user }}
 PassCmd "cat /run/secrets/mbsync_imap_password"
-SSLType IMAPS
+TLSType IMAPS
 
 IMAPStore {{ mbsync.imap.name }}-remote
 Account {{ mbsync.imap.name }}

@@ -29,7 +29,7 @@
 echo "Pinging Healthchecks: start"
 curl -fsS -m 10 --retry 5 -o /dev/null "https://${HEALTHCHECKS_URL}/${HEALTHCHECKS_UUID}/start"
 echo "Synchronizing IMAP account(s)..."
-if mbsync -c /config/mbsync.rc -a -V; then
+if mbsync -c /mbsyncrc -a -V; then
   echo "Synchronization completed successfully!"
   echo "Pinging Healthchecks: success"
   curl -fsS -m 10 --retry 5 -o /dev/null "https://${HEALTHCHECKS_URL}/${HEALTHCHECKS_UUID}"
