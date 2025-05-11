@@ -12,7 +12,7 @@
     - 'immich-postgres-dump.timer'
     - 'immich-server.service'
     - 'immich-machine-learning.service'
-    - 'immich-redis.service'
+    - 'immich-valkey.service'
 
 - name: 'Dump Immich database'
   containers.podman.podman_container_exec:
@@ -80,7 +80,7 @@
     state: 'started'
   loop:
     - 'immich-postgres.service'
-    - 'immich-redis.service'
+    - 'immich-valkey.service'
     - 'immich-machine-learning.service'
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'

@@ -1,0 +1,28 @@
+[Unit]
+Description=Immich Valkey
+Documentation=man:podman-systemd.unit(5)
+
+[Container]
+ContainerName=immich-valkey
+Image={{ containers_images.immich.valkey }}:{{ containers_images_tags.immich.valkey }}
+Exec=valkey-server /usr/local/etc/valkey/valkey.conf
+Network=immich-valkey-internal
+ExposeHostPort=6379
+Volume={{ containers_storage_path }}/config/immich-valkey/valkey.conf:/usr/local/etc/valkey/valkey.conf:Z,ro
+Volume={{ containers_storage_path }}/runtime/immich-valkey:/data:Z
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+HealthCmd="valkey-cli ping"
+HealthInterval=10s
+HealthTimeout=3s
+HealthRetries=3
+Notify=healthy
+AutoUpdate=local
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=300
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

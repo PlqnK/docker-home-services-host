@@ -262,7 +262,7 @@ all:
           password: ''
           dump:
             healthchecks_uuid: ''
-        redis:
+        valkey:
           password: ''
       ttrss:
         postgres:

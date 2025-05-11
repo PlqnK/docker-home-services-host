@@ -54,7 +54,7 @@
       isolate: true
   loop:
     - 'immich-postgres-internal'
-    - 'immich-redis-internal'
+    - 'immich-valkey-internal'
     - 'immich-server-internal'
 
 - name: 'Add Immich stack networks to firewalld trusted zone'
@@ -64,7 +64,7 @@
         name: '{{ item }}'
       loop:
         - 'immich-postgres-internal'
-        - 'immich-redis-internal'
+        - 'immich-valkey-internal'
         - 'immich-server-internal'
       register: 'podman_networks'
 
@@ -85,7 +85,7 @@
     mode: '0700'
     state: 'directory'
   loop:
-    - path: 'config/immich-redis'
+    - path: 'config/immich-valkey'
       owner: 999
       group: 999
     - path: 'data/immich-postgres'
@@ -94,7 +94,7 @@
     - path: 'runtime/immich-postgres'
       owner: 999
       group: 999
-    - path: 'runtime/immich-redis'
+    - path: 'runtime/immich-valkey'
       owner: 999
       group: 999
     - path: 'runtime/immich-machine-learning'
@@ -126,10 +126,10 @@
       services:
         - 'immich-postgres.service'
         - 'immich-server.service'
-    - name: 'immich_redis_password'
-      data: '{{ immich.redis.password }}'
+    - name: 'immich_valkey_password'
+      data: '{{ immich.valkey.password }}'
       services:
-        - 'immich-redis.service'
+        - 'immich-valkey.service'
         - 'immich-server.service'
   loop_control:
     label: '{{ item.name }}'
@@ -143,11 +143,11 @@
     group: '{{ item.group }}'
     mode: '0400'
   loop:
-    - src: 'redis.conf.j2'
-      dest: 'immich-redis/redis.conf'
+    - src: 'valkey.conf.j2'
+      dest: 'immich-valkey/valkey.conf'
       owner: 999
       group: 999
-      services: 'immich-redis.service'
+      services: 'immich-valkey.service'
   loop_control:
     label: '{{ item.dest }}'
   register: 'configuration_files'
@@ -161,7 +161,7 @@
     mode: '0644'
   loop:
     - 'immich-postgres'
-    - 'immich-redis'
+    - 'immich-valkey'
     - 'immich-machine-learning'
     - 'immich-server'
   register: 'quadlet_units'
@@ -194,7 +194,7 @@
   register: 'systemd_start'
   loop:
     - 'immich-postgres.service'
-    - 'immich-redis.service'
+    - 'immich-valkey.service'
     - 'immich-machine-learning.service'
     - 'immich-server.service'
     - 'immich-postgres-dump.timer'

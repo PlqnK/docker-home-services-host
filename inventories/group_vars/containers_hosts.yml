@@ -30,7 +30,7 @@ containers_images_tags:
   stirling_pdf: 'latest-ultra-lite'
   immich:
     postgres: 'pg16-v0.3.0'
-    redis: '7'
+    valkey: '8'
     machine_learning: 'release'
     server: 'release'
   ttrss:
