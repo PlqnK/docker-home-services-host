@@ -8,13 +8,20 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update vdirsyncer tag in systemd unit' # noqa: no-handler
+- name: 'Update vdirsyncer tag in systemd unit and script' # noqa: no-handler
   ansible.builtin.template:
-    src: 'vdirsyncer.service.j2'
-    dest: '/etc/systemd/system/vdirsyncer.service'
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
     owner: 'root'
     group: 'root'
-    mode: '0644'
+    mode: '{{ item.mode }}'
+  loop:
+    - src: 'vdirsyncer.service.j2'
+      dest: '/etc/systemd/system/vdirsyncer.service'
+      mode: '0644'
+    - src: 'vdirsyncer.j2'
+      dest: '/usr/local/bin/vdirsyncer'
+      mode: '0755'
   when: (container_image_pull.changed)
   notify: 'Reload systemd daemon'
   tags: ['never', 'containers-update']

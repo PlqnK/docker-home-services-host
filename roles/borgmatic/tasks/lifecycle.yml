@@ -8,13 +8,23 @@
   register: 'container_image_pull'
   tags: ['never', 'containers-pull', 'containers-update']
 
-- name: 'Update borgmatic tag in systemd unit' # noqa: no-handler
+- name: 'Update borgmatic tag in systemd unit and scripts' # noqa: no-handler
   ansible.builtin.template:
-    src: 'borgmatic.service.j2'
-    dest: '/etc/systemd/system/borgmatic.service'
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
     owner: 'root'
     group: 'root'
-    mode: '0644'
+    mode: '{{ item.mode }}'
+  loop:
+    - src: 'borgmatic.service.j2'
+      dest: '/etc/systemd/system/borgmatic.service'
+      mode: '0644'
+    - src: 'borgmatic.j2'
+      dest: '/usr/local/bin/borgmatic'
+      mode: '0755'
+    - src: 'borgmatic-shell.j2'
+      dest: '/usr/local/bin/borgmatic-shell'
+      mode: '0755'
   when: (container_image_pull.changed)
   notify: 'Reload systemd daemon'
   tags: ['never', 'containers-update']
