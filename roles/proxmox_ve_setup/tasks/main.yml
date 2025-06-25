@@ -2,6 +2,9 @@
   when: (containers_list is not defined)
   tags: ['os-setup']
   block:
+    - name: 'Configure network'
+      ansible.builtin.import_tasks: 'network.yml'
+
     - name: 'Install packages'
       ansible.builtin.import_tasks: 'packages.yml'
 
