@@ -29,7 +29,7 @@ containers_images_tags:
   collabora_online: 'latest'
   stirling_pdf: 'latest-ultra-lite'
   immich:
-    postgres: 'pg16-v0.3.0'
+    postgres: '16-vectorchord0.4.3'
     valkey: '8'
     machine_learning: 'release'
     server: 'release'
