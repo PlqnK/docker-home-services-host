@@ -80,7 +80,7 @@
     - 'sonarr'
     - 'bazarr'
     - 'lidarr'
-    - 'readarr'
+    # - 'readarr'
     - 'mylar'
     - 'overseerr'
     - 'maintainerr'
