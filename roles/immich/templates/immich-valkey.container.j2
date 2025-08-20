@@ -12,10 +12,11 @@ Volume={{ containers_storage_path }}/config/immich-valkey/valkey.conf:/usr/local
 Volume={{ containers_storage_path }}/runtime/immich-valkey:/data:Z
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
+HealthStartupCmd="valkey-cli ping"
+HealthStartPeriod=5m
+HealthStartupInterval=5s
 HealthCmd="valkey-cli ping"
-HealthInterval=10s
-HealthTimeout=3s
-HealthRetries=3
+HealthInterval=1m
 Notify=healthy
 AutoUpdate=local
 

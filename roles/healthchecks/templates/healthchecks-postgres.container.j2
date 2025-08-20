@@ -16,10 +16,11 @@ Environment="TZ={{ timezone }}"
 Environment="POSTGRES_DB={{ healthchecks.postgres.database }}"
 Environment="POSTGRES_USER_FILE=/run/secrets/healthchecks_postgres_user"
 Environment="POSTGRES_PASSWORD_FILE=/run/secrets/healthchecks_postgres_password"
+HealthStartupCmd="pg_isready -d {{ healthchecks.postgres.database }} -U {{ healthchecks.postgres.user }}"
+HealthStartPeriod=5m
+HealthStartupInterval=5s
 HealthCmd="pg_isready -d {{ healthchecks.postgres.database }} -U {{ healthchecks.postgres.user }}"
-HealthInterval=10s
-HealthTimeout=3s
-HealthRetries=3
+HealthInterval=1m
 Notify=healthy
 AutoUpdate=local
 

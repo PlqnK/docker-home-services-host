@@ -19,10 +19,11 @@ Environment="TTRSS_DB_TYPE=pgsql"
 Environment="TTRSS_DB_HOST=ttrss-postgres"
 Environment="TTRSS_DB_NAME={{ ttrss.postgres.database }}"
 Environment="TTRSS_SELF_URL_PATH=https://ttrss.{{ domain_name }}"
+HealthStartupCmd="nc -z 127.0.0.1 9000"
+HealthStartPeriod=5m
+HealthStartupInterval=5s
 HealthCmd="nc -z 127.0.0.1 9000"
-HealthInterval=10s
-HealthTimeout=3s
-HealthRetries=3
+HealthInterval=1m
 Notify=healthy
 AutoUpdate=local
 

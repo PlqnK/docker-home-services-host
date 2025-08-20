@@ -7,7 +7,6 @@ Requires=ttrss-server.service
 [Container]
 ContainerName=ttrss-nginx
 Image={{ containers_images.ttrss.nginx }}:{{ containers_images_tags.ttrss.nginx }}
-HealthCmd=/usr/bin/curl --fail http://localhost/index.php || exit 1
 Network=web-egress
 Network=common-internal
 Network=ttrss-server-internal
@@ -24,6 +23,7 @@ Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.ttrss.rule=Host(`ttrss.{{ domain_name }}`)"
 Label="traefik.http.routers.ttrss.entrypoints=websecure"
 Label="traefik.http.services.ttrss.loadbalancer.server.port=80"
+HealthCmd=none
 AutoUpdate=local
 
 [Service]
