@@ -19,7 +19,6 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.cloud.rule=Host(`cloud.{{ domain_name }}`)"
 Label="traefik.http.routers.cloud.entrypoints=websecure"
-Label="traefik.http.routers.cloud.middlewares=set-security-headers@file"
 Label="traefik.http.services.cloud.loadbalancer.server.port=80"
 AutoUpdate=local
 

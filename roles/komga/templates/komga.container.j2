@@ -17,7 +17,6 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.komga.rule=Host(`komga.{{ domain_name }}`)"
 Label="traefik.http.routers.komga.entrypoints=websecure"
-Label="traefik.http.routers.komga.middlewares=set-security-headers@file"
 Label="traefik.http.services.komga.loadbalancer.server.port=25600"
 AutoUpdate=local
 

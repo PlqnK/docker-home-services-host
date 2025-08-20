@@ -29,12 +29,12 @@ Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.traefik.rule=Host(`traefik.{{ ansible_fqdn }}`)"
 Label="traefik.http.routers.traefik.entrypoints=websecure"
 Label="traefik.http.routers.traefik.service=api@internal"
-Label="traefik.http.routers.traefik.middlewares=set-security-headers@file, restrict-external-access@file, traefik-auth"
+Label="traefik.http.routers.traefik.middlewares=restrict-external-access@file, traefik-auth"
 Label="traefik.http.middlewares.traefik-auth.basicauth.users={{ traefik.api.user }}:{{ traefik.api.password_hash }}"
 Label="traefik.http.routers.traefik-ping.rule=Host(`traefik.{{ ansible_fqdn }}`) && Path(`/ping`)"
 Label="traefik.http.routers.traefik-ping.entrypoints=websecure"
 Label="traefik.http.routers.traefik-ping.service=ping@internal"
-Label="traefik.http.routers.traefik-ping.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.routers.traefik-ping.middlewares=restrict-external-access@file"
 AutoUpdate=local
 
 [Service]

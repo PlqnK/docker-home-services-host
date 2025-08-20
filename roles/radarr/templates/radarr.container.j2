@@ -17,7 +17,7 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.radarr.rule=Host(`radarr.{{ domain_name }}`)"
 Label="traefik.http.routers.radarr.entrypoints=websecure"
-Label="traefik.http.routers.radarr.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.routers.radarr.middlewares=restrict-external-access@file"
 Label="traefik.http.services.radarr.loadbalancer.server.port=7878"
 AutoUpdate=local
 

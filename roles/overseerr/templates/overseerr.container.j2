@@ -15,7 +15,6 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.overseerr.rule=Host(`overseerr.{{ domain_name }}`)"
 Label="traefik.http.routers.overseerr.entrypoints=websecure"
-Label="traefik.http.routers.overseerr.middlewares=set-security-headers@file"
 Label="traefik.http.services.overseerr.loadbalancer.server.port=5055"
 AutoUpdate=local
 

@@ -20,7 +20,7 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.transmission.rule=Host(`transmission.{{ domain_name }}`)"
 Label="traefik.http.routers.transmission.entrypoints=websecure"
-Label="traefik.http.routers.transmission.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.routers.transmission.middlewares=restrict-external-access@file"
 Label="traefik.http.services.transmission.loadbalancer.server.port=9091"
 AutoUpdate=local
 

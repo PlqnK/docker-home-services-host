@@ -30,7 +30,6 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.immich.rule=Host(`immich.{{ domain_name }}`)"
 Label="traefik.http.routers.immich.entrypoints=websecure"
-Label="traefik.http.routers.immich.middlewares=set-security-headers@file"
 Label="traefik.http.services.immich.loadbalancer.server.port=2283"
 AutoUpdate=local
 

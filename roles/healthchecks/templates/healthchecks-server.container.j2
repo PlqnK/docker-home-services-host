@@ -41,7 +41,7 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.healthchecks.rule=Host(`healthchecks.{{ domain_name }}`)"
 Label="traefik.http.routers.healthchecks.entrypoints=websecure"
-Label="traefik.http.routers.healthchecks.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.routers.healthchecks.middlewares=restrict-external-access@file"
 Label="traefik.http.services.healthchecks.loadbalancer.server.port=8000"
 AutoUpdate=local
 

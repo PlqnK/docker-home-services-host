@@ -15,8 +15,20 @@
     [entryPoints.web.proxyProtocol]
       trustedIPs = [{% for ip in home_network.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
 {% endif %}
+    [entryPoints.web.http.redirections.entryPoint]
+      to = "websecure"
+      scheme = "https"
+      permanent = true
   [entryPoints.websecure]
     address = ":443"
+{% if "home_hosts" in group_names and home_network.proxy_protocol_trusted_ips is not none %}
+    [entryPoints.websecure.proxyProtocol]
+      trustedIPs = [{% for ip in home_network.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
+{% endif %}
+    [entryPoints.websecure.http]
+      middlewares = ["set-security-headers@file"]
+      [entryPoints.websecure.http.tls]
+        certResolver = "le"
 {% if "cloud_hosts" in group_names %}
     [entryPoints.websecure.http3]
 {% endif %}
@@ -26,12 +38,6 @@
       idleTimeout = "600s"
       writeTimeout = "600s"
 {% endif %}
-{% if "home_hosts" in group_names and home_network.proxy_protocol_trusted_ips is not none %}
-    [entryPoints.websecure.proxyProtocol]
-      trustedIPs = [{% for ip in home_network.proxy_protocol_trusted_ips %}"{{ ip }}"{{ ", " if not loop.last else "" }}{% endfor %}]
-{% endif %}
-    [entryPoints.websecure.http.tls]
-      certResolver = "le"
 
 [api]
   dashboard = true

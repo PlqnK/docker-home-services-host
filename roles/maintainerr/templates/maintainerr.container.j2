@@ -15,7 +15,7 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.maintainerr.rule=Host(`maintainerr.{{ domain_name }}`)"
 Label="traefik.http.routers.maintainerr.entrypoints=websecure"
-Label="traefik.http.routers.maintainerr.middlewares=set-security-headers@file, restrict-external-access@file, maintainerr-auth"
+Label="traefik.http.routers.maintainerr.middlewares=restrict-external-access@file, maintainerr-auth"
 Label="traefik.http.middlewares.maintainerr-auth.basicauth.users={{ maintainerr.user }}:{{ maintainerr.password_hash }}"
 Label="traefik.http.services.maintainerr.loadbalancer.server.port=6246"
 AutoUpdate=local

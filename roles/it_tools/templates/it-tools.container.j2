@@ -14,7 +14,7 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.it-tools.rule=Host(`tools.{{ domain_name }}`)"
 Label="traefik.http.routers.it-tools.entrypoints=websecure"
-Label="traefik.http.routers.it-tools.middlewares=set-security-headers@file, it-tools-auth"
+Label="traefik.http.routers.it-tools.middlewares=it-tools-auth"
 Label="traefik.http.middlewares.it-tools-auth.basicauth.users={{ it_tools.user }}:{{ it_tools.password_hash }}"
 Label="traefik.http.services.it-tools.loadbalancer.server.port=80"
 AutoUpdate=local

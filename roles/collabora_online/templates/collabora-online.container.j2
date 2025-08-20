@@ -18,7 +18,6 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.office.rule=Host(`office.{{ domain_name }}`)"
 Label="traefik.http.routers.office.entrypoints=websecure"
-Label="traefik.http.routers.office.middlewares=set-security-headers@file"
 Label="traefik.http.services.office.loadbalancer.server.port=9980"
 Label="traefik.http.services.office.loadbalancer.server.scheme=https"
 AutoUpdate=local

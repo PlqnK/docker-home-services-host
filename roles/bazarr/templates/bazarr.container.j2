@@ -17,7 +17,7 @@ Label="traefik.enable=true"
 Label="traefik.docker.network=common-internal"
 Label="traefik.http.routers.bazarr.rule=Host(`bazarr.{{ domain_name }}`)"
 Label="traefik.http.routers.bazarr.entrypoints=websecure"
-Label="traefik.http.routers.bazarr.middlewares=set-security-headers@file, restrict-external-access@file"
+Label="traefik.http.routers.bazarr.middlewares=restrict-external-access@file"
 Label="traefik.http.services.bazarr.loadbalancer.server.port=6767"
 AutoUpdate=local
 
