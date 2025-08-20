@@ -5,10 +5,10 @@ Documentation=man:podman-systemd.unit(5)
 [Container]
 ContainerName=nextcloud-redis
 Image={{ containers_images.nextcloud.redis }}:{{ containers_images_tags.nextcloud.redis }}
-#Exec=redis-server /usr/local/etc/redis/redis.conf # See https://github.com/nextcloud/docker/issues/1402
+Exec=redis-server /usr/local/etc/redis/redis.conf
 Network=nextcloud-redis-internal
 ExposeHostPort=6379
-#Volume={{ containers_storage_path }}/config/immich-redis/redis.conf:/usr/local/etc/redis/redis.conf:Z,ro
+Volume={{ containers_storage_path }}/config/nextcloud-redis/redis.conf:/usr/local/etc/redis/redis.conf:Z,ro
 Volume={{ containers_storage_path }}/runtime/nextcloud-redis:/data:Z
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"

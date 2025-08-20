@@ -16,7 +16,7 @@ Volume={{ containers_storage_path }}/data/nextcloud-server:/var/www/html:z
 Volume={{ storage_server_shares_mounts_path }}/nextcloud:/var/www/html/data:slave
 Secret=nextcloud_postgres_user
 Secret=nextcloud_postgres_password
-#Secret=nextcloud_redis_password # See https://github.com/nextcloud/docker/issues/1402
+Secret=nextcloud_redis_password
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"
 Environment="NEXTCLOUD_TRUSTED_DOMAINS=cloud.{{ domain_name }}"
@@ -25,7 +25,7 @@ Environment="POSTGRES_DB={{ nextcloud.postgres.database }}"
 Environment="POSTGRES_USER_FILE=/run/secrets/nextcloud_postgres_user"
 Environment="POSTGRES_PASSWORD_FILE=/run/secrets/nextcloud_postgres_password"
 Environment="REDIS_HOST=nextcloud-redis"
-#Environment="REDIS_HOST_PASSWORD_FILE=/run/secrets/nextcloud_redis_password" # See https://github.com/nextcloud/docker/issues/1402
+Environment="REDIS_HOST_PASSWORD_FILE=/run/secrets/nextcloud_redis_password"
 HealthStartupCmd="bash -c 'exec 5<>/dev/tcp/127.0.0.1/9000'"
 HealthStartPeriod=5m
 HealthStartupInterval=5s

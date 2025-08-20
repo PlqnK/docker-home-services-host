@@ -88,11 +88,10 @@
     mode: '{{ item.mode }}'
     state: 'directory'
   loop:
-    # See https://github.com/nextcloud/docker/issues/1402
-    # - path: 'config/nextcloud-redis'
-    #   owner: 999
-    #   group: 999
-    #   mode: '0700'
+    - path: 'config/nextcloud-redis'
+      owner: 999
+      group: 999
+      mode: '0700'
     - path: 'config/nextcloud-nginx'
       owner: 'root'
       group: 'root'
@@ -139,12 +138,11 @@
       services:
         - 'nextcloud-postgres.service'
         - 'nextcloud-server.service'
-    # See https://github.com/nextcloud/docker/issues/1402
-    # - name: 'nextcloud_redis_password'
-    #   data: '{{ nextcloud.redis.password }}'
-    #   services:
-    #     - 'nextcloud-redis.service'
-    #     - 'nextcloud-server.service'
+    - name: 'nextcloud_redis_password'
+      data: '{{ nextcloud.redis.password }}'
+      services:
+        - 'nextcloud-redis.service'
+        - 'nextcloud-server.service'
   loop_control:
     label: '{{ item.name }}'
   register: 'podman_secrets'
@@ -157,13 +155,12 @@
     group: '{{ item.group }}'
     mode: '{{ item.mode }}'
   loop:
-    # See https://github.com/nextcloud/docker/issues/1402
-    # - src: 'redis.conf.j2'
-    #   dest: 'nextcloud-redis/redis.conf'
-    #   owner: 999
-    #   group: 999
-    #   mode: '0400'
-    #   services: 'nextcloud-redis.service'
+    - src: 'redis.conf.j2'
+      dest: 'nextcloud-redis/redis.conf'
+      owner: 999
+      group: 999
+      mode: '0400'
+      services: 'nextcloud-redis.service'
     - src: 'nginx.conf.j2'
       dest: 'nextcloud-nginx/nginx.conf'
       owner: 'root'
