@@ -29,10 +29,10 @@ containers_images_tags:
   collabora_online: 'latest'
   stirling_pdf: 'latest-ultra-lite'
   immich:
-    postgres: '16-vectorchord0.4.3'
+    postgres: '16-vectorchord0.5.3'
     valkey: '8'
-    machine_learning: 'release'
-    server: 'release'
+    machine_learning: 'v2'
+    server: 'v2'
   ttrss:
     postgres: '16'
     server: 'latest'
