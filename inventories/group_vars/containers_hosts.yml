@@ -9,10 +9,10 @@ containers_images_tags:
   autorestic: '1.8'
   cetusguard: 'v1'
   traefik: '3'
-  uptime_kuma: '1'
+  uptime_kuma: '2'
   healthchecks:
     postgres: '16'
-    server: 'v3.10'
+    server: 'v3.11.2'
   prometheus: 'latest'
   loki: 'latest'
   syslog_ng: 'latest'
@@ -24,7 +24,7 @@ containers_images_tags:
   nextcloud:
     postgres: '16'
     redis: '7'
-    server: '31-fpm'
+    server: '32-fpm'
     nginx: '1'
   collabora_online: 'latest'
   stirling_pdf: 'latest-ultra-lite'
