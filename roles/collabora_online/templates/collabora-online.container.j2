@@ -5,7 +5,9 @@ Documentation=man:podman-systemd.unit(5)
 [Container]
 ContainerName=collabora-online
 Image={{ containers_images.collabora_online }}:{{ containers_images_tags.collabora_online }}
-AddCapability=MKNOD
+DropCapability=ALL
+AddCapability=SYS_CHROOT
+AddCapability=SYS_ADMIN
 Network=web-egress
 Network=common-internal
 ExposeHostPort=9980
