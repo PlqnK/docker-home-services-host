@@ -10,15 +10,15 @@ sonarr:
     custom_formats:
       - trash_ids:
           # Series Versions
-          - 3a4127d8aa781b44120d907f2cd62627 # Hybrid
           - b735f09d3c025cbb7d75a5d38325b73b # Remaster
           # Unwanted
           - 85c61753df5da1fb2aab6f2a47426b09 # BR-DISK
-          - fbcb31d8dabd2a319072b84fc0b7249c # Extras
           - 9c11cd3f07101cdba90a2d81cf0e56b4 # LQ
           - e2315f990da2e2cbfc9fa5b7a6fcfe48 # LQ (Release Title)
           - 23297a736ca77c0fc8e70f8edd7ee56c # Upscaled
           - 47435ece6b99a0b477caf360e79ba0bb # x265 (HD)
+          - fbcb31d8dabd2a319072b84fc0b7249c # Extras
+          - 15a05bc7c1a36e2b57fd628f8977e2fc # AV1
           # Misc
           - ec8fa7296b64e8cd390a1600981f3923 # Repack/Proper
           - eb3d5cc0a2be0db205fb823640db6a3c # Repack v2
@@ -57,21 +57,26 @@ sonarr:
           - a880d6abc21e7c16884f3ae393f84179 # HMAX
           - 7a235133c87f7da4c8cccceca7e3c7a6 # HBO
           - f6cce30f1733d5c8194222a7507909bb # Hulu
-          - 0ac24a2a68a9700bcb7eeca8e5cd644c # IT
-          - 81d1fbf600e2540cee87f3a23f9d3c1c # Max
+          - 0ac24a2a68a9700bcb7eeca8e5cd644c # iT
+          - 81d1fbf600e2540cee87f3a23f9d3c1c # MAX
           - d34870697c9db575f17700212167be23 # NF
           - c67a75ae4a1715f2bb4d492755ba4195 # PMTP
           - 1656adc6d7bb2c8cca6acfb6592db421 # PCOK
           - ae58039e1319178e6be73caab5c42166 # SHO
           - 1efe8da11bfd74fbbcd4d8117ddb9213 # STAN
+          - 9623c5c9cac8e939c1b9aedd32f640bf # SYFY
+          - 218e93e5702f44a68ad9e3c6ba87d2f0 # HD Streaming Boost
           # French Streaming Services
-          - f27d46a831e6b16fa3fee2c4e5d10984 # CANALPlus
-          - b0d6195c23ae254932da00512db7e8a8 # RTBF
+          - b0d6195c23ae254932da00512db7e8a8 # AUViO
+          - f27d46a831e6b16fa3fee2c4e5d10984 # MyCANAL
           - 0455d6519a550dbf648c97b56e7231d2 # SALTO
           # UK Streaming Services
           - bbcaf03147de0f73be2be4a9078dfa03 # 4OD
           - fcc09418f67ccaddcf3b641a22c5cfd7 # ALL4
           - dc503e2425126fa1d0a9ad6168c83b3f # iP
+          - fa5a16b951004c23e980d2913694a137 # ITVX
+          - 9f72dc1059a6b277c21cee6a1f15f13f # MY5
+          - b66a699fba6f9df91becab798d7502e5 # NOW
         assign_scores_to:
           - name: Web
 
@@ -85,27 +90,33 @@ radarr:
     custom_formats:
       - trash_ids:
           # Movie Versions
-          - e0c07d59beb37348e975a930d5e50319 # Criterion Collection
-          - 0f12c086e289cf966fa5948eac571f44 # Hybrid
-          - 9f6cbff8cfe4ebbc1bde14c7b7bec0de # IMAX Enhanced
-          - eecf3a857724171f968a66cb5719e152 # IMAX
-          - 9d27d9d2181838f76dee150882bdc58c # Masters of Cinema
           - 570bc9ebecd92723d2d21500f4be314c # Remaster
+          - eca37840c13c6ef2dd0262b141a5482f # 4K Remaster
+          - e0c07d59beb37348e975a930d5e50319 # Criterion Collection
+          - 9d27d9d2181838f76dee150882bdc58c # Masters of Cinema
+          - db9b4c4b53d312a3ca5f1378f6440fc9 # Vinegar Syndrome
           - 957d0f44b592285f26449575e8b1167e # Special Edition
+          - eecf3a857724171f968a66cb5719e152 # IMAX
+          - 9f6cbff8cfe4ebbc1bde14c7b7bec0de # IMAX Enhanced
           # Unwanted
-          - b8cd450cbfa689c0259a01d9e29ba3d6 # 3D
           - ed38b889b31be83fda192888e2286d83 # BR-DISK
-          - 0a3f082873eb454bde444150b70253cc # Extras
+          - e6886871085226c3da1830830146846c # Generated Dynamic HDR
           - 90a6f9a284dff5103f6346090e6280c8 # LQ
           - e204b80c87be9497a8a6eaff48f72905 # LQ (Release Title)
-          - bfd8eb01832d646a0a89c4deb46f8564 # Upscaled
           - dc98083864ea246d05a42df0d05f81cc # x265 (HD)
+          - b8cd450cbfa689c0259a01d9e29ba3d6 # 3D
+          - bfd8eb01832d646a0a89c4deb46f8564 # Upscaled
+          - 0a3f082873eb454bde444150b70253cc # Extras
+          - 712d74cd88bceb883ee32f773656b1f5 # Sing-Along Versions
+          - cae4ca30163749b891686f95532519bd # AV1
           # Misc
           - 0d91270a7255a1e388fa85e959f359d8 # FreeLeech
           - e7718d7a3ce595f289bfee26adc178f5 # Repack/Proper
           - ae43b294509409a6a13919dedd4764c4 # Repack2
+          - 5caaaa1c08c1742aa4342d8c4cc463f2 # Repack3
           # Optional
           - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
+          - cc444569854e9de0b084ab2b8b1532b2 # Black and White Editions
           - 73613461ac2cea99d52c4cd6e177ab82 # HFR
           - c465ccc73923871b3eb1802042331306 # Line/Mic Dubbed
           - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
@@ -123,25 +134,25 @@ radarr:
           - name: Web
           - name: DVD
       - trash_ids:
-          # Audio Advanced #1
+          # HQ Release Groups
+          - 3a3ff47579026e76d6504ebea39390de # Remux Tier 01
+          - 9f98181fe5a3fbeb0cc29340da2a468a # Remux Tier 02
+          - 8baaf0b3142bf4d94c42a724f034e27a # Remux Tier 03
+          # Audio
           - 496f355514737f7d83bf7aa4d24f8169 # TrueHD ATMOS
           - 2f22d89048b01681dde8afe203bf2e95 # DTS X
           - 417804f7f2c4308c1f4c5d380d4c4475 # ATMOS (undefined)
           - 1af239278386be2919e1bcee0bde047e # DD+ ATMOS
           - 3cafb66171b47f226146a0770576870f # TrueHD
           - dcf3ec6938fa32445f590a4da84256cd # DTS-HD MA
+          - a570d4a0e56a2874b64e5bfa55202a1b # FLAC
+          - e7c2fcae07cbada050a0af3357491d7b # PCM
+          - 8e109e50e0a0b83a5098b056e13bf6db # DTS-HD HRA
           - 185f1dd7264c4562b9022d963ac37424 # DD+
           - f9f847ac70a0af62ea4a08280b859636 # DTS-ES
           - 1c1a4c5e823891c75bc50380a6866f73 # DTS
-          # Audio Advanced #2
-          - e7c2fcae07cbada050a0af3357491d7b # PCM
-          - 8e109e50e0a0b83a5098b056e13bf6db # DTS-HD HRA
           - 240770601cc226190c367ef59aba7463 # AAC
           - c2998bd0d90ed5621d8df281e839436e # DD
-          # HQ Release Groups
-          - 3a3ff47579026e76d6504ebea39390de # Remux Tier 01
-          - 9f98181fe5a3fbeb0cc29340da2a468a # Remux Tier 02
-          - 8baaf0b3142bf4d94c42a724f034e27a # Remux Tier 03
         assign_scores_to:
           - name: Remux
       - trash_ids:
@@ -158,6 +169,7 @@ radarr:
           - af94e0fe497124d1f9ce732069ec8c3b # WEB Tier 03
           # General Streaming Services
           - b3b3a6ac74ecbd56bcdbefa4799fb9df # AMZN
+          - df13ed57843877b21ad969184ab6888f # ATV
           - 40e9380490e748672c2522eaaeb692f7 # ATVP
           - cc5e51a9e85a6296ceefe097a77f12f4 # BCORE
           - 16622a6911d1ab5d5b8b713d5b0036d4 # CRiT
@@ -165,14 +177,14 @@ radarr:
           - 509e5f41146e278f9eab1ddaceb34515 # HBO
           - 5763d1b0ce84aff3b21038eea8e9b8ad # HMAX
           - 526d445d4c16214309f0fd2b3be18a89 # Hulu
-          - 6a061313d22e51e0f25b7cd4dc065233 # Max
+          - e0ec9672be6cac914ffad34a6b077209 # iT
+          - 6a061313d22e51e0f25b7cd4dc065233 # MAX
           - 2a6039655313bf5dab1e43523b62c374 # MA
           - 170b1d363bd8516fbf3a3eb05d4faff6 # NF
           - c9fd353f8f5f1baf56dc601c4cb29920 # PCOK
           - e36a0ba1bc902b26ee40818a1d59b8bd # PMTP
+          - 44c2b54d7c81c1a442a8b2cabeaef54f # ROKU
           - c2863d2a50c9acad1fb50e53ece60817 # STAN
-          # UK Streaming Services
-          - 6185878161f1e2eef9cd0641a0d09eae # iP
         assign_scores_to:
           - name: Bluray
           - name: Web
