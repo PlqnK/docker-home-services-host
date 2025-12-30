@@ -1,4 +1,9 @@
 ---
+- name: 'Remote gateways base configuration'
+  hosts: 'remote_gateways'
+  roles:
+    - 'raspberry_pi_os_setup'
+
 - name: 'Hypervisors base configuration'
   hosts: 'hypervisors'
   roles:

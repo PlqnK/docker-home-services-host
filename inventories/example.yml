@@ -1,6 +1,37 @@
 ---
 all:
   hosts:
+    gateway0:
+      ansible_host: 'gateway0.domain.tld'
+      ansible_user: 'pi'
+      ansible_become: true
+      ansible_python_interpreter: '/usr/bin/python3'
+      totp:
+        key: '' # cat /dev/urandom | tr -dc 'A-Z0-9' | fold -w 26 | head -n 1
+        recovery_codes: | # for i in {1..5}; do cat /dev/urandom | tr -dc '0-9' | fold -w 6 | head -n 1; done
+          020932
+          803780
+          742117
+          859969
+          595151
+      wireguard_tunnel:
+        interface:
+          addresses:
+            - '10.0.0.2/32'
+            - 'fc00::2/128'
+          private_key: '' # wg genkey
+          dns_servers:
+            - '10.0.0.1'
+            - 'fc00::1'
+          search_domains:
+            - 'domain.tld'
+        peer:
+          endpoint: 'wgpeer.domain.tld:51820'
+          public_key: ''
+          preshared_key: '' # wg genpsk
+          allowed_ips:
+            - '10.0.0.0/8'
+            - 'fc00::/8'
     hypervisor:
       ansible_host: 'hypervisor.domain.tld'
       ansible_user: 'root'
@@ -348,6 +379,9 @@ all:
         user: ''
         password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
   children:
+    remote_gateways:
+      hosts:
+        gateway0:
     hypervisors:
       hosts:
         hypervisor:
