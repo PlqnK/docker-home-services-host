@@ -25,7 +25,7 @@
     daemon_reload: '{{ ("true" | bool) if quadlet_unit.changed else ("false" | bool) }}'
     state: 'restarted'
   when: ("containers-restart" in ansible_run_tags or
-        ("containers-update" in ansible_run_tags and container_image_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
+        ("containers-update" in ansible_run_tags and container_image_pull.changed))
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable Prometheus container'

@@ -42,7 +42,7 @@ provision: ## [env=<inventory>] [limit=<subset of hosts to target>] [tags=<tags 
 	@$(env_vars) ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) provision.yml --vault-password-file="vault-pass.sh"
 
 update: ## [env=<inventory>] [limit=<subset of hosts to target>] ## Update the hosts. ## Example: make update env=production limit=home,monitoring
-	@ANSIBLE_DISPLAY_SKIPPED_HOSTS=False ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) --tags="containers-update,os-upgrade" provision.yml --vault-password-file="vault-pass.sh"
+	@ANSIBLE_DISPLAY_SKIPPED_HOSTS=False ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) --tags="containers-update" provision.yml --vault-password-file="vault-pass.sh"
 
 db-upgrade: ## [env=<inventory>] [limit=<subset of hosts to target>] [app=<containers roles to execute>] ## Upgrade databases to new major version. ## Example: make db-upgrade env=production limit=documents app=nextcloud
 	@ANSIBLE_DISPLAY_SKIPPED_HOSTS=False ansible-playbook --inventory-file="inventories/$(env).yml" $(flags) --tags="containers-db-upgrade" provision.yml --vault-password-file="vault-pass.sh"

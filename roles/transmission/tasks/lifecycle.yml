@@ -31,7 +31,7 @@
     daemon_reload: '{{ ("true" | bool) if quadlet_units.changed else ("false" | bool) }}'
     state: 'restarted'
   when: ("containers-restart" in ansible_run_tags or
-        ("containers-update" in ansible_run_tags and containers_images_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
+        ("containers-update" in ansible_run_tags and containers_images_pull.changed))
   tags: ['never', 'containers-restart', 'containers-update']
 
 - name: 'Disable Transmission pod'

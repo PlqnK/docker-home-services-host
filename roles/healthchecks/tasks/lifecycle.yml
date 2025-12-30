@@ -35,7 +35,7 @@
 - name: 'Restart Healthchecks stack'
   tags: ['never', 'containers-restart', 'containers-update']
   when: ("containers-restart" in ansible_run_tags or
-        ("containers-update" in ansible_run_tags and containers_images_pull.changed and (rpm_ostree_upgrade is not defined or not rpm_ostree_upgrade.changed)))
+        ("containers-update" in ansible_run_tags and containers_images_pull.changed))
   block:
     - name: 'Stop Healthchecks stack'
       ansible.builtin.systemd_service:
