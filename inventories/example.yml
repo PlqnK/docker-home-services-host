@@ -1,6 +1,11 @@
 ---
 all:
   hosts:
+    hypervisor:
+      ansible_host: 'hypervisor.domain.tld'
+      ansible_user: 'root'
+      ansible_become: true
+      ansible_python_interpreter: '/usr/bin/python3'
     backups:
       ansible_host: 'backups.domain.tld'
       ansible_user: 'core'
@@ -343,6 +348,9 @@ all:
         user: ''
         password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
   children:
+    hypervisors:
+      hosts:
+        hypervisor:
     home_hosts:
       hosts:
         backups:
