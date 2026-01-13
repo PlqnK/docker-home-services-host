@@ -1,8 +1,8 @@
 ---
-- name: 'Remote gateways base configuration'
-  hosts: 'remote_gateways'
-  roles:
-    - 'raspberry_pi_os_setup'
+# - name: 'Remote gateways base configuration'
+#   hosts: 'remote_gateways'
+#   roles:
+#     - 'raspberry_pi_os_setup'
 
 - name: 'Hypervisors base configuration'
   hosts: 'hypervisors'
@@ -26,7 +26,7 @@
     # - 'systemd_exporter'
 
 - name: 'Backups containers'
-  hosts: 'backups'
+  hosts: 'medias'
   roles:
     - 'rsync_servers'
     - 'mbsync'
@@ -35,7 +35,7 @@
     - 'autorestic'
 
 - name: 'Monitoring containers'
-  hosts: 'monitoring'
+  hosts: 'medias'
   roles:
     - 'uptime_kuma'
     - 'healthchecks'
@@ -45,7 +45,7 @@
     - 'syslog_ng'
 
 - name: 'Home containers'
-  hosts: 'home'
+  hosts: 'medias'
   roles:
     - 'home_assistant'
 
