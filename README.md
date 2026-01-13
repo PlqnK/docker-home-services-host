@@ -4,7 +4,9 @@ This is a mono repository for my home infrastructure, managed with Ansible.
 
 ## Stack Overview
 
-I have 2 DELL Optiplex Micro to run my workloads. One is running Proxmox VE and the other one Fedora CoreOS. On the Proxmox host there are 3 Virtual Machines, all running Fedora CoreOS.
+I have 2 DELL Optiplex Micro to run my home workloads. One is running Proxmox VE and the other one Fedora CoreOS. On the Proxmox host there are 3 Virtual Machines, all running Fedora CoreOS.
+
+I also have a Hetzner VM to run my "critical" services that need to be always online even when my home network is down.
 
 As well as the following resources :
 
@@ -45,6 +47,8 @@ The Ansible code configures and deploys the following:
 - The Proxmox VE host (networking, alerting, smart monitoring etc.)
 - The Fedora CoreOS hosts (networking, NFS mounts, Podman installation etc.)
 - All the containerized services running on the Fedora CoreOS hosts
+
+The `example.yml` inventory contains an example of how to structure the inventory file and contains all the possible variables as well as comments to explain how to generated certain values.
 
 The services roles follow the following structure:
 
