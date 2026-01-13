@@ -1,0 +1,20 @@
+[Unit]
+Description={{ storage_server.name }} {{ item.name }} {{ storage_server.type }} share
+After=nss-lookup.target
+Wants=nss-lookup.target
+
+[Mount]
+{% if storage_server.type == "nfs" %}
+What={{ storage_server.fqdn }}:{{ storage_server.shares_base_path }}/{{ item.name }}
+{% elif storage_server.type == "cifs" %}
+What=//{{ storage_server.fqdn }}/{{ storage_server.shares_base_path }}/{{ item.name }}
+{% endif %}
+Where={{ storage_server_shares_mounts_path }}/{{ item.name }}
+Type={{ storage_server.type }}
+{% if storage_server.type == "cifs" %}
+Options=seal,credentials=/etc/smbcredentials,iocharset=utf8,uid={{ item.uid }},gid={{ item.gid }},file_mode=0640,dir_mode=0750
+{% endif %}
+TimeoutSec=30
+
+[Install]
+WantedBy=multi-user.target

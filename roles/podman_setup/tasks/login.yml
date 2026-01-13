@@ -1,0 +1,8 @@
+---
+- name: 'Login to containers registries'
+  containers.podman.podman_login:
+    authfile: '/root/.config/containers/auth.json'
+    registry: '{{ item.registry }}'
+    username: '{{ item.username }}'
+    password: '{{ item.password }}'
+  loop: '{{ containers_registries }}'

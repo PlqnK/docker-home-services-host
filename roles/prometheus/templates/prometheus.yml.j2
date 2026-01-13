@@ -1,0 +1,71 @@
+global:
+  scrape_interval: '1m'
+  evaluation_interval: '1m'
+  #external_labels:
+  #  monitor: codelab
+  #  foo: bar
+
+scrape_configs:
+  - job_name: 'prometheus'
+    #honor_labels: true
+    static_configs:
+      - targets:
+          - 'localhost:9090'
+        #labels:
+        #  my: label
+        #  your: label
+    basic_auth:
+      username: '{{ prometheus.scrape_configs.prometheus.basic_auth.user }}'
+      password_file: '/run/secrets/prometheus_prometheus_password'
+    #relabel_configs:
+    #  - source_labels: [job, __meta_dns_name]
+    #    regex: (.*)some-[regex]
+    #    target_label: job
+    #    replacement: foo-${1}
+    #    # action defaults to 'replace'
+    #  - source_labels: [abc]
+    #    target_label: cde
+    #  - replacement: static
+    #    target_label: abc
+    #  - regex:
+    #    replacement: static
+    #    target_label: abc
+    #  - source_labels: [foo]
+    #    target_label: abc
+    #    action: keepequal
+    #  - source_labels: [foo]
+    #    target_label: abc
+    #    action: dropequal
+
+  - job_name: 'node'
+    static_configs:
+      - targets:
+{% for host in prometheus.scrape_configs.node.hosts %}
+          - '{{ host }}:9100'
+{% endfor %}
+    basic_auth:
+      username: '{{ prometheus.scrape_configs.node.basic_auth.user }}'
+      password_file: '/run/secrets/prometheus_node_password'
+
+  - job_name: 'systemd'
+    static_configs:
+      - targets:
+{% for host in prometheus.scrape_configs.systemd.hosts %}
+          - '{{ host }}:9558'
+{% endfor %}
+    basic_auth:
+      username: '{{ prometheus.scrape_configs.systemd.basic_auth.user }}'
+      password_file: '/run/secrets/prometheus_systemd_password'
+
+#rule_files:
+#  - "first.rules"
+#  - "my/*.rules"
+
+#alerting:
+#  alertmanagers:
+#    - scheme: https
+#      static_configs:
+#        - targets:
+#            - "1.2.3.4:9093"
+#            - "1.2.3.5:9093"
+#            - "1.2.3.6:9093"

@@ -1,0 +1,29 @@
+[Unit]
+Description=Immich Machine Learning
+Documentation=man:podman-systemd.unit(5)
+
+[Container]
+ContainerName=immich-machine-learning
+Image={{ containers_images.immich.machine_learning }}:{{ containers_images_tags.immich.machine_learning }}
+Network=web-egress
+Network=immich-server-internal
+ExposeHostPort=3003
+Volume={{ containers_storage_path }}/runtime/immich-machine-learning:/cache:Z
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Environment="IMMICH_SERVER_URL=http://immich-server:3001"
+HealthStartupCmd="python3 healthcheck.py"
+HealthStartPeriod=5m
+HealthStartupInterval=5s
+HealthCmd="python3 healthcheck.py"
+HealthInterval=1m
+Notify=healthy
+AutoUpdate=local
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=300
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

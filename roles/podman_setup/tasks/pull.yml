@@ -1,0 +1,29 @@
+---
+- name: 'Copy podman-pull-images script to /usr/local/bin'
+  ansible.builtin.copy:
+    src: 'podman-pull-images.sh'
+    dest: '/usr/local/bin/podman-pull-images.sh'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Copy podman auto-pull systemd units'
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: '/etc/systemd/system/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'podman-auto-pull.service'
+    - 'podman-auto-pull.timer'
+  notify: 'Reload systemd daemon'
+
+- name: 'Reload systemd daemon to load new units'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Enable and start podman auto-pull timer'
+  ansible.builtin.systemd_service:
+    name: 'podman-auto-pull.timer'
+    enabled: true
+    state: 'started'

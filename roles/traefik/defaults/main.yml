@@ -1,0 +1,7 @@
+---
+containers_images:
+  cetusguard: 'docker.io/hectorm/cetusguard'
+  traefik: 'public.ecr.aws/docker/library/traefik'
+containers_images_tags:
+  cetusguard: 'latest'
+  traefik: 'latest'

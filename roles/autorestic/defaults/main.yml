@@ -1,0 +1,5 @@
+---
+containers_images:
+  autorestic: 'docker.io/cupcakearmy/autorestic'
+containers_images_tags:
+  autorestic: 'latest'

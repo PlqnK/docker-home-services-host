@@ -1,0 +1,3 @@
+Host *.repo.borgbase.com
+    ServerAliveInterval 10
+    ServerAliveCountMax 30

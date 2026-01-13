@@ -1,0 +1,55 @@
+---
+- name: 'Template Btrfs tasks systemd services'
+  ansible.builtin.template:
+    src: '{{ item }}.j2'
+    dest: '/etc/systemd/system/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'btrfs-scrub@.service'
+    - 'btrfs-scrub-ro@.service'
+    - 'btrfs-snapshot@.service'
+  notify: 'Reload systemd daemon'
+
+- name: 'Copy Btrfs tasks systemd timers'
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: '/etc/systemd/system/{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  loop:
+    - 'btrfs-scrub@.timer'
+    - 'btrfs-scrub-ro@.timer'
+    - 'btrfs-snapshot@.timer'
+  notify: 'Reload systemd daemon'
+
+- name: 'Reload systemd daemon to load new units'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Enable and start Btrfs autocorrect scrub timers'
+  ansible.builtin.systemd_service:
+    name: 'btrfs-scrub@{{ item.mount | systemd_escape(path=True) }}.timer'
+    enabled: true
+    state: 'started'
+  loop: '{{ ansible_mounts }}'
+  loop_control:
+    label: '{{ item.mount }}'
+  when: (item.fstype == "btrfs" and "rw" in item.options and not "bind" in item.options)
+
+- name: 'Enable and start Btrfs read-only scrub timers'
+  ansible.builtin.systemd_service:
+    name: 'btrfs-scrub-ro@{{ item.mount | systemd_escape(path=True) }}.timer'
+    enabled: true
+    state: 'started'
+  loop: '{{ ansible_mounts }}'
+  loop_control:
+    label: '{{ item.mount }}'
+  when: (item.fstype == "btrfs" and "ro" in item.options and not "bind" in item.options)
+
+- name: 'Enable and start Btrfs /var/containers snapshot timer'
+  ansible.builtin.systemd_service:
+    name: 'btrfs-snapshot@var-containers.timer'
+    enabled: true
+    state: 'started'

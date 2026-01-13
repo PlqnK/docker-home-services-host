@@ -1,0 +1,5 @@
+---
+containers_images:
+  prowlarr: 'lscr.io/linuxserver/prowlarr'
+containers_images_tags:
+  prowlarr: 'latest'

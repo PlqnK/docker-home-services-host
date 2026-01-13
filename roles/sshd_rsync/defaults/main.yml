@@ -1,0 +1,5 @@
+---
+containers_images:
+  sshd_rsync: 'quay.io/panubo/sshd'
+containers_images_tags:
+  sshd_rsync: 'latest'

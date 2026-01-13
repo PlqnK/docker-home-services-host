@@ -1,0 +1,20 @@
+[Unit]
+Description=Home Assistant
+Documentation=man:podman-systemd.unit(5)
+
+[Container]
+ContainerName=home-assistant
+Image={{ containers_images.home_assistant }}:{{ containers_images_tags.home_assistant }}
+Network=host
+Volume={{ containers_storage_path }}/data/home-assistant:/config:Z
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+AutoUpdate=local
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=300
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,38 @@
+[Unit]
+Description=mbsync
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+RequiresMountsFor={{ containers_storage_path }}/config/mbsync/mbsync.sh
+RequiresMountsFor={{ containers_storage_path }}/config/mbsync/mbsyncrc
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/groupware/emails
+
+[X-Container]
+Image={{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }}
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Type=oneshot
+TimeoutSec=900
+Restart=no
+ExecStart=/usr/bin/podman container run \
+	--rm \
+	--detach \
+	--replace \
+	--name mbsync \
+	--cidfile=%t/%N.cid \
+	--entrypoint /app/mbsync.sh \
+	--hostname {{ ansible_hostname }} \
+	--network web-egress \
+	--volume {{ containers_storage_path }}/config/mbsync/mbsync.sh:/app/mbsync.sh:Z \
+	--volume {{ containers_storage_path }}/config/mbsync/mbsyncrc:/mbsyncrc:Z \
+	--volume {{ storage_server_shares_mounts_path }}/backups/groupware/emails:/mail:slave \
+	--secret mbsync_imap_password \
+	--tz {{ timezone }} \
+	--env TZ={{ timezone }} \
+	--env HEALTHCHECKS_URL=healthchecks.{{ domain_name }}/ping \
+	--env HEALTHCHECKS_UUID={{ mbsync.healthchecks_uuid }} {{ containers_images.mbsync }}:{{ containers_images_tags.mbsync }}
+ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
+
+[Install]
+WantedBy=default.target

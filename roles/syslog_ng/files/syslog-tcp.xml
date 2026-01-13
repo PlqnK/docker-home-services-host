@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>syslog-tcp</short>
+  <description>TCP variant of the syslog client/server protocol.</description>
+  <port protocol="tcp" port="514"/>
+</service>

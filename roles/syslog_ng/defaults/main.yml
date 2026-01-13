@@ -1,0 +1,5 @@
+---
+containers_images:
+  syslog_ng: 'docker.io/balabit/syslog-ng'
+containers_images_tags:
+  syslog_ng: 'latest'

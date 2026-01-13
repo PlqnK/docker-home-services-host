@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily pruning of dangling container images
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=900
+Persistent=true
+
+[Install]
+WantedBy=timers.target

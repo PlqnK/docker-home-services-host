@@ -1,0 +1,5 @@
+---
+containers_images:
+  maintainerr: 'ghcr.io/maintainerr/maintainerr'
+containers_images_tags:
+  maintainerr: 'latest'

@@ -1,0 +1,61 @@
+[Unit]
+Description=Borgmatic
+Wants=network-online.target
+After=network-online.target
+After=mbsync.service vdirsyncer.service rsync-servers.service
+RequiresMountsFor=%t/containers
+RequiresMountsFor={{ containers_storage_path }}/config/borgmatic/borgmatic.d
+RequiresMountsFor={{ containers_storage_path }}/config/borgmatic/.ssh
+RequiresMountsFor={{ containers_storage_path }}/data/borgmatic
+RequiresMountsFor={{ containers_storage_path }}/runtime/borgmatic/borgmatic
+RequiresMountsFor={{ containers_storage_path }}/runtime/borgmatic/cache
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/documents
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/groupware
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/backups/servers
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/audiodrama
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/audiobooks
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/books
+RequiresMountsFor={{ storage_server_shares_mounts_path }}/medias/comics
+
+[X-Container]
+Image={{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }}
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Type=forking
+RuntimeMaxSec=14400
+TimeoutStartSec=300
+TimeoutStopSec=70
+Restart=no
+ExecStart=/usr/bin/podman container run \
+	--rm \
+	--detach \
+	--replace \
+	--name borgmatic \
+	--cidfile=%t/%N.cid \
+	--entrypoint "borgmatic" \
+	--hostname {{ ansible_hostname }} \
+	--network web-egress \
+	--volume {{ containers_storage_path }}/config/borgmatic/borgmatic.d:/etc/borgmatic.d:Z \
+	--volume {{ containers_storage_path }}/config/borgmatic/.ssh:/root/.ssh:Z \
+	--volume {{ containers_storage_path }}/data/borgmatic:/root/.config/borg:Z \
+	--volume {{ containers_storage_path }}/runtime/borgmatic/cache:/root/.cache/borg:Z \
+	--volume {{ containers_storage_path }}/runtime/borgmatic/state:/root/.local/state/borgmatic:Z \
+	--volume {{ storage_server_shares_mounts_path }}/backups/documents:{{ storage_server_shares_mounts_path }}/backups/documents:slave,ro \
+	--volume {{ storage_server_shares_mounts_path }}/backups/groupware:{{ storage_server_shares_mounts_path }}/backups/groupware:slave,ro \
+	--volume {{ storage_server_shares_mounts_path }}/backups/servers:{{ storage_server_shares_mounts_path }}/backups/servers:slave,ro \
+	--volume {{ storage_server_shares_mounts_path }}/medias/audiodrama:{{ storage_server_shares_mounts_path }}/medias/audiodrama:slave,ro \
+	--volume {{ storage_server_shares_mounts_path }}/medias/audiobooks:{{ storage_server_shares_mounts_path }}/medias/audiobooks:slave,ro \
+	--volume {{ storage_server_shares_mounts_path }}/medias/books:{{ storage_server_shares_mounts_path }}/medias/books:slave,ro \
+	--volume {{ storage_server_shares_mounts_path }}/medias/comics:{{ storage_server_shares_mounts_path }}/medias/comics:slave,ro \
+	--secret borgmatic_documents_encryption_passphrase \
+	--secret borgmatic_groupware_encryption_passphrase \
+	--secret borgmatic_medias_encryption_passphrase \
+	--secret borgmatic_servers_encryption_passphrase \
+	--tz {{ timezone }} \
+	--env TZ={{ timezone }} {{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }} --stats -v 1
+ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
+ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
+
+[Install]
+WantedBy=default.target

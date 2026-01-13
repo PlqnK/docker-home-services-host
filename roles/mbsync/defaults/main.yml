@@ -1,0 +1,5 @@
+---
+containers_images:
+  mbsync: 'docker.io/theohbrothers/docker-isync'
+containers_images_tags:
+  mbsync: 'latest'

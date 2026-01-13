@@ -1,0 +1,5 @@
+---
+containers_images:
+  vdirsyncer: 'ghcr.io/bleala/vdirsyncer'
+containers_images_tags:
+  vdirsyncer: 'latest'

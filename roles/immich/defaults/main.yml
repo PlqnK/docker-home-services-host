@@ -1,0 +1,13 @@
+---
+containers_images:
+  immich:
+    postgres: 'ghcr.io/immich-app/postgres'
+    valkey: 'docker.io/valkey/valkey'
+    machine_learning: 'ghcr.io/immich-app/immich-machine-learning'
+    server: 'ghcr.io/immich-app/immich-server'
+containers_images_tags:
+  immich:
+    postgres: 'latest'
+    valkey: 'latest'
+    machine_learning: 'latest'
+    server: 'latest'

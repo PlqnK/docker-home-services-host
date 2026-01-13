@@ -1,0 +1,27 @@
+# Override podamn-auto-update units to be executed only if the host has not been updated and rebooted by Zincati.
+---
+- name: 'Create podman auto-update systemd timer override directory'
+  ansible.builtin.file:
+    path: '/etc/systemd/system/podman-auto-update.timer.d'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: 'directory'
+
+- name: 'Copy override podman auto-update systemd timer'
+  ansible.builtin.copy:
+    src: 'podman-auto-update.timer.override.conf'
+    dest: '/etc/systemd/system/podman-auto-update.timer.d/override.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Reload systemd daemon'
+
+- name: 'Reload systemd daemon to load new units'
+  ansible.builtin.meta: 'flush_handlers'
+
+- name: 'Enable and start podman auto-update timer'
+  ansible.builtin.systemd_service:
+    name: 'podman-auto-update.timer'
+    enabled: true
+    state: 'started'

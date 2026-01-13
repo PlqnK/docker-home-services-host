@@ -1,0 +1,10 @@
+[http]
+  [http.routers]
+    [http.routers.home-assistant]
+      entryPoints = ["websecure"]
+      rule = "Host(`home.{{ domain_name }}`)"
+      service = "home-assistant"
+      middlewares = ["set-security-headers"]
+  [http.services]
+    [[http.services.home-assistant.loadBalancer.servers]]
+      url = "http://{{ ansible_fqdn }}:8123"

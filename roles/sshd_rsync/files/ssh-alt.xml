@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>ssh-alt</short>
+  <description>Alternative port for the Secure Shell (SSH) protocol.</description>
+  <port protocol="tcp" port="2222"/>
+</service>

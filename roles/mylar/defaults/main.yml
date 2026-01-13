@@ -1,0 +1,5 @@
+---
+containers_images:
+  mylar: 'lscr.io/linuxserver/mylar3'
+containers_images_tags:
+  mylar: 'latest'

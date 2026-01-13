@@ -1,0 +1,14 @@
+---
+- name: 'Template Zincati comfiguration'
+  ansible.builtin.template:
+    src: '30-updates-strategy.toml.j2'
+    dest: '/etc/zincati/config.d/30-updates-strategy.toml'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Enable and start zincati'
+  ansible.builtin.systemd_service:
+    name: 'zincati.service'
+    enabled: true
+    state: 'started'

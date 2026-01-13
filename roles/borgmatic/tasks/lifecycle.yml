@@ -1,0 +1,54 @@
+---
+- name: 'Pull borgmatic image'
+  containers.podman.podman_image:
+    name: '{{ containers_images.borgmatic }}:{{ containers_images_tags.borgmatic }}'
+    pull: true
+    force: true
+    state: 'present'
+  register: 'container_image_pull'
+  tags: ['never', 'containers-pull', 'containers-update']
+
+- name: 'Update borgmatic tag in systemd unit and scripts' # noqa: no-handler
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: 'root'
+    group: 'root'
+    mode: '{{ item.mode }}'
+  loop:
+    - src: 'borgmatic.service.j2'
+      dest: '/etc/systemd/system/borgmatic.service'
+      mode: '0644'
+    - src: 'borgmatic.j2'
+      dest: '/usr/local/bin/borgmatic'
+      mode: '0755'
+    - src: 'borgmatic-shell.j2'
+      dest: '/usr/local/bin/borgmatic-shell'
+      mode: '0755'
+  when: (container_image_pull.changed)
+  notify: 'Reload systemd daemon'
+  tags: ['never', 'containers-update']
+
+- name: 'Disable borgmatic timer'
+  ansible.builtin.systemd_service:
+    name: 'borgmatic.timer'
+    enabled: false
+  tags: ['never', 'containers-disable']
+
+- name: 'Stop borgmatic timer'
+  ansible.builtin.systemd_service:
+    name: 'borgmatic.timer'
+    state: 'stopped'
+  tags: ['never', 'containers-stop']
+
+- name: 'Enable borgmatic timer'
+  ansible.builtin.systemd_service:
+    name: 'borgmatic.timer'
+    enabled: true
+  tags: ['never', 'containers-enable']
+
+- name: 'Start borgmatic timer'
+  ansible.builtin.systemd_service:
+    name: 'borgmatic.timer'
+    state: 'started'
+  tags: ['never', 'containers-start']

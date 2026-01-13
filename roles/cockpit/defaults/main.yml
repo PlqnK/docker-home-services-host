@@ -1,0 +1,5 @@
+---
+containers_images:
+  cockpit: 'quay.io/cockpit/ws'
+containers_images_tags:
+  cockpit: 'latest'

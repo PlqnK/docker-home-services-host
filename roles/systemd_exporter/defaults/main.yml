@@ -1,0 +1,5 @@
+---
+containers_images:
+  systemd_exporter: 'quay.io/prometheuscommunity/systemd-exporter'
+containers_images_tags:
+  systemd_exporter: 'latest'

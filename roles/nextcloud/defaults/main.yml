@@ -1,0 +1,13 @@
+---
+containers_images:
+  nextcloud:
+    postgres: 'public.ecr.aws/docker/library/postgres'
+    redis: 'public.ecr.aws/docker/library/redis'
+    server: 'public.ecr.aws/docker/library/nextcloud'
+    nginx: 'public.ecr.aws/docker/library/nginx'
+containers_images_tags:
+  nextcloud:
+    postgres: 'latest'
+    redis: 'latest'
+    server: 'fpm'
+    nginx: 'latest'

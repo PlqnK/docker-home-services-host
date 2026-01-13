@@ -1,0 +1,10 @@
+---
+- name: 'Install packages'
+  ansible.builtin.apt:
+    name:
+      - 'firewalld'
+      - 'fail2ban'
+      - 'wireguard-tools'
+    update_cache: 'true'
+    cache_valid_time: 3600
+    state: 'present'

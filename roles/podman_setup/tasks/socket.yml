@@ -1,0 +1,6 @@
+---
+- name: 'Enable and start podman socket'
+  ansible.builtin.systemd_service:
+    name: 'podman.socket'
+    enabled: true
+    state: 'started'
