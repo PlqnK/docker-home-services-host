@@ -80,8 +80,8 @@
 - name: 'Create Plex bind mounts paths'
   ansible.builtin.file:
     path: '{{ containers_storage_path }}/{{ item }}'
-    owner: 1001
-    group: 1001
+    owner: 1000
+    group: 1000
     mode: '0700'
     state: 'directory'
   loop:
