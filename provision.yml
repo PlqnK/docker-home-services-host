@@ -4,10 +4,10 @@
 #   roles:
 #     - 'raspberry_pi_os_setup'
 
-- name: 'Hypervisors base configuration'
-  hosts: 'hypervisors'
-  roles:
-    - 'proxmox_ve_setup'
+# - name: 'Hypervisors base configuration'
+#   hosts: 'hypervisors'
+#   roles:
+#     - 'proxmox_ve_setup'
 
 - name: 'Containers hosts base configuration'
   hosts: 'containers_hosts'
@@ -21,8 +21,8 @@
     - 'traefik'
     - 'cockpit'
     - 'sshd_rsync'
-    - 'promtail'
-    - 'node_exporter'
+    # - 'promtail'
+    # - 'node_exporter'
     # - 'systemd_exporter'
 
 - name: 'Backups containers'
@@ -39,15 +39,15 @@
   roles:
     - 'uptime_kuma'
     - 'healthchecks'
-    - 'grafana'
-    - 'prometheus'
-    - 'loki'
-    - 'syslog_ng'
+    # - 'grafana'
+    # - 'prometheus'
+    # - 'loki'
+    # - 'syslog_ng'
 
-- name: 'Home containers'
-  hosts: 'medias'
-  roles:
-    - 'home_assistant'
+# - name: 'Home containers'
+#   hosts: 'medias'
+#   roles:
+#     - 'home_assistant'
 
 - name: 'Documents containers'
   hosts: 'documents'
