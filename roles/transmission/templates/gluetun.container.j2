@@ -16,13 +16,11 @@ Environment="TZ={{ timezone }}"
 Environment="VPN_TYPE=wireguard"
 Environment="VPN_INTERFACE=wg0"
 Environment="VPN_SERVICE_PROVIDER={{ gluetun.provider.name }}"
-Environment="VPN_ENDPOINT_IP={{ gluetun.wireguard.endpoint.ip }}"
-Environment="VPN_ENDPOINT_PORT={{ gluetun.wireguard.endpoint.port }}"
+Environment="SERVER_COUNTRIES={% for country in gluetun.provider.countries %}{{ country }}{{ "," if not loop.last else "" }}{% endfor %}"
 Environment="WIREGUARD_PUBLIC_KEY={{ gluetun.wireguard.endpoint.public_key }}"
 Environment="WIREGUARD_ADDRESSES={{ gluetun.wireguard.addresses }}"
 Environment="FIREWALL_VPN_INPUT_PORTS={{ gluetun.firewall.vpn_input_ports }}"
 Environment="DOT=off"
-Environment="DNS_ADDRESS={{ gluetun.dns.addresses }}"
 AutoUpdate=local
 
 [Service]

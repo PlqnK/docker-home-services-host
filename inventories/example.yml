@@ -354,19 +354,17 @@ all:
         password: ''
       gluetun:
         provider:
-          name: 'custom'
+          name: 'provider'
+          countries:
+            - 'Country'
         wireguard:
           private_key: '' # wg genkey
           addresses: '172.16.0.2/32,fd00::2/128'
           endpoint:
             public_key: ''
             preshared_key: '' # wg genpsk
-            ip: ''
-            port: ''
         firewall:
           vpn_input_ports: ''
-        dns:
-          addresses: '172.16.0.1'
       transmission:
         user: ''
         password: ''
