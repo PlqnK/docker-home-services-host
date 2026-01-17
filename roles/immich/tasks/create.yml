@@ -106,7 +106,7 @@
     path: '{{ storage_server_shares_mounts_path }}/immich'
     owner: 'root'
     group: 'root'
-    mode: '0700'
+    mode: '0750'
     state: 'directory'
 
 - name: 'Create Immich stack secrets'
