@@ -434,7 +434,8 @@ all:
   vars:
     timezone: 'Europe/Paris'
     domain_name: 'domain.tld'
-    desec_token: '' # https://desec.readthedocs.io/en/latest/auth/tokens.html
+    cloudflare_zone_token: '' # https://go-acme.github.io/lego/dns/cloudflare/index.html#api-tokens
+    cloudflare_dns_token: '' # https://go-acme.github.io/lego/dns/cloudflare/index.html#api-tokens
     root_user:
       email: ''
     admin_user:
