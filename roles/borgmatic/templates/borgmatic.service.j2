@@ -34,7 +34,7 @@ ExecStart=/usr/bin/podman container run \
 	--name borgmatic \
 	--cidfile=%t/%N.cid \
 	--entrypoint "borgmatic" \
-	--hostname {{ ansible_hostname }} \
+	--hostname {{ ansible_facts["hostname"] }} \
 	--network web-egress \
 	--volume {{ containers_storage_path }}/config/borgmatic/borgmatic.d:/etc/borgmatic.d:Z \
 	--volume {{ containers_storage_path }}/config/borgmatic/.ssh:/root/.ssh:Z \

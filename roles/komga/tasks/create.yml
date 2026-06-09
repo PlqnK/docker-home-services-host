@@ -6,7 +6,7 @@
     record: 'komga'
     ttl: 3600
     type: 'CNAME'
-    value: '{{ ansible_fqdn }}'
+    value: '{{ ansible_facts["fqdn"] }}'
     proxied: false
     state: 'present'
   delegate_to: 'localhost'

@@ -24,7 +24,7 @@ ExecStart=/usr/bin/podman container run \
 	--name rsync-servers \
 	--cidfile=%t/%N.cid \
 	--entrypoint /app/backup-servers.sh \
-	--hostname {{ ansible_hostname }} \
+	--hostname {{ ansible_facts["hostname"] }} \
 	--network web-egress \
 	--volume {{ containers_storage_path }}/config/rsync-servers/backup-servers.sh:/app/backup-servers.sh:Z,ro \
 	--volume {{ containers_storage_path }}/config/rsync-servers/id_ed25519:/root/id_ed25519:Z,ro \

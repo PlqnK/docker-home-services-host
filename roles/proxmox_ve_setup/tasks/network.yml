@@ -7,7 +7,7 @@
     line: '	post-up ethtool -K {{ item }} gso off tso off'
     insertafter: '^iface {{ item }} inet'
     state: 'present'
-  loop: '{{ ansible_interfaces }}'
+  loop: '{{ ansible_facts["interfaces"] }}'
   when:
     - (ansible_facts[item].module is defined and ansible_facts[item].module == "e1000e")
     - (ansible_facts[item].features.generic_segmentation_offload == "on" or ansible_facts[item].features.tcp_segmentation_offload == "on")

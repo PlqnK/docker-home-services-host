@@ -8,7 +8,7 @@
 
 - name: 'Enable no subscription repository'
   ansible.builtin.copy:
-    content: "deb http://download.proxmox.com/debian/pve {{ ansible_distribution_release }} pve-no-subscription\n"
+    content: "deb http://download.proxmox.com/debian/pve {{ ansible_facts['distribution_release'] }} pve-no-subscription\n"
     dest: '/etc/apt/sources.list.d/pve-no-subscription.list'
     owner: 'root'
     group: 'root'

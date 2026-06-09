@@ -31,7 +31,7 @@ ExecStart=/usr/bin/podman container run \
 	--name autorestic \
 	--cidfile=%t/%N.cid \
 	--entrypoint "autorestic" \
-	--hostname {{ ansible_hostname }} \
+	--hostname {{ ansible_facts["hostname"] }} \
 	--network web-egress \
 	--volume {{ containers_storage_path }}/runtime/autorestic/lock:/config:Z \
 	--volume {{ containers_storage_path }}/config/autorestic/autorestic.yml:/config/autorestic.yml:Z \

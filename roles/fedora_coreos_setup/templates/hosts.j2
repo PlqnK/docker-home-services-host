@@ -5,5 +5,5 @@
 # See hosts(5) for proper format and other examples:
 # 192.168.1.10 foo.example.org foo
 # 192.168.1.13 bar.example.org bar
-{{ ansible_default_ipv4.address }} {{ ansible_fqdn }} {{ ansible_hostname }}
-{{ ansible_default_ipv6.address }} {{ ansible_fqdn }} {{ ansible_hostname }}
+{{ ansible_facts["default_ipv4"].address }} {{ ansible_facts["fqdn"] }} {{ ansible_facts["hostname"] }}
+{{ ansible_facts["default_ipv6"].address }} {{ ansible_facts["fqdn"] }} {{ ansible_facts["hostname"] }}

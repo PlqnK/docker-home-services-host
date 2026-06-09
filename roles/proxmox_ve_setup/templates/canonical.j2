@@ -1,1 +1,1 @@
-/./ {{ ansible_hostname }}@{{ smtp_relay.from_domain }}
+/./ {{ ansible_facts["hostname"] }}@{{ smtp_relay.from_domain }}

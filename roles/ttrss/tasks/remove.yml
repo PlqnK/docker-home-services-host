@@ -91,6 +91,6 @@
     zone: '{{ domain_name }}'
     record: 'ttrss'
     type: 'CNAME'
-    value: '{{ ansible_fqdn }}'
+    value: '{{ ansible_facts["fqdn"] }}'
     state: 'absent'
   delegate_to: 'localhost'
