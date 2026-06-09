@@ -20,7 +20,6 @@ Environment="SERVER_COUNTRIES={% for country in gluetun.provider.countries %}{{ 
 Environment="WIREGUARD_PUBLIC_KEY={{ gluetun.wireguard.endpoint.public_key }}"
 Environment="WIREGUARD_ADDRESSES={{ gluetun.wireguard.addresses }}"
 Environment="FIREWALL_VPN_INPUT_PORTS={{ gluetun.firewall.vpn_input_ports }}"
-Environment="DOT=off"
 AutoUpdate=local
 
 [Service]
