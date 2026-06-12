@@ -1,9 +1,9 @@
 ---
-- name: 'Create/Update Overseerr CNAME record'
+- name: 'Create/Update Seerr CNAME record'
   community.general.cloudflare_dns:
     api_token: '{{ cloudflare_dns_token }}'
     zone: '{{ domain_name }}'
-    record: 'overseerr'
+    record: 'seerr'
     ttl: 3600
     type: 'CNAME'
     value: '{{ ansible_facts["fqdn"] }}'
@@ -11,35 +11,35 @@
     state: 'present'
   delegate_to: 'localhost'
 
-- name: 'Create Overseerr data bind mount path'
+- name: 'Create Seerr data bind mount path'
   ansible.builtin.file:
-    path: '{{ containers_storage_path }}/data/overseerr'
-    owner: 'root'
-    group: 'root'
+    path: '{{ containers_storage_path }}/data/seerr'
+    owner: 1000
+    group: 1000
     mode: '0700'
     state: 'directory'
 
-- name: 'Create Overseerr quadlet unit from template'
+- name: 'Create Seerr quadlet unit from template'
   ansible.builtin.template:
-    src: 'overseerr.container.j2'
-    dest: '/etc/containers/systemd/overseerr.container'
+    src: 'seerr.container.j2'
+    dest: '/etc/containers/systemd/seerr.container'
     owner: 'root'
     group: 'root'
     mode: '0644'
   register: 'quadlet_unit'
   notify: 'Reload systemd daemon'
 
-- name: 'Enable and start Overseerr container'
+- name: 'Enable and start Seerr container'
   ansible.builtin.systemd_service:
-    name: 'overseerr.service'
+    name: 'seerr.service'
     daemon_reload: true
     enabled: true
     state: 'started'
   register: 'systemd_start'
 
-- name: 'Restart Overseerr service if quadlet unit has changed while service was already started'
+- name: 'Restart Seerr service if quadlet unit has changed while service was already started'
   ansible.builtin.systemd_service:
-    name: 'overseerr.service'
+    name: 'seerr.service'
     daemon_reload: true
     state: 'restarted'
   when: (quadlet_unit.changed and not systemd_start.changed)

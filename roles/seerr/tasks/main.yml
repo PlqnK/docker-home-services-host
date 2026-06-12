@@ -1,6 +1,6 @@
 ---
-- name: 'Configure and manage Overseerr container'
-  when: (containers_list is not defined or (containers_list is defined and 'overseerr' in containers_list))
+- name: 'Configure and manage Seerr container'
+  when: (containers_list is not defined or (containers_list is defined and 'seerr' in containers_list))
   block:
     - name: 'Create'
       ansible.builtin.import_tasks: 'create.yml'

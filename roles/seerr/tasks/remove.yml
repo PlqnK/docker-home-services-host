@@ -1,7 +1,7 @@
 ---
-- name: 'Ensure the user really wants to remove the Overseerr container'
+- name: 'Ensure the user really wants to remove the Seerr container'
   ansible.builtin.pause:
-    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE OVERSEERR CONTAINER?\nTHIS ACTION WILL DELETE ALL OVERSEERR APP DATA AND IS IRREVERSIBLE!\nAnswer yes in capital letters to confirm"
+    prompt: "WARNING! DO YOU REALLY WANT TO REMOVE THE SEERR CONTAINER?\nTHIS ACTION WILL DELETE ALL SEERR APP DATA AND IS IRREVERSIBLE!\nAnswer yes in capital letters to confirm"
     echo: true
   register: remove_prompt
 
@@ -10,31 +10,31 @@
     msg: "Stopping playbook execution because the playbook was called with the tag 'containers-remove' but the user didn't want to remove the containers."
   when: (remove_prompt.user_input != "YES")
 
-- name: 'Disable and stop Overseerr container'
+- name: 'Disable and stop Seerr container'
   ansible.builtin.systemd_service:
-    name: 'overseerr.service'
+    name: 'seerr.service'
     daemon_reload: true
     enabled: false
     state: 'stopped'
   register: systemd_unit
   failed_when: (systemd_unit.failed and not "Could not find the requested service" in systemd_unit.msg)
 
-- name: 'Remove Overseerr container quadlet unit'
+- name: 'Remove Seerr container quadlet unit'
   ansible.builtin.file:
-    path: '/etc/containers/systemd/overseerr.container'
+    path: '/etc/containers/systemd/seerr.container'
     state: 'absent'
   notify: 'Reload systemd daemon'
 
-- name: 'Remove Overseerr data bind mount path'
+- name: 'Remove Seerr data bind mount path'
   ansible.builtin.file:
-    path: '{{ containers_storage_path }}/data/overseerr'
+    path: '{{ containers_storage_path }}/data/seerr'
     state: 'absent'
 
-- name: 'Remove Overseerr CNAME record'
+- name: 'Remove Seerr CNAME record'
   community.general.cloudflare_dns:
     api_token: '{{ cloudflare_dns_token }}'
     zone: '{{ domain_name }}'
-    record: 'overseerr'
+    record: 'seerr'
     type: 'CNAME'
     value: '{{ ansible_facts["fqdn"] }}'
     state: 'absent'
