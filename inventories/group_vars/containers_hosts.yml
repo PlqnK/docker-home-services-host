@@ -31,8 +31,8 @@ containers_images_tags:
   immich:
     postgres: '16-vectorchord0.5.3'
     valkey: '9'
-    machine_learning: 'v2'
-    server: 'v2'
+    machine_learning: 'v3'
+    server: 'v3'
   ttrss:
     postgres: '16'
     server: 'latest'
