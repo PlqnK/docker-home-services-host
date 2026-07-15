@@ -58,5 +58,5 @@
   storage = "acme.json"
   [certificatesResolvers.le.acme.dnsChallenge]
     provider = "cloudflare"
-    {# delayBeforeCheck = 60 #}
-    {# resolvers = ["1.1.1.1:53", "1.0.0.1:53"] #}
+    delayBeforeCheck = 30
+    resolvers = ["1.1.1.1:53", "1.0.0.1:53"]
