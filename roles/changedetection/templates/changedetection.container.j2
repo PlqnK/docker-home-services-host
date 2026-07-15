@@ -1,0 +1,29 @@
+[Unit]
+Description=changedetection
+Documentation=man:podman-systemd.unit(5)
+
+[Container]
+ContainerName=changedetection
+Image={{ containers_images.changedetection }}:{{ containers_images_tags.changedetection }}
+Network=web-egress
+Network=common-internal
+ExposeHostPort=5000
+Volume={{ containers_storage_path }}/data/changedetection:/datastore:Z
+Timezone={{ timezone }}
+Environment="TZ={{ timezone }}"
+Environment="BASE_URL=https://changedetection.{{ domain_name }}"
+Label="traefik.enable=true"
+Label="traefik.docker.network=common-internal"
+Label="traefik.http.routers.changedetection.rule=Host(`changedetection.{{ domain_name }}`)"
+Label="traefik.http.routers.changedetection.entrypoints=websecure"
+Label="traefik.http.routers.changedetection.middlewares=restrict-external-access@file"
+Label="traefik.http.services.changedetection.loadbalancer.server.port=5000"
+AutoUpdate=local
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=300
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target
