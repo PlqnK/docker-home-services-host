@@ -61,4 +61,3 @@ containers_images_tags:
   overseerr: 'latest'
   seerr: 'v3'
   maintainerr: 'latest'
-  changedetection: '0'

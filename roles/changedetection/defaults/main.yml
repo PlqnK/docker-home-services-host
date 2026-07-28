@@ -1,5 +1,0 @@
----
-containers_images:
-  changedetection: 'ghcr.io/dgtlmoon/changedetection.io'
-containers_images_tags:
-  changedetection: 'latest'
