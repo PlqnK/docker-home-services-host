@@ -24,7 +24,7 @@ containers_images_tags:
   nextcloud:
     postgres: '16'
     redis: '8'
-    server: '33-fpm'
+    server: '34-fpm'
     nginx: '1'
   collabora_online: 'latest'
   stirling_pdf: 'latest-ultra-lite'
