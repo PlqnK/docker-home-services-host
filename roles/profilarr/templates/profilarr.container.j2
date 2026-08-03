@@ -11,7 +11,7 @@ Network=web-egress
 Network=common-internal
 Network=profilarr-internal
 ExposeHostPort=6868
-Volume={{ containers_storage_path }}/config/profilarr:/config:Z
+Volume={{ containers_storage_path }}/data/profilarr:/config:Z
 Secret=profilarr_oidc_client_secret
 Timezone={{ timezone }}
 Environment="TZ={{ timezone }}"

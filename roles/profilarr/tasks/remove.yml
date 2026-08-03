@@ -48,4 +48,4 @@
     path: '{{ containers_storage_path }}/{{ item }}'
     state: 'absent'
   loop:
-    - 'config/profilarr'
+    - 'data/profilarr'

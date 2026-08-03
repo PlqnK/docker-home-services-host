@@ -43,7 +43,7 @@
     mode: '0700'
     state: 'directory'
   loop:
-    - 'config/profilarr'
+    - 'data/profilarr'
 
 - name: 'Create Profilarr stack secrets'
   containers.podman.podman_secret:
