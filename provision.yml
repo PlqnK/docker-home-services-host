@@ -79,7 +79,6 @@
     - 'sonarr'
     - 'bazarr'
     - 'lidarr'
-    # - 'readarr'
     - 'mylar'
     - 'seerr'
     - 'maintainerr'

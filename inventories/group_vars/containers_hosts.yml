@@ -56,7 +56,6 @@ containers_images_tags:
   sonarr: 'latest'
   bazarr: 'latest'
   lidarr: 'latest'
-  readarr: 'develop'
   mylar: 'latest'
   overseerr: 'latest'
   seerr: 'v3'

@@ -372,7 +372,6 @@ all:
         sonarr_api_key: '' # https://sonarr.domain.tld/settings/general > Security > API Key
         radarr_api_key: '' # https://radarr.domain.tld/settings/general > Security > API Key
         lidarr_api_key: '' # https://lidarr.domain.tld/settings/general > Security > API Key
-        readarr_api_key: '' # https://readarr.domain.tld/settings/general > Security > API Key
       profilarr:
         oidc:
           client_id: ''
