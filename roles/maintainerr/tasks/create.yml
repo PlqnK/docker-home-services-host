@@ -1,16 +1,4 @@
 ---
-- name: 'Create/Update Maintainerr CNAME record'
-  community.general.cloudflare_dns:
-    api_token: '{{ cloudflare_dns_token }}'
-    zone: '{{ domain_name }}'
-    record: 'maintainerr'
-    ttl: 3600
-    type: 'CNAME'
-    value: '{{ ansible_facts["fqdn"] }}'
-    proxied: false
-    state: 'present'
-  delegate_to: 'localhost'
-
 - name: 'Create Maintainerr data bind mount path'
   ansible.builtin.file:
     path: '{{ containers_storage_path }}/data/maintainerr'

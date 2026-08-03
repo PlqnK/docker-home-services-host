@@ -1,16 +1,4 @@
 ---
-- name: 'Create/Update Profilarr CNAME record'
-  community.general.cloudflare_dns:
-    api_token: '{{ cloudflare_dns_token }}'
-    zone: '{{ domain_name }}'
-    record: 'profilarr'
-    ttl: 3600
-    type: 'CNAME'
-    value: '{{ ansible_facts["fqdn"] }}'
-    proxied: false
-    state: 'present'
-  delegate_to: 'localhost'
-
 - name: 'Create Profilarr stack network'
   containers.podman.podman_network:
     name: 'profilarr-internal'
