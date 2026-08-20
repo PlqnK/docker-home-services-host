@@ -60,3 +60,5 @@ containers_images_tags:
   overseerr: 'latest'
   seerr: 'v3'
   maintainerr: 'latest'
+  muxarr: '0.9'
+  uldas: 'latest'

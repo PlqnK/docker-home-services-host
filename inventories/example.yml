@@ -380,6 +380,9 @@ all:
       maintainerr:
         user: ''
         password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
+      uldas:
+        user: ''
+        password_hash: '' # podman run -it --rm quay.io/coreos/mkpasswd --method=bcrypt
   children:
     remote_gateways:
       hosts:
@@ -466,3 +469,4 @@ all:
       password: ''
     healthchecks_ping_key: '' # https://healthchecks.domain.tld/projects/PROJECT_UUID/settings/ > API Access > Ping key
     healthchecksio_ping_key: '' # https://healthchecks.io/projects/PROJECT_UUID/settings/ > API Access > Ping key
+    tmdb_api_key: '' # https://www.themoviedb.org/settings/api
