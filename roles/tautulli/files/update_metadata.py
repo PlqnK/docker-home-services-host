@@ -4,57 +4,56 @@
 '''
 Description:  Selects the default TMDB poster, art and logo for items in a Plex library
               if none is selected or the current one is from Gracenote.
-              The selected poster is the primary TMDB poster in the item's original language.
+              The selected poster is the primary TMDB poster in the item's original language,
+              and a season uses its own TMDB season poster in that language.
               The selected art is the primary TMDB backdrop.
               The selected logo is the primary TMDB logo in English for English media,
               otherwise in French with a fallback to the original language.
               Can also override the metadata language for non-English media and set
               the sort title without the leading article for French metadata.
+              Seasons and episodes inherit their metadata from the show, so the logo,
+              the metadata language and the sort title are applied to the parent show.
+              Episodes have no artwork of their own, so their poster and art are
+              curated on the parent season, and a show curates all of its seasons.
 Author:       /u/SwiftPanda16 (original), shellt0pia (modifications)
 Requires:     plexapi, requests
-Environment:  PLEX_URL, PLEX_TOKEN
+Environment:  PLEX_URL, PLEX_TOKEN, TAUTULLI_URL and TAUTULLI_APIKEY are provided by
+              Tautulli when running as a notification script.
               TMDB API key read from the file at TMDB_API_KEY_FILE if set,
               otherwise from the TMDB_API_KEY environment variable
 Usage:
-    * Change the posters for an entire library:
-        python update_metadata.py --library "Movies" --poster
-    * Change the art for an entire library:
-        python update_metadata.py --library "Movies" --art
-    * Change the posters and art for an entire library:
-        python update_metadata.py --library "Movies" --poster --art
-    * Change the poster for a specific item:
-        python update_metadata.py --rating_key 1234 --poster
-    * Change the art for a specific item:
-        python update_metadata.py --rating_key 1234 --art
-    * Change the poster and art for a specific item:
-        python update_metadata.py --rating_key 1234 --poster --art
-    * By default locked posters are skipped. To update locked posters:
-        python update_metadata.py --library "Movies" --include_locked --poster --art
-    * To override the preferred provider:
-        python update_metadata.py --library "Movies" --art --art_provider "fanarttv"
-    * Change the logo for a specific item:
-        python update_metadata.py --rating_key 1234 --logo
-    * Change the metadata language for non-English media:
-        python update_metadata.py --rating_key 1234 --language
-    * Set the sort title without the leading article for French metadata:
-        python update_metadata.py --rating_key 1234 --sort_title
+    * Change the poster, the art and the logo of an item:
+        python update_metadata.py --rating_key 1234 --poster --art --logo
+    * By default locked fields are skipped. To update them:
+        python update_metadata.py --rating_key 1234 --include_locked --poster --art
+    * To override the provider used when TMDB has no image:
+        python update_metadata.py --rating_key 1234 --art --art_provider "fanarttv"
+    * Change the metadata language for non-English media and set the sort title
+      without the leading article:
+        python update_metadata.py --rating_key 1234 --language --sort_title
     * Send a recently added notification through another notifier once done
-      (requires --rating_key, and the notifier must not be this script):
+      (the notifier must not be this script):
         python update_metadata.py --rating_key 1234 --notify 2
+    * Report metadata failures through another notifier:
+        python update_metadata.py --rating_key 1234 --language --error_notify 3
 Tautulli script trigger:
     * Notify on recently added
 Tautulli script conditions:
-    * Filter which media to select the poster. Examples:
-        [ Media Type | is | movie ]
+    * Restrict the script to the media types it knows how to handle:
+        [ Media Type | is | movie or show or season or episode ]
 Tautulli script arguments:
     * Recently Added:
-        --rating_key {rating_key} --poster --art --logo --language --sort_title --notify <notifier_id>
+        --rating_key {rating_key} --poster --art --logo --language --sort_title
+        --notify <notifier_id> --error_notify <admin_notifier_id>
 '''
 
 import argparse
 import os
+import sys
 import time
+import traceback
 from collections import namedtuple
+from contextlib import contextmanager
 from urllib.parse import unquote
 import requests
 import plexapi.base
@@ -62,18 +61,11 @@ from plexapi.server import PlexServer
 plexapi.base.USER_DONT_RELOAD_FOR_KEYS.add('fields')
 
 
-def read_tmdb_api_key():
-    key_file = os.getenv('TMDB_API_KEY_FILE')
-    if key_file:
-        with open(key_file) as f:
-            return f.read().strip()
-    return os.getenv('TMDB_API_KEY', '')
-
-
 # Poster and art providers to replace
 REPLACE_PROVIDERS = ['gracenote', 'plex', None]
 
-# Preferred poster and art provider to use (Note not all providers are availble for all items)
+# Preferred poster and art provider to fall back on when TMDB has no image
+# (Note not all providers are availble for all items)
 # Possible options: tmdb, tvdb, imdb, fanarttv, gracenote, plex
 PREFERRED_POSTER_PROVIDER = 'tmdb'
 PREFERRED_ART_PROVIDER = 'tmdb'
@@ -92,66 +84,90 @@ TMDB_API_URL = 'https://api.themoviedb.org/3'
 TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/original'
 
 
-# ## OVERRIDES - ONLY EDIT IF RUNNING SCRIPT WITHOUT TAUTULLI ##
+def read_tmdb_api_key():
+    key_file = os.getenv('TMDB_API_KEY_FILE')
+    if key_file:
+        with open(key_file) as f:
+            return f.read().strip()
+    return os.getenv('TMDB_API_KEY', '')
 
-PLEX_URL = ''
-PLEX_TOKEN = ''
-TMDB_API_KEY = ''
 
-# Environmental Variables
-PLEX_URL = PLEX_URL or os.getenv('PLEX_URL', PLEX_URL)
-PLEX_TOKEN = PLEX_TOKEN or os.getenv('PLEX_TOKEN', PLEX_TOKEN)
-TMDB_API_KEY = TMDB_API_KEY or read_tmdb_api_key()
-# Provided by Tautulli when running as a notification script
+PLEX_URL = os.getenv('PLEX_URL', '')
+PLEX_TOKEN = os.getenv('PLEX_TOKEN', '')
+TMDB_API_KEY = read_tmdb_api_key()
 TAUTULLI_URL = os.getenv('TAUTULLI_URL', '')
 TAUTULLI_APIKEY = os.getenv('TAUTULLI_APIKEY', '')
 
-TmdbInfo = namedtuple('TmdbInfo', 'original_language poster_path backdrop_path logo_path')
+TmdbInfo = namedtuple('TmdbInfo', 'original_language poster_path backdrop_path logo_path season_posters')
 # Returned when TMDB cannot be queried, so callers never have to check for None
-NO_TMDB_INFO = TmdbInfo(None, None, None, None)
+NO_TMDB_INFO = TmdbInfo(None, None, None, None, {})
+
+MetadataTargets = namedtuple('MetadataTargets', 'matched_item artwork_items')
+
+# The PlexAPI methods an item exposes for one kind of image
+ImageKind = namedtuple('ImageKind', 'name field choices upload lock fallback_provider')
+
+
+def tmdb_get(path, **params):
+    '''Calls the TMDB API, returning the parsed payload or None when the call fails.'''
+    try:
+        response = requests.get(
+            f"{TMDB_API_URL}/{path}",
+            params={'api_key': TMDB_API_KEY, **params},
+            timeout=30
+        )
+        response.raise_for_status()
+        return response.json()
+    except (requests.RequestException, ValueError) as e:
+        print(f"  - WARNING: TMDB API request failed for '{path}': {e}")
+        return None
 
 
 def get_tmdb_info(item):
     '''Returns the original language, the primary poster path (in the original
-    language), the primary backdrop path and the logo path for an item, using
-    the TMDB API.'''
+    language), the primary backdrop path, the logo path and the per-season poster
+    paths for an item, using the TMDB API.'''
     if not TMDB_API_KEY:
-        print(f"  - WARNING: No TMDB API key configured. Skipping TMDB lookup for {item.title}.")
+        print(f"  - WARNING: No TMDB API key configured. Skipping TMDB lookup for {full_title(item)}.")
         return NO_TMDB_INFO
 
     tmdb_id = next((guid.id.split('://')[1] for guid in item.guids if guid.id.startswith('tmdb://')), None)
     if tmdb_id is None:
-        print(f"  - WARNING: No TMDB guid found for {item.title}.")
+        print(f"  - WARNING: No TMDB guid found for {full_title(item)}.")
         return NO_TMDB_INFO
 
-    endpoint = 'movie' if item.type == 'movie' else 'tv'
-    url = f"{TMDB_API_URL}/{endpoint}/{tmdb_id}"
-
-    try:
-        details = requests.get(url, params={'api_key': TMDB_API_KEY}, timeout=30)
-        details.raise_for_status()
-        details = details.json()
-
-        original_language = details.get('original_language')
-        poster_path = details.get('poster_path')
-        # The backdrop from the base details is the TMDB primary background
-        backdrop_path = details.get('backdrop_path')
-
-        if original_language:
-            # The details endpoint with a language parameter returns the primary poster for that language
-            localized = requests.get(url, params={'api_key': TMDB_API_KEY, 'language': original_language}, timeout=30)
-            localized.raise_for_status()
-            poster_path = localized.json().get('poster_path') or poster_path
-
-        logo_path = get_tmdb_logo_path(url, original_language)
-    except requests.RequestException as e:
-        print(f"  - WARNING: TMDB API request failed for {item.title}: {e}")
+    path = f"{'movie' if item.type == 'movie' else 'tv'}/{tmdb_id}"
+    details = tmdb_get(path)
+    if details is None:
         return NO_TMDB_INFO
 
-    return TmdbInfo(original_language, poster_path, backdrop_path, logo_path)
+    original_language = details.get('original_language')
+    poster_path = details.get('poster_path')
+    season_posters = extract_season_posters(details)
+
+    if original_language:
+        # The details endpoint with a language parameter returns the primary poster for that language
+        localized = tmdb_get(path, language=original_language) or {}
+        poster_path = localized.get('poster_path') or poster_path
+        # Seasons without a localized poster keep the default one
+        season_posters = {**season_posters, **extract_season_posters(localized)}
+
+    # The backdrop from the base details is the TMDB primary background
+    backdrop_path = details.get('backdrop_path')
+    logo_path = get_tmdb_logo_path(path, original_language)
+
+    return TmdbInfo(original_language, poster_path, backdrop_path, logo_path, season_posters)
 
 
-def get_tmdb_logo_path(url, original_language):
+def extract_season_posters(details):
+    '''Maps season numbers to their TMDB poster path. The seasons array ships with the
+    show details, so the season posters cost no extra request.'''
+    return {season['season_number']: season['poster_path']
+            for season in details.get('seasons') or []
+            if season.get('poster_path') and season.get('season_number') is not None}
+
+
+def get_tmdb_logo_path(path, original_language):
     '''Returns the primary TMDB logo path: English for English media, otherwise
     French with a fallback to the original language.'''
     if original_language is None:
@@ -162,51 +178,78 @@ def get_tmdb_logo_path(url, original_language):
     else:
         languages = [LOGO_LANGUAGE_OVERRIDE, original_language]
 
-    images = requests.get(
-        f"{url}/images",
-        params={'api_key': TMDB_API_KEY, 'include_image_language': ','.join(languages)},
-        timeout=30
-    )
-    images.raise_for_status()
-    logos = images.json().get('logos', [])
+    images = tmdb_get(f"{path}/images", include_image_language=','.join(languages)) or {}
+    return find_logo_path(images.get('logos') or [], languages)
 
+
+def find_logo_path(logos, languages):
+    '''Logos are sorted by votes, so the first match is the primary one for that language.'''
     for language in languages:
-        # Logos are sorted by votes, the first match is the primary one for that language
-        logo = next((l for l in logos if l.get('iso_639_1') == language), None)
+        logo = next((entry for entry in logos if entry.get('iso_639_1') == language), None)
         if logo:
             return logo['file_path']
     return None
 
 
-def process_library(library, opts):
-    for item in library.all(includeGuids=False):
-        # Only reload for fields
-        item.reload(**{k: 0 for k, v in item._INCLUDES.items()})
-        process_item(item, opts)
+def resolve_targets(item):
+    '''Metadata lives higher up the hierarchy than the item Tautulli notifies about:
+    - matched_item: the movie or show the Plex agent matched, holding the TMDB guid,
+      the metadata language, the sort title and the logo.
+    - artwork_items: everything whose poster and background are curated. An episode
+      thumb is a still frame, so its season is curated instead, and a whole newly added
+      show is only notified once, which is the sole chance to curate its seasons.'''
+    if item.type == 'episode':
+        return MetadataTargets(matched_item=item.show(), artwork_items=[item.season()])
+    if item.type == 'season':
+        return MetadataTargets(matched_item=item.show(), artwork_items=[item])
+    if item.type == 'show':
+        return MetadataTargets(matched_item=item, artwork_items=[item] + item.seasons())
+    return MetadataTargets(matched_item=item, artwork_items=[item])
 
 
-def process_item(item, opts):
-    print(f"{item.title} ({item.year})")
+def full_title(item):
+    '''Plex titles are relative to the parent, so a season or an episode title on its
+    own does not identify the media.'''
+    if item.type == 'episode':
+        return f"{item.grandparentTitle} - {item.seasonEpisode} - {item.title}"
+    if item.type == 'season':
+        return f"{item.parentTitle} - {item.title}"
+    return item.title
 
-    needs_tmdb = opts.poster or opts.art or opts.logo or opts.language or opts.sort_title
-    tmdb = get_tmdb_info(item) if needs_tmdb else NO_TMDB_INFO
 
-    if opts.poster:
-        select_poster(item, opts, tmdb.poster_path)
-    if opts.art:
-        select_art(item, opts, tmdb.backdrop_path)
-    if opts.logo:
-        select_logo(item, opts, tmdb.logo_path)
-    # After the artwork so the metadata refresh cannot revert the locked images
-    if opts.language and update_metadata_language(item, tmdb.original_language):
-        # The refresh is asynchronous, later steps must see the new metadata
-        if opts.sort_title or opts.notify:
-            wait_for_metadata_refresh(item)
-    if opts.sort_title:
-        update_sort_title(item, opts, tmdb.original_language)
-    # Last so the notification carries the updated metadata
-    if opts.notify:
-        send_recently_added_notification(item, opts.notify)
+def image_kind(item, name, opts):
+    '''Binds the PlexAPI methods an item exposes for one kind of image. Logos have no
+    fallback provider, TMDB is the only source Plex offers for them.'''
+    kinds = {
+        'poster': ImageKind('poster', 'thumb', item.posters, item.uploadPoster, item.lockPoster, opts.poster_provider),
+        'art': ImageKind('art', 'art', item.arts, item.uploadArt, item.lockArt, opts.art_provider),
+        'logo': ImageKind('logo', 'clearLogo', item.logos, item.uploadLogo, item.lockLogo, None),
+    }
+    return kinds[name]
+
+
+def select_image(item, name, tmdb_path, opts):
+    print(f"  Checking {name}...")
+    kind = image_kind(item, name, opts)
+
+    if item.isLocked(kind.field) and not opts.include_locked:  # PlexAPI 4.5.10
+        print(f"  - Locked {name} for {full_title(item)}. Skipping.")
+        return
+
+    if tmdb_path:
+        apply_tmdb_image(item, kind, tmdb_path)
+        return
+
+    if kind.fallback_provider is None:
+        print(f"  - WARNING: No TMDB {name} found for {full_title(item)}. Skipping.")
+        return
+
+    images = kind.choices()
+    if not images:
+        print(f"  - WARNING: No available {name} for {full_title(item)}.")
+        return
+
+    select_provider_image(item, kind, images)
 
 
 def find_tmdb_image(images, tmdb_path):
@@ -221,31 +264,55 @@ def find_tmdb_image(images, tmdb_path):
     return None
 
 
-def apply_tmdb_image(item, images, tmdb_path, kind, upload, lock):
+def apply_tmdb_image(item, kind, tmdb_path):
     '''Selects the TMDB image among the Plex choices, uploading it when Plex
     exposes no matching source URL.'''
-    match = find_tmdb_image(images, tmdb_path)
+    match = find_tmdb_image(kind.choices(), tmdb_path)
     if match:
         match.select()  # selecting an image automatically locks the field
-        print(f"  - Selected and locked TMDB {kind} for {item.title}.")
+        print(f"  - Selected and locked TMDB {kind.name} for {full_title(item)}.")
     else:
-        upload(url=f"{TMDB_IMAGE_URL}{tmdb_path}")
-        lock()
-        print(f"  - Uploaded and locked TMDB {kind} for {item.title}.")
+        kind.upload(url=f"{TMDB_IMAGE_URL}{tmdb_path}")
+        kind.lock()
+        print(f"  - Uploaded and locked TMDB {kind.name} for {full_title(item)}.")
 
 
-def select_provider_image(item, images, provider, kind, lock):
-    '''Fallback used when TMDB is unavailable: keeps the current image unless it
+def select_provider_image(item, kind, images):
+    '''Fallback used when TMDB has no image: keeps the current one unless it
     comes from a provider we want to replace.'''
-    selected = next((i for i in images if i.selected), None)
+    selected = next((image for image in images if image.selected), None)
     if selected is not None and selected.provider not in REPLACE_PROVIDERS:
-        lock()
-        print(f"  - Locked {selected.provider} {kind} for {item.title}.")
+        kind.lock()
+        print(f"  - Locked {selected.provider} {kind.name} for {full_title(item)}.")
         return
 
-    chosen = next((i for i in images if i.provider == provider), images[0])
+    chosen = next((image for image in images if image.provider == kind.fallback_provider), images[0])
     chosen.select()  # selecting an image automatically locks the field
-    print(f"  - Selected and locked {chosen.provider} {kind} for {item.title}.")
+    print(f"  - Selected and locked {chosen.provider} {kind.name} for {full_title(item)}.")
+
+
+def tautulli_api(cmd, **params):
+    '''Calls the Tautulli API, returning an error message or None on success.'''
+    if not TAUTULLI_URL or not TAUTULLI_APIKEY:
+        return 'TAUTULLI_URL or TAUTULLI_APIKEY not available'
+
+    try:
+        # The API key goes in a header so it never lands in a URL or an access log
+        response = requests.get(
+            f"{TAUTULLI_URL}/api/v2",
+            headers={'X-Api-Key': TAUTULLI_APIKEY},
+            params={'cmd': cmd, **params},
+            timeout=30
+        )
+        response.raise_for_status()
+        # Tautulli reports command failures in the payload with a 200 status
+        result = response.json().get('response', {})
+    except (requests.RequestException, ValueError) as e:
+        return str(e)
+
+    if result.get('result') != 'success':
+        return result.get('message') or 'unknown error'
+    return None
 
 
 def send_recently_added_notification(item, notifier_id):
@@ -253,33 +320,31 @@ def send_recently_added_notification(item, notifier_id):
     after the metadata has been updated.'''
     print("  Sending Tautulli notification...")
 
-    if not TAUTULLI_URL or not TAUTULLI_APIKEY:
-        print("  - WARNING: TAUTULLI_URL or TAUTULLI_APIKEY not available. Skipping notification.")
+    error = tautulli_api('notify_recently_added', rating_key=item.ratingKey, notifier_id=notifier_id)
+    if error:
+        print(f"  - WARNING: Tautulli notification failed for {full_title(item)}: {error}")
         return
 
-    try:
-        response = requests.get(
-            f"{TAUTULLI_URL}/api/v2",
-            params={
-                'apikey': TAUTULLI_APIKEY,
-                'cmd': 'notify_recently_added',
-                'rating_key': item.ratingKey,
-                'notifier_id': notifier_id,
-            },
-            timeout=30
-        )
-        response.raise_for_status()
-        # Tautulli reports command failures in the payload with a 200 status
-        result = response.json().get('response', {})
-    except (requests.RequestException, ValueError) as e:
-        print(f"  - WARNING: Tautulli notification failed for {item.title}: {e}")
+    print(f"  - Triggered recently added notification (notifier_id {notifier_id}) for {full_title(item)}.")
+
+
+def send_error_notification(item, notifier_id, errors):
+    '''Reports the metadata failures through the given Tautulli notifier.'''
+    print("  Sending Tautulli error notification...")
+
+    failures = '\n'.join(f"- {error}" for error in errors)
+    error = tautulli_api(
+        'notify',
+        notifier_id=notifier_id,
+        subject='Tautulli metadata script',
+        body=f"Failed to apply custom metadata for {full_title(item)} "
+             f"(rating_key {item.ratingKey}):\n{failures}",
+    )
+    if error:
+        print(f"  - WARNING: Tautulli error notification failed for {full_title(item)}: {error}")
         return
 
-    if result.get('result') != 'success':
-        print(f"  - WARNING: Tautulli notification failed for {item.title}: {result.get('message')}")
-        return
-
-    print(f"  - Triggered recently added notification (notifier_id {notifier_id}) for {item.title}.")
+    print(f"  - Triggered error notification (notifier_id {notifier_id}) for {full_title(item)}.")
 
 
 def update_metadata_language(item, original_language):
@@ -287,33 +352,37 @@ def update_metadata_language(item, original_language):
     print("  Checking metadata language...")
 
     if original_language is None:
-        print(f"  - WARNING: Unknown original language for {item.title}. Skipping.")
+        print(f"  - WARNING: Unknown original language for {full_title(item)}. Skipping.")
         return False
 
     if original_language == DEFAULT_ORIGINAL_LANGUAGE:
-        print(f"  - Original language is '{original_language}' for {item.title}. Keeping default metadata language.")
+        print(f"  - Original language is '{original_language}' for {full_title(item)}. "
+              "Keeping default metadata language.")
         return False
 
     current = next((s.value for s in item.preferences() if s.id == 'languageOverride'), None)
     if current == METADATA_LANGUAGE_OVERRIDE:
-        print(f"  - Metadata language is already '{METADATA_LANGUAGE_OVERRIDE}' for {item.title}.")
+        print(f"  - Metadata language is already '{METADATA_LANGUAGE_OVERRIDE}' for {full_title(item)}.")
         return False
 
     item.editAdvanced(languageOverride=METADATA_LANGUAGE_OVERRIDE)
     item.refresh()
-    print(f"  - Original language is '{original_language}' for {item.title}. "
+    print(f"  - Original language is '{original_language}' for {full_title(item)}. "
           f"Set metadata language to '{METADATA_LANGUAGE_OVERRIDE}' and refreshed metadata.")
     return True
 
 
-def wait_for_metadata_refresh(item, timeout=30):
-    '''Best effort wait for the asynchronous refresh, detected through a title change.'''
-    old_title = item.title
+def wait_for_metadata_refresh(item, timeout=10):
+    '''Best effort wait for the asynchronous refresh. A title change is the signal that
+    the new language landed, but it stays identical for plenty of shows. The timeout is
+    kept well under the Tautulli script timeout, which would kill the notification.'''
+    before = (item.title, item.updatedAt)
     deadline = time.time() + timeout
     while time.time() < deadline:
         time.sleep(2)
-        item.reload(**{k: 0 for k, v in item._INCLUDES.items()})
-        if item.title != old_title:
+        # Only reload for fields
+        item.reload(**{key: 0 for key in item._INCLUDES})
+        if (item.title, item.updatedAt) != before:
             return
 
 
@@ -329,11 +398,11 @@ def update_sort_title(item, opts, original_language):
     print("  Checking sort title...")
 
     if original_language is None or original_language == DEFAULT_ORIGINAL_LANGUAGE:
-        print(f"  - Default metadata language for {item.title}. Keeping default sort title.")
+        print(f"  - Default metadata language for {full_title(item)}. Keeping default sort title.")
         return
 
     if item.isLocked('titleSort') and not opts.include_locked:
-        print(f"  - Locked sort title for {item.title}. Skipping.")
+        print(f"  - Locked sort title for {full_title(item)}. Skipping.")
         return
 
     sort_title = strip_french_article(item.title)
@@ -342,71 +411,78 @@ def update_sort_title(item, opts, original_language):
         return
 
     if item.titleSort == sort_title:
-        print(f"  - Sort title is already '{sort_title}' for {item.title}.")
+        print(f"  - Sort title is already '{sort_title}' for {full_title(item)}.")
         return
 
     item.editSortTitle(sort_title, locked=True)
-    print(f"  - Set and locked sort title '{sort_title}' for {item.title}.")
+    print(f"  - Set and locked sort title '{sort_title}' for {full_title(item)}.")
 
 
-def select_poster(item, opts, tmdb_poster_path):
-    print("  Checking poster...")
-
-    if item.isLocked('thumb') and not opts.include_locked:  # PlexAPI 4.5.10
-        print(f"  - Locked poster for {item.title}. Skipping.")
-        return
-
-    posters = item.posters()
-    if not posters:
-        print(f"  - WARNING: No available posters for {item.title}.")
-        return
-
-    if tmdb_poster_path:
-        apply_tmdb_image(item, posters, tmdb_poster_path, 'poster', item.uploadPoster, item.lockPoster)
-    else:
-        select_provider_image(item, posters, opts.poster_provider, 'poster', item.lockPoster)
+@contextmanager
+def step(errors, description):
+    '''Isolates one metadata step: a failure is collected and reported at the end
+    instead of skipping the remaining steps.'''
+    try:
+        yield
+    except Exception as e:
+        print(f"  - ERROR: Failed to apply the {description}: {e}")
+        traceback.print_exc()
+        errors.append(f"{description}: {e}")
 
 
-def select_art(item, opts, tmdb_art_path):
-    print("  Checking art...")
+def apply_metadata(item, opts):
+    '''Applies every requested step, returning the descriptions of those that failed.'''
+    errors = []
+    if not (opts.poster or opts.art or opts.logo or opts.language or opts.sort_title):
+        return errors
 
-    if item.isLocked('art') and not opts.include_locked:  # PlexAPI 4.5.10
-        print(f"  - Locked art for {item.title}. Skipping.")
-        return
+    targets = None
+    with step(errors, 'resolution of the metadata targets'):
+        targets = resolve_targets(item)
+    if targets is None:
+        return errors
 
-    arts = item.arts()
-    if not arts:
-        print(f"  - WARNING: No available art for {item.title}.")
-        return
+    matched_title = full_title(targets.matched_item)
 
-    if tmdb_art_path:
-        apply_tmdb_image(item, arts, tmdb_art_path, 'art', item.uploadArt, item.lockArt)
-    else:
-        select_provider_image(item, arts, opts.art_provider, 'art', item.lockArt)
+    tmdb = NO_TMDB_INFO
+    with step(errors, f"TMDB lookup of {matched_title}"):
+        tmdb = get_tmdb_info(targets.matched_item)
+
+    for artwork_item in targets.artwork_items:
+        if artwork_item is targets.matched_item:
+            poster_path, art_path = tmdb.poster_path, tmdb.backdrop_path
+        else:
+            # TMDB has no per-season backdrop, and Plex seasons inherit the show art
+            poster_path, art_path = tmdb.season_posters.get(artwork_item.seasonNumber), None
+        if opts.poster:
+            with step(errors, f"poster of {full_title(artwork_item)}"):
+                select_image(artwork_item, 'poster', poster_path, opts)
+        if opts.art:
+            with step(errors, f"art of {full_title(artwork_item)}"):
+                select_image(artwork_item, 'art', art_path, opts)
+
+    if opts.logo:
+        with step(errors, f"logo of {matched_title}"):
+            select_image(targets.matched_item, 'logo', tmdb.logo_path, opts)
+
+    # After the artwork so the metadata refresh cannot revert the locked images
+    if opts.language:
+        with step(errors, f"metadata language of {matched_title}"):
+            if update_metadata_language(targets.matched_item, tmdb.original_language) \
+                    and (opts.sort_title or opts.notify):
+                # The refresh is asynchronous, later steps must see the new metadata
+                wait_for_metadata_refresh(targets.matched_item)
+
+    if opts.sort_title:
+        with step(errors, f"sort title of {matched_title}"):
+            update_sort_title(targets.matched_item, opts, tmdb.original_language)
+
+    return errors
 
 
-def select_logo(item, opts, tmdb_logo_path):
-    print("  Checking logo...")
-
-    if not hasattr(item, 'logos'):
-        print("  - WARNING: Logos are not supported by this PlexAPI version. Skipping.")
-        return
-
-    if item.isLocked('clearLogo') and not opts.include_locked:
-        print(f"  - Locked logo for {item.title}. Skipping.")
-        return
-
-    if not tmdb_logo_path:
-        print(f"  - WARNING: No TMDB logo found for {item.title}. Skipping.")
-        return
-
-    apply_tmdb_image(item, item.logos(), tmdb_logo_path, 'logo', item.uploadLogo, item.lockLogo)
-
-
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--rating_key', type=int)
-    parser.add_argument('--library')
+    parser.add_argument('--rating_key', type=int, required=True)
     parser.add_argument('--include_locked', action='store_true')
     parser.add_argument('--poster', action='store_true')
     parser.add_argument('--poster_provider', default=PREFERRED_POSTER_PROVIDER)
@@ -416,17 +492,24 @@ if __name__ == '__main__':
     parser.add_argument('--language', action='store_true')
     parser.add_argument('--sort_title', action='store_true')
     parser.add_argument('--notify', type=int, metavar='NOTIFIER_ID')
+    parser.add_argument('--error_notify', type=int, metavar='NOTIFIER_ID')
     opts = parser.parse_args()
 
-    # One notification per library item would duplicate the Tautulli grouping
-    if opts.notify and not opts.rating_key:
-        parser.error('--notify requires --rating_key')
+    item = PlexServer(PLEX_URL, PLEX_TOKEN).fetchItem(opts.rating_key)
+    # Seasons usually carry no year
+    year = f" ({item.year})" if item.year else ''
+    print(f"{full_title(item)}{year}")
 
-    plex = PlexServer(PLEX_URL, PLEX_TOKEN)
+    errors = apply_metadata(item, opts)
 
-    if opts.rating_key:
-        process_item(plex.fetchItem(opts.rating_key), opts)
-    elif opts.library:
-        process_library(plex.library.section(opts.library), opts)
-    else:
-        parser.error('either --rating_key or --library is required')
+    # Last so the notification carries the updated metadata
+    if opts.notify:
+        send_recently_added_notification(item, opts.notify)
+    if errors and opts.error_notify:
+        send_error_notification(item, opts.error_notify, errors)
+
+    return 1 if errors else 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
